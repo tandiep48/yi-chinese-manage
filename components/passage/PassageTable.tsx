@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { SkeletonTable } from "@/components/ui/SkeletonRow";
 import { Pagination } from "@/components/ui/Pagination";
+import { PassageVocabManager } from "@/components/passage/PassageVocabManager";
 import type { LessonPassage } from "@/lib/types";
 
 interface PassageTableProps {
@@ -193,6 +194,11 @@ export function PassageTable({
                                 </div>
                               ))}
                             </div>
+                          )}
+
+                          {/* Vocabulary linked to this passage */}
+                          {!expandLoading && (
+                            <PassageVocabManager passageId={p.passage_id} />
                           )}
                         </td>
                       </tr>

@@ -56,7 +56,7 @@ export default async function DashboardPage() {
               label="Total Vocabulary"
               value={totalVocab}
               icon="📖"
-              href="/vocab"
+              href="/manage/vocab"
               colour="from-indigo-500 to-violet-500"
             />
             <StatCard
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
               label="Total Passages"
               value={totalPassages}
               icon="📝"
-              href="/passage"
+              href="/manage/passage"
               colour="from-sky-500 to-cyan-400"
             />
             <StatCard
@@ -86,7 +86,7 @@ export default async function DashboardPage() {
             {hskBreakdown.map(({ level, count }) => (
               <Link
                 key={level}
-                href={`/vocab?hsk_level=${level}`}
+                href={`/manage/vocab?hsk_level=${level}`}
                 id={`hsk-card-${level}`}
                 className="flex flex-col items-center gap-2 rounded-xl bg-white border border-slate-200 px-4 py-5 hover:border-indigo-200 hover:shadow-md transition-all group"
               >
@@ -107,14 +107,14 @@ export default async function DashboardPage() {
           </h2>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/vocab"
+              href="/manage/vocab"
               id="quick-manage-vocab"
               className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-indigo-600 transition-colors shadow-sm"
             >
               📖 Manage Vocabulary
             </Link>
             <Link
-              href="/passage"
+              href="/manage/passage"
               id="quick-manage-passages"
               className="inline-flex items-center gap-2 rounded-lg bg-white border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
             >

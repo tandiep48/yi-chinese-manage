@@ -31,6 +31,31 @@ export interface LessonPassage {
   lines?: LessonLine[];
 }
 
+export interface User {
+  id: number;
+  username: string;
+  email: string;
+  level: number | null;
+}
+
+export interface Question {
+  id: number;
+  level: number;
+  category: string;
+  lesson: number;
+  no: number;
+  skill: string | null;
+  type: number;
+  content: string | null;
+  question: string | null;
+  answer: string | null;
+  audio_key: string | null;
+  image: string | null;
+  options: Record<string, unknown> | null;
+  progress: string;
+  unit_id: string;
+}
+
 export interface PaginatedResponse<T> {
   items: T[];
   page: number;
@@ -71,5 +96,32 @@ export type PassageFormData = {
   lines?: LineFormData[];
 };
 
+export type UserFormData = {
+  username: string;
+  email: string;
+  password?: string;
+  level?: number;
+};
+
+export type QuestionFormData = {
+  category: string;
+  level: number;
+  lesson: number;
+  no: number;
+  type: number;
+  progress: string;
+  skill?: string | null;
+  content?: string | null;
+  question?: string | null;
+  answer?: string | null;
+  audio_key?: string | null;
+  image?: string | null;
+  options?: Record<string, unknown> | null;
+  unit_id?: string;
+};
+
 export const HSK_LEVELS = ["HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6"] as const;
 export type HskLevel = (typeof HSK_LEVELS)[number];
+
+export const QUESTION_CATEGORIES = ["practice", "exam"] as const;
+export const QUESTION_SKILLS = ["listening", "reading"] as const;
