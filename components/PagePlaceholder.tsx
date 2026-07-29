@@ -4,7 +4,7 @@
 export function PagePlaceholder({ name }: { name: string }) {
   return (
     <div className="flex flex-1 items-center justify-center p-10">
-      <p className="text-2xl font-semibold text-slate-700">{name} it work</p>
+      <p className="text-2xl font-bold">{name} it work</p>
     </div>
   );
 }
