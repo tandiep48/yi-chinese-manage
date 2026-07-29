@@ -1,4 +1,13 @@
+import { Roboto } from "next/font/google";
 import { TopNav } from "@/components/layout/TopNav";
+import { I18nProvider } from "@/components/i18n/I18nProvider";
+
+// Roboto — the Learning app's learner-facing font.
+const roboto = Roboto({
+  subsets: ["latin"],
+  weight: ["400", "500", "700"],
+  variable: "--font-roboto",
+});
 
 export default function LearnerLayout({
   children,
@@ -6,9 +15,11 @@ export default function LearnerLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex h-full flex-col">
-      <TopNav />
-      <div className="flex flex-1 flex-col overflow-auto">{children}</div>
+    <div className={`${roboto.variable} learner-theme flex h-full flex-col`}>
+      <I18nProvider>
+        <TopNav />
+        <div className="flex flex-1 flex-col overflow-auto">{children}</div>
+      </I18nProvider>
     </div>
   );
 }
