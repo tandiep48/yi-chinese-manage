@@ -7,8 +7,8 @@ import { useState } from "react";
 import { useVocab } from "@/hooks/useVocab";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
-import { VocabTable } from "@/components/vocab/VocabTable";
-import { VocabForm } from "@/components/vocab/VocabForm";
+import { VocabTable } from "@/components/page/vocab/VocabTable";
+import { VocabForm } from "@/components/page/vocab/VocabForm";
 import { HSK_LEVELS } from "@/lib/types/types";
 import type { Vocab, VocabFormData } from "@/lib/types/types";
 

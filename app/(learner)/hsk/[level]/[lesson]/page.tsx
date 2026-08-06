@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel, getParts, getLessonProgress, type LessonPart } from "@/lib/lessons/lessons";
-import { LessonProgress, ProgressLines } from "@/components/learner/PickerProgress";
+import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
 
 function partTitle(p: LessonPart, t: (k: string, v?: Record<string, string | number>) => string): string {

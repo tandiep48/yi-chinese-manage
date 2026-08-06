@@ -7,8 +7,8 @@ import { useState } from "react";
 import { usePassage } from "@/hooks/usePassage";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
-import { PassageTable } from "@/components/passage/PassageTable";
-import { PassageForm } from "@/components/passage/PassageForm";
+import { PassageTable } from "@/components/page/passage/PassageTable";
+import { PassageForm } from "@/components/page/passage/PassageForm";
 import { HSK_LEVELS } from "@/lib/types/types";
 import type { LessonPassage, PassageFormData } from "@/lib/types/types";
 

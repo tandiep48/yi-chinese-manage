@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
 import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
 import { Pagination } from "@/components/shared/manager_ui/Pagination/Pagination";
-import { PassageVocabManager } from "@/components/passage/PassageVocabManager";
+import { PassageVocabManager } from "@/components/page/passage/PassageVocabManager";
 import type { LessonPassage } from "@/lib/types/types";
 
 interface PassageTableProps {

@@ -7,8 +7,8 @@ import { useEffect, useState } from "react";
 import { useQuestion } from "@/hooks/useQuestion";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
-import { QuestionTable } from "@/components/question/QuestionTable";
-import { QuestionForm } from "@/components/question/QuestionForm";
+import { QuestionTable } from "@/components/page/question/QuestionTable";
+import { QuestionForm } from "@/components/page/question/QuestionForm";
 import { QUESTION_CATEGORIES, QUESTION_SKILLS } from "@/lib/types/types";
 import type { Question, QuestionFormData } from "@/lib/types/types";
 

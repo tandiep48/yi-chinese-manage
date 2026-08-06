@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
-import { LinesEditor } from "@/components/passage/LinesEditor";
+import { LinesEditor } from "@/components/page/passage/LinesEditor";
 import type { LessonPassage, PassageFormData, LineFormData } from "@/lib/types/types";
 import { HSK_LEVELS } from "@/lib/types/types";
 
