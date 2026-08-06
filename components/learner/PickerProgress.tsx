@@ -4,7 +4,7 @@
 // Progress bars for the lesson picker — ports _progressBar() from the
 // Learning app's passage_picker.js (words + lesson-progress bars).
 
-import type { Progress } from "@/lib/lessons";
+import type { Progress } from "@/lib/lessons/lessons";
 import { useT } from "@/components/i18n/I18nProvider";
 
 function pctClass(pct: number): string {

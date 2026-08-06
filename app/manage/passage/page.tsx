@@ -5,12 +5,12 @@
 
 import { useState } from "react";
 import { usePassage } from "@/hooks/usePassage";
-import { useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { PassageTable } from "@/components/passage/PassageTable";
 import { PassageForm } from "@/components/passage/PassageForm";
-import { HSK_LEVELS } from "@/lib/types";
-import type { LessonPassage, PassageFormData } from "@/lib/types";
+import { HSK_LEVELS } from "@/lib/types/types";
+import type { LessonPassage, PassageFormData } from "@/lib/types/types";
 
 export default function PassagePage() {
   const {

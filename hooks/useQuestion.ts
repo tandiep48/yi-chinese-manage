@@ -4,14 +4,14 @@
 // All state and CRUD logic for the Question Bank management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { Question, QuestionFormData } from "@/lib/types";
+import type { Question, QuestionFormData } from "@/lib/types/types";
 import {
   listQuestions,
   createQuestion,
   updateQuestion,
   deleteQuestion,
   type QuestionFilters,
-} from "@/lib/api";
+} from "@/lib/api/question";
 
 interface UseQuestionReturn {
   items: Question[];

@@ -5,11 +5,11 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@/hooks/useUser";
-import { useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { UserTable } from "@/components/user/UserTable";
 import { UserForm } from "@/components/user/UserForm";
-import type { User, UserFormData } from "@/lib/types";
+import type { User, UserFormData } from "@/lib/types/types";
 
 export default function UserPage() {
   const {

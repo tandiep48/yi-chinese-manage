@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import { HSK_LEVELS } from "@/lib/lessons";
+import { HSK_LEVELS } from "@/lib/lessons/lessons";
 import { useT } from "@/components/i18n/I18nProvider";
 
 export default function HskLevelPickerPage() {

@@ -4,11 +4,11 @@
 // Passage list table with expandable lines panel and edit/delete actions.
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/Badge";
-import { SkeletonTable } from "@/components/ui/SkeletonRow";
-import { Pagination } from "@/components/ui/Pagination";
+import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
+import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
+import { Pagination } from "@/components/shared/manager_ui/Pagination/Pagination";
 import { PassageVocabManager } from "@/components/passage/PassageVocabManager";
-import type { LessonPassage } from "@/lib/types";
+import type { LessonPassage } from "@/lib/types/types";
 
 interface PassageTableProps {
   items: LessonPassage[];

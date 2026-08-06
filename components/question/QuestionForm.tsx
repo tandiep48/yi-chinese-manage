@@ -5,9 +5,9 @@
 // `options` is edited as raw JSON (must be a JSON object or blank).
 
 import { useEffect, useState } from "react";
-import { Modal } from "@/components/ui/Modal";
-import type { Question, QuestionFormData } from "@/lib/types";
-import { QUESTION_CATEGORIES, QUESTION_SKILLS } from "@/lib/types";
+import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
+import type { Question, QuestionFormData } from "@/lib/types/types";
+import { QUESTION_CATEGORIES, QUESTION_SKILLS } from "@/lib/types/types";
 
 interface QuestionFormProps {
   open: boolean;

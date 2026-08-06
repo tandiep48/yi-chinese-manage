@@ -4,9 +4,9 @@
 // Question bank data table with edit/delete actions.
 
 import { useState } from "react";
-import { SkeletonTable } from "@/components/ui/SkeletonRow";
-import { Pagination } from "@/components/ui/Pagination";
-import type { Question } from "@/lib/types";
+import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
+import { Pagination } from "@/components/shared/manager_ui/Pagination/Pagination";
+import type { Question } from "@/lib/types/types";
 
 interface QuestionTableProps {
   items: Question[];

@@ -11,10 +11,10 @@ import {
   listPassageVocab,
   addPassageVocab,
   removePassageVocab,
-  listVocab,
-} from "@/lib/api";
-import { useToast } from "@/components/ui/Toast";
-import type { Vocab } from "@/lib/types";
+} from "@/lib/api/passage";
+import { listVocab } from "@/lib/api/vocab";
+import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
+import type { Vocab } from "@/lib/types/types";
 
 interface PassageVocabManagerProps {
   passageId: string;

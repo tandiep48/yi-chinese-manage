@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { config } from "@fortawesome/fontawesome-svg-core";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
-import { ToastProvider } from "@/components/ui/Toast";
+import { ToastProvider } from "@/components/shared/manager_ui/Toast/Toast";
 
 // Import Font Awesome's core CSS manually so icons don't flash oversized.
 config.autoAddCss = false;

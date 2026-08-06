@@ -5,8 +5,8 @@
 // On edit, leaving the password blank keeps the current password.
 
 import { useEffect, useState } from "react";
-import { Modal } from "@/components/ui/Modal";
-import type { User, UserFormData } from "@/lib/types";
+import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
+import type { User, UserFormData } from "@/lib/types/types";
 
 interface UserFormProps {
   open: boolean;

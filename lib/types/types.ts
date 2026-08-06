@@ -1,5 +1,6 @@
-// lib/types.ts
+// lib/types/types.ts
 // Shared TypeScript interfaces mirroring Flask API response shapes
+import { TYPE_CONSTANTS } from "./constants";
 
 export interface Vocab {
   id: number;
@@ -120,8 +121,8 @@ export type QuestionFormData = {
   unit_id?: string;
 };
 
-export const HSK_LEVELS = ["HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6"] as const;
+export const HSK_LEVELS = TYPE_CONSTANTS.HSK_LEVELS;
 export type HskLevel = (typeof HSK_LEVELS)[number];
 
-export const QUESTION_CATEGORIES = ["practice", "exam"] as const;
-export const QUESTION_SKILLS = ["listening", "reading"] as const;
+export const QUESTION_CATEGORIES = TYPE_CONSTANTS.QUESTION_CATEGORIES;
+export const QUESTION_SKILLS = TYPE_CONSTANTS.QUESTION_SKILLS;

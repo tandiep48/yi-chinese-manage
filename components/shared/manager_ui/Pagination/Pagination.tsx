@@ -1,5 +1,6 @@
-// components/ui/Pagination.tsx
+// components/shared/manager_ui/Pagination/Pagination.tsx
 // Page controls: Prev / page pills / Next
+import { PAGINATION_DESIGN, PAGINATION_TEXT } from './constants';
 
 interface PaginationProps {
   page: number;
@@ -35,20 +36,16 @@ export function Pagination({
     pages.push(totalPages);
   }
 
-  const btnBase =
-    "inline-flex h-8 min-w-[2rem] items-center justify-center rounded-lg px-2 text-sm font-medium transition-colors";
-  const btnActive = "bg-indigo-500 text-white shadow-sm";
-  const btnDefault = "text-slate-600 hover:bg-slate-100";
-  const btnDisabled = "text-slate-300 cursor-not-allowed";
+  const { btnBase, btnActive, btnDefault, btnDisabled } = PAGINATION_DESIGN;
 
   return (
-    <div className="flex items-center justify-between gap-4 pt-3">
-      <p className="text-sm text-slate-500 shrink-0">
-        Showing <span className="font-medium text-slate-700">{from}–{to}</span> of{" "}
-        <span className="font-medium text-slate-700">{total}</span>
+    <div className={PAGINATION_DESIGN.container}>
+      <p className={PAGINATION_DESIGN.textContainer}>
+        {PAGINATION_TEXT.showing} <span className={PAGINATION_DESIGN.textHighlight}>{from}–{to}</span> {PAGINATION_TEXT.of}{" "}
+        <span className={PAGINATION_DESIGN.textHighlight}>{total}</span>
       </p>
 
-      <nav aria-label="Pagination" className="flex items-center gap-1">
+      <nav aria-label="Pagination" className={PAGINATION_DESIGN.nav}>
         {/* Prev */}
         <button
           id="pagination-prev"
@@ -63,7 +60,7 @@ export function Pagination({
         {/* Page pills */}
         {pages.map((p, i) =>
           p === "…" ? (
-            <span key={`ellipsis-${i}`} className="px-1 text-slate-400 text-sm">
+            <span key={`ellipsis-${i}`} className={PAGINATION_DESIGN.ellipsis}>
               …
             </span>
           ) : (

@@ -4,10 +4,10 @@
 // Vocabulary data table with edit/delete actions.
 
 import { useState } from "react";
-import { Badge } from "@/components/ui/Badge";
-import { SkeletonTable } from "@/components/ui/SkeletonRow";
-import { Pagination } from "@/components/ui/Pagination";
-import type { Vocab } from "@/lib/types";
+import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
+import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
+import { Pagination } from "@/components/shared/manager_ui/Pagination/Pagination";
+import type { Vocab } from "@/lib/types/types";
 
 interface VocabTableProps {
   items: Vocab[];

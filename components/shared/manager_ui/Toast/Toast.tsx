@@ -1,6 +1,6 @@
 "use client";
 
-// components/ui/Toast.tsx
+// components/shared/manager_ui/Toast/Toast.tsx
 // Self-contained toast notification system:
 //  - ToastProvider — wraps the app (added in layout.tsx)
 //  - useToast()   — hook to trigger toasts from any client component
@@ -14,6 +14,7 @@ import {
   useRef,
   ReactNode,
 } from "react";
+import { TOAST_DESIGN, TOAST_ICONS } from "./constants";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -53,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       {/* Toast stack */}
       <div
         aria-live="polite"
-        className="fixed bottom-5 right-5 z-[999] flex flex-col gap-2 pointer-events-none"
+        className={TOAST_DESIGN.container}
       >
         {toasts.map((t) => (
           <ToastCard key={t.id} item={t} onDismiss={() =>
@@ -81,32 +82,18 @@ function ToastCard({
     return () => clearTimeout(t);
   }, []);
 
-  const variantStyles: Record<ToastVariant, string> = {
-    success: "border-l-4 border-green-500 bg-green-50 text-green-800",
-    error:   "border-l-4 border-red-500   bg-red-50   text-red-800",
-    info:    "border-l-4 border-indigo-500 bg-indigo-50 text-indigo-800",
-  };
-
-  const icons: Record<ToastVariant, string> = {
-    success: "✓",
-    error:   "✕",
-    info:    "ℹ",
-  };
-
   return (
     <div
       role="alert"
       onClick={onDismiss}
       className={[
-        "pointer-events-auto flex items-start gap-3 rounded-lg px-4 py-3 shadow-lg",
-        "min-w-[280px] max-w-sm cursor-pointer select-none",
-        "transition-all duration-300",
-        variantStyles[item.variant],
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4",
+        TOAST_DESIGN.cardBase,
+        TOAST_DESIGN.variantStyles[item.variant],
+        visible ? TOAST_DESIGN.cardVisible : TOAST_DESIGN.cardHidden,
       ].join(" ")}
     >
-      <span className="mt-0.5 text-sm font-bold shrink-0">{icons[item.variant]}</span>
-      <p className="text-sm leading-snug">{item.message}</p>
+      <span className={TOAST_DESIGN.iconContainer}>{TOAST_ICONS[item.variant]}</span>
+      <p className={TOAST_DESIGN.message}>{item.message}</p>
     </div>
   );
 }

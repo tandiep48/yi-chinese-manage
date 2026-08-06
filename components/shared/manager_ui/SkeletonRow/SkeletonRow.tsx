@@ -1,5 +1,6 @@
-// components/ui/SkeletonRow.tsx
+// components/shared/manager_ui/SkeletonRow/SkeletonRow.tsx
 // Animated loading placeholder for table rows.
+import { SKELETON_DESIGN } from './constants';
 
 interface SkeletonRowProps {
   cols: number;
@@ -7,8 +8,8 @@ interface SkeletonRowProps {
 
 function SkeletonCell() {
   return (
-    <td className="px-4 py-3">
-      <div className="h-4 rounded-md bg-slate-200 animate-pulse" />
+    <td className={SKELETON_DESIGN.cell}>
+      <div className={SKELETON_DESIGN.bar} />
     </td>
   );
 }

@@ -2,9 +2,10 @@
 // Dashboard — stat cards showing total vocab, total passages, and HSK breakdown.
 
 import { TopBar } from "@/components/layout/TopBar";
-import { Badge } from "@/components/ui/Badge";
-import { listVocab, listPassages } from "@/lib/api";
-import { HSK_LEVELS } from "@/lib/types";
+import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
+import { listVocab } from "@/lib/api/vocab";
+import { listPassages } from "@/lib/api/passage";
+import { HSK_LEVELS } from "@/lib/types/types";
 import Link from "next/link";
 
 async function fetchStats() {

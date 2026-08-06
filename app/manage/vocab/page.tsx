@@ -5,12 +5,12 @@
 
 import { useState } from "react";
 import { useVocab } from "@/hooks/useVocab";
-import { useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { VocabTable } from "@/components/vocab/VocabTable";
 import { VocabForm } from "@/components/vocab/VocabForm";
-import { HSK_LEVELS } from "@/lib/types";
-import type { Vocab, VocabFormData } from "@/lib/types";
+import { HSK_LEVELS } from "@/lib/types/types";
+import type { Vocab, VocabFormData } from "@/lib/types/types";
 
 export default function VocabPage() {
   const {

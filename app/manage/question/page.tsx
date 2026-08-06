@@ -5,12 +5,12 @@
 
 import { useEffect, useState } from "react";
 import { useQuestion } from "@/hooks/useQuestion";
-import { useToast } from "@/components/ui/Toast";
+import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { QuestionTable } from "@/components/question/QuestionTable";
 import { QuestionForm } from "@/components/question/QuestionForm";
-import { QUESTION_CATEGORIES, QUESTION_SKILLS } from "@/lib/types";
-import type { Question, QuestionFormData } from "@/lib/types";
+import { QUESTION_CATEGORIES, QUESTION_SKILLS } from "@/lib/types/types";
+import type { Question, QuestionFormData } from "@/lib/types/types";
 
 const selectCls =
   "rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all";

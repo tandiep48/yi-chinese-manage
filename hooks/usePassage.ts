@@ -4,14 +4,14 @@
 // All state and CRUD logic for the Passage management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { LessonPassage, PassageFormData } from "@/lib/types";
+import type { LessonPassage, PassageFormData } from "@/lib/types/types";
 import {
   listPassages,
   createPassage,
   updatePassage,
   deletePassage,
   getPassage,
-} from "@/lib/api";
+} from "@/lib/api/passage";
 
 interface UsePassageReturn {
   items: LessonPassage[];

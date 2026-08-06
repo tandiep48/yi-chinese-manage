@@ -4,8 +4,8 @@
 // All state and CRUD logic for the Users management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { User, UserFormData } from "@/lib/types";
-import { listUsers, createUser, updateUser, deleteUser } from "@/lib/api";
+import type { User, UserFormData } from "@/lib/types/types";
+import { listUsers, createUser, updateUser, deleteUser } from "@/lib/api/user";
 
 interface UseUserReturn {
   items: User[];

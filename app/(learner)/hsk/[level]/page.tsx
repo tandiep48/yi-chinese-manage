@@ -8,7 +8,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookOpen, faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import { getLevel, getLessons } from "@/lib/lessons";
+import { getLevel, getLessons } from "@/lib/lessons/lessons";
 import { ProgressLines } from "@/components/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
 

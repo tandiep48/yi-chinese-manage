@@ -4,10 +4,10 @@
 // Create / Edit passage modal form with embedded LinesEditor.
 
 import { useEffect, useState } from "react";
-import { Modal } from "@/components/ui/Modal";
+import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
 import { LinesEditor } from "@/components/passage/LinesEditor";
-import type { LessonPassage, PassageFormData, LineFormData } from "@/lib/types";
-import { HSK_LEVELS } from "@/lib/types";
+import type { LessonPassage, PassageFormData, LineFormData } from "@/lib/types/types";
+import { HSK_LEVELS } from "@/lib/types/types";
 
 interface PassageFormProps {
   open: boolean;

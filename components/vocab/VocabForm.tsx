@@ -4,9 +4,9 @@
 // Create / Edit vocabulary modal form.
 
 import { useEffect, useState } from "react";
-import { Modal } from "@/components/ui/Modal";
-import type { Vocab, VocabFormData } from "@/lib/types";
-import { HSK_LEVELS } from "@/lib/types";
+import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
+import type { Vocab, VocabFormData } from "@/lib/types/types";
+import { HSK_LEVELS } from "@/lib/types/types";
 
 interface VocabFormProps {
   open: boolean;
