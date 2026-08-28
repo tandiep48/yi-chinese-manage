@@ -42,6 +42,15 @@ const NAV_ITEMS: NavItem[] = [
     ),
   },
   {
+    label: "Books",
+    href: "/manage/book",
+    icon: (
+      <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+        <path d="M2 4.75A2.75 2.75 0 0 1 4.75 2h1.5c.966 0 1.83.462 2.372 1.176A2.735 2.735 0 0 1 10.75 2h1.5A2.75 2.75 0 0 1 15 4.75v9a.75.75 0 0 1-.75.75h-4.19a1.25 1.25 0 0 0-.883.366l-.354.354a.75.75 0 0 1-1.06 0l-.354-.354a1.25 1.25 0 0 0-.883-.366H2.75A.75.75 0 0 1 2 13.75v-9Z" />
+      </svg>
+    ),
+  },
+  {
     label: "Users",
     href: "/manage/user",
     icon: (

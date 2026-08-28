@@ -3,7 +3,8 @@
 // app/(learner)/page.tsx
 // Learner home dashboard — layout ported from the Learning app
 // (templates/dashboard/dashboard.html + static/dashboard/dashboard.css).
-// Content is static placeholder for now; real data wiring comes later.
+// Data wiring ported from static/dashboard/dashboard.js, against the same
+// (non-enveloped) JSON endpoints — see hooks/useDashboardHome.ts.
 
 import Link from "next/link";
 import { Inter } from "next/font/google";
@@ -28,26 +29,75 @@ import {
   faListCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
+import { useDashboardHome } from "@/hooks/useDashboardHome";
+import type { GlobalStatsBucket, RecommendStatus } from "@/lib/types/types";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
-// Placeholder stats — replace with real DB-backed data later.
-const SUB_STATS = [
-  { icon: faPencil, labelKey: "dashboard.exercise", value: "128", time: "3h 12m" },
-  { icon: faClipboardCheck, labelKey: "dashboard.exam", value: "42", time: "1h 05m" },
-  { icon: faChalkboardUser, labelKey: "dashboard.lesson_trainer", value: "310", time: "5h 48m" },
-  { icon: faLanguage, labelKey: "dashboard.vocab_trainer", value: "560", time: "4h 20m" },
-];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-// Placeholder recommendations — replace with real DB-backed data later.
-const RECOMMENDED = [
-  { level: 1, lesson: 4, skill: "listening", category: "practice", questions: 20, statusKey: "status_not_start" },
-  { level: 1, lesson: 5, skill: "reading", category: "practice", questions: 18, statusKey: "status_finish_success" },
-  { level: 2, lesson: 1, skill: "listening", category: "exam", questions: 25, statusKey: "status_not_start" },
-];
+function formatChartDate(iso: string): string {
+  const parts = iso.split("-").map(Number);
+  if (parts.length !== 3 || !MONTHS[parts[1] - 1]) return iso;
+  return `${MONTHS[parts[1] - 1]} ${parts[2]}`;
+}
+
+function recommendStatusKey(status: RecommendStatus): string {
+  if (status === "Finish and success") return "status_finish_success";
+  if (status === "Finish and fail") return "status_finish_fail";
+  return "status_not_start";
+}
+
+function MiniBarChart({
+  values,
+  labels,
+  suffix = "",
+}: {
+  values: number[];
+  labels: string[];
+  suffix?: string;
+}) {
+  const max = Math.max(1, ...values);
+  return (
+    <div className="flex h-[240px] items-end justify-around gap-4 px-2">
+      {values.map((value, i) => (
+        <div key={i} className="flex flex-1 flex-col items-center gap-2">
+          <span className="text-xs font-semibold text-[var(--text-main)]">
+            {value}
+            {suffix}
+          </span>
+          <div
+            className="w-full max-w-10 rounded-t-md bg-[var(--primary)]"
+            style={{ height: `${Math.max(4, (value / max) * 160)}px` }}
+          />
+          <span className="text-xs text-[var(--text-light)]">{labels[i]}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function DashboardPage() {
   const { t } = useT();
+  const {
+    loading,
+    signedOut,
+    hasRecent,
+    lesson,
+    stats,
+    wordsDays,
+    timeDays,
+    recommendations,
+    recommendError,
+    error,
+  } = useDashboardHome();
+
+  const subStats: { icon: typeof faPencil; labelKey: string; bucket: GlobalStatsBucket | undefined }[] = [
+    { icon: faPencil, labelKey: "dashboard.exercise", bucket: stats?.buckets.exercise },
+    { icon: faClipboardCheck, labelKey: "dashboard.exam", bucket: stats?.buckets.exam },
+    { icon: faChalkboardUser, labelKey: "dashboard.lesson_trainer", bucket: stats?.buckets.lesson_trainer },
+    { icon: faLanguage, labelKey: "dashboard.vocab_trainer", bucket: stats?.buckets.vocab_trainer },
+  ];
 
   return (
     <div className={`${inter.variable} ui2-dashboard`}>
@@ -60,17 +110,58 @@ export default function DashboardPage() {
               <div className="tag">
                 <FontAwesomeIcon icon={faBookOpen} /> {t("dashboard.current_lesson")}
               </div>
-              <h2>HSK 1 · {t("picker.lesson_prefix")} 3</h2>
-              <p className="description">{t("dashboard.continue_subtitle")}</p>
 
-              <div className="button-group">
-                <Link className="btn btn-primary" href="/hsk">
-                  {t("dashboard.continue_lesson")} <FontAwesomeIcon icon={faArrowRight} />
-                </Link>
-                <Link className="btn btn-secondary" href="/hsk">
-                  {t("dashboard.change_lesson")}
-                </Link>
-              </div>
+              {loading ? (
+                <>
+                  <h2>{t("dashboard.loading")}</h2>
+                  <p className="description">&nbsp;</p>
+                </>
+              ) : signedOut ? (
+                <>
+                  <h2>{t("dashboard.signed_out_title")}</h2>
+                  <p className="description">{t("dashboard.signed_out_body")}</p>
+                  <div className="button-group">
+                    <Link className="btn btn-primary" href="/login">
+                      {t("auth.login_button")} <FontAwesomeIcon icon={faArrowRight} />
+                    </Link>
+                  </div>
+                </>
+              ) : error ? (
+                <>
+                  <h2>{t("dashboard.load_failed")}</h2>
+                  <p className="description">{error}</p>
+                </>
+              ) : hasRecent === false ? (
+                <>
+                  <h2>{t("dashboard.no_lesson_title")}</h2>
+                  <p className="description">{t("dashboard.no_lesson_body")}</p>
+                  <div className="button-group">
+                    <Link className="btn btn-primary" href="/hsk">
+                      {t("dashboard.open_learning")} <FontAwesomeIcon icon={faArrowRight} />
+                    </Link>
+                  </div>
+                </>
+              ) : lesson ? (
+                <>
+                  <h2>
+                    HSK {lesson.level} · {t("picker.lesson_prefix")} {lesson.lesson}
+                  </h2>
+                  <p className="description">
+                    {t("dashboard.current_part", {
+                      part: lesson.part,
+                      count: lesson.passage_ids.length || 1,
+                    })}
+                  </p>
+                  <div className="button-group">
+                    <Link className="btn btn-primary" href={`/hsk/${lesson.hsk_level}/${lesson.lesson}`}>
+                      {t("dashboard.continue_lesson")} <FontAwesomeIcon icon={faArrowRight} />
+                    </Link>
+                    <Link className="btn btn-secondary" href="/hsk">
+                      {t("dashboard.change_lesson")}
+                    </Link>
+                  </div>
+                </>
+              ) : null}
             </div>
             <div className="card-illustration">
               <FontAwesomeIcon icon={faUserGraduate} />
@@ -105,44 +196,40 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="rec-grid dashboard-rec-grid">
-            {RECOMMENDED.map((r) => (
-              <div key={`${r.level}-${r.lesson}-${r.category}`} className="rec-card">
-                <div className="rec-card-header">
-                  <input
-                    type="checkbox"
-                    className="rec-card-checkbox"
-                    defaultChecked={false}
-                    aria-label={`${t("picker.lesson_prefix")} ${r.lesson}`}
-                  />
-                  <span className={`hsk-badge hsk-${r.level}`}>HSK {r.level}</span>
-                  <span className="rec-card-title">
-                    {t("picker.lesson_prefix")} {r.lesson}
-                  </span>
+          {loading ? (
+            <p className="dashboard-empty">{t("dashboard.recommend_loading")}</p>
+          ) : recommendError ? (
+            <p className="dashboard-empty">{recommendError}</p>
+          ) : recommendations.length === 0 ? (
+            <p className="dashboard-empty">{t("dashboard.recommend_empty")}</p>
+          ) : (
+            <div className="rec-grid dashboard-rec-grid">
+              {recommendations.map((r) => (
+                <div key={`${r.level}-${r.lesson}-${r.progress}-${r.category}`} className="rec-card">
+                  <div className="rec-card-header">
+                    <span className={`hsk-badge hsk-${r.level}`}>HSK {r.level}</span>
+                    <span className="rec-card-title">
+                      {t("picker.lesson_prefix")} {r.lesson}
+                    </span>
+                  </div>
+                  <div className="rec-card-meta">
+                    <span className="rec-card-skill">
+                      <FontAwesomeIcon icon={r.skill === "listening" ? faHeadphonesSimple : faBookOpen} />{" "}
+                      {t(r.skill === "listening" ? "recommend.listening" : "recommend.reading")}
+                    </span>
+                    <span className={`category-badge ${r.category === "exam" ? "badge-exam" : "badge-practice"}`}>
+                      <FontAwesomeIcon icon={r.category === "exam" ? faFileLines : faListCheck} />
+                      <span>{t(r.category === "exam" ? "dashboard.exam" : "dashboard.exercise")}</span>
+                    </span>
+                    <span className="status-badge">{t(`recommend.${recommendStatusKey(r.status)}`)}</span>
+                  </div>
+                  <div className="rec-progress-label">
+                    {t("recommend.question_count", { count: r.question_count })}
+                  </div>
                 </div>
-                <div className="rec-card-meta">
-                  <span className="rec-card-skill">
-                    <FontAwesomeIcon
-                      icon={r.skill === "listening" ? faHeadphonesSimple : faBookOpen}
-                    />{" "}
-                    {t(r.skill === "listening" ? "recommend.listening" : "recommend.reading")}
-                  </span>
-                  <span
-                    className={`category-badge ${
-                      r.category === "exam" ? "badge-exam" : "badge-practice"
-                    }`}
-                  >
-                    <FontAwesomeIcon icon={r.category === "exam" ? faFileLines : faListCheck} />
-                    <span>{t(r.category === "exam" ? "dashboard.exam" : "dashboard.exercise")}</span>
-                  </span>
-                  <span className="status-badge">{t(`recommend.${r.statusKey}`)}</span>
-                </div>
-                <div className="rec-progress-label">
-                  {t("recommend.question_count", { count: r.questions })}
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
 
         {/* ── Progress / stats ──────────────────────────────────────── */}
@@ -160,12 +247,12 @@ export default function DashboardPage() {
             <div className="main-stats">
               <div className="primary-stat">
                 <p className="stat-label">{t("dashboard.total_time").toUpperCase()}</p>
-                <h3>14h 25m</h3>
+                <h3>{stats?.total_time_label ?? "0s"}</h3>
               </div>
               <div className="stat-divider-vertical" />
               <div className="primary-stat">
                 <p className="stat-label">{t("dashboard.words_mastered").toUpperCase()}</p>
-                <h3>248</h3>
+                <h3>{(stats?.total_words ?? 0).toLocaleString()}</h3>
               </div>
             </div>
 
@@ -173,31 +260,45 @@ export default function DashboardPage() {
               <div className="charts-grid">
                 <div className="chart-card">
                   <h4>
-                    <FontAwesomeIcon icon={faClock} className="text-primary" />{" "}
-                    {t("dashboard.time_learned_3days")}
+                    <FontAwesomeIcon icon={faClock} className="text-primary" /> {t("dashboard.time_learned_3days")}
                   </h4>
-                  <div className="chart-canvas-wrap">{t("dashboard.no_chart_data")}</div>
+                  {timeDays.length === 0 ? (
+                    <div className="chart-canvas-wrap">{t("dashboard.no_chart_data")}</div>
+                  ) : (
+                    <MiniBarChart
+                      values={timeDays.map((d) => d.minutes)}
+                      labels={timeDays.map((d) => formatChartDate(d.date))}
+                      suffix="m"
+                    />
+                  )}
                 </div>
                 <div className="chart-card">
                   <h4>
                     <FontAwesomeIcon icon={faChartColumn} className="text-primary" />{" "}
                     {t("dashboard.words_mastered_3days")}
                   </h4>
-                  <div className="chart-canvas-wrap">{t("dashboard.no_chart_data")}</div>
+                  {wordsDays.length === 0 ? (
+                    <div className="chart-canvas-wrap">{t("dashboard.no_chart_data")}</div>
+                  ) : (
+                    <MiniBarChart
+                      values={wordsDays.map((d) => d.count)}
+                      labels={wordsDays.map((d) => formatChartDate(d.date))}
+                    />
+                  )}
                 </div>
               </div>
             </div>
 
             <div className="sub-stats-grid">
-              {SUB_STATS.map((s) => (
+              {subStats.map((s) => (
                 <div key={s.labelKey} className="sub-stat-card">
                   <div className="icon-wrapper">
                     <FontAwesomeIcon icon={s.icon} />
                   </div>
                   <div className="sub-stat-info">
                     <p className="label">{t(s.labelKey).toUpperCase()}</p>
-                    <h4>{s.value}</h4>
-                    <p className="time">{s.time}</p>
+                    <h4>{(s.bucket?.questions ?? 0).toLocaleString()}</h4>
+                    <p className="time">{s.bucket?.time_label ?? "0s"}</p>
                   </div>
                 </div>
               ))}

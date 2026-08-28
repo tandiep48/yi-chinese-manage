@@ -26,7 +26,7 @@ Do not blindly write code. Analyze the request and ask for clarification if you 
 
 - **2.1 No Conversational Filler:** Output only the code. Do not explain every action, provide summaries for each item, or narrate your thought process. Only provide explanations if explicitly asked to do so.
 - **2.2 Performance & Readability:** Ensure the code is highly performant and readable for human review.
-- **2.3 No Automated Testing:** Do not write test cases for new features. All testing will be conducted manually by the user.
+- **2.3 Automated Testing:** Always write test cases for new features.
 - **2.4 Housekeeping:** Clean up unneeded items, dead code, and unused imports within the specific folder you are working on.
 
 ## 3. Git & Version Control Constraints
