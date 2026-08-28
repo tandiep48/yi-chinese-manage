@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 interface NavItem {
   labelKey: string;
@@ -23,11 +24,6 @@ const NAV_ITEMS: NavItem[] = [
   { labelKey: "nav.learn_together", href: "/learn-together" },
 ];
 
-const RIGHT_ITEMS: NavItem[] = [
-  { labelKey: "nav.profile", href: "/profile" },
-  { labelKey: "nav.login", href: "/login" },
-];
-
 function isActive(pathname: string, href: string): boolean {
   return href === "/" ? pathname === "/" : pathname.startsWith(href);
 }
@@ -35,6 +31,7 @@ function isActive(pathname: string, href: string): boolean {
 export function TopNav() {
   const pathname = usePathname();
   const { t } = useT();
+  const { user, loading, logout } = useAuth();
 
   const linkClass = (href: string) =>
     [
@@ -65,11 +62,30 @@ export function TopNav() {
 
       {/* Account nav */}
       <nav className="flex items-center gap-1">
-        {RIGHT_ITEMS.map((item) => (
-          <Link key={item.href} href={item.href} className={linkClass(item.href)}>
-            {t(item.labelKey)}
-          </Link>
-        ))}
+        {loading ? null : user ? (
+          <>
+            <Link href="/profile" className={linkClass("/profile")}>
+              {user.username}
+            </Link>
+            <button
+              type="button"
+              id="topnav-logout-btn"
+              onClick={() => logout()}
+              className="rounded-lg px-3 py-2 text-sm font-bold text-white transition-colors hover:bg-white/15"
+            >
+              {t("nav.logout")}
+            </button>
+          </>
+        ) : (
+          <>
+            <Link href="/login" className={linkClass("/login")}>
+              {t("nav.login")}
+            </Link>
+            <Link href="/register" className={linkClass("/register")}>
+              {t("nav.register")}
+            </Link>
+          </>
+        )}
         <LanguageSwitcher />
       </nav>
     </header>

@@ -2,26 +2,38 @@ import { API_CONSTANTS } from "./constants";
 
 const BASE = API_CONSTANTS.BASE_URL;
 
+// Every Flask endpoint responds with the envelope from api-standards.md:
+// { success: true, data: ... } or { success: false, error: ... }.
+interface ApiEnvelope<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
+
 export async function apiFetch<T>(
   path: string,
   options?: RequestInit
 ): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     headers: { "Content-Type": "application/json" },
+    // Send/receive the Flask-Login session cookie across the
+    // localhost:3000 -> localhost:5000 origin boundary.
+    credentials: "include",
     ...options,
   });
 
-  if (!res.ok) {
-    let message = `API error ${res.status}`;
-    try {
-      const body = await res.json();
-      if (body?.error) message = body.error;
-    } catch {
-      // ignore parse errors
-    }
-    throw new Error(message);
+  if (res.status === 204) return undefined as unknown as T;
+
+  let body: ApiEnvelope<T> | undefined;
+  try {
+    body = await res.json();
+  } catch {
+    // ignore parse errors (e.g. empty body)
   }
 
-  if (res.status === 204) return undefined as unknown as T;
-  return res.json() as Promise<T>;
+  if (!res.ok || !body?.success) {
+    throw new Error(body?.error || `API error ${res.status}`);
+  }
+
+  return body.data as T;
 }

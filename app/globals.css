@@ -47,6 +47,75 @@
   --shadow-xl:  0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.08);
 }
 
+/* ─────────────────────────────────────────────
+   BRAND DESIGN TOKENS
+   Ported from the Learning Flask app for reference:
+   Learning/web_app/static/shared/styles.css + Learning/FRONTEND_GUIDELINES.md
+   These do NOT replace the admin tokens above (--accent, --text-primary, etc.)
+   — the /manage panel keeps its own slate/indigo theme. Reach for these when
+   styling anything meant to match the learner-facing brand palette in plain
+   CSS (e.g. inside .learner-theme / .ui2-dashboard, which already scope their
+   own copies of --primary/--text-main — use --brand-* here for anything
+   outside those scopes so names never collide).
+   ───────────────────────────────────────────── */
+:root {
+  /* Core palette (sage/green) — main learner UI */
+  --brand-bg:               #cbe2d4;
+  --brand-card-bg:          #ffffff;
+  --brand-primary:          #576856;  /* main focus color */
+  --brand-primary-hover:    #455544;
+  --brand-secondary:        #f0f4f1;  /* secondary / low-emphasis surfaces */
+  --brand-secondary-hover:  #e0e8e1;
+  --brand-text-main:        #576856;
+  --brand-text-muted:       #738a72;
+
+  /* Dashboard palette (teal) — high-contrast variant, e.g. learner home */
+  --brand-dashboard-bg:              #eef6df;
+  --brand-dashboard-primary:         #007a61;  /* main focus color */
+  --brand-dashboard-primary-hover:   #00634f;
+  --brand-dashboard-secondary:       #eef6df;  /* secondary / low-emphasis surfaces */
+  --brand-dashboard-secondary-hover: #e3efcf;
+  --brand-dashboard-text-main:       #111111;
+  --brand-dashboard-text-muted:      #2b2b2b;
+  --brand-dashboard-border:          #d7e3c6;
+
+  /* Status colors — shared by both palettes above */
+  --brand-success: #10b981;
+  --brand-warning: #f59e0b;
+  --brand-danger:  #ef4444;
+
+  /* Spacing scale — 4px base unit. Matches values actually used across
+     Learning's CSS (10/12/20/8/14/16/18/24/28/32/40/48/64/80px, etc. all
+     round to these steps) — and lines up 1:1 with Tailwind's default
+     p, m, and gap utility scale, so prefer those classes in JSX; reach for
+     these vars only in plain CSS. */
+  --space-1:  0.25rem;  /* 4px  */
+  --space-2:  0.5rem;   /* 8px  */
+  --space-3:  0.75rem;  /* 12px */
+  --space-4:  1rem;     /* 16px */
+  --space-5:  1.25rem;  /* 20px */
+  --space-6:  1.5rem;   /* 24px */
+  --space-7:  1.75rem;  /* 28px */
+  --space-8:  2rem;     /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+
+  /* Font-size scale — cleaned up from the ad-hoc rem/px values used across
+     Learning's CSS (0.7rem–4rem) into a consistent ramp. */
+  --font-size-xs:   0.75rem;   /* 12px — badges, meta/timestamp text */
+  --font-size-sm:   0.875rem;  /* 14px — muted/secondary text, form labels */
+  --font-size-base: 1rem;      /* 16px — body text */
+  --font-size-md:   1.125rem;  /* 18px — subtitles, emphasized labels */
+  --font-size-lg:   1.25rem;   /* 20px — card/list titles */
+  --font-size-xl:   1.5rem;    /* 24px — section headers */
+  --font-size-2xl:  2rem;      /* 32px — page/dashboard headings */
+  --font-size-3xl:  2.5rem;    /* 40px — stat numbers */
+  --font-size-4xl:  3rem;      /* 48px — hero numbers */
+  --font-size-5xl:  4rem;      /* 64px — display/hanzi characters */
+}
+
 /* Force light regardless of OS preference */
 html {
   color-scheme: light;

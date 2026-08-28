@@ -1,8 +1,9 @@
 "use client";
 
-// app/(learner)/login/page.tsx
-// Learner sign-in — posts to /api/auth/login via useAuth(), which sets the
-// Flask-Login session cookie the rest of the learner app relies on.
+// app/(learner)/register/page.tsx
+// Learner sign-up — posts to /api/auth/register via useAuth(), which creates
+// the account and immediately signs the caller in (same as the old Jinja
+// register flow's follow-up login, but in one step).
 
 import { useState } from "react";
 import Link from "next/link";
@@ -19,12 +20,13 @@ const inputCls =
 
 const labelCls = "block text-sm font-semibold text-[var(--learner-text)] mb-1.5";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const { t } = useT();
-  const { login } = useAuth();
+  const { register } = useAuth();
   const router = useRouter();
 
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -34,10 +36,10 @@ export default function LoginPage() {
     setSubmitting(true);
     setError("");
     try {
-      await login(username, password);
+      await register(username, email, password);
       router.push("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("flash.invalid_login"));
+      setError(err instanceof Error ? err.message : t("flash.database_error"));
     } finally {
       setSubmitting(false);
     }
@@ -47,16 +49,16 @@ export default function LoginPage() {
     <div className="flex flex-1 items-center justify-center p-6">
       <div className="w-full max-w-sm rounded-2xl border border-black/5 bg-white p-8 shadow-[0_8px_32px_rgba(0,0,0,0.06)]">
         <h1 className="mb-6 text-center text-2xl font-extrabold text-[var(--learner-text)]">
-          {t("auth.login_heading")}
+          {t("auth.register_heading")}
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="login-username" className={labelCls}>
+            <label htmlFor="register-username" className={labelCls}>
               {t("auth.username_label")}
             </label>
             <input
-              id="login-username"
+              id="register-username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
@@ -66,15 +68,31 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="login-password" className={labelCls}>
+            <label htmlFor="register-email" className={labelCls}>
+              {t("auth.email_label")}
+            </label>
+            <input
+              id="register-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              required
+              className={inputCls}
+            />
+          </div>
+
+          <div>
+            <label htmlFor="register-password" className={labelCls}>
               {t("auth.password_label")}
             </label>
             <input
-              id="login-password"
+              id="register-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
+              autoComplete="new-password"
+              minLength={8}
               required
               className={inputCls}
             />
@@ -88,20 +106,20 @@ export default function LoginPage() {
 
           <Button
             type="submit"
-            id="login-submit"
+            id="register-submit"
             variant="primary"
             size="md"
             className="w-full justify-center"
             isLoading={submitting}
           >
-            {t("auth.login_button")}
+            {t("auth.register_button")}
           </Button>
         </form>
 
         <p className="mt-6 text-center text-sm text-[var(--learner-text-muted)]">
-          {t("auth.no_account_prompt")}{" "}
-          <Link href="/register" className="font-semibold text-[var(--learner-primary)] hover:underline">
-            {t("auth.register_here")}
+          {t("auth.have_account_prompt")}{" "}
+          <Link href="/login" className="font-semibold text-[var(--learner-primary)] hover:underline">
+            {t("auth.login_here")}
           </Link>
         </p>
       </div>
