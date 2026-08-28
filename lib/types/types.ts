@@ -160,6 +160,60 @@ export interface RecommendedPractice {
   question_count: number;
 }
 
+// ── Lesson picker (HSK level → lesson → part) — mirrors the raw JSON shapes
+// from Learning/web_app/routes/lesson/lesson_routes.py.
+export interface PickerPassage {
+  passage_id: string;
+  hsk_level: string;
+  line_count?: number;
+  title?: string | null;
+}
+
+export interface PickerProgressEntry {
+  total_words: number;
+  learned_words: number;
+  lesson_learned: number;
+  lesson_total: number;
+  progress_pct: number;
+}
+
+export interface PickerProgressSummary {
+  lessons: Record<string, PickerProgressEntry>;
+  parts: Record<string, PickerProgressEntry>;
+}
+
+// ── Lesson overview (passage content + linked vocab for one part) — mirrors
+// the raw JSON shapes from Learning/web_app/routes/lesson/lesson_routes.py's
+// GET /passage/<id> and GET /vocab/<id>. Distinct from LessonLine/LessonPassage
+// above, which mirror the admin CRUD passage-editor shape instead.
+export interface LessonPassageLine {
+  line_id: number;
+  speaker: string | null;
+  content: string | null;
+  pinyin: string | null;
+  audio_key: string | null;
+  translations: { en: string | null; vi: string | null };
+  tokens: unknown[];
+  flag: number;
+}
+
+export interface LessonPassageDetail {
+  passage_id: string;
+  hsk_level: string | null;
+  book_code?: string | null;
+  lines: LessonPassageLine[];
+  title?: string;
+}
+
+export interface LessonVocabRow {
+  cn: string;
+  pinyin: string;
+  meaning_vn: string;
+  meaning_en: string;
+  audio_key: string;
+  hsk_level: string;
+}
+
 export interface PaginatedResponse<T> {
   items: T[];
   page: number;

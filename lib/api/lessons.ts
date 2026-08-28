@@ -1,0 +1,34 @@
+import type {
+  PickerPassage,
+  PickerProgressSummary,
+  LessonPassageDetail,
+  LessonVocabRow,
+} from "@/lib/types/types";
+import { legacyApiFetch } from "./client";
+
+export function getPassages(hskLevel: string): Promise<PickerPassage[]> {
+  return legacyApiFetch<{ passages: PickerPassage[] }>(
+    `/api/lesson/passages?hsk_level=${encodeURIComponent(hskLevel)}`
+  ).then((r) => r.passages);
+}
+
+// Requires a session — resolves null (rather than throwing) when signed out
+// or on any failure, same as the legacy picker's soft-fail: progress bars are
+// an enhancement, not a blocker for browsing lessons.
+export function getPickerProgress(hskLevel: string): Promise<PickerProgressSummary | null> {
+  return legacyApiFetch<PickerProgressSummary>(
+    `/api/lesson/picker-progress?hsk_level=${encodeURIComponent(hskLevel)}`
+  ).catch(() => null);
+}
+
+export function getLessonPassageDetail(passageId: string): Promise<LessonPassageDetail> {
+  return legacyApiFetch<{ passage: LessonPassageDetail }>(
+    `/api/lesson/passage/${encodeURIComponent(passageId)}`
+  ).then((r) => r.passage);
+}
+
+export function getLessonPassageVocab(passageId: string): Promise<LessonVocabRow[]> {
+  return legacyApiFetch<{ passage_id: string; vocab: LessonVocabRow[] }>(
+    `/api/lesson/vocab/${encodeURIComponent(passageId)}`
+  ).then((r) => r.vocab);
+}

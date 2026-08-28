@@ -251,6 +251,8 @@
     "learn_this_lesson": "Learn This Lesson",
     "train_this_lesson": "Train This Lesson",
     "summary": "Summary",
+    "lesson_overview": "Lesson Overview",
+    "vocab_overview": "Vocab Overview",
     "play_audio": "Play Audio",
     "auto_play": "Auto Play",
     "stop_auto_play": "Stop",

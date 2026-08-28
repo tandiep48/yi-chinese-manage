@@ -811,6 +811,7 @@ body {
   border-radius: 8px;
   color: #111111;
   cursor: pointer;
+  text-decoration: none;
   box-shadow: 0 4px 14px rgba(87, 104, 86, 0.06);
   transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
 }
