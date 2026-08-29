@@ -7,8 +7,9 @@ import { use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBookOpen, faGraduationCap } from "@fortawesome/free-solid-svg-icons";
+import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel } from "@/lib/lessons/lessons";
+import { hskImageUrl, lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/useLessonPicker";
 import { ProgressLines } from "@/components/page/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -34,9 +35,22 @@ export default function LessonPickerPage({
           </Link>
         </div>
 
-        <div className="picker-header-section">
+        <div className="picker-header-section" style={{ backgroundColor: hsk.color }}>
           <div className="picker-header-col1">
-            <div className="picker-header-image" style={{ backgroundColor: hsk.color }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="picker-header-hsk-img"
+              src={hskImageUrl(hsk.level)}
+              alt={hsk.label}
+              // Fall back to a graduation-cap tile if the HSK cover is unavailable.
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                e.currentTarget.parentElement
+                  ?.querySelector<HTMLElement>(".picker-header-image")
+                  ?.style.setProperty("display", "flex");
+              }}
+            />
+            <div className="picker-header-image" style={{ display: "none" }}>
               <FontAwesomeIcon icon={faGraduationCap} />
             </div>
           </div>
@@ -61,9 +75,26 @@ export default function LessonPickerPage({
             </p>
           ) : (
             lessons.map((ls) => (
-              <Link key={ls.lesson} href={`/hsk/${hsk.key}/${ls.lesson}`} className="lesson-card">
+              <Link
+                key={ls.lesson}
+                // The pinyin lesson (HSK1 L1) has no real passages — it opens the
+                // dedicated pinyin guide instead of the (empty) part picker.
+                href={ls.isPinyinLesson ? "/lesson/basic-pinyin" : `/hsk/${hsk.key}/${ls.lesson}`}
+                className="lesson-card"
+              >
                 <div className="lesson-card-img-wrap">
-                  <FontAwesomeIcon icon={faBookOpen} />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    className="lesson-card-img"
+                    src={lessonImageUrl(hsk.key, ls.lesson)}
+                    alt=""
+                    loading="lazy"
+                    // Hide the image column when a lesson has no cover (e.g. pinyin / Other).
+                    onError={(e) => {
+                      const wrap = e.currentTarget.parentElement;
+                      if (wrap) wrap.style.display = "none";
+                    }}
+                  />
                 </div>
                 <div className="lesson-card-body">
                   {ls.title ? (

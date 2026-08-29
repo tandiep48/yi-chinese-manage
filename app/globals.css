@@ -629,6 +629,14 @@ body {
   font-size: 3.5rem;
   color: rgba(17, 24, 39, 0.45);
 }
+.lesson-picker .picker-header-lesson-img,
+.lesson-picker .picker-header-hsk-img {
+  width: 100%;
+  height: auto;
+  max-height: 170px;
+  object-fit: contain;
+  display: block;
+}
 .lesson-picker .picker-header-col2 {
   flex: 1;
   display: flex;
@@ -675,13 +683,19 @@ body {
   box-shadow: 0 10px 26px rgba(87, 104, 86, 0.18);
 }
 .lesson-picker .level-icon {
-  width: 120px;
-  height: 120px;
+  width: 160px;
+  height: 160px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   color: rgba(17, 24, 39, 0.5);
   font-size: 4rem;
+}
+.lesson-picker .level-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 .lesson-picker .level-name {
   font-weight: 800;
@@ -716,7 +730,7 @@ body {
   box-shadow: 0 8px 24px rgba(87, 104, 86, 0.13);
 }
 .lesson-picker .lesson-card-img-wrap {
-  width: 96px;
+  width: 140px;
   flex-shrink: 0;
   background: rgba(87, 104, 86, 0.05);
   display: flex;
@@ -724,6 +738,17 @@ body {
   justify-content: center;
   color: rgba(87, 104, 86, 0.5);
   font-size: 1.8rem;
+  overflow: hidden;
+}
+.lesson-picker .lesson-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+.lesson-picker .lesson-card:hover .lesson-card-img {
+  transform: scale(1.04);
 }
 .lesson-picker .lesson-card-body {
   padding: 12px 14px 14px;
@@ -921,4 +946,140 @@ body {
 }
 .animate-dot-bounce {
   animation: dot-bounce 1.2s infinite ease-in-out;
+}
+
+/* ─────────────────────────────────────────────
+   PINYIN GUIDES — scoped to .pinyin-guide (learner /lesson/basic-pinyin
+   and /lesson/advanced-pinyin). Ported from Learning/web_app/static/lesson/
+   pinyin.css: initials/finals chart + advanced initial×final matrix.
+   ───────────────────────────────────────────── */
+.pinyin-guide { color: #111; }
+
+.pinyin-guide .pinyin-toggle a {
+  text-decoration: none;
+  color: var(--learner-text-muted);
+  font-size: 18px;
+  font-weight: 500;
+  padding: 4px 8px;
+}
+.pinyin-guide .pinyin-toggle a.active {
+  color: var(--learner-text);
+  font-weight: 600;
+  border-bottom: 2px solid var(--learner-primary);
+}
+
+/* Horizontal scroll container so wide tables never break the page layout. */
+.pinyin-guide .pinyin-table-wrap {
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.pinyin-guide table {
+  border-collapse: collapse;
+  background: var(--learner-card);
+  margin: 0 auto;
+}
+
+/* ── Basic chart ── */
+.pinyin-guide .pinyin-basic-table {
+  border: 1px solid #000;
+  border-radius: 1.25rem;
+  overflow: hidden;
+}
+.pinyin-guide .pinyin-basic-table th,
+.pinyin-guide .pinyin-basic-table td {
+  border: 1px solid #000;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px 5px;
+  min-width: 72px;
+}
+.pinyin-guide .pinyin-basic-table thead th,
+.pinyin-guide .pinyin-section-head {
+  background-color: #e0efe9;
+  font-weight: 700;
+  font-size: 22px;
+}
+.pinyin-guide .pinyin-basic-table td { font-size: 18px; }
+
+/* ── Advanced matrix ── */
+.pinyin-guide .pinyin-advanced-table { border: 1px solid #999; }
+.pinyin-guide .pinyin-advanced-table th,
+.pinyin-guide .pinyin-advanced-table td {
+  border: 1px solid #e5e5e5;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  height: 34px;
+  min-width: 46px;
+  font-size: 15px;
+}
+.pinyin-guide .pinyin-advanced-table thead th,
+.pinyin-guide .pinyin-final-head {
+  background: #e0efe9;
+  font-weight: 600;
+}
+.pinyin-guide .pinyin-advanced-table .pinyin-corner { background: #fff4df; }
+.pinyin-guide .pinyin-advanced .pinyin-table-wrap { margin-bottom: 2rem; }
+
+/* Clickable cells (basic direct-play + advanced popover trigger). */
+.pinyin-guide .pinyin-cell-clickable,
+.pinyin-guide .btn-pinyin {
+  cursor: pointer;
+}
+.pinyin-guide .pinyin-cell-clickable:hover {
+  background-color: #eee;
+  font-weight: 700;
+}
+.pinyin-guide .btn-pinyin {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 4px 0;
+  border-radius: 4px;
+}
+.pinyin-guide .btn-pinyin:hover { background-color: #e9ecef; }
+
+/* ── Hover tooltip (basic) ── */
+.pinyin-tooltip {
+  position: absolute;
+  background: #333;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+}
+
+/* ── Tone popover (advanced) ── */
+.pinyin-popover {
+  position: fixed;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 0.25rem;
+}
+.pinyin-popover .tone-button {
+  cursor: pointer;
+  padding: 8px 16px;
+  font-size: 1rem;
+  text-align: center;
+  border: none;
+  background: transparent;
+  border-radius: 4px;
+  color: #111;
+}
+.pinyin-popover .tone-button:hover { background-color: #f0f0f0; }
+
+@media (max-width: 700px) {
+  .pinyin-guide .pinyin-basic-table th,
+  .pinyin-guide .pinyin-basic-table td { min-width: 52px; padding: 8px 3px; font-size: 16px; }
 }

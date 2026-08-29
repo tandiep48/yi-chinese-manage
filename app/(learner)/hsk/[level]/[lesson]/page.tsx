@@ -7,10 +7,11 @@
 
 import { use } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import { getLevel, isNumberPart, getPartNumber } from "@/lib/lessons/lessons";
+import { getLevel, isNumberPart, getPartNumber, lessonColor } from "@/lib/lessons/lessons";
+import { lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/useLessonPicker";
 import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -32,10 +33,14 @@ export default function PartPickerPage({
   const hsk = getLevel(level);
   const { loading, error, lessons, partsProgress } = useLessonPicker(hsk?.key ?? level);
   if (!hsk || !lesson) notFound();
+  // HSK1 Lesson 1 is the pinyin guide, not a passage-backed lesson — its only
+  // "part" is a placeholder, so send direct visits to the guide instead.
+  if (hsk.key === "HSK1" && lesson === "1") redirect("/lesson/basic-pinyin");
 
   const current = lessons.find((l) => l.lesson === lesson);
   const lessonLabel = lesson === "Other" ? t("picker.other_passages") : `${t("picker.lesson_prefix")} ${lesson}`;
   const emptyProgress = { learnedWords: 0, totalWords: 0, progressPct: 0 };
+  const headerColor = lessonColor(hsk.key, lesson);
 
   return (
     <div className="lesson-picker">
@@ -46,9 +51,25 @@ export default function PartPickerPage({
           </Link>
         </div>
 
-        <div className="picker-header-section">
+        <div className="picker-header-section" style={{ backgroundColor: headerColor }}>
           <div className="picker-header-col1">
-            <div className="picker-header-image" style={{ backgroundColor: hsk.color }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              className="picker-header-lesson-img"
+              src={lessonImageUrl(hsk.key, lesson)}
+              alt=""
+              // Fall back to a colored icon tile when the lesson has no image.
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+                e.currentTarget.parentElement
+                  ?.querySelector<HTMLElement>(".picker-header-image")
+                  ?.style.setProperty("display", "flex");
+              }}
+            />
+            <div
+              className="picker-header-image"
+              style={{ backgroundColor: hsk.color, display: "none" }}
+            >
               <FontAwesomeIcon icon={faGraduationCap} />
             </div>
           </div>

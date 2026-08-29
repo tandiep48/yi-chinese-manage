@@ -2,7 +2,7 @@
 // HSK level metadata + helpers for grouping/sorting real API passages into
 // the lesson picker flow (HSK level → lesson → part). Ported from
 // Learning/web_app/static/shared/passage_picker.js's Picker object.
-import { LESSON_CONSTANTS } from './constants';
+import { LESSON_CONSTANTS, LESSON_COLORS } from './constants';
 import type { PickerPassage, PickerProgressEntry } from '@/lib/types/types';
 
 export interface HskLevel {
@@ -28,6 +28,14 @@ export const NUMBER_PART_ID = 'H1_5_99';
 
 export function getLevel(key: string): HskLevel | undefined {
   return HSK_LEVELS.find((l) => l.key.toLowerCase() === key.toLowerCase());
+}
+
+// Per-lesson header tint, keyed "H<level>-<lesson>" (e.g. HSK1 + "2" -> "H1-2").
+// Returns undefined when the lesson has no mapped color. Mirrors the legacy
+// passage_picker.js LESSON_COLORS lookup.
+export function lessonColor(hskKey: string, lessonNum: string | number): string | undefined {
+  const h = hskKey.toUpperCase().replace("HSK", "H");
+  return LESSON_COLORS[`${h}-${lessonNum}`];
 }
 
 export function isNumberPart(passageId: string): boolean {
