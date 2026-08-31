@@ -15,6 +15,7 @@ import { lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/useLessonPicker";
 import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
+import { saveRecentLearning } from "@/lib/api/recent";
 import type { PickerPassage } from "@/lib/types/types";
 
 function partLabel(p: PickerPassage, t: (k: string, v?: Record<string, string | number>) => string): string {
@@ -112,6 +113,9 @@ export default function PartPickerPage({
                     key={p.passage_id}
                     href={`/lesson?passage_id=${encodeURIComponent(p.passage_id)}`}
                     className="part-list-item"
+                    // Record this as the most-recent lesson so the learning
+                    // page's "Continue" panel can offer it (best-effort POST).
+                    onClick={() => saveRecentLearning(p.passage_id)}
                   >
                     <div className="part-list-title">{partLabel(p, t)}</div>
                     {progress ? <ProgressLines progress={progress} centered /> : null}
