@@ -182,6 +182,44 @@ export interface PickerProgressSummary {
   parts: Record<string, PickerProgressEntry>;
 }
 
+// ── Learner Books browsing (Books tab of the learning page) — mirrors the raw
+// JSON shapes from Learning/web_app/routes/lesson/lesson_routes.py's
+// GET /api/lesson/books and GET /api/lesson/book/<code>.
+export interface LearnerBookSummary {
+  book_code: string;
+  name?: string | null;
+  cover_url: string;
+  lesson_count: number;
+  part_count: number;
+  done_count: number;
+}
+
+export interface LearnerBookPart {
+  part: string | number;
+  passage_id: string;
+  completed?: boolean;
+}
+
+export interface LearnerBookLesson {
+  lesson: string | number;
+  title?: string | null;
+  part_count: number;
+  done_count: number;
+  parts: LearnerBookPart[];
+}
+
+export interface LearnerBookDetail {
+  book_code: string;
+  book_name?: string | null;
+  lessons: LearnerBookLesson[];
+}
+
+// ── Recent learning (the "Continue where you left off" panel) — mirrors
+// GET/POST /api/user/recent-learning.
+export interface RecentLearning {
+  passage_id: string;
+}
+
 // ── Lesson overview (passage content + linked vocab for one part) — mirrors
 // the raw JSON shapes from Learning/web_app/routes/lesson/lesson_routes.py's
 // GET /passage/<id> and GET /vocab/<id>. Distinct from LessonLine/LessonPassage

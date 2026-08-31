@@ -19,3 +19,10 @@ export function lessonImageUrl(hskKey: string, lessonNum: string | number): stri
   const h = hskKey.toUpperCase().replace("HSK", "H"); // "HSK1" -> "H1"
   return `${GCS_BUCKET_URL}/lesson_images/${h}/${h}-lesson ${lessonNum}.png`;
 }
+
+// Book cover, e.g. "AML" -> .../lesson_cover/AML.png (gcs_service.lesson_cover_url:
+// uppercased book code). The book grid provides a cover_url per book already, so
+// use this only where a book_code is all that's available (the book-detail header).
+export function bookCoverUrl(bookCode: string): string {
+  return `${GCS_BUCKET_URL}/lesson_cover/${bookCode.toUpperCase()}.png`;
+}
