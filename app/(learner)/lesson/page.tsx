@@ -1,17 +1,23 @@
 "use client";
 
 // app/(learner)/lesson/page.tsx
-// Lesson Overview + Vocab Overview for one lesson part — the read-only
-// "before you start training" screens ported from Learning/web_app's
-// /reading page. The graded lesson/vocab trainers themselves aren't wired
-// yet (no such screens exist in this app), so this stops at overview.
+// The lesson-part study page — the read-only two-domain view a learner lands on
+// after selecting a part (e.g. HSK 2 · Lesson 2 · Part 2). Ported to match the
+// Jinja design exactly: the shared Word Summary / Lesson Summary tab bar
+// (Learning/web_app/templates/{vocab_learning,reading} + static/shared/lesson_ui2.css),
+// with each tab a read-only panel. The graded trainers, speaking, and stroke
+// order from the original are deferred to a later phase.
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faListUl, faBookOpen, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useLessonOverview } from "@/hooks/useLessonOverview";
-import { LessonOverview } from "@/components/page/learner/LessonOverview";
-import { VocabOverview } from "@/components/page/learner/VocabOverview";
+import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
+import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { useT } from "@/components/i18n/I18nProvider";
+
+type Domain = "vocab" | "lesson";
 
 export default function LessonPage() {
   return (
@@ -27,26 +33,46 @@ function LessonPageContent() {
   const searchParams = useSearchParams();
   const passageId = searchParams.get("passage_id") ?? "";
 
+  // HSK parts open on the vocab (Word Summary) domain in the legacy flow.
+  const [domain, setDomain] = useState<Domain>("vocab");
   const { loading, error, passage, vocab, vocabError } = useLessonOverview(passageId);
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-8 space-y-6">
-      <button
-        type="button"
-        onClick={() => router.back()}
-        className="text-sm font-semibold text-[var(--learner-primary)] hover:underline"
-      >
-        ← {t("picker.back_to_lessons")}
-      </button>
+    <div className="lesson-study ui2-lesson">
+      <div className="app-container">
+        <button type="button" className="lesson-study-back" onClick={() => router.back()}>
+          <FontAwesomeIcon icon={faArrowLeft} /> {t("picker.back_to_lessons")}
+        </button>
 
-      {!passageId ? (
-        <p className="text-sm text-[var(--learner-text-muted)]">{t("reading.failed_load_passage")}</p>
-      ) : (
-        <>
-          <VocabOverview vocab={vocab} loading={loading} error={vocabError} />
-          <LessonOverview passage={passage} loading={loading} error={error} />
-        </>
-      )}
+        <nav className="section-tabs lesson-view-tabs" role="tablist">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={domain === "vocab"}
+            className={`tab${domain === "vocab" ? " active" : ""}`}
+            onClick={() => setDomain("vocab")}
+          >
+            <FontAwesomeIcon icon={faListUl} /> {t("sidebar.word_summary")}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={domain === "lesson"}
+            className={`tab${domain === "lesson" ? " active" : ""}`}
+            onClick={() => setDomain("lesson")}
+          >
+            <FontAwesomeIcon icon={faBookOpen} /> {t("vocab_trainer.lesson_summary")}
+          </button>
+        </nav>
+
+        {!passageId ? (
+          <div className="lesson-learner-empty">{t("reading.failed_load_passage")}</div>
+        ) : domain === "vocab" ? (
+          <WordSummary vocab={vocab} loading={loading} error={vocabError} />
+        ) : (
+          <LessonSummary passage={passage} loading={loading} error={error} />
+        )}
+      </div>
     </div>
   );
 }
