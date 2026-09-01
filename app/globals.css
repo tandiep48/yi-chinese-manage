@@ -1392,6 +1392,204 @@ body {
   }
 }
 
+/* ── Grammar / Translation study pages (ported from static/grammar/grammar.css
+   + static/translation/translation.css), scoped under .lesson-study with the
+   teal --ls-* palette. ─────────────────────────────────────────────────────── */
+.lesson-study .lesson-study-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.lesson-study .lesson-study-breadcrumb {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ls-text);
+}
+
+/* Grammar */
+.lesson-study .grammar-content {
+  padding: 4px;
+}
+.lesson-study .grammar-section {
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 2px solid rgba(87, 104, 86, 0.12);
+}
+.lesson-study .grammar-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.lesson-study .grammar-title {
+  color: var(--ls-primary);
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 0 10px;
+  border-bottom: 1px solid rgba(87, 104, 86, 0.1);
+  padding-bottom: 6px;
+}
+.lesson-study .grammar-desc {
+  color: var(--ls-text);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.lesson-study .grammar-example {
+  background: var(--ls-preview);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--ls-primary);
+}
+.lesson-study .ex-cn {
+  font-size: 1.15rem;
+  color: var(--ls-text);
+  margin-bottom: 4px;
+}
+.lesson-study .ex-vn {
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+.lesson-study .grammar-dialogue {
+  background: #eef4ec;
+  border-left: 3px solid #7fa07c;
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.lesson-study .dlg-cn {
+  font-size: 1.1rem;
+  color: var(--ls-text);
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+.lesson-study .dlg-vn {
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+.lesson-study .grammar-table-ref {
+  margin: 10px 0 15px;
+  padding: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px dashed #10b981;
+  color: #10b981;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.lesson-study .grammar-table-container {
+  overflow-x: auto;
+  margin: 15px 0;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #d9ded9;
+}
+.lesson-study .grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.lesson-study .grammar-table th,
+.lesson-study .grammar-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(87, 104, 86, 0.06);
+}
+.lesson-study .grammar-table th {
+  background: var(--ls-primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+.lesson-study .grammar-table td {
+  color: var(--ls-text);
+}
+.lesson-study .grammar-table tr:last-child td {
+  border-bottom: none;
+}
+.lesson-study .grammar-table tbody tr:hover {
+  background: #eef6df;
+}
+
+/* Translation */
+.lesson-study .translation-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.lesson-study .translation-item {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  background: var(--ls-card);
+}
+.lesson-study .translation-item-index {
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ls-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+.lesson-study .translation-item-body {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lesson-study .translation-meaning {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ls-text);
+}
+.lesson-study .translation-input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.lesson-study .translation-input:focus {
+  outline: none;
+  border-color: var(--ls-primary);
+}
+.lesson-study .translation-answer {
+  font-size: 20px;
+  color: #16a34a;
+  font-weight: 600;
+}
+.lesson-study .translation-reveal-btn {
+  align-self: flex-start;
+  padding: 6px 14px;
+  font-size: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ls-muted);
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.lesson-study .translation-reveal-btn:hover {
+  border-color: var(--ls-primary);
+  color: var(--ls-primary);
+}
+
+@media (max-width: 600px) {
+  .lesson-study .lesson-study-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
 .lesson-study .lesson-study-back {
   display: inline-flex;
   align-items: center;

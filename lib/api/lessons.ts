@@ -3,6 +3,7 @@ import type {
   PickerProgressSummary,
   LessonPassageDetail,
   LessonVocabRow,
+  LessonGrammarRule,
 } from "@/lib/types/types";
 import { legacyApiFetch } from "./client";
 
@@ -31,4 +32,11 @@ export function getLessonPassageVocab(passageId: string): Promise<LessonVocabRow
   return legacyApiFetch<{ passage_id: string; vocab: LessonVocabRow[] }>(
     `/api/lesson/vocab/${encodeURIComponent(passageId)}`
   ).then((r) => r.vocab);
+}
+
+// Lesson-wide grammar rules for the passage's lesson (all parts), id-ordered.
+export function getPassageGrammar(passageId: string): Promise<LessonGrammarRule[]> {
+  return legacyApiFetch<{ grammar: LessonGrammarRule[] }>(
+    `/api/lesson/grammar/${encodeURIComponent(passageId)}`
+  ).then((r) => r.grammar ?? []);
 }

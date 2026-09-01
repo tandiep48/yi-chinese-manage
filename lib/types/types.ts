@@ -252,6 +252,30 @@ export interface LessonVocabRow {
   hsk_level: string;
 }
 
+// ── Lesson grammar (lesson-wide grammar rules) — mirrors the raw JSON from
+// Learning/web_app/routes/lesson/lesson_routes.py GET /grammar/<passage_id>
+// (entity/grammar_rule/service.py get_grammar_for_lesson). The flat list is
+// id-ordered; the UI splits it into sections at each type=1 (section-title) row.
+// type: 1 title · 2 description · 3 example (cn~vn) · 4 table/ref · 5 dialogue (cn~vn).
+// Distinct from the admin CRUD `GrammarRule` above (different endpoint/shape).
+export interface LessonGrammarRule {
+  grammar_id: string;
+  type: number;
+  vietnamese_content?: string | null;
+  english_content?: string | null;
+  vn_context?: Array<Record<string, string>> | null;
+  en_context?: Array<Record<string, string>> | null;
+}
+
+// ── Lesson translation (lesson-wide sentence list) — mirrors the raw JSON from
+// Learning/web_app/routes/translation/translation_routes.py GET /lesson.
+export interface TranslationRow {
+  translation_id: string;
+  cn: string;
+  vn?: string | null;
+  en?: string | null;
+}
+
 export interface PaginatedResponse<T> {
   items: T[];
   page: number;
