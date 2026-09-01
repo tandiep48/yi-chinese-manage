@@ -37,10 +37,9 @@ export default function BookPartsPage({
 
         <div className="picker-header-section">
           <div className="picker-header-col2">
-            <h2>{t("books.select_part")}</h2>
-            <p className="subtitle">
+            <h2>
               {bookTitle} · {lessonLabel}
-            </p>
+            </h2>
           </div>
         </div>
 
@@ -56,7 +55,7 @@ export default function BookPartsPage({
               {parts.map((part) => (
                 <Link
                   key={part.passage_id}
-                  href={lessonHrefForPassage(part.passage_id)}
+                  href={lessonHrefForPassage(part.passage_id, "lesson")}
                   className="part-list-item"
                 >
                   <div className="part-list-title">

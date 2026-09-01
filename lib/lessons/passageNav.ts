@@ -8,8 +8,14 @@
 const BASIC_PINYIN_PASSAGE = "H1_1_1";
 const ADVANCED_PINYIN_PASSAGE = "H1_1_2";
 
-export function lessonHrefForPassage(passageId: string): string {
+// Which lesson tab to land on. HSK parts open on "vocab" (Word Summary); book
+// parts opened the reading/Lesson Summary view in the legacy learning.js, so
+// they pass "lesson" to land there instead.
+export type LessonView = "vocab" | "lesson";
+
+export function lessonHrefForPassage(passageId: string, view?: LessonView): string {
   if (passageId === BASIC_PINYIN_PASSAGE) return "/lesson/basic-pinyin";
   if (passageId === ADVANCED_PINYIN_PASSAGE) return "/lesson/advanced-pinyin";
-  return `/lesson?passage_id=${encodeURIComponent(passageId)}`;
+  const base = `/lesson?passage_id=${encodeURIComponent(passageId)}`;
+  return view ? `${base}&view=${view}` : base;
 }

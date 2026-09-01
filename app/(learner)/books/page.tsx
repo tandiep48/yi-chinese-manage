@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLearnerBooks } from "@/hooks/useLearnerBooks";
 import { LearningTabs } from "@/components/page/learner/LearningTabs";
-import { RecentLessonPanel } from "@/components/page/learner/RecentLessonPanel";
+import { bookCoverUrl } from "@/lib/gcs";
 
 export default function BooksGridPage() {
   const { t } = useT();
@@ -19,7 +19,6 @@ export default function BooksGridPage() {
     <div className="lesson-picker">
       <div className="picker-wrap">
         <LearningTabs />
-        <RecentLessonPanel />
 
         <h1 className="picker-title">{t("books.select_book")}</h1>
         <p className="picker-subtitle">{t("books.choose_book_subtitle")}</p>
@@ -41,7 +40,7 @@ export default function BooksGridPage() {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       className="book-card-img"
-                      src={book.cover_url}
+                      src={bookCoverUrl(book.book_code)}
                       alt={book.name || book.book_code}
                       loading="lazy"
                       onError={(e) => {
