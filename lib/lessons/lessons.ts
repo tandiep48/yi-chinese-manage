@@ -42,6 +42,37 @@ export function isNumberPart(passageId: string): boolean {
   return passageId === NUMBER_PART_ID;
 }
 
+// Passage-id prefix → HSK level key. Mirrors passage_picker.js / sidebar.js's
+// SIDEBAR_HSK_MAP (H79 is the HSK 7-9 band).
+const PREFIX_TO_LEVEL: Record<string, string> = {
+  H1: "HSK1", H2: "HSK2", H3: "HSK3", H4: "HSK4",
+  H5: "HSK5", H6: "HSK6", H79: "HSK7-9",
+};
+
+// The HSK level a passage belongs to, e.g. "H2_2_2" -> "HSK2".
+export function hskLevelFromPassageId(passageId: string): string {
+  const prefix = passageId.split("_")[0];
+  return PREFIX_TO_LEVEL[prefix] ?? prefix;
+}
+
+// Book passages are "<book_code>_<lesson>_<part>" (e.g. AML_1_1); the prefix is
+// a book code rather than an "H<level>" HSK level. Mirrors sidebar.js.
+export function isBookPassageId(passageId: string): boolean {
+  const prefix = passageId.split("_")[0];
+  return !!prefix && !/^H\d+$/i.test(prefix);
+}
+
+// The part-selection (part picker) route for a passage's lesson — the HSK level
+// or book lesson page. Mirrors goBackToPartSelection() in the legacy sidebar.
+export function partPickerHref(passageId: string): string {
+  const seg = passageId.split("_");
+  const lesson = seg.length >= 2 ? seg[1] : "";
+  const base = isBookPassageId(passageId)
+    ? `/books/${seg[0]}`
+    : `/hsk/${hskLevelFromPassageId(passageId)}`;
+  return `${base}/${lesson}`;
+}
+
 export function toProgress(entry: PickerProgressEntry | undefined): Progress {
   if (!entry) return { learnedWords: 0, totalWords: 0, progressPct: 0 };
   return {

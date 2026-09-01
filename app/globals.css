@@ -1066,8 +1066,9 @@ body {
   --ls-text: #111827;
   --ls-muted: #4b5563;
   --ls-preview: #cbe2d4;
+  --ls-sidebar-width: 300px;
 
-  max-width: 1000px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 24px 20px;
   background: #ffffff;
@@ -1079,6 +1080,318 @@ body {
   box-shadow: none;
   padding: 0;
 }
+
+/* ── Study layout shell: sidebar + main content ──────────────────────────── */
+.lesson-study .lesson-study-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  position: relative;
+}
+.lesson-study .lesson-study-main {
+  flex: 1;
+  min-width: 0;
+  max-width: 1000px;
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* When collapsed, clear space at top-left for the floating toggle button. */
+.lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
+  padding-left: 52px;
+}
+
+/* ── Lesson-study sidebar (ported from static/shared/sidebar.css) ─────────── */
+.lesson-study .lesson-sidebar {
+  flex-shrink: 0;
+  width: var(--ls-sidebar-width);
+  max-width: var(--ls-sidebar-width);
+  align-self: stretch;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+}
+.lesson-study .lesson-sidebar.collapsed {
+  max-width: 0;
+  width: 0;
+  opacity: 0;
+  border-color: transparent;
+  margin-right: -24px;
+}
+
+/* Floating toggle shown while the sidebar is collapsed */
+.lesson-study .lesson-sidebar-toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ls-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.lesson-study .lesson-sidebar-toggle:hover {
+  background: #f1f5f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Header */
+.lesson-study .lesson-sidebar-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.lesson-study .lesson-sidebar-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ls-text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lesson-study .lesson-sidebar-badge {
+  background: var(--ls-secondary);
+  color: var(--ls-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.lesson-study .lesson-sidebar-back,
+.lesson-study .lesson-sidebar-close {
+  background: none;
+  border: 0;
+  font-size: 1.05rem;
+  color: var(--ls-muted);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+.lesson-study .lesson-sidebar-back:hover {
+  background: #f8fafc;
+  color: var(--ls-primary);
+}
+.lesson-study .lesson-sidebar-close:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+/* Accordion */
+.lesson-study .lesson-sidebar-accordion {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.lesson-study .acc-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.lesson-study .acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: 0;
+  text-align: left;
+}
+.lesson-study .acc-item.active .acc-header {
+  background: #f1f5f9;
+}
+.lesson-study .acc-item.disabled .acc-header {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.lesson-study .acc-icon {
+  font-size: 1.1rem;
+  display: flex;
+  color: var(--ls-primary);
+}
+.lesson-study .acc-title {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ls-text);
+}
+.lesson-study .acc-arrow {
+  color: var(--ls-muted);
+}
+.lesson-study .acc-body {
+  background: #fafbfc;
+}
+.lesson-study .sidebar-nav {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Part / step cards */
+.lesson-study .sidebar-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.lesson-study .sidebar-step:hover {
+  border-color: var(--ls-secondary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+.lesson-study .sidebar-step[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.lesson-study .sidebar-step[aria-disabled="true"]:hover {
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.lesson-study .step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f7fbf9;
+  color: var(--ls-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.lesson-study .step-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.lesson-study .step-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ls-text);
+}
+.lesson-study .sidebar-step.active {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 12px rgba(0, 122, 97, 0.08);
+}
+.lesson-study .sidebar-step.active .step-icon {
+  background: var(--ls-primary);
+  color: #ffffff;
+}
+.lesson-study .sidebar-step.active .step-label {
+  color: var(--ls-primary);
+}
+
+/* Mini progress bars */
+.lesson-study .sidebar-part-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+.lesson-study .mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lesson-study .mini-stat .label {
+  width: 58px;
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  white-space: nowrap;
+  color: var(--ls-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.lesson-study .mini-progress-bg {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.lesson-study .mini-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--ls-primary);
+  border-radius: 10px;
+}
+.lesson-study .mini-progress-fill.success {
+  background: #10b981;
+}
+.lesson-study .mini-stat .value {
+  width: 44px;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ls-muted);
+}
+.lesson-study .mini-stat .value.success-text {
+  color: #10b981;
+}
+.lesson-study .sidebar-loader {
+  font-size: 0.88rem;
+  color: var(--ls-muted);
+  text-align: center;
+  padding: 12px;
+}
+
+/* Stack the sidebar above the content on narrow screens */
+@media (max-width: 768px) {
+  .lesson-study .lesson-study-layout {
+    flex-direction: column;
+  }
+  .lesson-study .lesson-sidebar {
+    width: 100%;
+    max-width: 100%;
+    position: static;
+    max-height: none;
+  }
+  .lesson-study .lesson-sidebar.collapsed {
+    margin-right: 0;
+  }
+}
+
 .lesson-study .lesson-study-back {
   display: inline-flex;
   align-items: center;

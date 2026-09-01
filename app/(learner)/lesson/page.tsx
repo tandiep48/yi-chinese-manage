@@ -9,12 +9,13 @@
 // order from the original are deferred to a later phase.
 
 import { Suspense, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faListUl, faBookOpen, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { faListUl, faBookOpen } from "@fortawesome/free-solid-svg-icons";
 import { useLessonOverview } from "@/hooks/useLessonOverview";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
+import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import { useT } from "@/components/i18n/I18nProvider";
 
 type Domain = "vocab" | "lesson";
@@ -29,50 +30,45 @@ export default function LessonPage() {
 
 function LessonPageContent() {
   const { t } = useT();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const passageId = searchParams.get("passage_id") ?? "";
 
-  // HSK parts open on the vocab (Word Summary) domain in the legacy flow.
-  const [domain, setDomain] = useState<Domain>("vocab");
+  // HSK parts open on the vocab (Word Summary) domain in the legacy flow; book
+  // parts pass ?view=lesson to land on Lesson Summary, matching learning.js.
+  const initialDomain: Domain = searchParams.get("view") === "lesson" ? "lesson" : "vocab";
+  const [domain, setDomain] = useState<Domain>(initialDomain);
   const { loading, error, passage, vocab, vocabError } = useLessonOverview(passageId);
 
   return (
-    <div className="lesson-study ui2-lesson">
-      <div className="app-container">
-        <button type="button" className="lesson-study-back" onClick={() => router.back()}>
-          <FontAwesomeIcon icon={faArrowLeft} /> {t("picker.back_to_lessons")}
+    <LessonStudyShell passageId={passageId} domain="lesson">
+      <nav className="section-tabs lesson-view-tabs" role="tablist">
+        <button
+          type="button"
+          role="tab"
+          aria-selected={domain === "vocab"}
+          className={`tab${domain === "vocab" ? " active" : ""}`}
+          onClick={() => setDomain("vocab")}
+        >
+          <FontAwesomeIcon icon={faListUl} /> {t("sidebar.word_summary")}
         </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={domain === "lesson"}
+          className={`tab${domain === "lesson" ? " active" : ""}`}
+          onClick={() => setDomain("lesson")}
+        >
+          <FontAwesomeIcon icon={faBookOpen} /> {t("vocab_trainer.lesson_summary")}
+        </button>
+      </nav>
 
-        <nav className="section-tabs lesson-view-tabs" role="tablist">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={domain === "vocab"}
-            className={`tab${domain === "vocab" ? " active" : ""}`}
-            onClick={() => setDomain("vocab")}
-          >
-            <FontAwesomeIcon icon={faListUl} /> {t("sidebar.word_summary")}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={domain === "lesson"}
-            className={`tab${domain === "lesson" ? " active" : ""}`}
-            onClick={() => setDomain("lesson")}
-          >
-            <FontAwesomeIcon icon={faBookOpen} /> {t("vocab_trainer.lesson_summary")}
-          </button>
-        </nav>
-
-        {!passageId ? (
-          <div className="lesson-learner-empty">{t("reading.failed_load_passage")}</div>
-        ) : domain === "vocab" ? (
-          <WordSummary vocab={vocab} loading={loading} error={vocabError} />
-        ) : (
-          <LessonSummary passage={passage} loading={loading} error={error} />
-        )}
-      </div>
-    </div>
+      {!passageId ? (
+        <div className="lesson-learner-empty">{t("reading.failed_load_passage")}</div>
+      ) : domain === "vocab" ? (
+        <WordSummary vocab={vocab} loading={loading} error={vocabError} />
+      ) : (
+        <LessonSummary passage={passage} loading={loading} error={error} />
+      )}
+    </LessonStudyShell>
   );
 }
