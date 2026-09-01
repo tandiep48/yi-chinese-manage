@@ -231,9 +231,24 @@ export interface LessonPassageLine {
   pinyin: string | null;
   audio_key: string | null;
   translations: { en: string | null; vi: string | null };
-  tokens: unknown[];
+  // Word segmentation for the clickable Lesson Summary tokens; [] when the line
+  // wasn't tokenised (renderTokens then falls back to the raw content).
+  tokens: string[];
   flag: number;
 }
+
+// One vocabulary lookup entry for a clicked Lesson Summary word — mirrors the
+// GET /api/vocab/lookup-batch value shape in Learning's vocab_routes.py.
+export interface VocabLookup {
+  pinyin: string;
+  meaning_vn: string;
+  meaning_en: string;
+  audio_key: string | null;
+}
+
+// word -> lookup; words absent from the lesson vocabulary are simply omitted
+// (the popup shows a "not found" state for those).
+export type VocabLookupMap = Record<string, VocabLookup>;
 
 export interface LessonPassageDetail {
   passage_id: string;

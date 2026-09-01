@@ -4,16 +4,21 @@
 // Read-only "Lesson Summary" (reading domain) panel for a lesson part — the
 // passage preview lines + toolbar from Learning/web_app/static/reading/reading.js's
 // renderLessonSummary(), styled with the shared lesson_ui2.css .lesson-preview-line
-// design. Interactive extras (word popup, speaking, "Learn/Train") are deferred;
-// this is the read-only first cut.
+// design. Each line renders as clickable word tokens (renderTokens); clicking a
+// word opens the vocab WordPopup (pinyin/meaning/audio/stroke/save). The graded
+// "Learn/Train" flows remain deferred.
 
 import { useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faStop, faEye, faEyeSlash, faVolumeHigh, faGraduationCap, faDumbbell } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonAudioUrl, lessonAudioFolder } from "@/lib/audio";
+import { isPunctToken } from "@/lib/lessons/tokens";
 import { useAudioSequence } from "@/hooks/useAudioSequence";
-import type { LessonPassageDetail } from "@/lib/types/types";
+import { useWordLookup } from "@/hooks/useWordLookup";
+import { useSavedWords } from "@/hooks/useSavedWords";
+import { WordPopup } from "./WordPopup";
+import type { LessonPassageDetail, LessonPassageLine } from "@/lib/types/types";
 
 export function LessonSummary({
   passage,
@@ -27,10 +32,41 @@ export function LessonSummary({
   const { t, lang } = useT();
   const [showPinyin, setShowPinyin] = useState(false);
   const [showMeaning, setShowMeaning] = useState(false);
+  const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const { activeKey, sequenceActive, playSingle, toggleSequence } = useAudioSequence();
 
   const lines = useMemo(() => passage?.lines ?? [], [passage]);
   const folder = useMemo(() => (passage ? lessonAudioFolder(passage) : ""), [passage]);
+
+  const { lookupMap } = useWordLookup(lines);
+  const { enabled: saveEnabled, saved, toggle: toggleSaved } = useSavedWords(passage);
+
+  const renderTokens = (line: LessonPassageLine) => {
+    if (!line.tokens || line.tokens.length === 0) return line.content;
+    return line.tokens.map((tok, i) =>
+      isPunctToken(tok) ? (
+        <span key={i} className="line-token">
+          {tok}
+        </span>
+      ) : (
+        <span
+          key={i}
+          className="line-token clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => setSelectedWord(tok)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              setSelectedWord(tok);
+            }
+          }}
+        >
+          {tok}
+        </span>
+      )
+    );
+  };
 
   const playable = useMemo(
     () =>
@@ -98,7 +134,7 @@ export function LessonSummary({
                 )}
                 <div className="lesson-preview-text">
                   <div className="hanzi-text" lang="zh-CN">
-                    {line.content}
+                    {renderTokens(line)}
                   </div>
                   <div className={`pinyin-text${showPinyin ? " show" : ""}`}>{line.pinyin}</div>
                   <div className={`meaning-text${showMeaning ? " show" : ""}`}>{meaning}</div>
@@ -118,6 +154,17 @@ export function LessonSummary({
           <FontAwesomeIcon icon={faDumbbell} /> {t("reading.train_this_lesson")}
         </button>
       </div>
+
+      {selectedWord !== null && (
+        <WordPopup
+          word={selectedWord}
+          entry={lookupMap[selectedWord] ?? null}
+          saveEnabled={saveEnabled}
+          isSaved={saved.has(selectedWord)}
+          onToggleSave={() => toggleSaved(selectedWord)}
+          onClose={() => setSelectedWord(null)}
+        />
+      )}
     </div>
   );
 }

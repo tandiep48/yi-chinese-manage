@@ -255,6 +255,8 @@
     "listen": "Nghe",
     "stroke": "Nét Chữ",
     "close": "Đóng",
+    "add_to_list": "Thêm vào danh sách",
+    "added": "Đã thêm",
     "loading": "Đang tải...",
     "vocab_panel_aria": "Từ vựng bài học",
     "close_vocab_aria": "Đóng từ vựng"
@@ -291,6 +293,7 @@
     "play_audio_for": "Phát âm thanh cho {word}",
     "no_lines_found": "Không tìm thấy câu nào cho phần bài học này.",
     "no_audio_available": "Không có âm thanh",
+    "word_not_found": "Không có trong từ vựng",
     "play_passage_line": "Phát câu {n}",
     "train_these_numbers": "Luyện Các Số Này",
     "mic_blocked": "Truy cập micro bị chặn. Vui lòng cho phép micro và thử lại.",

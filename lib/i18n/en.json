@@ -255,6 +255,8 @@
     "listen": "Listen",
     "stroke": "Stroke",
     "close": "Close",
+    "add_to_list": "Add to list",
+    "added": "Added",
     "loading": "Loading...",
     "vocab_panel_aria": "Lesson vocabulary",
     "close_vocab_aria": "Close vocabulary"
@@ -291,6 +293,7 @@
     "play_audio_for": "Play audio for {word}",
     "no_lines_found": "No passage lines found for this lesson part.",
     "no_audio_available": "No audio available",
+    "word_not_found": "Not found in vocabulary",
     "play_passage_line": "Play passage line {n}",
     "train_these_numbers": "Train These Numbers",
     "mic_blocked": "Microphone access was blocked. Allow microphone permission and try again.",
