@@ -267,6 +267,35 @@ export interface LessonVocabRow {
   hsk_level: string;
 }
 
+// ── Learner vocab selection table (the training-selection page) — mirrors the
+// normalized rows returned by Learning/web_app/routes/vocab/vocab_routes.py
+// (/api/vocab/table, /api/vocab/search) and user_routes.py
+// (/api/user/learned-vocab). `word` and `cn` are the same value; `meaning_en`
+// is the fallback shown when `meaning_vn` is empty.
+export interface VocabRow {
+  word: string;
+  cn: string;
+  pinyin: string;
+  meaning_vn: string;
+  meaning_en: string;
+  audio_key: string;
+  level: string;
+}
+
+// The five table modes offered by the selection page. `recent` is served by a
+// separate endpoint (/api/user/learned-vocab); the rest share /api/vocab/table.
+export type VocabMode = "free" | "standard" | "unsure" | "unlearn" | "recent";
+
+export interface VocabTableResponse {
+  rows: VocabRow[];
+  page: number;
+  page_size: number;
+  total: number;
+  total_pages: number;
+  // Present only for standard mode with a single selected part; null otherwise.
+  passage_id?: string | null;
+}
+
 // ── Lesson grammar (lesson-wide grammar rules) — mirrors the raw JSON from
 // Learning/web_app/routes/lesson/lesson_routes.py GET /grammar/<passage_id>
 // (entity/grammar_rule/service.py get_grammar_for_lesson). The flat list is

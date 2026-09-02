@@ -380,6 +380,8 @@
     "select_lesson_option": "Chọn bài học",
     "select_part_option": "Chọn phần",
     "n_selected": "Đã chọn {n}",
+    "select_all": "Chọn tất cả",
+    "coming_soon": "Sắp ra mắt",
     "rows_label": "Số Dòng",
     "state_choose_filters": "Chọn bộ lọc để tải từ vựng.",
     "page_status": "Trang {current} / {total}",

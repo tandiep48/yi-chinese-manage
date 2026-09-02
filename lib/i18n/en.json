@@ -380,6 +380,8 @@
     "select_lesson_option": "Select lesson",
     "select_part_option": "Select part",
     "n_selected": "{n} selected",
+    "select_all": "Select all",
+    "coming_soon": "Coming soon",
     "rows_label": "Rows",
     "state_choose_filters": "Choose filters to load vocabulary.",
     "page_status": "Page {current} / {total}",

@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { VocabSelectPage } from "@/components/page/learner/vocab/VocabSelectPage";
 
 export default function VocabPage() {
-  return <PagePlaceholder name="Vocabulary" />;
+  return <VocabSelectPage />;
 }
