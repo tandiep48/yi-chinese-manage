@@ -6,12 +6,13 @@
 // Composes the mode picker, search, filter bar, study table, pagination and the
 // stroke-order modal on top of the useVocabSelect state machine.
 //
-// The Flashcards and Start Training actions are stubbed (disabled) for now: the
-// batch trainer and flashcard pages they open (/vocab-training-batch,
-// /vocab-learning) have not been ported to this app yet.
+// Flash Cards stashes the current selection in sessionStorage and opens
+// /vocab-learning. Start Training stays a disabled stub — the batch trainer
+// (/vocab-training-batch) has not been ported to this app yet.
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -28,10 +29,27 @@ import {
 const HANZI_RE = /[一-鿿]/;
 const MODES: VocabMode[] = ["free", "standard", "unsure", "unlearn", "recent"];
 
+const FLASHCARD_SELECTION_KEY = "selectedVocabFlashcards";
+
 export function VocabSelectPage() {
   const { t } = useT();
+  const router = useRouter();
   const vocab = useVocabSelect();
   const [stroke, setStroke] = useState<StrokeModalState>(null);
+
+  function openFlashcards() {
+    if (vocab.selectedCount === 0) return;
+    try {
+      sessionStorage.setItem(
+        FLASHCARD_SELECTION_KEY,
+        JSON.stringify(vocab.selectedWordList)
+      );
+    } catch {
+      // sessionStorage unavailable (private mode); the target page shows an
+      // empty state rather than crashing.
+    }
+    router.push("/vocab-learning?source=selection");
+  }
 
   function openStrokeAll(rows: VocabRow[]) {
     const queue: StrokeAllItem[] = [];
@@ -90,8 +108,8 @@ export function VocabSelectPage() {
               <button
                 type="button"
                 className="btn action-secondary"
-                disabled
-                title={comingSoon}
+                onClick={openFlashcards}
+                disabled={vocab.selectedCount === 0}
               >
                 {t("reading.flash_cards")}
               </button>

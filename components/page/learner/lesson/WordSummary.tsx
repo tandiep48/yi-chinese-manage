@@ -1,11 +1,14 @@
 "use client";
 
 // components/page/learner/lesson/WordSummary.tsx
-// Read-only "Word Summary" (vocab domain) panel for a lesson part — the vocab
-// cards + toolbar from Learning/web_app/static/vocab_learning.js's
-// renderVocabTable() and the shared lesson_ui2.css .vocab-card design.
-// Interactive extras from the original (stroke order, "Learn/Train") are
-// deferred; this is the read-only first cut.
+// "Word Summary" (vocab domain) panel — the vocab cards + toolbar from
+// Learning/web_app/static/vocab_learning.js's renderVocabTable() and the shared
+// lesson_ui2.css .vocab-card design.
+//
+// Interactive extras (per-card stroke order, "stroke all", and the Learn/Train
+// footer actions) are opt-in via callbacks: the read-only lesson-study page
+// passes none (buttons stay disabled, no stroke), while the Flash Cards flow
+// wires them up. Learn/Train hand back the CURRENT (shuffled) item order.
 
 import { useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -18,6 +21,7 @@ import {
   faEyeSlash,
   faGraduationCap,
   faDumbbell,
+  faPaintbrush,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
@@ -26,14 +30,26 @@ import type { LessonVocabRow } from "@/lib/types/types";
 
 type Col = "cn" | "py" | "vn";
 
+const HANZI_RE = /[一-鿿]/;
+
 export function WordSummary({
   vocab,
   loading,
   error,
+  onLearn,
+  onTrain,
+  onOpenStroke,
+  onStrokeAll,
 }: {
   vocab: LessonVocabRow[];
   loading: boolean;
   error: string | null;
+  // Opt-in interactions (Flash Cards flow). Learn/Train receive the current
+  // on-screen order so a shuffle in the summary carries into the next screen.
+  onLearn?: (items: LessonVocabRow[]) => void;
+  onTrain?: (items: LessonVocabRow[]) => void;
+  onOpenStroke?: (word: string, pinyin: string) => void;
+  onStrokeAll?: (items: LessonVocabRow[]) => void;
 }) {
   const { t, lang } = useT();
   const [items, setItems] = useState<LessonVocabRow[]>(vocab);
@@ -95,6 +111,16 @@ export function WordSummary({
           <button type="button" className="btn" onClick={shuffle} title={t("reading.shuffle_vocab_audio")}>
             <FontAwesomeIcon icon={faShuffle} /> {t("vocab_learning.shuffle")}
           </button>
+          {onStrokeAll && (
+            <button
+              type="button"
+              className="btn"
+              onClick={() => onStrokeAll(items)}
+              title={t("vocab.stroke_all_aria")}
+            >
+              <FontAwesomeIcon icon={faPaintbrush} /> {t("vocab_learning.stroke_order")}
+            </button>
+          )}
         </div>
         <div className="toolbar-right">
           {(["cn", "py", "vn"] as Col[]).map((col) => (
@@ -129,6 +155,17 @@ export function WordSummary({
               <div className="vc-pinyin">{v.pinyin}</div>
               <div className="vc-meaning">{(lang === "vi" ? v.meaning_vn : v.meaning_en) || v.meaning_en || v.meaning_vn}</div>
               <div className="vc-right">
+                {onOpenStroke && HANZI_RE.test(v.cn) ? (
+                  <button
+                    type="button"
+                    className="action-btn"
+                    onClick={() => onOpenStroke(v.cn, v.pinyin || "")}
+                    title={t("vocab_learning.show_stroke_order_aria")}
+                    aria-label={t("vocab_learning.show_stroke_order_aria")}
+                  >
+                    <FontAwesomeIcon icon={faPaintbrush} />
+                  </button>
+                ) : null}
                 {v.audio_key ? (
                   <button
                     type="button"
@@ -147,11 +184,22 @@ export function WordSummary({
       )}
 
       <div className="vl-summary-footer">
-        {/* The graded flows are deferred in this read-only cut. */}
-        <button type="button" className="vl-train-btn vl-learn-btn" disabled>
+        {/* Enabled only when the host wires the flow (Flash Cards); the read-only
+            lesson-study page leaves these disabled. */}
+        <button
+          type="button"
+          className="vl-train-btn vl-learn-btn"
+          disabled={!onLearn}
+          onClick={onLearn ? () => onLearn(items) : undefined}
+        >
           <FontAwesomeIcon icon={faGraduationCap} /> {t("vocab_learning.learn_these_words")}
         </button>
-        <button type="button" className="vl-train-btn" disabled>
+        <button
+          type="button"
+          className="vl-train-btn"
+          disabled={!onTrain}
+          onClick={onTrain ? () => onTrain(items) : undefined}
+        >
           <FontAwesomeIcon icon={faDumbbell} /> {t("vocab_learning.train_these_vocab")}
         </button>
       </div>

@@ -424,6 +424,8 @@
     "keyboard_tip": "Tip: Use arrow keys to navigate. Press Space to replay audio.",
     "learn_these_words": "Learn These Words",
     "train_these_vocab": "Train These Vocab",
+    "finish": "Finish",
+    "back_to_vocab": "Back to Vocabulary",
     "close_stroke_order_aria": "Close stroke order",
     "stroke_hint_words": "Choose a character tab to switch. Animate shows each stroke in order.",
     "picker_title": "Vocab Learning",
