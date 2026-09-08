@@ -206,7 +206,8 @@
     "pronunciation_good": "✓ Great pronunciation!",
     "pronunciation_retry": "✗ Try again next time",
     "stop": "Stop",
-    "scoring": "Scoring..."
+    "scoring": "Scoring...",
+    "skip": "Skip"
   },
   "vocab_review": {
     "page_title": "Review Words",
@@ -410,7 +411,12 @@
     "searching": "Searching…",
     "no_results_for": "No results for \"{query}\".",
     "no_column": "No",
-    "column_label": "column"
+    "column_label": "column",
+    "mode_book": "Book",
+    "book_label": "Book",
+    "select_book_option": "Select book",
+    "choose_book": "Choose a book to load your saved words.",
+    "no_saved_books": "You have not saved any words in a book yet."
   },
   "vocab_learning": {
     "page_title": "Vocab Learning - {hsk_level}",
@@ -581,5 +587,24 @@
     "skip": "Skip",
     "finish": "Finish",
     "question_number": "Question {n}"
+  },
+  "train_picker": {
+    "title": "What do you want to train?",
+    "subtitle": "Pick the skills for this session.",
+    "skill_typing": "Typing",
+    "skill_listening": "Listening",
+    "skill_reading": "Reading",
+    "skill_meaning": "Meaning",
+    "skill_reorder": "Reorder",
+    "start": "Start",
+    "cancel": "Cancel",
+    "select_one": "Select at least one skill."
+  },
+  "success_popup": {
+    "perfect_title": "Perfect Score! 🎉",
+    "complete_title": "Session Complete!",
+    "stat_tasks": "Tasks",
+    "stat_correct": "Correct",
+    "stat_accuracy": "Accuracy"
   }
 }

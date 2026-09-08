@@ -206,7 +206,8 @@
     "pronunciation_good": "✓ Phát âm rất tốt!",
     "pronunciation_retry": "✗ Hãy thử lại lần sau",
     "stop": "Dừng",
-    "scoring": "Đang chấm điểm..."
+    "scoring": "Đang chấm điểm...",
+    "skip": "Bỏ qua"
   },
   "vocab_review": {
     "page_title": "Ôn Tập Từ Vựng",
@@ -410,7 +411,12 @@
     "searching": "Đang tìm kiếm…",
     "no_results_for": "Không có kết quả cho \"{query}\".",
     "no_column": "STT",
-    "column_label": "cột"
+    "column_label": "cột",
+    "mode_book": "Sách",
+    "book_label": "Sách",
+    "select_book_option": "Chọn sách",
+    "choose_book": "Chọn một cuốn sách để tải các từ bạn đã lưu.",
+    "no_saved_books": "Bạn chưa lưu từ nào trong sách nào."
   },
   "vocab_learning": {
     "page_title": "Học Từ Vựng - {hsk_level}",
@@ -581,5 +587,24 @@
     "skip": "Bỏ qua",
     "finish": "Hoàn thành",
     "question_number": "Câu {n}"
+  },
+  "train_picker": {
+    "title": "Bạn muốn luyện gì?",
+    "subtitle": "Chọn các kỹ năng cho phiên luyện tập này.",
+    "skill_typing": "Gõ Chữ",
+    "skill_listening": "Nghe",
+    "skill_reading": "Đọc",
+    "skill_meaning": "Nghĩa",
+    "skill_reorder": "Sắp Xếp",
+    "start": "Bắt Đầu",
+    "cancel": "Hủy",
+    "select_one": "Chọn ít nhất một kỹ năng."
+  },
+  "success_popup": {
+    "perfect_title": "Điểm Tuyệt Đối! 🎉",
+    "complete_title": "Hoàn Thành Phiên!",
+    "stat_tasks": "Câu",
+    "stat_correct": "Đúng",
+    "stat_accuracy": "Độ Chính Xác"
   }
 }

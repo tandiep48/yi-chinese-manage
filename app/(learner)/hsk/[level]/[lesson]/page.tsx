@@ -2,21 +2,26 @@
 
 // app/(learner)/hsk/[level]/[lesson]/page.tsx
 // Step 3 of the lesson flow — pick a part, or Grammar / Translation.
-// Vocab/Lesson trainer buttons and the Grammar/Translation items are not
-// wired yet — those trainer screens don't exist in this app yet.
+// The Vocab/Lesson trainer buttons run the whole lesson (all its parts) through
+// the train-type picker; the Grammar/Translation items are not wired yet.
 
-import { use } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound, redirect, useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel, isNumberPart, getPartNumber, lessonColor } from "@/lib/lessons/lessons";
 import { lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/useLessonPicker";
 import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
+import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { useT } from "@/components/i18n/I18nProvider";
 import { saveRecentLearning } from "@/lib/api/recent";
 import type { PickerPassage } from "@/lib/types/types";
+
+// Pinyin-guide and Numbers placeholders aren't graded lesson parts.
+const PINYIN_IDS = new Set(["H1_1_1", "H1_1_2"]);
+const NUMBER_ID = "H1_5_99";
 
 function partLabel(p: PickerPassage, t: (k: string, v?: Record<string, string | number>) => string): string {
   if (p.title) return p.title;
@@ -31,8 +36,10 @@ export default function PartPickerPage({
 }) {
   const { level, lesson } = use(params);
   const { t } = useT();
+  const router = useRouter();
   const hsk = getLevel(level);
   const { loading, error, lessons, partsProgress } = useLessonPicker(hsk?.key ?? level);
+  const [trainEngine, setTrainEngine] = useState<TrainerEngine | null>(null);
   if (!hsk || !lesson) notFound();
   // HSK1 Lesson 1 is the pinyin guide, not a passage-backed lesson — its only
   // "part" is a placeholder, so send direct visits to the guide instead.
@@ -42,6 +49,29 @@ export default function PartPickerPage({
   const lessonLabel = lesson === "Other" ? t("picker.other_passages") : `${t("picker.lesson_prefix")} ${lesson}`;
   const emptyProgress = { learnedWords: 0, totalWords: 0, progressPct: 0 };
   const headerColor = lessonColor(hsk.key, lesson);
+  const canTrain = !!current?.parts.length;
+
+  // Run the whole lesson: stash all its (graded) part ids + chosen skills and open the
+  // matching trainer. Vocab keeps the Numbers part (it has vocab); the lesson trainer
+  // drops it (not a graded passage).
+  function launchTraining(engine: TrainerEngine, types: string[]) {
+    setTrainEngine(null);
+    const partIds = (current?.parts ?? []).map((p) => p.passage_id).filter((id) => !PINYIN_IDS.has(id));
+    const ids = engine === "lesson" ? partIds.filter((id) => id !== NUMBER_ID) : partIds;
+    if (!ids.length) return;
+    try {
+      if (engine === "vocab") {
+        sessionStorage.setItem("lessonWideVocabTrainer", JSON.stringify({ passage_ids: ids }));
+        sessionStorage.setItem("vocabTrainerActivityTypes", JSON.stringify(types));
+      } else {
+        sessionStorage.setItem("lessonWideLessonTrainer", JSON.stringify({ passage_ids: ids }));
+        sessionStorage.setItem("lessonTrainerActivityTypes", JSON.stringify(types));
+      }
+    } catch {
+      // sessionStorage unavailable (private mode); the trainer redirects rather than crashing.
+    }
+    router.push(engine === "vocab" ? "/vocab-training-batch" : "/lesson-training");
+  }
 
   return (
     <div className="lesson-picker">
@@ -80,15 +110,25 @@ export default function PartPickerPage({
               {hsk.label} — {lessonLabel}
             </p>
 
-            {/* Trainer action card — buttons aren't wired yet (no trainer screens exist). */}
+            {/* Trainer action card — trains the whole lesson (all parts). */}
             <div className="picker-lesson-action-card">
               <div className="picker-lesson-action-header">
                 <LessonProgress progress={current?.progress ?? emptyProgress} />
                 <div className="picker-lesson-action-buttons">
-                  <button type="button" className="picker-action-btn" disabled>
+                  <button
+                    type="button"
+                    className="picker-action-btn"
+                    disabled={!canTrain}
+                    onClick={() => setTrainEngine("vocab")}
+                  >
                     {t("picker.vocab_trainer_btn")}
                   </button>
-                  <button type="button" className="picker-action-btn" disabled>
+                  <button
+                    type="button"
+                    className="picker-action-btn"
+                    disabled={!canTrain}
+                    onClick={() => setTrainEngine("lesson")}
+                  >
                     {t("picker.lesson_trainer_btn")}
                   </button>
                 </div>
@@ -132,6 +172,14 @@ export default function PartPickerPage({
           )}
         </div>
       </div>
+
+      {trainEngine && (
+        <TrainTypePicker
+          engine={trainEngine}
+          onStart={(types) => launchTraining(trainEngine, types)}
+          onCancel={() => setTrainEngine(null)}
+        />
+      )}
     </div>
   );
 }

@@ -282,9 +282,17 @@ export interface VocabRow {
   level: string;
 }
 
-// The five table modes offered by the selection page. `recent` is served by a
-// separate endpoint (/api/user/learned-vocab); the rest share /api/vocab/table.
-export type VocabMode = "free" | "standard" | "unsure" | "unlearn" | "recent";
+// The table modes offered by the selection page. `recent` is served by a separate
+// endpoint (/api/user/learned-vocab); `book` shows the user's saved words for one
+// book (mode=book&book_code); the rest share /api/vocab/table.
+export type VocabMode = "free" | "standard" | "book" | "unsure" | "unlearn" | "recent";
+
+// A book the user has saved words in — populates the "Book" mode picker
+// (GET /api/vocab/saved-books).
+export interface SavedBook {
+  book_code: string;
+  name: string;
+}
 
 export interface VocabTableResponse {
   rows: VocabRow[];
@@ -294,6 +302,32 @@ export interface VocabTableResponse {
   total_pages: number;
   // Present only for standard mode with a single selected part; null otherwise.
   passage_id?: string | null;
+}
+
+// ── Lesson trainer task — one graded activity built by the server, mirroring
+// build_lesson_tasks() in Learning/web_app/service/lesson_task_service.py and
+// returned by POST /api/lesson/start. `type` selects the activity: listening /
+// meaning are multiple-choice, typing types the sentence, reorder arranges chips.
+export type LessonTaskType = "listening" | "meaning" | "typing" | "reorder";
+
+export interface LessonTask {
+  type: LessonTaskType;
+  passage_id: string;
+  line_id: number;
+  content: string; // the Chinese sentence (shown, typed, or revealed)
+  correct_answer: string;
+  options?: string[]; // listening / meaning
+  tokens?: string[]; // reorder: correct order
+  shuffled_tokens?: string[]; // reorder: presented order
+  pinyin?: string; // typing: revealed after answering
+  audio_key?: string | null;
+  hsk_level?: string | null;
+  book_code?: string | null;
+}
+
+export interface LessonSessionResponse {
+  session_id: number;
+  tasks: LessonTask[];
 }
 
 // ── Lesson grammar (lesson-wide grammar rules) — mirrors the raw JSON from
@@ -411,3 +445,63 @@ export const QUESTION_SKILLS = TYPE_CONSTANTS.QUESTION_SKILLS;
 
 export const GRAMMAR_TYPES = TYPE_CONSTANTS.GRAMMAR_TYPES;
 export type GrammarType = (typeof GRAMMAR_TYPES)[number];
+
+// ── Practice / Exam (learner) ────────────────────────────────────────────────
+// Mirrors the rows returned by Learning/web_app/routes/practice/practice_routes.py
+// (raw JSON, login-required). `category` is "practice" (Exercise) or "exam".
+export type PracticeCategory = "practice" | "exam";
+
+export interface PracticeQuestion {
+  level: number;
+  lesson: string | number;
+  no: number;
+  skill: string; // "listening" | "reading" (defaulted to "listening" by the API)
+  type: number; // 1..6
+  content: string | null;
+  question: string | null;
+  answer: string;
+  audio_key: string[];
+  image: string | null;
+  // Values are strings, or booleans for True/False (type 1) questions.
+  options: Record<string, string | boolean>;
+  progress: string;
+  category: PracticeCategory;
+  unit_id?: string;
+}
+
+export interface PracticeGroup {
+  progress: string;
+  lesson: string | number;
+  category?: PracticeCategory;
+  questions: PracticeQuestion[];
+}
+
+export interface PracticeSessionData {
+  number?: number | string;
+  level?: number | string;
+  lesson?: string | number;
+  total_groups?: number;
+  groups: PracticeGroup[];
+}
+
+// One row of the /api/practice/submit payload.
+export interface PracticeAnswerRow {
+  hsk_level: number;
+  lesson: string | number;
+  question_no: number;
+  skill: string;
+  type: number;
+  category: PracticeCategory;
+  user_answer: string;
+  is_correct: boolean;
+  response_time_ms: number;
+}
+
+// One item in the multi-select queue (recommend → /practice/multi).
+export interface PracticeMultiItem {
+  level: number;
+  lesson: string | number;
+  progress: string;
+  category?: PracticeCategory;
+  unit_ids?: string[];
+}

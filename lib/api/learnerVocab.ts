@@ -9,8 +9,17 @@ import type {
   VocabLookupMap,
   VocabMode,
   VocabTableResponse,
+  SavedBook,
 } from "@/lib/types/types";
 import { legacyApiFetch } from "./client";
+
+// Books the current user has saved words in (populates the "Book" mode picker).
+// Login-required; soft-fails to [] when signed out, like the legacy loadSavedBooks().
+export function getSavedBooks(): Promise<SavedBook[]> {
+  return legacyApiFetch<{ books: SavedBook[] }>(`/api/vocab/saved-books`)
+    .then((r) => r.books ?? [])
+    .catch(() => []);
+}
 
 // Batch-resolve words to { pinyin, meaning_vn, meaning_en, audio_key }. Words not
 // in the vocabulary are omitted from the map. The backend caps the query at 80
@@ -49,13 +58,15 @@ export interface VocabTableParams {
   hskLevel?: string;
   // Standard mode: the selected passage_ids (H<level>_<lesson>_<part>).
   passages?: string[];
+  // Book mode: the selected book code.
+  bookCode?: string;
   page: number;
   pageSize: number;
 }
 
-// Loads a page of the vocab table for the free / standard / unsure / unlearn
-// modes. `recent` is served by getLearnedVocab instead — it lives on a different
-// route and the /table endpoint rejects it. Mirrors loadVocabTable() in
+// Loads a page of the vocab table for the free / standard / book / unsure /
+// unlearn modes. `recent` is served by getLearnedVocab instead — it lives on a
+// different route and the /table endpoint rejects it. Mirrors loadVocabTable() in
 // Learning/web_app/static/vocab/vocab_select.js.
 export function getVocabTable(
   params: VocabTableParams
@@ -68,6 +79,9 @@ export function getVocabTable(
   });
   if (params.mode === "standard") {
     query.set("passages", (params.passages ?? []).join(","));
+  }
+  if (params.mode === "book") {
+    query.set("book_code", params.bookCode ?? "");
   }
   return legacyApiFetch<VocabTableResponse>(
     `/api/vocab/table?${query.toString()}`

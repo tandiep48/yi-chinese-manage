@@ -5,8 +5,10 @@
 // passage preview lines + toolbar from Learning/web_app/static/reading/reading.js's
 // renderLessonSummary(), styled with the shared lesson_ui2.css .lesson-preview-line
 // design. Each line renders as clickable word tokens (renderTokens); clicking a
-// word opens the vocab WordPopup (pinyin/meaning/audio/stroke/save). The graded
-// "Learn/Train" flows remain deferred.
+// word opens the vocab WordPopup (pinyin/meaning/audio/stroke/save). The Learn/Train
+// footer actions are opt-in via callbacks: the read-only host passes none (buttons
+// stay disabled), the lesson-study page wires them to the lesson-card viewer and the
+// lesson trainer.
 
 import { useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -24,10 +26,16 @@ export function LessonSummary({
   passage,
   loading,
   error,
+  onLearn,
+  onTrain,
 }: {
   passage: LessonPassageDetail | null;
   loading: boolean;
   error: string | null;
+  // Opt-in footer actions (lesson-study page). onLearn opens the lesson-card viewer,
+  // onTrain launches the lesson trainer.
+  onLearn?: () => void;
+  onTrain?: () => void;
 }) {
   const { t, lang } = useT();
   const [showPinyin, setShowPinyin] = useState(false);
@@ -146,11 +154,19 @@ export function LessonSummary({
       )}
 
       <div className="lesson-summary-actions">
-        {/* The graded flows are deferred in this read-only cut. */}
-        <button type="button" className="vl-train-btn vl-learn-btn" disabled>
-          <FontAwesomeIcon icon={faGraduationCap} /> {t("reading.learn_this_lesson")}
-        </button>
-        <button type="button" className="vl-train-btn" disabled>
+        {/* Enabled only when the host wires the flow; the read-only view leaves these
+            disabled. Books have no curated vocab, so Learn hides for them. */}
+        {!passage?.book_code && (
+          <button
+            type="button"
+            className="vl-train-btn vl-learn-btn"
+            disabled={!onLearn}
+            onClick={onLearn}
+          >
+            <FontAwesomeIcon icon={faGraduationCap} /> {t("reading.learn_this_lesson")}
+          </button>
+        )}
+        <button type="button" className="vl-train-btn" disabled={!onTrain} onClick={onTrain}>
           <FontAwesomeIcon icon={faDumbbell} /> {t("reading.train_this_lesson")}
         </button>
       </div>

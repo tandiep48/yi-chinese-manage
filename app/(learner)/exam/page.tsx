@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { PracticeSelectPage } from "@/components/page/learner/practice/PracticeSelectPage";
 
 export default function ExamPage() {
-  return <PagePlaceholder name="Exam" />;
+  return <PracticeSelectPage category="exam" />;
 }

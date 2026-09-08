@@ -9,7 +9,7 @@
 import { useT } from "@/components/i18n/I18nProvider";
 import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
 import type { MultiSelectOption } from "@/hooks/useVocabSelect";
-import type { VocabMode } from "@/lib/types/types";
+import type { SavedBook, VocabMode } from "@/lib/types/types";
 
 const HSK_LEVELS = ["HSK1", "HSK2", "HSK3", "HSK4", "HSK5", "HSK6"] as const;
 const PAGE_SIZES = [10, 20, 50, 100, 200, 500, 1000] as const;
@@ -17,8 +17,12 @@ const PAGE_SIZES = [10, 20, 50, 100, 200, 500, 1000] as const;
 interface VocabFilterBarProps {
   mode: VocabMode;
   isHistoryMode: boolean;
+  isBookMode: boolean;
   hskLevel: string;
   onHskChange: (level: string) => void;
+  bookOptions: SavedBook[];
+  selectedBook: string;
+  onBookChange: (bookCode: string) => void;
   lessonOptions: MultiSelectOption[];
   selectedLessons: string[];
   onLessonsChange: (values: string[]) => void;
@@ -32,8 +36,12 @@ interface VocabFilterBarProps {
 export function VocabFilterBar({
   mode,
   isHistoryMode,
+  isBookMode,
   hskLevel,
   onHskChange,
+  bookOptions,
+  selectedBook,
+  onBookChange,
   lessonOptions,
   selectedLessons,
   onLessonsChange,
@@ -48,7 +56,7 @@ export function VocabFilterBar({
 
   return (
     <div className="vocab-filter-bar">
-      {!isHistoryMode && (
+      {!isHistoryMode && !isBookMode && (
         <div className="form-group">
           <label htmlFor="filter-hsk">{t("vocab.hsk_label")}</label>
           <select
@@ -59,6 +67,24 @@ export function VocabFilterBar({
             <option value="">{t("vocab.select_hsk")}</option>
             {HSK_LEVELS.map((lvl) => (
               <option key={lvl} value={lvl}>{`HSK ${lvl.slice(3)}`}</option>
+            ))}
+          </select>
+        </div>
+      )}
+
+      {isBookMode && (
+        <div className="form-group book-filter">
+          <label htmlFor="filter-book">{t("vocab.book_label")}</label>
+          <select
+            id="filter-book"
+            value={selectedBook}
+            onChange={(e) => onBookChange(e.target.value)}
+          >
+            <option value="">{t("vocab.select_book_option")}</option>
+            {bookOptions.map((book) => (
+              <option key={book.book_code} value={book.book_code}>
+                {book.name || book.book_code}
+              </option>
             ))}
           </select>
         </div>

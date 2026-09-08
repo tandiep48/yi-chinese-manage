@@ -6,15 +6,16 @@
 // same item shape (LessonVocabRow) — the /vocab selection flow and a lesson-part
 // deep link — so the whole flow lives in one component. Ported from the
 // selection path of Learning/web_app/static/vocab_learning/vocab_learning.js
-// (startSelectedFlashcards → summary → startLearningCards). Speaking practice
-// and the "Train these vocab" hand-off are deferred (the batch trainer is not
-// ported yet), so Train stays disabled.
+// (startSelectedFlashcards → summary → startLearningCards + goToTrainer). Speaking
+// practice from the original is deferred.
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
+import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
 import {
   VocabStrokeModal,
   type StrokeModalState,
@@ -39,9 +40,38 @@ export function FlashcardStudy({
   passageId?: string;
 }) {
   const { t } = useT();
-  const [screen, setScreen] = useState<"summary" | "learning">("summary");
+  const router = useRouter();
+  // A lesson deep link ("Learn These Words") lands straight on the cards — the learner
+  // already reviewed the word summary on the study page. The /vocab selection flow
+  // (no passageId) still opens on its summary so the picked words can be reviewed.
+  const [screen, setScreen] = useState<"summary" | "learning">(passageId ? "learning" : "summary");
   const [learningWords, setLearningWords] = useState<LessonVocabRow[]>([]);
   const [stroke, setStroke] = useState<StrokeModalState>(null);
+  const [trainPickerOpen, setTrainPickerOpen] = useState(false);
+  // The on-screen word order captured when the train picker opens (selection flow).
+  const [trainItems, setTrainItems] = useState<LessonVocabRow[]>([]);
+
+  // "Train These Vocab" → the batch vocab trainer. A lesson-part deep link auto-starts
+  // from the passage (mode 6); the /vocab selection flow stashes the chosen words.
+  function startTraining(types: string[]) {
+    setTrainPickerOpen(false);
+    try {
+      sessionStorage.setItem("vocabTrainerActivityTypes", JSON.stringify(types));
+      if (!passageId) {
+        sessionStorage.setItem(
+          "selectedVocabTrainerWords",
+          JSON.stringify(trainItems.map((row) => row.cn))
+        );
+      }
+    } catch {
+      // sessionStorage unavailable (private mode); the trainer still starts.
+    }
+    router.push(
+      passageId
+        ? `/vocab-training-batch?mode=6&passage_id=${encodeURIComponent(passageId)}`
+        : "/vocab-training-batch"
+    );
+  }
 
   function openStrokeAll(items: LessonVocabRow[]) {
     const queue: StrokeAllItem[] = [];
@@ -74,18 +104,30 @@ export function FlashcardStudy({
             setLearningWords(items);
             setScreen("learning");
           }}
+          onTrain={(items) => {
+            setTrainItems(items);
+            setTrainPickerOpen(true);
+          }}
           onOpenStroke={openStroke}
           onStrokeAll={openStrokeAll}
         />
       ) : (
         <FlashcardView
-          words={learningWords}
+          words={learningWords.length ? learningWords : words}
           onOpenStroke={openStroke}
           onShowSummary={() => setScreen("summary")}
         />
       )}
 
       <VocabStrokeModal state={stroke} onClose={() => setStroke(null)} />
+
+      {trainPickerOpen && (
+        <TrainTypePicker
+          engine="vocab"
+          onStart={startTraining}
+          onCancel={() => setTrainPickerOpen(false)}
+        />
+      )}
     </LessonStudyShell>
   );
 }

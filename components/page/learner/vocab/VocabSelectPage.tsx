@@ -7,8 +7,9 @@
 // stroke-order modal on top of the useVocabSelect state machine.
 //
 // Flash Cards stashes the current selection in sessionStorage and opens
-// /vocab-learning. Start Training stays a disabled stub — the batch trainer
-// (/vocab-training-batch) has not been ported to this app yet.
+// /vocab-learning. Start Training opens the train-type picker, stashes the
+// selection + chosen skills, and opens the batch trainer (/vocab-training-batch),
+// mirroring vocab_select.js.
 
 import { useState } from "react";
 import Link from "next/link";
@@ -17,6 +18,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabSelect } from "@/hooks/useVocabSelect";
+import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
 import type { VocabMode, VocabRow } from "@/lib/types/types";
 import { VocabFilterBar } from "./VocabFilterBar";
 import { VocabTable } from "./VocabTable";
@@ -27,15 +29,33 @@ import {
 } from "./VocabStrokeModal";
 
 const HANZI_RE = /[一-鿿]/;
-const MODES: VocabMode[] = ["free", "standard", "unsure", "unlearn", "recent"];
+const MODES: VocabMode[] = ["free", "standard", "book", "unsure", "unlearn", "recent"];
 
 const FLASHCARD_SELECTION_KEY = "selectedVocabFlashcards";
+const TRAINER_WORDS_KEY = "selectedVocabTrainerWords";
+const TRAINER_TYPES_KEY = "vocabTrainerActivityTypes";
 
 export function VocabSelectPage() {
   const { t } = useT();
   const router = useRouter();
   const vocab = useVocabSelect();
   const [stroke, setStroke] = useState<StrokeModalState>(null);
+  const [trainPickerOpen, setTrainPickerOpen] = useState(false);
+
+  function startTraining(types: string[]) {
+    setTrainPickerOpen(false);
+    try {
+      sessionStorage.setItem(
+        TRAINER_WORDS_KEY,
+        JSON.stringify(vocab.selectedWordList.map((row) => row.word))
+      );
+      sessionStorage.setItem(TRAINER_TYPES_KEY, JSON.stringify(types));
+    } catch {
+      // sessionStorage unavailable (private mode); the trainer shows its empty
+      // state / redirects rather than crashing.
+    }
+    router.push("/vocab-training-batch");
+  }
 
   function openFlashcards() {
     if (vocab.selectedCount === 0) return;
@@ -63,7 +83,6 @@ export function VocabSelectPage() {
   }
 
   const showTable = vocab.tableState.status === "ready" && vocab.rows.length > 0;
-  const comingSoon = t("vocab.coming_soon");
 
   return (
     <div className="vocab-select">
@@ -116,8 +135,8 @@ export function VocabSelectPage() {
               <button
                 type="button"
                 className="btn action-primary"
-                disabled
-                title={comingSoon}
+                onClick={() => setTrainPickerOpen(true)}
+                disabled={vocab.selectedCount === 0}
               >
                 {t("vocab.start_training")}
               </button>
@@ -157,8 +176,12 @@ export function VocabSelectPage() {
             <VocabFilterBar
               mode={vocab.mode}
               isHistoryMode={vocab.isHistoryMode}
+              isBookMode={vocab.isBookMode}
               hskLevel={vocab.hskLevel}
               onHskChange={vocab.setHskLevel}
+              bookOptions={vocab.bookOptions}
+              selectedBook={vocab.selectedBook}
+              onBookChange={vocab.setBook}
               lessonOptions={vocab.lessonOptions}
               selectedLessons={vocab.selectedLessons}
               onLessonsChange={vocab.changeLessons}
@@ -215,6 +238,14 @@ export function VocabSelectPage() {
       </div>
 
       <VocabStrokeModal state={stroke} onClose={() => setStroke(null)} />
+
+      {trainPickerOpen && (
+        <TrainTypePicker
+          engine="vocab"
+          onStart={startTraining}
+          onCancel={() => setTrainPickerOpen(false)}
+        />
+      )}
     </div>
   );
 }

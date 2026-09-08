@@ -26,3 +26,26 @@ export function lessonImageUrl(hskKey: string, lessonNum: string | number): stri
 export function bookCoverUrl(bookCode: string): string {
   return `${GCS_BUCKET_URL}/lesson_cover/${bookCode.toUpperCase()}.png`;
 }
+
+// Practice/exam question audio, mirroring practice_engine.js audioSrc():
+// .../question_bank/<category>/<category>-<level>/<key>.mp3
+export function practiceAudioUrl(
+  key: string,
+  level: number | string,
+  category: "practice" | "exam" = "practice"
+): string {
+  const lvl = level || 1;
+  return `${GCS_BUCKET_URL}/question_bank/${category}/${category}-${lvl}/${key}.mp3`;
+}
+
+// Practice/exam question image, mirroring practice_engine.js imageUrl():
+// .../images/<category>/<level>/<file> (a bare name gets a .jpg extension).
+export function practiceImageUrl(
+  level: number | string,
+  filename: string,
+  category: "practice" | "exam" = "practice"
+): string {
+  let file = filename.trim();
+  if (!/\.(jpg|jpeg|png|gif|webp)$/i.test(file)) file += ".jpg";
+  return `${GCS_BUCKET_URL}/images/${category}/${level}/${file}`;
+}

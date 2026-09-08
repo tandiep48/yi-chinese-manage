@@ -20,10 +20,12 @@ import { getPassages } from "@/lib/api/lessons";
 import {
   getVocabTable,
   getLearnedVocab,
+  getSavedBooks,
   searchVocab,
 } from "@/lib/api/learnerVocab";
 import type {
   PickerPassage,
+  SavedBook,
   VocabMode,
   VocabRow,
   VocabTableResponse,
@@ -74,6 +76,10 @@ export function useVocabSelect() {
 
   const [mode, setModeState] = useState<VocabMode>("standard");
   const [hskLevel, setHskLevelState] = useState("");
+
+  // Book mode: the books the user has saved words in, and the chosen one.
+  const [bookOptions, setBookOptions] = useState<SavedBook[]>([]);
+  const [selectedBook, setSelectedBook] = useState("");
 
   const [groupedPassages, setGroupedPassages] = useState<
     Record<string, PassageMeta[]>
@@ -133,13 +139,19 @@ export function useVocabSelect() {
     setTableState({ status: "loading", message });
   }, []);
 
-  // ── Table loading (free / standard / unsure / unlearn / recent) ────────────
+  // ── Table loading (free / standard / book / unsure / unlearn / recent) ──────
   const loadTable = useCallback(
     async (targetPage: number) => {
       let selectedPassages: string[] = [];
       if (mode === "standard") selectedPassages = selectedParts;
 
+      if (mode === "book" && !selectedBook) {
+        setPrompt(t("vocab.choose_book"));
+        return;
+      }
+
       if (
+        mode !== "book" &&
         !isHistoryMode(mode) &&
         (!hskLevel || (mode === "standard" && selectedPassages.length === 0))
       ) {
@@ -163,6 +175,7 @@ export function useVocabSelect() {
                 mode,
                 hskLevel,
                 passages: selectedPassages,
+                bookCode: selectedBook,
                 page: targetPage,
                 pageSize,
               });
@@ -177,8 +190,19 @@ export function useVocabSelect() {
         setPrompt(t("reading.failed_load_vocabulary"));
       }
     },
-    [mode, hskLevel, selectedParts, pageSize, t, setPrompt, setLoading, setReady]
+    [mode, hskLevel, selectedParts, selectedBook, pageSize, t, setPrompt, setLoading, setReady]
   );
+
+  // Load the books the user has saved words in (Book mode picker). Soft-fails to
+  // an empty list; prompts to pick a book, or that there are none yet.
+  const loadSavedBooks = useCallback(async () => {
+    const seq = ++requestSeq.current;
+    setLoading(t("dashboard.loading_vocabulary"));
+    const books = await getSavedBooks();
+    if (seq !== requestSeq.current) return;
+    setBookOptions(books);
+    setPrompt(t(books.length ? "vocab.choose_book" : "vocab.no_saved_books"));
+  }, [t, setLoading, setPrompt]);
 
   // ── Search ─────────────────────────────────────────────────────────────────
   const runSearch = useCallback(
@@ -265,15 +289,29 @@ export function useVocabSelect() {
       setPartOptions([]);
       setSelectedLessons([]);
       setSelectedParts([]);
+      setSelectedBook("");
+      setBookOptions([]);
       setPage(1);
       setRows([]);
       if (isHistoryMode(next)) {
         setTableState({ status: "loading", message: t("dashboard.loading_vocabulary") });
+      } else if (next === "book") {
+        loadSavedBooks();
       } else {
         setTableState({ status: "prompt", message: t("vocab.state_choose_filters") });
       }
     },
-    [t]
+    [t, loadSavedBooks]
+  );
+
+  const setBook = useCallback(
+    (bookCode: string) => {
+      setSelectedBook(bookCode);
+      setPage(1);
+      // The load-effect reacts to selectedBook; an empty choice just re-prompts.
+      if (!bookCode) setPrompt(t("vocab.choose_book"));
+    },
+    [t, setPrompt]
   );
 
   const setHskLevel = useCallback(
@@ -363,6 +401,10 @@ export function useVocabSelect() {
       loadTable(1);
       return;
     }
+    if (mode === "book" && selectedBook) {
+      loadTable(1);
+      return;
+    }
     if (mode === "free" && hskLevel) {
       loadTable(1);
       return;
@@ -371,7 +413,7 @@ export function useVocabSelect() {
       loadTable(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, hskLevel, selectedParts, pageSize, searchMode]);
+  }, [mode, hskLevel, selectedParts, selectedBook, pageSize, searchMode]);
 
   // ── Selection ────────────────────────────────────────────────────────────────
   const toggleWord = useCallback((row: VocabRow, checked: boolean) => {
@@ -422,6 +464,10 @@ export function useVocabSelect() {
     hskLevel,
     setHskLevel,
     isHistoryMode: isHistoryMode(mode),
+    isBookMode: mode === "book",
+    bookOptions,
+    selectedBook,
+    setBook,
     lessonOptions,
     partOptions,
     selectedLessons,
