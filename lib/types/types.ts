@@ -505,3 +505,64 @@ export interface PracticeMultiItem {
   category?: PracticeCategory;
   unit_ids?: string[];
 }
+
+// ─── Profile / review history ─────────────────────────────────────────────
+// Backs the ported profile page (Learning/web_app profile.js + review.js).
+
+// GET /api/user/profile-summary → serialize_current_user() under `user`.
+// The legacy page uses this only to refresh the avatar + level on view (the
+// summary also recomputes/backfills the stored HSK level server-side).
+export interface ProfileSummaryUser {
+  id: number;
+  username: string;
+  email: string;
+  level: number | null;
+  avatar_path: string | null;
+  avatar_url: string | null;
+  hanzi_font: string | null;
+  hanzi_script: string | null;
+  ui_language: string | null;
+}
+
+// One past practice/exam session, from GET /api/practice/history.
+export interface ReviewSessionSummary {
+  session_id: number;
+  ended_at: string | null;
+  total: number;
+  correct: number;
+  score_pct: number;
+  levels: number[];
+  lessons: string[];
+  categories: string[];
+}
+
+export interface ReviewHistoryResponse {
+  sessions: ReviewSessionSummary[];
+  page: number;
+  has_more: boolean;
+}
+
+// One answered question in a session, from GET /api/practice/history/<id>.
+// Same shape as a PracticeQuestion plus the user's own answer + result.
+export interface ReviewQuestion extends PracticeQuestion {
+  user_answer: string | null;
+  is_correct: boolean;
+  answered_at: string | null;
+}
+
+export interface ReviewSessionDetail {
+  session_id: number;
+  total: number;
+  correct: number;
+  score_pct: number;
+  questions: ReviewQuestion[];
+}
+
+// Backend filters for the session list (all optional; "all" = no filter).
+export interface ReviewHistoryFilters {
+  level: string; // "all" | "1".."6"
+  category: string; // "all" | "practice" | "exam"
+  sort: "recent" | "oldest";
+  date: string; // "" | "YYYY-MM-DD"
+  page: number;
+}

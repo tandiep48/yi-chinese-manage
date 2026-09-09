@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { ProfilePage } from "@/components/page/learner/profile/ProfilePage";
 
-export default function ProfilePage() {
-  return <PagePlaceholder name="User profile" />;
+export default function Page() {
+  return <ProfilePage />;
 }

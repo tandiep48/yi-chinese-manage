@@ -10,6 +10,9 @@ import type {
   PracticeMultiItem,
   PracticeSessionData,
   PracticeAnswerRow,
+  ReviewHistoryFilters,
+  ReviewHistoryResponse,
+  ReviewSessionDetail,
 } from "@/lib/types/types";
 import { legacyApiFetch } from "./client";
 
@@ -74,4 +77,27 @@ export function submitPractice(
     method: "POST",
     body: JSON.stringify(payload),
   });
+}
+
+// GET /api/practice/history — the profile page's review panel: the current
+// user's past sessions, with backend level/category/date filters + paging.
+export function getPracticeHistory(
+  filters: ReviewHistoryFilters
+): Promise<ReviewHistoryResponse> {
+  const qs = new URLSearchParams({
+    level: filters.level,
+    category: filters.category,
+    sort: filters.sort,
+    page: String(filters.page),
+  });
+  if (filters.date) qs.set("date", filters.date);
+  return legacyApiFetch(`/api/practice/history?${qs.toString()}`);
+}
+
+// GET /api/practice/history/<id> — every answered question in one session,
+// with the user's own answer vs the correct one (read-only review).
+export function getPracticeHistoryDetail(
+  sessionId: number
+): Promise<ReviewSessionDetail> {
+  return legacyApiFetch(`/api/practice/history/${sessionId}`);
 }

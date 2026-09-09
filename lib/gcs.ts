@@ -38,6 +38,14 @@ export function practiceAudioUrl(
   return `${GCS_BUCKET_URL}/question_bank/${category}/${category}-${lvl}/${key}.mp3`;
 }
 
+// HSK achievement badge, e.g. level 3 -> .../badge/HSK3.png (gcs_service badge_url).
+// Returns "" for a level outside 1..6, matching the legacy helper.
+export function badgeUrl(level: number | string | null | undefined): string {
+  const n = String(level ?? "").replace(/[^0-9]/g, "");
+  if (!["1", "2", "3", "4", "5", "6"].includes(n)) return "";
+  return `${GCS_BUCKET_URL}/badge/HSK${n}.png`;
+}
+
 // Practice/exam question image, mirroring practice_engine.js imageUrl():
 // .../images/<category>/<level>/<file> (a bare name gets a .jpg extension).
 export function practiceImageUrl(
