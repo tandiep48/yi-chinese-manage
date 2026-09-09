@@ -153,7 +153,19 @@ body {
   min-height: 100%;
   background-color: var(--learner-bg);
   color: var(--learner-text);
-  font-family: var(--font-roboto), Roboto, "Noto Sans", Helvetica, sans-serif;
+  /* --han-font-family is set at runtime by HanziSettingsProvider from the
+     user's hanzi_font. It's Roboto-first, so Latin text stays on Roboto and
+     only the ideographs pick up the chosen face (ports the legacy body rule in
+     Learning/web_app/static/shared/styles.css). Falls back to the plain stack
+     before the provider runs / for signed-out visitors. */
+  font-family: var(
+    --han-font-family,
+    var(--font-roboto),
+    Roboto,
+    "Noto Sans",
+    Helvetica,
+    sans-serif
+  );
 }
 
 /* ─────────────────────────────────────────────

@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { HanziSettingsControl } from "@/components/han/HanziSettingsControl";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 interface NavItem {
@@ -75,6 +76,7 @@ export function TopNav() {
             >
               {t("nav.logout")}
             </button>
+            <HanziSettingsControl />
           </>
         ) : (
           <>
