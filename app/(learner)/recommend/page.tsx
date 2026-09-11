@@ -1,5 +1,5 @@
-import { PagePlaceholder } from "@/components/PagePlaceholder";
+import { RecommendPage } from "@/components/page/learner/recommend/RecommendPage";
 
-export default function RecommendPage() {
-  return <PagePlaceholder name="Recommend" />;
+export default function Page() {
+  return <RecommendPage />;
 }

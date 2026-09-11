@@ -51,6 +51,16 @@ export function removeSavedWord(passageId: string, cn: string): Promise<void> {
   }).then(() => undefined);
 }
 
+// GET /api/vocab/has_history — whether the user has any vocab-practice history.
+// The Recommend page uses it to show the "new user" welcome instead of the plain
+// empty state when there are zero recommendations. Soft-fails to true so a broken
+// call falls back to the regular empty state (matches the legacy try/catch).
+export function getVocabHasHistory(): Promise<boolean> {
+  return legacyApiFetch<{ has_history: boolean }>(`/api/vocab/has_history`)
+    .then((r) => Boolean(r.has_history))
+    .catch(() => true);
+}
+
 // ── Vocab selection table (the training-selection page) ─────────────────────
 
 export interface VocabTableParams {

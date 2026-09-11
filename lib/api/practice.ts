@@ -10,11 +10,21 @@ import type {
   PracticeMultiItem,
   PracticeSessionData,
   PracticeAnswerRow,
+  RecommendedPractice,
   ReviewHistoryFilters,
   ReviewHistoryResponse,
   ReviewSessionDetail,
 } from "@/lib/types/types";
 import { legacyApiFetch } from "./client";
+
+// GET /api/practice/recommend — ranked progress groups the user is ready for
+// (vocab coverage ≥ 0.80). Login-required raw JSON; the card only needs the
+// lightweight metadata (question_count), the runner loads questions on demand.
+export function getRecommendations(): Promise<RecommendedPractice[]> {
+  return legacyApiFetch<{ recommendations: RecommendedPractice[] }>(
+    `/api/practice/recommend`
+  ).then((r) => r.recommendations ?? []);
+}
 
 // GET /api/practice/<number>?category= — unique available lessons for a level.
 export function getPracticeLessons(

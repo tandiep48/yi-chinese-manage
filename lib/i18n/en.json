@@ -335,7 +335,16 @@
     "question_single": "Question {n}",
     "new_focus": "New focus: {words}",
     "select_lesson_aria": "Select Lesson {n}",
-    "question_count": "{count} question(s)"
+    "question_count": "{count} question(s)",
+    "page_range": "{start}-{end} of {total}",
+    "prev_page": "Previous page",
+    "next_page": "Next page",
+    "error_title": "Something went wrong",
+    "empty_title": "No recommendations yet",
+    "empty_sub": "Keep learning vocabulary to unlock recommended practice groups!",
+    "new_user_title": "Welcome! You're just getting started.",
+    "new_user_sub": "You haven't practiced any vocabulary yet. Recommended lessons unlock automatically as you learn words — start with the Vocabulary Trainer!",
+    "new_user_cta": "Go to Vocabulary Trainer"
   },
   "review": {
     "page_title": "Practice Review",

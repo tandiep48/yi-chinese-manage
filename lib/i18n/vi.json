@@ -335,7 +335,16 @@
     "question_single": "Câu {n}",
     "new_focus": "Trọng tâm mới: {words}",
     "select_lesson_aria": "Chọn Bài {n}",
-    "question_count": "{count} câu hỏi"
+    "question_count": "{count} câu hỏi",
+    "page_range": "{start}-{end} trên {total}",
+    "prev_page": "Trang trước",
+    "next_page": "Trang sau",
+    "error_title": "Đã xảy ra lỗi",
+    "empty_title": "Chưa có đề xuất nào",
+    "empty_sub": "Tiếp tục học từ vựng để mở khóa các nhóm luyện tập được đề xuất!",
+    "new_user_title": "Chào mừng! Bạn chỉ mới bắt đầu.",
+    "new_user_sub": "Bạn chưa luyện tập từ vựng nào. Các bài học đề xuất sẽ tự động mở khóa khi bạn học từ — hãy bắt đầu với Trình Luyện Từ Vựng!",
+    "new_user_cta": "Đến Trình Luyện Từ Vựng"
   },
   "review": {
     "page_title": "Xem Lại Bài Làm",
