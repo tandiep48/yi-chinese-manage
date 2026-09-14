@@ -28,6 +28,10 @@ interface AuthContextValue {
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  // Merge server-confirmed fields into the cached user, so a change made on one page
+  // shows everywhere at once — the profile page's avatar upload updating the nav
+  // avatar is the legacy updateNavAvatar(), without the DOM surgery.
+  patchUser: (patch: Partial<AuthUser>) => void;
 }
 
 const AuthCtx = createContext<AuthContextValue>({
@@ -36,6 +40,7 @@ const AuthCtx = createContext<AuthContextValue>({
   login: async () => {},
   register: async () => {},
   logout: async () => {},
+  patchUser: () => {},
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -79,8 +84,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const patchUser = useCallback((patch: Partial<AuthUser>) => {
+    setUser((u) => (u ? { ...u, ...patch } : u));
+  }, []);
+
   return (
-    <AuthCtx.Provider value={{ user, loading, login, register, logout }}>
+    <AuthCtx.Provider value={{ user, loading, login, register, logout, patchUser }}>
       {children}
     </AuthCtx.Provider>
   );

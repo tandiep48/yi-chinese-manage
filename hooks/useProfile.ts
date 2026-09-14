@@ -24,7 +24,7 @@ export interface StatusMessage {
 const EMPTY: StatusMessage = { text: "", type: "" };
 
 export function useProfile() {
-  const { user } = useAuth();
+  const { user, patchUser } = useAuth();
   const { t } = useT();
 
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -75,6 +75,9 @@ export function useProfile() {
       try {
         const data = await uploadAvatar(file);
         setAvatarUrl(data.avatar_url ?? null);
+        // Push it into the shared user so the nav avatar updates without a reload
+        // (legacy updateNavAvatar()).
+        patchUser({ avatar_url: data.avatar_url ?? null, avatar_path: data.avatar_path });
         setAvatarMsg({ text: t("profile.avatar_updated"), type: "success" });
         setTimeout(() => setModalOpen(false), 800);
       } catch (e) {
@@ -86,7 +89,7 @@ export function useProfile() {
         setUploading(false);
       }
     },
-    [t]
+    [t, patchUser]
   );
 
   const submitPassword = useCallback(

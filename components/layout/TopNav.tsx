@@ -65,7 +65,25 @@ export function TopNav() {
       <nav className="flex items-center gap-1">
         {loading ? null : user ? (
           <>
-            <Link href="/profile" className={linkClass("/profile")}>
+            {/* Avatar + name, like site_nav.html's #site-user-link. The image comes
+                from the shared auth user, so an upload on the profile page shows here
+                immediately. */}
+            <Link
+              href="/profile"
+              className={`${linkClass("/profile")} flex items-center gap-2`}
+            >
+              {user.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- GCS-hosted, arbitrary host
+                <img
+                  src={user.avatar_url}
+                  alt=""
+                  className="h-6 w-6 rounded-full object-cover"
+                />
+              ) : (
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/25 text-xs font-bold">
+                  {user.username.slice(0, 1).toUpperCase()}
+                </span>
+              )}
               {user.username}
             </Link>
             <button
