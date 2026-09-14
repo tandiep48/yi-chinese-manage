@@ -4524,19 +4524,6 @@ body {
   cursor: pointer;
   min-width: 150px;
 }
-.profile-page .review-date-wrap { display: flex; align-items: center; gap: 8px; }
-.profile-page .review-date-wrap .filter-select { min-width: 140px; }
-.profile-page .review-date-clear {
-  background: none;
-  border: none;
-  color: var(--text-muted);
-  font-size: 0.82rem;
-  cursor: pointer;
-  padding: 4px 2px;
-  white-space: nowrap;
-  transition: color 0.15s;
-}
-.profile-page .review-date-clear:hover { color: var(--primary); }
 
 /* ── Review panel: pagination ── */
 .profile-page .review-pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; }

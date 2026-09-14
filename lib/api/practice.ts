@@ -89,8 +89,10 @@ export function submitPractice(
   });
 }
 
-// GET /api/practice/history — the profile page's review panel: the current
-// user's past sessions, with backend level/category/date filters + paging.
+// GET /api/practice/history — the profile page's review panel: the current user's
+// past sessions, with backend level/category/sort filters + paging. There is no date
+// filter: the server dropped the parameter, since defaulting it to today hid every
+// older session.
 export function getPracticeHistory(
   filters: ReviewHistoryFilters
 ): Promise<ReviewHistoryResponse> {
@@ -100,7 +102,6 @@ export function getPracticeHistory(
     sort: filters.sort,
     page: String(filters.page),
   });
-  if (filters.date) qs.set("date", filters.date);
   return legacyApiFetch(`/api/practice/history?${qs.toString()}`);
 }
 

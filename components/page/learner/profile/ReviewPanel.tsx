@@ -58,27 +58,6 @@ export function ReviewPanel() {
     <div>
       <div className="review-filters">
         <div className="filter-group">
-          <label className="filter-label" htmlFor="filter-date">
-            {t("review.date")}
-          </label>
-          <div className="review-date-wrap">
-            <input
-              type="date"
-              id="filter-date"
-              className="filter-select"
-              value={rp.filters.date}
-              onChange={(e) => rp.setFilter({ date: e.target.value })}
-            />
-            <button
-              type="button"
-              className="review-date-clear"
-              onClick={rp.clearDate}
-            >
-              {t("review.all_dates")}
-            </button>
-          </div>
-        </div>
-        <div className="filter-group">
           <label className="filter-label" htmlFor="filter-level">
             {t("recommend.level")}
           </label>

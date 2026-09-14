@@ -563,7 +563,6 @@ export interface ReviewHistoryFilters {
   level: string; // "all" | "1".."6"
   category: string; // "all" | "practice" | "exam"
   sort: "recent" | "oldest";
-  date: string; // "" | "YYYY-MM-DD"
   page: number;
 }
 

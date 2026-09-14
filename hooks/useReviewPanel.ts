@@ -12,22 +12,12 @@ import {
 } from "@/lib/api/practice";
 import { UnauthenticatedError } from "@/lib/api/client";
 import { useT } from "@/components/i18n/I18nProvider";
-import { now } from "@/lib/clock";
 import type {
   ReviewHistoryFilters,
   ReviewSessionSummary,
   ReviewSessionDetail,
 } from "@/lib/types/types";
 import type { ResultFilter, SkillFilter } from "@/lib/review/reviewLogic";
-
-// Local YYYY-MM-DD for the default "today" date filter. Uses the lib/clock now()
-// wrapper so the purity linter treats the time read as opaque.
-function todayStr(): string {
-  const d = new Date(now());
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${d.getFullYear()}-${mm}-${dd}`;
-}
 
 export function useReviewPanel() {
   const { t } = useT();
@@ -36,7 +26,6 @@ export function useReviewPanel() {
     level: "all",
     category: "all",
     sort: "recent",
-    date: todayStr(),
     page: 1,
   }));
   const [sessions, setSessions] = useState<ReviewSessionSummary[]>([]);
@@ -88,8 +77,6 @@ export function useReviewPanel() {
     []
   );
 
-  const clearDate = useCallback(() => setFilter({ date: "" }), [setFilter]);
-
   const changePage = useCallback(
     (delta: number) => {
       setFilters((f) => {
@@ -140,7 +127,6 @@ export function useReviewPanel() {
     resultFilter,
     skillFilter,
     setFilter,
-    clearDate,
     changePage,
     openSession,
     backToList,
