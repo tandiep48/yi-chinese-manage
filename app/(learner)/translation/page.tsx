@@ -1,9 +1,9 @@
 "use client";
 
 // app/(learner)/translation/page.tsx
-// The lesson Translation study page — every sentence in the passage's lesson,
-// with the meaning shown and a per-row reveal of the Chinese. Ported from
-// Learning/web_app/templates/translation/translation.html + static/translation/
+// The lesson Translation study page — every sentence in the passage's lesson, drilled
+// one card at a time: the meaning is shown and the learner types the Chinese. Ported
+// from Learning/web_app/templates/translation/translation.html + static/translation/
 // translation.js. Reached from the study sidebar's Translation section.
 
 import { Suspense } from "react";

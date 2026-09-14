@@ -1525,81 +1525,112 @@ body {
   background: #eef6df;
 }
 
-/* Translation */
-.lesson-study .translation-list {
+/* Translation — a single-card drill, one sentence at a time (translation.css) */
+.lesson-study .translation-card-view {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
-.lesson-study .translation-item {
+.lesson-study .translation-card-topbar {
   display: flex;
-  gap: 14px;
-  padding: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 12px;
-  background: var(--ls-card);
+  justify-content: flex-end;
 }
-.lesson-study .translation-item-index {
-  flex: 0 0 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--ls-primary);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.lesson-study .translation-counter {
   font-size: 14px;
   font-weight: 600;
+  color: var(--ls-muted);
 }
-.lesson-study .translation-item-body {
-  flex: 1 1 auto;
-  min-width: 0;
+.lesson-study .translation-progress-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.lesson-study .translation-progress-fill {
+  height: 100%;
+  background: var(--ls-primary);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+.lesson-study .translation-card {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
+  padding: 32px 24px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  background: var(--ls-card);
+  min-height: 220px;
+  justify-content: center;
+  text-align: center;
 }
 .lesson-study .translation-meaning {
-  font-size: 17px;
-  font-weight: 500;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.4;
   color: var(--ls-text);
 }
 .lesson-study .translation-input {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 18px;
+  padding: 12px 14px;
+  font-size: 20px;
+  text-align: center;
   border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 8px;
+  border-radius: 10px;
   box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 .lesson-study .translation-input:focus {
   outline: none;
   border-color: var(--ls-primary);
 }
+/* Turns green the moment the typed Chinese matches the answer. */
+.lesson-study .translation-input.success-highlight {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
 .lesson-study .translation-answer {
-  font-size: 20px;
+  font-size: 26px;
   color: #16a34a;
-  font-weight: 600;
+  font-weight: 700;
 }
 .lesson-study .translation-reveal-btn {
-  align-self: flex-start;
-  padding: 6px 14px;
-  font-size: 14px;
+  align-self: center;
+  padding: 8px 18px;
+  font-size: 15px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  background: transparent;
-  color: var(--ls-muted);
+  background: var(--ls-primary);
+  color: #fff;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s;
+  transition: opacity 0.2s;
 }
 .lesson-study .translation-reveal-btn:hover {
-  border-color: var(--ls-primary);
-  color: var(--ls-primary);
+  opacity: 0.9;
+}
+.lesson-study .translation-nav-row {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+.lesson-study .translation-nav-btn {
+  flex-direction: row;
+  white-space: nowrap;
+}
+.lesson-study .translation-nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 @media (max-width: 600px) {
   .lesson-study .lesson-study-topbar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .lesson-study .translation-card {
+    padding: 24px 16px;
   }
 }
 
