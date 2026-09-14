@@ -1,10 +1,13 @@
 "use client";
 
 // components/page/learner/competition/SetupScreen.tsx
-// The Learn Together setup screen: the create-room form (mode, skill types, HSK ->
+// The Learn Together setup screen: the create-room form (mode, skill types, source ->
 // lesson -> part multi-selects, capacity, time limit) beside the join-by-code panel.
 // Ported from the #screen-setup section of
 // Learning/web_app/templates/competition/learn_together.html.
+//
+// The source picker is mode-dependent and mutually exclusive: book rooms pick from the
+// host's saved books, every other mode picks HSK levels.
 
 import { useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -49,12 +52,27 @@ export function SetupScreen({
               {t("competition.mode")}
               <select
                 value={setup.mode}
-                onChange={(e) => setup.setMode(e.target.value as CompetitionCategory)}
+                onChange={(e) => void setup.setMode(e.target.value as CompetitionCategory)}
               >
                 <option value="vocab">{t("competition.mode_vocab")}</option>
                 <option value="lesson">{t("competition.mode_lesson")}</option>
+                <option value="book">{t("competition.mode_book")}</option>
               </select>
             </label>
+
+            {setup.isBook && (
+              <label>
+                {t("competition.book")}
+                <MultiSelect
+                  options={setup.bookOptions}
+                  values={setup.books}
+                  onChange={(v) => void setup.setBooks(v)}
+                  placeholder={t("competition.select_book")}
+                  selectAllLabel={t("vocab.select_all")}
+                  renderCount={countLabel}
+                />
+              </label>
+            )}
 
             <label>
               {t("competition.type")}
@@ -68,17 +86,19 @@ export function SetupScreen({
               />
             </label>
 
-            <label>
-              HSK
-              <MultiSelect
-                options={levelOptions}
-                values={setup.levels}
-                onChange={(v) => void setup.setLevels(v)}
-                placeholder={t("vocab.select_hsk")}
-                selectAllLabel={t("vocab.select_all")}
-                renderCount={countLabel}
-              />
-            </label>
+            {!setup.isBook && (
+              <label>
+                HSK
+                <MultiSelect
+                  options={levelOptions}
+                  values={setup.levels}
+                  onChange={(v) => void setup.setLevels(v)}
+                  placeholder={t("vocab.select_hsk")}
+                  selectAllLabel={t("vocab.select_all")}
+                  renderCount={countLabel}
+                />
+              </label>
+            )}
 
             <label>
               {t("picker.lesson_prefix")}
