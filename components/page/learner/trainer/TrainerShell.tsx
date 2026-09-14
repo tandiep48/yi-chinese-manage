@@ -25,6 +25,18 @@ export function useTrainerActionSlot(): HTMLElement | null {
   return useContext(ActionSlotContext);
 }
 
+// Publishes an action slot for callers that host the activities outside this shell —
+// Learn Together mounts them in its own action bar (the legacy mountAction hook).
+export function TrainerActionSlotProvider({
+  slot,
+  children,
+}: {
+  slot: HTMLElement | null;
+  children: ReactNode;
+}) {
+  return <ActionSlotContext.Provider value={slot}>{children}</ActionSlotContext.Provider>;
+}
+
 export type TrainerScreen = "loading" | "training" | "complete";
 
 interface TrainerShellProps {

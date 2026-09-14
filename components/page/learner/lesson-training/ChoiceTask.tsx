@@ -19,13 +19,21 @@ export function ChoiceTask({
   task,
   onResolved,
   onAdvance,
+  mcDelayMs,
 }: {
   task: LessonTask;
   onResolved: Parameters<typeof useLessonTaskFlow>[0]["onResolved"];
   onAdvance: () => void;
+  // Learn Together shortens the pause after a correct answer; see useLessonTaskFlow.
+  mcDelayMs?: number;
 }) {
   const { t } = useT();
-  const { answered, playAudio, commit, buttonPortal } = useLessonTaskFlow({ task, onResolved, onAdvance });
+  const { answered, playAudio, commit, buttonPortal } = useLessonTaskFlow({
+    task,
+    onResolved,
+    onAdvance,
+    mcDelayMs,
+  });
   const [selected, setSelected] = useState<string | null>(null);
   const isListening = task.type === "listening";
   const options = task.options ?? [];

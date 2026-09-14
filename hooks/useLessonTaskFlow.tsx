@@ -33,6 +33,7 @@ export function useLessonTaskFlow({
   task,
   onResolved,
   onAdvance,
+  mcDelayMs = MC_CORRECT_DELAY_MS,
 }: {
   task: LessonTask;
   onResolved: (
@@ -43,6 +44,10 @@ export function useLessonTaskFlow({
     responseMs: number
   ) => void;
   onAdvance: () => void;
+  // How long a correct multiple-choice answer stays on screen. The solo trainer holds
+  // it for lesson.js's 3s; Learn Together moves on after 800ms so the room keeps pace
+  // (lesson_trainer_core.js).
+  mcDelayMs?: number;
 }): LessonTaskFlow {
   const { t } = useT();
   const slot = useTrainerActionSlot();
@@ -114,7 +119,7 @@ export function useLessonTaskFlow({
       if (task.type === "typing" || task.type === "reorder") {
         void playAudioToEnd().then(onAdvance);
       } else {
-        window.setTimeout(onAdvance, MC_CORRECT_DELAY_MS);
+        window.setTimeout(onAdvance, mcDelayMs);
       }
     }
     // wrong / skipped: the Next button (below) advances when the learner is ready.
