@@ -62,6 +62,7 @@ export function SectionScreen({
 
   const vocab = useCompetitionTrainer({
     room: isLesson ? null : room,
+    session: isLesson ? null : session,
     onAnswer: onVocabAnswer,
     onFinish,
   });

@@ -9,9 +9,11 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useCompetitionTrainer } from "@/hooks/useCompetitionTrainer";
 import * as trainerApi from "@/lib/api/vocabTrainer";
-import type { CompetitionRoom, VocabRow } from "@/lib/types/types";
+import * as competitionApi from "@/lib/api/competition";
+import type { CompetitionRoom, CompetitionSession, VocabRow } from "@/lib/types/types";
 
 vi.mock("@/lib/api/vocabTrainer");
+vi.mock("@/lib/api/competition");
 vi.mock("@/components/i18n/I18nProvider", () => ({
   useT: () => ({ t: (key: string) => key, lang: "en" }),
 }));
@@ -54,7 +56,7 @@ describe("useCompetitionTrainer", () => {
   it("resolves the room's words and starts playing", async () => {
     vi.mocked(trainerApi.resolveTrainerWords).mockResolvedValue(WORDS);
     const { result } = renderHook(() =>
-      useCompetitionTrainer({ room: room(), onAnswer: vi.fn(), onFinish: vi.fn() })
+      useCompetitionTrainer({ room: room(), session: null, onAnswer: vi.fn(), onFinish: vi.fn() })
     );
 
     expect(result.current.status).toBe("loading");
@@ -68,7 +70,7 @@ describe("useCompetitionTrainer", () => {
     vi.mocked(trainerApi.resolveTrainerWords).mockResolvedValue(WORDS);
     const { result, rerender } = renderHook(
       ({ r }: { r: CompetitionRoom }) =>
-        useCompetitionTrainer({ room: r, onAnswer: vi.fn(), onFinish: vi.fn() }),
+        useCompetitionTrainer({ room: r, session: null, onAnswer: vi.fn(), onFinish: vi.fn() }),
       { initialProps: { r: room() } }
     );
     await waitFor(() => expect(result.current.status).toBe("playing"));
@@ -86,7 +88,7 @@ describe("useCompetitionTrainer", () => {
     vi.mocked(trainerApi.resolveTrainerWords).mockResolvedValue(WORDS);
     const onAnswer = vi.fn();
     const { result } = renderHook(() =>
-      useCompetitionTrainer({ room: room(), onAnswer, onFinish: vi.fn() })
+      useCompetitionTrainer({ room: room(), session: null, onAnswer, onFinish: vi.fn() })
     );
     await waitFor(() => expect(result.current.status).toBe("playing"));
 
@@ -99,7 +101,7 @@ describe("useCompetitionTrainer", () => {
     vi.mocked(trainerApi.resolveTrainerWords).mockResolvedValue(WORDS);
     const onFinish = vi.fn();
     const { result } = renderHook(() =>
-      useCompetitionTrainer({ room: room(), onAnswer: vi.fn(), onFinish })
+      useCompetitionTrainer({ room: room(), session: null, onAnswer: vi.fn(), onFinish })
     );
     await waitFor(() => expect(result.current.status).toBe("playing"));
 
@@ -108,10 +110,44 @@ describe("useCompetitionTrainer", () => {
     expect(onFinish).toHaveBeenCalledTimes(1);
   });
 
+  // A book room's pool is frozen server-side at session start, so every player must
+  // fetch it rather than resolve the passages locally — otherwise the lists diverge.
+  it("resolves a book room's words from the session endpoint, not the passages", async () => {
+    vi.mocked(competitionApi.getSessionBookWords).mockResolvedValue(WORDS);
+    const session = { id: 42 } as CompetitionSession;
+    const { result } = renderHook(() =>
+      useCompetitionTrainer({
+        room: room({ category: "book", passage_ids: ["GCS_1_2"] }),
+        session,
+        onAnswer: vi.fn(),
+        onFinish: vi.fn(),
+      })
+    );
+
+    await waitFor(() => expect(result.current.status).toBe("playing"));
+    expect(competitionApi.getSessionBookWords).toHaveBeenCalledWith(42);
+    expect(trainerApi.resolveTrainerWords).not.toHaveBeenCalled();
+  });
+
+  it("waits for the session before fetching a book room's words", async () => {
+    vi.mocked(competitionApi.getSessionBookWords).mockResolvedValue(WORDS);
+    const { result } = renderHook(() =>
+      useCompetitionTrainer({
+        room: room({ category: "book", passage_ids: ["GCS_1_2"] }),
+        session: null,
+        onAnswer: vi.fn(),
+        onFinish: vi.fn(),
+      })
+    );
+
+    expect(result.current.status).toBe("loading");
+    expect(competitionApi.getSessionBookWords).not.toHaveBeenCalled();
+  });
+
   it("shows the empty state when the room's parts have no vocabulary", async () => {
     vi.mocked(trainerApi.resolveTrainerWords).mockResolvedValue([]);
     const { result } = renderHook(() =>
-      useCompetitionTrainer({ room: room(), onAnswer: vi.fn(), onFinish: vi.fn() })
+      useCompetitionTrainer({ room: room(), session: null, onAnswer: vi.fn(), onFinish: vi.fn() })
     );
     await waitFor(() => expect(result.current.status).toBe("empty"));
   });

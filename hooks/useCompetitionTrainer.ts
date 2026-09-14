@@ -2,26 +2,34 @@
 
 // hooks/useCompetitionTrainer.ts
 // The in-room vocab trainer for Learn Together, porting startTrainer() /
-// resolveRoomWords() / emitVocabAnswer() from
+// resolveRoomWords() / resolveBookWords() / emitVocabAnswer() from
 // Learning/web_app/static/competition/competition.js. It reuses the solo trainer's
 // activity builder and activity components; only the scoring destination differs —
 // every answer goes straight out over the socket instead of being batched to REST.
+//
+// Where the words come from depends on the room: a vocab room resolves the public
+// passage vocabulary on the client, while a book room fetches the pool the server
+// froze at session start from the participant set — every player must call that
+// endpoint rather than compute locally, so all players get an identical list.
 
 import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { resolveTrainerWords } from "@/lib/api/vocabTrainer";
+import { getSessionBookWords } from "@/lib/api/competition";
 import { vocabActivityTypes } from "@/lib/competition/roomLogic";
 import { buildActivities, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
-import type { CompetitionRoom } from "@/lib/types/types";
+import type { CompetitionRoom, CompetitionSession } from "@/lib/types/types";
 
 export type CompetitionTrainerStatus = "loading" | "playing" | "empty";
 
 export function useCompetitionTrainer({
   room,
+  session,
   onAnswer,
   onFinish,
 }: {
   room: CompetitionRoom | null;
+  session: CompetitionSession | null;
   onAnswer: (
     word: string,
     activityType: string,
@@ -42,12 +50,20 @@ export function useCompetitionTrainer({
   // rebuild the activities mid-game.
   const passageKey = (room?.passage_ids ?? []).join(",");
   const activityType = room?.activity_type;
+  const isBook = room?.category === "book";
+  const sessionId = session?.id ?? null;
 
   useEffect(() => {
     let cancelled = false;
     const passageIds = passageKey ? passageKey.split(",") : [];
     if (!passageIds.length) return;
-    resolveTrainerWords({ passage_ids: passageIds }).then((rows) => {
+    if (isBook && !sessionId) return;
+
+    const load = isBook
+      ? getSessionBookWords(sessionId as number)
+      : resolveTrainerWords({ passage_ids: passageIds });
+
+    load.then((rows) => {
       if (cancelled) return;
       if (!rows.length) {
         setNoWords(true);
@@ -59,7 +75,7 @@ export function useCompetitionTrainer({
     return () => {
       cancelled = true;
     };
-  }, [passageKey, activityType]);
+  }, [passageKey, activityType, isBook, sessionId]);
 
   // Derived rather than stored, so the effect never sets state synchronously.
   const status: CompetitionTrainerStatus =
