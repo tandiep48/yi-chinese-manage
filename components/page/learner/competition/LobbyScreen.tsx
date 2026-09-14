@@ -70,7 +70,7 @@ export function LobbyScreen({
           <h2>{t("competition.room_setup")}</h2>
           <div className="competition-summary">
             <div>
-              <strong>{summary.hskLabel}</strong>
+              <strong>{summary.sourceLabel || t(summary.modeKey)}</strong>
             </div>
             <div>{`${t(summary.modeKey)} · ${typeLabel}`}</div>
             <div>
@@ -79,11 +79,9 @@ export function LobbyScreen({
                 parts: summary.partCount,
               })}
             </div>
-            <div>
-              {summary.isLesson
-                ? t("competition.tasks_source_count", { count: summary.count })
-                : t("competition.words_count", { count: summary.count })}
-            </div>
+            {/* A book room's pool is only known once the session starts, so it shows a
+                note where the other modes show their count. */}
+            <div>{t(summary.countKey, { count: summary.count })}</div>
             <div>
               {t("competition.users_count", {
                 count: summary.memberCount,

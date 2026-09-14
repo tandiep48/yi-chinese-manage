@@ -572,7 +572,9 @@ export interface ReviewHistoryFilters {
 // (POST /api/competition/rooms) and everything after that flows over socket.io
 // (service/competition_socket.py).
 
-export type CompetitionCategory = "vocab" | "lesson";
+// A "book" room's word pool is the deduped union of every participant's saved
+// vocabulary inside the picked book parts, resolved server-side at session start.
+export type CompetitionCategory = "vocab" | "lesson" | "book";
 
 export interface CompetitionMember {
   user_id: number;

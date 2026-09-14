@@ -102,6 +102,37 @@ describe("lesson / part options", () => {
   it("skips lesson keys with no loaded passages", () => {
     expect(buildPartOptions(["H9_9"], {}, LABELS)).toEqual([]);
   });
+
+  // Book passages ("GCS_1_2") parse to level 0, so their group header is the book code
+  // rather than an HSK label — the same cascade, a different source.
+  describe("book sources", () => {
+    const byBook = {
+      GCS: [passage("GCS_1_1"), passage("GCS_1_2")],
+      AML: [passage("AML_2_1")],
+    };
+
+    it("groups book passages by lesson key", () => {
+      const grouped = groupPassagesByLesson(["GCS", "AML"], byBook);
+      expect(Object.keys(grouped).sort()).toEqual(["AML_2", "GCS_1"]);
+      expect(grouped["GCS_1"]).toHaveLength(2);
+    });
+
+    // Book lesson keys all parse to level 0, so they order by lesson number.
+    it("heads lesson options with the book code", () => {
+      const grouped = groupPassagesByLesson(["GCS", "AML"], byBook);
+      expect(buildLessonOptions(grouped, 2, LABELS)).toEqual([
+        { value: "GCS_1", label: "Lesson 1", group: "GCS" },
+        { value: "AML_2", label: "Lesson 2", group: "AML" },
+      ]);
+    });
+
+    it("heads part options with the book code and lesson", () => {
+      const grouped = groupPassagesByLesson(["GCS", "AML"], byBook);
+      expect(
+        buildPartOptions(["AML_2", "GCS_1"], grouped, LABELS).map((o) => o.group)
+      ).toEqual(["GCS · Lesson 1", "GCS · Lesson 1", "AML · Lesson 2"]);
+    });
+  });
 });
 
 describe("activity types", () => {
@@ -181,12 +212,13 @@ describe("roomSummary", () => {
 
   it("summarizes levels, lessons, parts and members", () => {
     expect(roomSummary(room)).toMatchObject({
-      hskLabel: "HSK 1, HSK 2",
+      sourceLabel: "HSK 1, HSK 2",
       lessonCount: 2,
       partCount: 3,
       count: 12,
       memberCount: 1,
-      isLesson: false,
+      modeKey: "competition.mode_vocab",
+      countKey: "competition.words_count",
       allTypes: false,
       typeKeys: ["competition.type_typing", "competition.type_listening"],
     });
@@ -200,7 +232,36 @@ describe("roomSummary", () => {
   });
 
   it("falls back to the room's own level when the ids carry none", () => {
-    expect(roomSummary({ ...room, passage_ids: [], level: 4 }).hskLabel).toBe("HSK 4");
+    expect(roomSummary({ ...room, passage_ids: [], level: 4 }).sourceLabel).toBe("HSK 4");
+  });
+
+  it("counts tasks for a lesson room", () => {
+    expect(roomSummary({ ...room, category: "lesson" })).toMatchObject({
+      modeKey: "competition.mode_lesson",
+      countKey: "competition.tasks_source_count",
+    });
+  });
+
+  // A book room is sourced from book codes, and its pool size is unknown until the
+  // session starts — so the count line becomes a note.
+  it("labels a book room by its book codes and notes the pool", () => {
+    expect(
+      roomSummary({
+        ...room,
+        category: "book",
+        passage_ids: ["GCS_1_1", "GCS_1_2", "AML_2_1"],
+      })
+    ).toMatchObject({
+      sourceLabel: "GCS, AML",
+      modeKey: "competition.mode_book",
+      countKey: "competition.book_pool_note",
+      lessonCount: 2,
+      partCount: 3,
+    });
+  });
+
+  it("leaves a book room's source label empty when it has no parts", () => {
+    expect(roomSummary({ ...room, category: "book", passage_ids: [] }).sourceLabel).toBe("");
   });
 });
 

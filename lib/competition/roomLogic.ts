@@ -18,7 +18,11 @@ export interface PassageInfo {
   lessonKey: string;
 }
 
-export type PassageByLesson = Record<string, (PickerPassage & PassageInfo)[]>;
+// The picker only needs a passage's id — the HSK list endpoint returns richer rows
+// and the book endpoint returns ids alone, so both feed the same cascade.
+export type SourcePassage = Pick<PickerPassage, "passage_id">;
+
+export type PassageByLesson = Record<string, PassageInfo[]>;
 
 export interface OptionLabels {
   lessonPrefix: string; // t("picker.lesson_prefix")
@@ -28,12 +32,16 @@ export interface OptionLabels {
 
 // The Type selector offers a different skill set per mode: the vocab competition
 // picks among typing/listening/reading, the lesson trainer among its four task types.
+const VOCAB_TYPE_SET = [
+  { value: "typing", key: "competition.type_typing" },
+  { value: "listening", key: "competition.type_listening" },
+  { value: "reading", key: "competition.type_reading" },
+];
+
 export const TYPE_OPTIONS: Record<CompetitionCategory, { value: string; key: string }[]> = {
-  vocab: [
-    { value: "typing", key: "competition.type_typing" },
-    { value: "listening", key: "competition.type_listening" },
-    { value: "reading", key: "competition.type_reading" },
-  ],
+  vocab: VOCAB_TYPE_SET,
+  // Book rooms play the vocab trainer, so they share the vocab type set.
+  book: VOCAB_TYPE_SET,
   lesson: [
     { value: "listening", key: "competition.type_listening" },
     { value: "meaning", key: "competition.type_meaning" },
@@ -50,6 +58,12 @@ const VOCAB_TYPE_TO_ACTIVITY: Record<string, "typing" | "listen" | "reading"> = 
 };
 
 export const HSK_LEVELS = [1, 2, 3, 4, 5, 6];
+
+// Group header for a lesson/part option: "HSK 1" for HSK passages, or the book code
+// for book passages (whose first segment is the code, so the parsed level is 0).
+export function sourceGroupLabel(info: PassageInfo): string {
+  return info.level ? `HSK ${info.level}` : info.hsk;
+}
 
 // Real passage ids look like "H1_10_2" (the level prefix is "H1", not "HSK1"), so the
 // level is read by stripping non-digits — which also accepts the "HSK1_..." form.
@@ -83,30 +97,33 @@ export function lessonKeySort(a: string, b: string): number {
   return la - lb || numericSort(pa[1], pb[1]);
 }
 
-// Rebuild the lesson -> passages map from the selected levels only, so deselecting a
-// level drops its lessons while the others stay (a host can mix parts across levels).
-export function groupPassagesByLesson(
-  levels: number[],
-  passagesByLevel: Record<number, PickerPassage[]>
+// Rebuild the lesson -> passages map from the selected sources only, so deselecting a
+// level (or book) drops its lessons while the others stay — a host can mix parts
+// across levels. Sources are HSK level numbers for vocab/lesson rooms and book codes
+// for book rooms; both index their own fetch cache.
+export function groupPassagesByLesson<K extends string | number>(
+  sources: K[],
+  passagesBySource: Record<K, SourcePassage[]>
 ): PassageByLesson {
   const grouped: PassageByLesson = {};
-  levels.forEach((n) => {
-    (passagesByLevel[n] || []).forEach((passage) => {
+  sources.forEach((key) => {
+    (passagesBySource[key] || []).forEach((passage) => {
       const info = parsePassageId(passage.passage_id);
       if (!grouped[info.lessonKey]) grouped[info.lessonKey] = [];
-      grouped[info.lessonKey].push({ ...passage, ...info });
+      grouped[info.lessonKey].push(info);
     });
   });
   return grouped;
 }
 
-// Lesson options, grouped under "HSK n" headers when more than one level is selected.
+// Lesson options, grouped under their source header ("HSK n", or the book code) when
+// more than one source is selected.
 export function buildLessonOptions(
   grouped: PassageByLesson,
-  levelCount: number,
+  sourceCount: number,
   labels: OptionLabels
 ): MultiSelectOption[] {
-  const showGroups = levelCount > 1;
+  const showGroups = sourceCount > 1;
   return Object.keys(grouped)
     .sort(lessonKeySort)
     .map((key) => {
@@ -114,7 +131,7 @@ export function buildLessonOptions(
       return {
         value: key,
         label: info.lesson === "Other" ? labels.other : `${labels.lessonPrefix} ${info.lesson}`,
-        group: showGroups ? `HSK ${info.level}` : null,
+        group: showGroups ? sourceGroupLabel(info) : null,
       };
     });
 }
@@ -135,7 +152,7 @@ export function buildPartOptions(
     const groupLabel =
       info.lesson === "Other"
         ? labels.other
-        : `HSK ${info.level} · ${labels.lessonPrefix} ${info.lesson}`;
+        : `${sourceGroupLabel(info)} · ${labels.lessonPrefix} ${info.lesson}`;
     [...passages]
       .sort((a, b) => Number(a.part) - Number(b.part))
       .forEach((passage) => {
@@ -203,13 +220,16 @@ export function collectRoomSettings(form: RoomFormValues) {
 // The room summary's translatable pieces: the component turns `typeKeys` into a
 // "Vocabulary · Typing, Listening" line and the counts into their i18n strings.
 export interface RoomSummary {
-  hskLabel: string;
+  // "HSK 1, HSK 2" for level-sourced rooms, or the book code(s) for a book room.
+  sourceLabel: string;
   modeKey: string;
   typeKeys: string[];
   allTypes: boolean;
   lessonCount: number;
   partCount: number;
-  isLesson: boolean;
+  // The count line: lesson rooms count tasks, vocab rooms count words, and a book
+  // room's pool is unknown until the session starts, so it shows a note instead.
+  countKey: string;
   count: number;
   memberCount: number;
   maxUsers: number;
@@ -222,16 +242,26 @@ export function roomSummary(room: CompetitionRoom): RoomSummary {
   const hskLevels = Array.from(new Set(infos.map((i) => i.level).filter(Boolean))).sort(
     (a, b) => a - b
   );
-  const mode: CompetitionCategory = room.category === "lesson" ? "lesson" : "vocab";
+  const mode: CompetitionCategory = TYPE_OPTIONS[room.category] ? room.category : "vocab";
+  const isBook = mode === "book";
   const activityType = room.activity_type || "all";
   const byValue = Object.fromEntries(TYPE_OPTIONS[mode].map((o) => [o.value, o.key]));
   const allTypes = activityType === "all";
+  // A book passage_id's first segment is the book code, parsed into `hsk`.
+  const bookCodes = Array.from(new Set(infos.map((i) => i.hsk).filter(Boolean)));
 
   return {
-    hskLabel: hskLevels.length
-      ? hskLevels.map((n) => `HSK ${n}`).join(", ")
-      : `HSK ${room.level}`,
-    modeKey: mode === "lesson" ? "competition.mode_lesson" : "competition.mode_vocab",
+    sourceLabel: isBook
+      ? bookCodes.join(", ") || "" // falls back to the mode label in the component
+      : hskLevels.length
+        ? hskLevels.map((n) => `HSK ${n}`).join(", ")
+        : `HSK ${room.level}`,
+    modeKey:
+      mode === "lesson"
+        ? "competition.mode_lesson"
+        : isBook
+          ? "competition.mode_book"
+          : "competition.mode_vocab",
     typeKeys: allTypes
       ? []
       : String(activityType)
@@ -240,7 +270,12 @@ export function roomSummary(room: CompetitionRoom): RoomSummary {
     allTypes,
     lessonCount: new Set(infos.map((i) => i.lessonKey)).size,
     partCount: passageIds.length,
-    isLesson: mode === "lesson",
+    countKey:
+      mode === "lesson"
+        ? "competition.tasks_source_count"
+        : isBook
+          ? "competition.book_pool_note"
+          : "competition.words_count",
     count: room.word_count || 0,
     memberCount: room.members?.length || 0,
     maxUsers: room.max_users,
