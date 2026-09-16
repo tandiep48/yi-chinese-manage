@@ -50,10 +50,11 @@
 @import "../components/page/learner/trainer/trainer-shell.css";
 @import "../components/page/learner/trainer/vocab-trainer.css";
 
-/* UNSCOPED globals: .ttp-* (train-type picker) and .success-popup* / .sp-*
-   (end-of-drill popup). Both are rendered inside .trainer-shell but are not
-   scoped to it. Phase 2 of the split scopes them and this file goes away. */
-@import "./styles/unscoped.css";
+/* The two trainer overlays: the train-type picker shown before a drill starts
+   and the popup shown when one ends. Neither renders inside .trainer-shell --
+   the picker is opened from four different pages and the popup is a sibling of
+   the shell -- so each is anchored to its own overlay root instead. */
+@import "../components/page/learner/trainer/overlays.css";
 
 /* .lesson-trainer, plus two deliberate late overrides it carries: the
    .trainer-shell skip button and the wider .lesson-study lesson-card. Both

@@ -1,9 +1,3 @@
-@keyframes btShake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
-}
-
 /* ─────────────────────────────────────────────
    TRAIN-TYPE PICKER overlay (.ttp-overlay).
    Ported from static/shared/train_type_picker.css.
