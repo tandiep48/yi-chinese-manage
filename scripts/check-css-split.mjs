@@ -1,11 +1,16 @@
 // Asserts that the per-scope CSS files still reproduce the pre-split
-// app/globals.css byte for byte.
+// app/globals.css, allowing only the scope prefixes listed in SCOPING below.
 //
 // app/globals.css was a single 5709-line file until it was split into one file
 // per page scope. To keep the cascade provably unchanged, globals.css is now an
 // ordered @import manifest and each imported file is a verbatim slice of the
 // original: line 1 (the Tailwind import) plus the files in manifest order must
-// equal the original exactly.
+// equal the original.
+//
+// A few selectors were later anchored to the root they render under, so that
+// generic names like .sp-title cannot leak. Each such rewrite is recorded in
+// SCOPING and applied to the baseline before comparing, which keeps this an
+// exact check: it still fails on any change that is not one of these.
 //
 // Run with: node scripts/check-css-split.mjs
 // The baseline is read from git, so this keeps working as the files move.
@@ -20,6 +25,31 @@ const GLOBALS = join(ROOT, "app", "globals.css");
 
 // The commit in which globals.css was still the single pre-split file.
 const BASELINE_REV = process.env.CSS_BASELINE_REV ?? "1eecc32";
+
+// Selectors deliberately anchored to the root they render under, applied to the
+// baseline before comparing. Add an entry here when you scope another rule --
+// never to silence an unexpected diff.
+const SCOPING = [
+  [".pinyin-tooltip {", ".pinyin-guide .pinyin-tooltip {"],
+  [".pinyin-popover {", ".pinyin-guide .pinyin-popover {"],
+  [".pinyin-popover .tone-button {", ".pinyin-guide .pinyin-popover .tone-button {"],
+  [".pinyin-popover .tone-button:hover {", ".pinyin-guide .pinyin-popover .tone-button:hover {"],
+];
+
+function applyScoping(text) {
+  for (const [from, to] of SCOPING) {
+    // Anchor at line start so ".pinyin-popover {" does not also rewrite the
+    // longer ".pinyin-popover .tone-button {" rules.
+    const pattern = new RegExp("^" + from.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gm");
+    const before = text;
+    text = text.replace(pattern, to);
+    if (text === before) {
+      console.error(`SCOPING entry never matched the baseline: ${from}`);
+      process.exit(2);
+    }
+  }
+  return text;
+}
 
 function baseline() {
   try {
@@ -62,12 +92,12 @@ const normalize = (buf) => Buffer.from(buf.toString("utf8").replace(/\r\n/g, "\n
 // Line 1 of the original is the Tailwind import, which stays in the manifest.
 const firstLine = Buffer.from('@import "tailwindcss";\n', "utf8");
 const rebuilt = Buffer.concat([firstLine, ...parts.map(normalize)]);
-const original = normalize(baseline());
+const original = Buffer.from(applyScoping(normalize(baseline()).toString("utf8")), "utf8");
 
 if (rebuilt.equals(original)) {
   console.log(
     `OK: ${scoped.length} files reproduce app/globals.css@${BASELINE_REV} ` +
-      `exactly (${original.length} bytes).`
+      `exactly (${original.length} bytes, ${SCOPING.length} declared scope rewrites).`
   );
   process.exit(0);
 }

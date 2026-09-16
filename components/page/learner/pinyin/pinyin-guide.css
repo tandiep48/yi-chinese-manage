@@ -94,7 +94,7 @@
 .pinyin-guide .btn-pinyin:hover { background-color: #e9ecef; }
 
 /* ── Hover tooltip (basic) ── */
-.pinyin-tooltip {
+.pinyin-guide .pinyin-tooltip {
   position: absolute;
   background: #333;
   color: #fff;
@@ -107,7 +107,7 @@
 }
 
 /* ── Tone popover (advanced) ── */
-.pinyin-popover {
+.pinyin-guide .pinyin-popover {
   position: fixed;
   z-index: 1050;
   display: flex;
@@ -118,7 +118,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 0.25rem;
 }
-.pinyin-popover .tone-button {
+.pinyin-guide .pinyin-popover .tone-button {
   cursor: pointer;
   padding: 8px 16px;
   font-size: 1rem;
@@ -128,7 +128,7 @@
   border-radius: 4px;
   color: #111;
 }
-.pinyin-popover .tone-button:hover { background-color: #f0f0f0; }
+.pinyin-guide .pinyin-popover .tone-button:hover { background-color: #f0f0f0; }
 
 @media (max-width: 700px) {
   .pinyin-guide .pinyin-basic-table th,
