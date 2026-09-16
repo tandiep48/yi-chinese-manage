@@ -1,0 +1,1027 @@
+
+/* ============================================================
+   Lesson-part study page (/lesson) — Word Summary / Lesson Summary.
+   Ported to match the Jinja "ui2-lesson" design exactly (shared/lesson_ui2.css
+   + reading.css + vocab_learning.css). Scoped under .lesson-study so the teal
+   study palette never leaks into the rest of the app.
+   ============================================================ */
+.lesson-study {
+  --ls-primary: #007a61;
+  --ls-primary-hover: #00634f;
+  --ls-primary-light: #e0efe9;
+  --ls-secondary: #cbe2d4;
+  --ls-card: #ffffff;
+  --ls-text: #111827;
+  --ls-muted: #4b5563;
+  --ls-preview: #cbe2d4;
+  --ls-sidebar-width: 300px;
+
+  /* Full-width layout like the legacy .page-layout (width:100%): the sidebar + main
+     span the whole viewport instead of being boxed into a centered max-width, so the
+     Word/Lesson summaries use the full page width. */
+  width: 100%;
+  padding: 24px 20px;
+  background: #ffffff;
+  color: var(--ls-text);
+}
+.lesson-study .app-container {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* ── Study layout shell: sidebar + main content ──────────────────────────── */
+.lesson-study .lesson-study-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 24px;
+  position: relative;
+}
+.lesson-study .lesson-study-main {
+  flex: 1;
+  min-width: 0;
+  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* When collapsed, clear space at top-left for the floating toggle button. */
+.lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
+  padding-left: 52px;
+}
+
+/* ── Lesson-study sidebar (ported from static/shared/sidebar.css) ─────────── */
+.lesson-study .lesson-sidebar {
+  flex-shrink: 0;
+  width: var(--ls-sidebar-width);
+  max-width: var(--ls-sidebar-width);
+  align-self: stretch;
+  position: sticky;
+  top: 16px;
+  max-height: calc(100vh - 32px);
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+              margin 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 1;
+}
+.lesson-study .lesson-sidebar.collapsed {
+  max-width: 0;
+  width: 0;
+  opacity: 0;
+  border-color: transparent;
+  margin-right: -24px;
+}
+
+/* Floating toggle shown while the sidebar is collapsed */
+.lesson-study .lesson-sidebar-toggle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ls-primary);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+.lesson-study .lesson-sidebar-toggle:hover {
+  background: #f1f5f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Header */
+.lesson-study .lesson-sidebar-header {
+  padding: 1.25rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+.lesson-study .lesson-sidebar-header h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ls-text);
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lesson-study .lesson-sidebar-badge {
+  background: var(--ls-secondary);
+  color: var(--ls-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.lesson-study .lesson-sidebar-back,
+.lesson-study .lesson-sidebar-close {
+  background: none;
+  border: 0;
+  font-size: 1.05rem;
+  color: var(--ls-muted);
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s, color 0.2s;
+}
+.lesson-study .lesson-sidebar-back:hover {
+  background: #f8fafc;
+  color: var(--ls-primary);
+}
+.lesson-study .lesson-sidebar-close:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: #ef4444;
+}
+
+/* Accordion */
+.lesson-study .lesson-sidebar-accordion {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.lesson-study .acc-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.lesson-study .acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: 0;
+  text-align: left;
+}
+.lesson-study .acc-item.active .acc-header {
+  background: #f1f5f9;
+}
+.lesson-study .acc-item.disabled .acc-header {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.lesson-study .acc-icon {
+  font-size: 1.1rem;
+  display: flex;
+  color: var(--ls-primary);
+}
+.lesson-study .acc-title {
+  flex: 1;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ls-text);
+}
+.lesson-study .acc-arrow {
+  color: var(--ls-muted);
+}
+.lesson-study .acc-body {
+  background: #fafbfc;
+}
+.lesson-study .sidebar-nav {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Part / step cards */
+.lesson-study .sidebar-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.lesson-study .sidebar-step:hover {
+  border-color: var(--ls-secondary);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+.lesson-study .sidebar-step[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.lesson-study .sidebar-step[aria-disabled="true"]:hover {
+  border-color: rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+.lesson-study .step-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f7fbf9;
+  color: var(--ls-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.lesson-study .step-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.lesson-study .step-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--ls-text);
+}
+.lesson-study .sidebar-step.active {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 12px rgba(0, 122, 97, 0.08);
+}
+.lesson-study .sidebar-step.active .step-icon {
+  background: var(--ls-primary);
+  color: #ffffff;
+}
+.lesson-study .sidebar-step.active .step-label {
+  color: var(--ls-primary);
+}
+
+/* Mini progress bars */
+.lesson-study .sidebar-part-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  width: 100%;
+}
+.lesson-study .mini-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lesson-study .mini-stat .label {
+  width: 58px;
+  flex-shrink: 0;
+  font-size: 0.6rem;
+  white-space: nowrap;
+  color: var(--ls-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.lesson-study .mini-progress-bg {
+  flex: 1;
+  height: 4px;
+  background: #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.lesson-study .mini-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--ls-primary);
+  border-radius: 10px;
+}
+.lesson-study .mini-progress-fill.success {
+  background: #10b981;
+}
+.lesson-study .mini-stat .value {
+  width: 44px;
+  text-align: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--ls-muted);
+}
+.lesson-study .mini-stat .value.success-text {
+  color: #10b981;
+}
+.lesson-study .sidebar-loader {
+  font-size: 0.88rem;
+  color: var(--ls-muted);
+  text-align: center;
+  padding: 12px;
+}
+
+/* Stack the sidebar above the content on narrow screens */
+@media (max-width: 768px) {
+  .lesson-study .lesson-study-layout {
+    flex-direction: column;
+  }
+  .lesson-study .lesson-sidebar {
+    width: 100%;
+    max-width: 100%;
+    position: static;
+    max-height: none;
+  }
+  .lesson-study .lesson-sidebar.collapsed {
+    margin-right: 0;
+  }
+}
+
+/* ── Grammar / Translation study pages (ported from static/grammar/grammar.css
+   + static/translation/translation.css), scoped under .lesson-study with the
+   teal --ls-* palette. ─────────────────────────────────────────────────────── */
+.lesson-study .lesson-study-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.lesson-study .lesson-study-breadcrumb {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ls-text);
+}
+
+/* Grammar */
+.lesson-study .grammar-content {
+  padding: 4px;
+}
+.lesson-study .grammar-section {
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 2px solid rgba(87, 104, 86, 0.12);
+}
+.lesson-study .grammar-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.lesson-study .grammar-title {
+  color: var(--ls-primary);
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 0 10px;
+  border-bottom: 1px solid rgba(87, 104, 86, 0.1);
+  padding-bottom: 6px;
+}
+.lesson-study .grammar-desc {
+  color: var(--ls-text);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.lesson-study .grammar-example {
+  background: var(--ls-preview);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--ls-primary);
+}
+.lesson-study .ex-cn {
+  font-size: 1.15rem;
+  color: var(--ls-text);
+  margin-bottom: 4px;
+}
+.lesson-study .ex-vn {
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+.lesson-study .grammar-dialogue {
+  background: #eef4ec;
+  border-left: 3px solid #7fa07c;
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.lesson-study .dlg-cn {
+  font-size: 1.1rem;
+  color: var(--ls-text);
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+.lesson-study .dlg-vn {
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+.lesson-study .grammar-table-ref {
+  margin: 10px 0 15px;
+  padding: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px dashed #10b981;
+  color: #10b981;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.lesson-study .grammar-table-container {
+  overflow-x: auto;
+  margin: 15px 0;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #d9ded9;
+}
+.lesson-study .grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.lesson-study .grammar-table th,
+.lesson-study .grammar-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(87, 104, 86, 0.06);
+}
+.lesson-study .grammar-table th {
+  background: var(--ls-primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+.lesson-study .grammar-table td {
+  color: var(--ls-text);
+}
+.lesson-study .grammar-table tr:last-child td {
+  border-bottom: none;
+}
+.lesson-study .grammar-table tbody tr:hover {
+  background: #eef6df;
+}
+
+/* Translation — a single-card drill, one sentence at a time (translation.css) */
+.lesson-study .translation-card-view {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.lesson-study .translation-card-topbar {
+  display: flex;
+  justify-content: flex-end;
+}
+.lesson-study .translation-counter {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ls-muted);
+}
+.lesson-study .translation-progress-bar {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+.lesson-study .translation-progress-fill {
+  height: 100%;
+  background: var(--ls-primary);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+.lesson-study .translation-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 32px 24px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  background: var(--ls-card);
+  min-height: 220px;
+  justify-content: center;
+  text-align: center;
+}
+.lesson-study .translation-meaning {
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--ls-text);
+}
+.lesson-study .translation-input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 20px;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.lesson-study .translation-input:focus {
+  outline: none;
+  border-color: var(--ls-primary);
+}
+/* Turns green the moment the typed Chinese matches the answer. */
+.lesson-study .translation-input.success-highlight {
+  border-color: #16a34a;
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+}
+.lesson-study .translation-answer {
+  font-size: 26px;
+  color: #16a34a;
+  font-weight: 700;
+}
+.lesson-study .translation-reveal-btn {
+  align-self: center;
+  padding: 8px 18px;
+  font-size: 15px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  background: var(--ls-primary);
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.lesson-study .translation-reveal-btn:hover {
+  opacity: 0.9;
+}
+.lesson-study .translation-nav-row {
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  align-items: center;
+}
+.lesson-study .translation-nav-btn {
+  flex-direction: row;
+  white-space: nowrap;
+}
+.lesson-study .translation-nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .lesson-study .lesson-study-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .lesson-study .translation-card {
+    padding: 24px 16px;
+  }
+}
+
+/* ── Lesson Summary clickable word tokens + word popup (ported from
+   static/reading/reading.css + static/vocab_learning stroke styles). ────────── */
+.lesson-study .line-token {
+  display: inline;
+  cursor: default;
+}
+.lesson-study .line-token.clickable {
+  cursor: pointer;
+  color: var(--ls-text);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  margin-right: 4px;
+  display: inline-block;
+}
+.lesson-study .line-token.clickable:hover {
+  background: rgba(0, 122, 97, 0.12);
+}
+
+.lesson-study .word-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.lesson-study .word-popup {
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 28px 24px 36px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
+  animation: wordPopupSlideUp 0.22s ease;
+}
+@keyframes wordPopupSlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.lesson-study .word-popup-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ls-muted);
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+.lesson-study .word-popup-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+.lesson-study .word-popup-hanzi {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--ls-primary);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.lesson-study .word-popup-pinyin {
+  font-size: 1.05rem;
+  color: var(--ls-muted);
+  margin-bottom: 10px;
+}
+.lesson-study .word-popup-meaning {
+  font-size: 0.95rem;
+  color: var(--ls-text);
+  margin-bottom: 4px;
+}
+.lesson-study .word-popup-meaning-en {
+  color: var(--ls-muted);
+  font-size: 0.88rem;
+}
+.lesson-study .word-popup-not-found {
+  color: var(--ls-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.lesson-study .word-popup-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.lesson-study .word-popup-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--ls-secondary);
+  border-radius: 10px;
+  background: var(--ls-primary-light);
+  color: var(--ls-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.lesson-study .word-popup-btn:hover {
+  background: var(--ls-secondary);
+}
+.lesson-study .word-popup-btn.active {
+  background: var(--ls-primary);
+  color: #ffffff;
+  border-color: var(--ls-primary);
+}
+
+/* Stroke order area */
+.lesson-study .word-popup-stroke-area {
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+.lesson-study .stroke-char-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+.lesson-study .stroke-tab {
+  background: var(--ls-primary-light);
+  border: 1px solid var(--ls-secondary);
+  color: var(--ls-muted);
+  border-radius: 10px;
+  padding: 8px 18px;
+  cursor: pointer;
+  font-size: 1.3rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.lesson-study .stroke-tab:hover {
+  color: var(--ls-text);
+}
+.lesson-study .stroke-tab.active {
+  border-color: var(--ls-primary);
+  color: var(--ls-primary);
+}
+.lesson-study .stroke-canvas-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 8px 0;
+}
+.lesson-study .stroke-container svg {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid var(--ls-secondary);
+  display: block;
+}
+.lesson-study .stroke-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+.lesson-study .stroke-btn {
+  background: var(--ls-primary-light);
+  border: 1px solid var(--ls-secondary);
+  color: var(--ls-primary);
+  padding: 9px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.lesson-study .stroke-btn:hover {
+  background: var(--ls-secondary);
+  border-color: var(--ls-primary);
+}
+.lesson-study .stroke-btn.secondary {
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: var(--ls-muted);
+}
+.lesson-study .stroke-btn.secondary:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--ls-text);
+}
+
+.lesson-study .lesson-study-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ls-primary);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.lesson-study .lesson-study-back:hover { color: var(--ls-primary-hover); }
+
+/* Base button used inside the study toolbars */
+.lesson-study .btn {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--ls-card);
+  color: var(--ls-muted);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lesson-study .btn:hover { border-color: var(--ls-secondary); color: var(--ls-primary); }
+.lesson-study .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.lesson-study .btn.primary,
+.lesson-study .vl-toolbar-primary {
+  background: var(--ls-primary);
+  color: #fff;
+  border-color: var(--ls-primary);
+}
+.lesson-study .vl-toolbar-primary:hover { background: var(--ls-primary-hover); color: #fff; }
+
+/* Word Summary / Lesson Summary tab bar */
+.lesson-study .section-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.lesson-study .section-tabs .tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--ls-card);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ls-muted);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  transition: all 0.2s;
+}
+.lesson-study .section-tabs .tab svg { font-size: 1.15rem; }
+.lesson-study .section-tabs .tab:hover { border-color: var(--ls-secondary); color: var(--ls-primary); }
+.lesson-study .section-tabs .tab.active {
+  background: var(--ls-primary);
+  color: #fff;
+  border-color: var(--ls-primary);
+}
+
+/* Word Summary — toolbar + column toggles */
+.lesson-study .vl-cards-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background: var(--ls-card);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.lesson-study .vl-cards-toolbar .toolbar-left,
+.lesson-study .vl-cards-toolbar .toolbar-right {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.lesson-study .vl-col-toggle { background: #f1f1f1; min-width: 150px; justify-content: center; }
+.lesson-study .vl-col-toggle.active { background: var(--ls-primary); color: #fff; border-color: var(--ls-primary); }
+
+/* Word Summary — vocab cards */
+.lesson-study .vl-vocab-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.lesson-study .vocab-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--ls-preview);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+.lesson-study .vocab-card:hover {
+  border-color: var(--ls-secondary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.08);
+  transform: translateY(-2px);
+}
+.lesson-study .vocab-card.playing-highlight {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+}
+.lesson-study .vocab-card .vc-left { display: flex; align-items: center; gap: 1.25rem; width: 28%; min-width: 0; }
+.lesson-study .vocab-card .vc-num { font-size: 0.95rem; font-weight: 700; color: #111; width: 24px; flex-shrink: 0; }
+.lesson-study .vocab-card .vc-char { font-size: 2.2rem; color: #111; line-height: 1; }
+.lesson-study .vocab-card .vc-pinyin { flex: 1; min-width: 0; font-size: 1.1rem; font-weight: 600; color: #111; }
+.lesson-study .vocab-card .vc-meaning { flex: 1; min-width: 0; color: #111; }
+.lesson-study .vocab-card .vc-right { display: flex; gap: 0.5rem; flex-shrink: 0; order: -1; }
+.lesson-study .vocab-card .action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f7fbf9;
+  color: var(--ls-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lesson-study .vocab-card .action-btn:hover { background: var(--ls-primary); color: #fff; border-color: var(--ls-primary); }
+.lesson-study .vocab-card .action-btn svg { font-size: 1rem; }
+.lesson-study .vl-vocab-cards.hide-cn .vc-char,
+.lesson-study .vl-vocab-cards.hide-py .vc-pinyin,
+.lesson-study .vl-vocab-cards.hide-vn .vc-meaning { visibility: hidden; }
+
+/* Lesson Summary — toolbar + preview lines */
+.lesson-study .lesson-summary-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  background: var(--ls-card);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  padding: 1rem;
+}
+.lesson-study .lesson-summary-toolbar .toolbar-left,
+.lesson-study .lesson-summary-toolbar .toolbar-right { display: flex; gap: 10px; flex-wrap: wrap; }
+.lesson-study .sum-toggle { background: #f1f1f1; min-width: 150px; justify-content: center; }
+.lesson-study .sum-toggle.primary { background: var(--ls-primary); color: #fff; border-color: var(--ls-primary); }
+.lesson-study .lesson-learner-preview { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+.lesson-study .lesson-preview-line {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  background: var(--ls-preview);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+.lesson-study .lesson-preview-line:hover {
+  border-color: var(--ls-secondary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.08);
+  transform: translateY(-2px);
+}
+.lesson-study .lesson-preview-line.playing-highlight {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+}
+.lesson-study .lesson-preview-text { flex: 1; min-width: 0; }
+.lesson-study .lesson-preview-text .hanzi-text { color: #111; font-size: 1.5rem; line-height: 1.5; }
+.lesson-study .lesson-preview-text .pinyin-text { color: var(--ls-primary); font-weight: 600; margin-top: 4px; display: none; }
+.lesson-study .lesson-preview-text .pinyin-text.show { display: block; }
+.lesson-study .lesson-preview-text .meaning-text { color: var(--ls-muted); margin-top: 4px; display: none; }
+.lesson-study .lesson-preview-text .meaning-text.show { display: block; }
+.lesson-study .lesson-passage-audio-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--ls-primary-light);
+  border: 1px solid rgba(0, 122, 97, 0.25);
+  border-radius: 50%;
+  color: var(--ls-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  align-self: center;
+  transition: all 0.18s ease;
+}
+.lesson-study .lesson-passage-audio-btn:hover { background: var(--ls-primary); border-color: var(--ls-primary); color: #fff; }
+.lesson-study .lesson-passage-audio-empty { pointer-events: none; background: transparent; border-color: transparent; }
+
+/* Footer actions (deferred / disabled in this read-only cut) */
+.lesson-study .vl-summary-footer,
+.lesson-study .lesson-summary-actions { display: flex; gap: 1.5rem; }
+.lesson-study .vl-train-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.15rem;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: var(--ls-primary);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lesson-study .vl-train-btn:hover { background: var(--ls-primary-hover); box-shadow: 0 4px 18px rgba(0, 122, 97, 0.2); }
+.lesson-study .vl-learn-btn { background: transparent; color: var(--ls-primary); border: 2px solid var(--ls-primary); }
+.lesson-study .vl-learn-btn:hover { background: var(--ls-primary-light); }
+.lesson-study .vl-train-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.lesson-study .vl-train-btn:disabled:hover { background: var(--ls-primary); box-shadow: none; }
+.lesson-study .vl-learn-btn:disabled:hover { background: transparent; }
+
+/* Empty / loading states */
+.lesson-study .vocab-empty,
+.lesson-study .lesson-learner-empty { padding: 24px; text-align: center; color: var(--ls-muted); }
+
+@media (max-width: 700px) {
+  .lesson-study .lesson-summary-toolbar,
+  .lesson-study .vl-cards-toolbar { justify-content: stretch; }
+  .lesson-study .sum-toggle,
+  .lesson-study .vl-col-toggle { min-width: 0; flex: 1; }
+}
+@media (max-width: 600px) {
+  .lesson-study .vocab-card { gap: 0.75rem; padding: 1rem; }
+  .lesson-study .vocab-card .vc-left { width: auto; gap: 0.75rem; }
+  .lesson-study .vocab-card .vc-char { font-size: 1.8rem; }
+  .lesson-study .vl-summary-footer,
+  .lesson-study .lesson-summary-actions { flex-direction: column; }
+}

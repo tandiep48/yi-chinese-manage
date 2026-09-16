@@ -1,0 +1,270 @@
+
+/* ─────────────────────────────────────────────
+   LESSON TRAINER task styles (.lesson-trainer). The shared chrome (screens, bottom
+   bar, buttons, complete table, quit modal) comes from .trainer-shell — the root
+   carries both classes. These are the listening/meaning/typing/reorder task visuals,
+   ported from Learning/web_app/static/lesson/lesson.css (+ shared styles.css).
+   ───────────────────────────────────────────── */
+.lesson-trainer .trainer-subtitle {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.lesson-trainer .instruction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.lesson-trainer .instruction svg {
+  color: var(--primary);
+}
+.lesson-trainer .lt-task {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  width: 100%;
+}
+
+/* Skip / Next button in the bottom bar (grey, like the legacy skip-bottom-btn). */
+.trainer-shell .skip-bottom-btn.btn.secondary {
+  background: #90a496;
+  color: #ffffff;
+  border: none;
+}
+.trainer-shell .skip-bottom-btn.btn.secondary:hover {
+  background: #7c8f82;
+}
+
+/* ── Multiple choice (listening / meaning) ── */
+.lesson-trainer .lt-word {
+  font-size: 40px;
+  line-height: 1.4;
+  font-weight: 600;
+  text-align: center;
+}
+.lesson-trainer .lt-audio-btn {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 122, 97, 0.3);
+  transition: background 0.2s, transform 0.15s;
+}
+.lesson-trainer .lt-audio-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-2px);
+}
+.lesson-trainer .lt-mc-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.lesson-trainer .lt-mc-btn {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  text-align: center;
+  justify-content: center;
+}
+.lesson-trainer .lt-mc-btn:hover:not(:disabled) {
+  background: rgba(0, 122, 97, 0.08);
+  border-color: var(--primary-hover);
+  color: var(--primary-hover);
+}
+.lesson-trainer .lt-mc-btn:disabled {
+  cursor: default;
+}
+.lesson-trainer .lt-mc-btn.lt-correct {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+.lesson-trainer .lt-mc-btn.lt-wrong {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
+}
+.lesson-trainer .mc-btn-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.lesson-trainer .key-hint {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(87, 104, 86, 0.12);
+  color: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+@media (max-width: 520px) {
+  .lesson-trainer .lt-mc-area {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Typing ── */
+.lesson-trainer .lt-typing-target {
+  font-size: 40px;
+  line-height: 1.4;
+  text-align: center;
+  word-break: break-word;
+}
+.lesson-trainer .lt-typing-target .typing-char.char-correct {
+  color: var(--success);
+}
+.lesson-trainer .lt-typing-target .typing-char.char-wrong {
+  color: #ef4444;
+}
+.lesson-trainer .lt-typing-input {
+  width: 100%;
+  max-width: 560px;
+  height: 60px;
+  font-size: 30px;
+  text-align: center;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #111111;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+.lesson-trainer .lt-typing-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 122, 97, 0.12);
+}
+.lesson-trainer .lt-typing-pinyin {
+  text-align: center;
+  color: var(--primary);
+  font-size: 22px;
+  line-height: 1.4;
+}
+
+/* ── Reorder ── */
+.lesson-trainer .lt-reorder {
+  width: 100%;
+  max-width: 640px;
+}
+.lesson-trainer .lt-reorder-label-row {
+  color: var(--text-muted);
+  margin: 0 0 6px;
+  text-align: left;
+  align-self: flex-start;
+}
+.lesson-trainer .chip-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 18px;
+  min-height: 50px;
+  width: 100%;
+  padding: 10px;
+  background: #ffffff;
+  border-radius: 8px;
+  border: 1px dashed rgba(87, 104, 86, 0.2);
+  box-sizing: border-box;
+}
+.lesson-trainer .lt-reorder-source {
+  border: none;
+  background: transparent;
+}
+.lesson-trainer .chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--primary);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: grab;
+  font-size: 20px;
+  line-height: 1;
+  min-width: 48px;
+  min-height: 48px;
+  text-align: center;
+  user-select: none;
+  transition: transform 0.1s, background 0.2s;
+}
+.lesson-trainer .chip:hover {
+  transform: scale(1.05);
+  background: var(--primary-hover);
+}
+.lesson-trainer .lesson-reorder-chip.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+.lesson-trainer .lt-reorder-feedback {
+  text-align: center;
+  margin-top: 4px;
+}
+.lesson-trainer .lt-reorder-label {
+  color: var(--text-muted);
+  font-size: 16px;
+}
+.lesson-trainer .lt-reorder-answer {
+  color: var(--success);
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* ── Complete screen extras ── */
+.lesson-trainer .lesson-complete-icon {
+  display: flex;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--primary);
+  margin-bottom: 14px;
+}
+.lesson-trainer .lesson-complete-heading {
+  text-align: center;
+  margin-bottom: 5px;
+}
+.lesson-trainer .lesson-complete-body {
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+.lesson-trainer .recap-your-answer {
+  color: var(--danger);
+}
+.lesson-trainer .recap-correct-answer {
+  color: var(--success);
+}
+
+/* ── Lesson-card learning view (Learn This Lesson) — wider than the vocab word
+   card because it shows whole sentences: 900px like the legacy .lesson-line-card,
+   with sentence-sized hanzi instead of the 80px single-word size. Scoped to the
+   lesson-card screen so the vocab FlashcardView keeps its 760px word card. */
+.lesson-study .lesson-line-learning .vl-card,
+.lesson-study .lesson-line-learning .vl-learning-topbar,
+.lesson-study .lesson-line-learning .vl-card-progress,
+.lesson-study .lesson-line-learning .vl-nav-row {
+  max-width: 900px;
+}
+.lesson-study .lesson-line-learning .lesson-line-hanzi {
+  font-size: clamp(32px, 5vw, 54px);
+  line-height: 1.35;
+  letter-spacing: 0;
+}

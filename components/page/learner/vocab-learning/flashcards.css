@@ -1,0 +1,213 @@
+
+/* ─────────────────────────────────────────────
+   FLASH CARDS — the /vocab-learning learning screen + stroke modal, scoped
+   under .lesson-study (shared with the lesson-study summaries). Ported from the
+   Learning app static/vocab_learning/vocab_learning.css (#screen-learning +
+   .stroke-modal-* shell). The summary cards/toolbar/footer already live under
+   .lesson-study; these add the flash-card view and the modal shell.
+   ───────────────────────────────────────────── */
+.lesson-study .vl-back-row { margin-bottom: 16px; }
+.lesson-study .vl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ls-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+.lesson-study .vl-back:hover { color: var(--ls-primary); }
+
+.lesson-study .vl-learning-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.lesson-study .vl-counter { font-size: 0.82rem; color: var(--ls-muted); }
+
+.lesson-study .vl-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 122, 97, 0.15);
+  border-radius: 99px;
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+.lesson-study .vl-card-progress { max-width: 760px; margin-left: auto; margin-right: auto; }
+.lesson-study .vl-progress-fill {
+  height: 100%;
+  background: var(--ls-primary);
+  border-radius: 99px;
+  transition: width 0.4s ease;
+}
+
+.lesson-study .vl-card {
+  background: var(--ls-secondary);
+  border: 1px solid #afcfbd;
+  border-radius: 24px;
+  padding: 40px 32px;
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto;
+  animation: vlFadeSlide 0.3s ease;
+}
+@keyframes vlFadeSlide {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.lesson-study .vl-hanzi {
+  font-size: 80px;
+  font-weight: 700;
+  color: #111111;
+  line-height: 1.2;
+  margin-bottom: 10px;
+}
+.lesson-study .vl-pinyin {
+  font-size: 1.3rem;
+  color: var(--ls-primary);
+  font-weight: 600;
+  margin-bottom: 10px;
+  min-height: 1.8rem;
+}
+.lesson-study .vl-meaning {
+  font-size: 1.05rem;
+  color: #2b2b2b;
+  margin-bottom: 28px;
+  min-height: 1.5rem;
+}
+
+.lesson-study .vl-typing-container { margin: 15px 0; }
+.lesson-study .vl-input {
+  width: 100%;
+  padding: 12px;
+  font-size: 1.2rem;
+  text-align: center;
+  border-radius: 8px;
+  border: 2px solid rgba(0, 122, 97, 0.15);
+  background: #ffffff;
+  color: var(--ls-text);
+  transition: all 0.3s ease;
+}
+.lesson-study .vl-input:focus { outline: none; border-color: var(--ls-primary); }
+.lesson-study .vl-input.success-highlight {
+  border-color: var(--ls-primary);
+  background: #eafaf3;
+  color: var(--ls-primary-hover);
+}
+
+.lesson-study .vl-card-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.lesson-study .vl-audio-btn,
+.lesson-study .vl-stroke-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--ls-primary);
+  padding: 10px 24px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  margin: 0 0 6px;
+}
+.lesson-study .vl-audio-btn { border: 1px solid var(--ls-primary); }
+.lesson-study .vl-stroke-btn { border: 1px solid rgba(0, 122, 97, 0.5); }
+.lesson-study .vl-audio-btn:hover,
+.lesson-study .vl-stroke-btn:hover { background: rgba(0, 122, 97, 0.08); transform: scale(1.04); }
+.lesson-study .vl-audio-btn.playing { background: rgba(0, 122, 97, 0.15); }
+
+.lesson-study .vl-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 8px auto 0;
+  max-width: 760px;
+}
+.lesson-study .vl-nav-btn {
+  background: rgba(0, 122, 97, 0.04);
+  border: 1px solid rgba(0, 122, 97, 0.12);
+  color: var(--ls-text);
+  padding: 12px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  transition: all 0.2s ease;
+  min-width: 52px;
+}
+.lesson-study .vl-nav-btn:hover:not(:disabled) { background: rgba(0, 122, 97, 0.08); transform: translateY(-2px); }
+.lesson-study .vl-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+.lesson-study .vl-keyboard-tip {
+  text-align: center;
+  color: var(--ls-muted);
+  font-size: 0.78rem;
+  margin-top: 14px;
+}
+
+/* ── Stroke-order modal shell (canvas/tabs/controls already scoped above) ── */
+.lesson-study .stroke-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 122, 97, 0.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.lesson-study .stroke-modal {
+  background: #ffffff;
+  border: 1px solid rgba(0, 122, 97, 0.12);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px 20px;
+  box-shadow: 0 20px 60px rgba(0, 122, 97, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 20px;
+}
+.lesson-study .stroke-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+.lesson-study .stroke-modal-word { font-size: 2rem; font-weight: 700; color: var(--ls-text); line-height: 1.1; }
+.lesson-study .stroke-modal-pinyin { font-size: 0.95rem; color: var(--ls-primary); margin-top: 4px; }
+.lesson-study .stroke-modal-close {
+  background: rgba(0, 122, 97, 0.06);
+  border: none;
+  color: var(--ls-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.lesson-study .stroke-modal-close:hover { background: rgba(0, 122, 97, 0.15); color: var(--ls-text); }
+.lesson-study .stroke-hint { font-size: 0.75rem; color: var(--ls-muted); text-align: center; opacity: 0.6; margin: 0; }
+
+@media (max-width: 640px) {
+  .lesson-study .vl-card { padding: 28px 18px; }
+  .lesson-study .vl-hanzi { font-size: 64px; }
+}

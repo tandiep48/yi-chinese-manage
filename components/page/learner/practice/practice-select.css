@@ -1,0 +1,45 @@
+
+/* ── Select pages (level + lesson grids) ── */
+.practice-select { padding: 40px 20px; }
+.practice-select .practice-select-container { width: 100%; max-width: 1120px; margin: 0 auto; }
+.practice-select .page-back {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--text-muted); text-decoration: none; font-size: 0.9rem;
+  margin-bottom: 30px; transition: color 0.2s;
+}
+.practice-select .page-back:hover { color: var(--primary); }
+.practice-select .page-title { font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+.practice-select .page-subtitle { color: var(--text-muted); margin-bottom: 36px; font-size: 1rem; }
+.practice-select .practice-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 18px;
+}
+.practice-select .practice-card {
+  background: #cbe2d4; border: 1px solid #afcfbd; border-radius: 16px; padding: 28px 20px;
+  text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 12px;
+  transition: all 0.2s ease; cursor: pointer;
+}
+.practice-select .practice-card:hover {
+  background: #bddbc9; border-color: #93bda7; transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(87, 104, 86, 0.16);
+}
+.practice-select .card-icon { font-size: 2.5rem; }
+.practice-select .card-label { font-size: 1.1rem; font-weight: 700; color: var(--text-main); }
+.practice-select .card-sub { font-size: 0.8rem; color: var(--text-muted); text-align: center; }
+.practice-select .hsk-badge {
+  background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em;
+}
+.practice-select .lesson-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;
+}
+.practice-select .lesson-card {
+  background: #cbe2d4; border: 1px solid #afcfbd; border-radius: 12px; padding: 24px 16px;
+  text-decoration: none; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px; transition: all 0.2s ease; cursor: pointer; color: var(--text-main);
+}
+.practice-select .lesson-card:hover {
+  background: #bddbc9; border-color: #93bda7; transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(87, 104, 86, 0.16);
+}
+.practice-select .lesson-label { font-size: 1.1rem; font-weight: 700; }
+.practice-select .loader-container { text-align: center; margin-top: 50px; color: var(--text-muted); }

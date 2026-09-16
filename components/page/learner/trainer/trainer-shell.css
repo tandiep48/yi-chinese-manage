@@ -1,0 +1,331 @@
+
+/* ─────────────────────────────────────────────
+   LEARNER TRAINERS — shared chrome (.trainer-shell) + batch vocab trainer
+   (.vocab-trainer), plus the train-type picker and success popup overlays.
+   Ported from Learning/web_app/templates/shared/trainer_base.html and
+   static/{shared/styles.css, vocab/vocab_training.css, vocab/vocab_training_batch.css,
+   shared/train_type_picker.css, shared/success_popup.css}. Learner teal palette,
+   scoped so it never leaks into the admin dashboard.
+   ───────────────────────────────────────────── */
+.trainer-shell,
+.ttp-overlay,
+.success-popup-overlay {
+  --primary: #007a61;
+  --primary-hover: #00634f;
+  --success: #22c55e;
+  --danger: #dc2626;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --card-bg: #ffffff;
+  --bg-color: #ffffff;
+  --secondary: #cbe2d4;
+  --secondary-hover: #b5d5c1;
+  --border-soft: #d7e3c6;
+  --warning: #f59e0b;
+}
+
+/* ── Shell + screens ── */
+.trainer-shell {
+  color: #111111;
+}
+.trainer-shell .app-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: clamp(16px, 3vw, 32px) clamp(16px, 3vw, 32px) 120px;
+  position: relative;
+}
+.trainer-shell .screen {
+  display: none;
+  animation: trainerFadeIn 0.3s ease;
+}
+.trainer-shell .screen.active {
+  display: block;
+}
+.trainer-shell .trainer-loading-screen {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--text-muted);
+}
+@keyframes trainerFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Loader ── */
+.trainer-shell .loader {
+  border: 4px solid rgba(87, 104, 86, 0.15);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: trainerSpin 1s linear infinite;
+  margin: 0 auto 20px auto;
+}
+@keyframes trainerSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ── Training header ── */
+.trainer-shell .trainer-topbar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto 16px;
+}
+.trainer-shell .trainer-subtitle {
+  font-weight: 600;
+  color: var(--primary);
+}
+.trainer-shell .progress-bar {
+  width: 100%;
+  max-width: 980px;
+  height: 6px;
+  margin: 0 auto 10px;
+  background: #ffffff;
+  border: 1px solid #d8d8d8;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.trainer-shell .progress-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--primary);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+.trainer-shell .task-counter {
+  max-width: 980px;
+  margin: 0 auto 20px;
+  text-align: right;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ── Task card (training) + complete card ── */
+.trainer-shell .task-card,
+.trainer-shell .trainer-complete-screen {
+  width: min(100%, 1280px);
+  margin: 0 auto;
+  text-align: center;
+  background: #cbe2d4;
+  border: 1px solid #afcfbd;
+  border-radius: 16px;
+  box-shadow: 0 18px 44px rgba(0, 122, 97, 0.08);
+  color: #111111;
+  padding: clamp(20px, 4vw, 40px);
+}
+.trainer-shell .instruction {
+  font-size: 18px;
+  margin-bottom: 25px;
+  font-weight: 600;
+}
+
+/* ── Buttons ── */
+.trainer-shell .btn {
+  padding: 15px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s, transform 0.15s, box-shadow 0.2s;
+  background: var(--secondary);
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.trainer-shell .btn.primary {
+  background: var(--primary);
+  color: #ffffff;
+}
+.trainer-shell .btn.primary:hover {
+  background: var(--primary-hover);
+}
+.trainer-shell .btn.primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.trainer-shell .btn.secondary {
+  background: #ffffff;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+}
+.trainer-shell .btn.secondary:hover {
+  background: rgba(0, 122, 97, 0.08);
+}
+.trainer-shell .btn.danger {
+  background: var(--danger);
+  color: #ffffff;
+}
+.trainer-shell .btn.danger:hover {
+  background: #b91c1c;
+}
+.trainer-shell .nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 24px;
+}
+.trainer-shell .nav-buttons .btn {
+  min-width: 120px;
+}
+
+/* ── Sticky bottom bar ── */
+.trainer-shell .trainer-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-top: 1px solid rgba(87, 104, 86, 0.15);
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
+  z-index: 1000;
+}
+.trainer-shell .trainer-action-slot {
+  display: contents;
+}
+.trainer-shell .trainer-bottom-bar > .btn,
+.trainer-shell .trainer-action-slot > .btn {
+  margin: 0;
+  min-width: 160px;
+  padding: 14px 24px;
+  font-size: 1.05rem;
+}
+.trainer-shell .trainer-quit-btn {
+  margin-right: auto;
+  flex-direction: row;
+  background: #90a496;
+  color: #ffffff;
+  border: none;
+}
+.trainer-shell .trainer-quit-btn:hover {
+  background: #7c8f82;
+}
+@media (max-width: 600px) {
+  .trainer-shell .trainer-bottom-bar {
+    padding: 12px 15px;
+  }
+  .trainer-shell .trainer-bottom-bar > .btn,
+  .trainer-shell .trainer-action-slot > .btn {
+    min-width: 120px;
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+}
+
+/* ── Complete / recap ── */
+.trainer-shell .training-complete-title {
+  margin: 0 0 18px;
+  color: #111111;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.35;
+  text-align: left;
+}
+.trainer-shell .training-complete-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.trainer-shell .training-complete-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.trainer-shell .training-complete-table th,
+.trainer-shell .training-complete-table td {
+  padding: 16px 18px;
+  border: 1px solid #d8d8d8;
+  text-align: left;
+}
+.trainer-shell .training-complete-table th {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 800;
+}
+.trainer-shell .training-complete-table td {
+  background: rgba(255, 255, 255, 0.72);
+  color: #111111;
+  font-size: 30px;
+  font-weight: 400;
+}
+.trainer-shell .training-empty-state {
+  padding: 24px;
+  text-align: center;
+  color: #111111;
+}
+.trainer-shell .training-complete-actions {
+  margin-top: 24px;
+  justify-content: space-between;
+  gap: 20px;
+}
+.trainer-shell .training-complete-top-actions {
+  margin: 0 0 22px;
+  justify-content: space-between;
+}
+
+/* ── Quit modal ── */
+.trainer-shell .quit-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 122, 97, 0.36);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.trainer-shell .quit-modal-overlay.open {
+  display: flex;
+  animation: trainerFadeIn 0.15s ease;
+}
+.trainer-shell .quit-modal {
+  background: #ffffff;
+  border: 1px solid rgba(87, 104, 86, 0.3);
+  border-radius: 20px;
+  padding: 36px 32px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: trainerSlideUp 0.2s ease;
+}
+.trainer-shell .quit-modal-icon {
+  font-size: 2.4rem;
+  color: var(--warning);
+  margin-bottom: 12px;
+}
+.trainer-shell .quit-modal h3 {
+  font-size: 1.3rem;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+.trainer-shell .quit-modal p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 26px;
+  line-height: 1.5;
+}
+.trainer-shell .quit-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+@keyframes trainerSlideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}

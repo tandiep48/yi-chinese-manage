@@ -1,0 +1,35 @@
+
+/* ─────────────────────────────────────────────
+   LEARNER THEME — scoped to the (learner) route group only.
+   Ported from the Learning Flask app (static/shared/styles.css):
+   sage-green palette, teal site header, Roboto font.
+   Does NOT affect /manage (which keeps the slate/indigo admin theme).
+   ───────────────────────────────────────────── */
+.learner-theme {
+  --learner-bg:            #cbe2d4;  /* mint page background */
+  --learner-card:          #ffffff;
+  --learner-text:          #576856;  /* sage */
+  --learner-text-muted:    #738a72;
+  --learner-primary:       #576856;
+  --learner-primary-hover: #455544;
+  --learner-nav:           #007a61;  /* teal site header */
+  --learner-nav-hover:     rgba(255, 255, 255, 0.12);
+  --learner-border:        rgba(87, 104, 86, 0.12);
+
+  min-height: 100%;
+  background-color: var(--learner-bg);
+  color: var(--learner-text);
+  /* --han-font-family is set at runtime by HanziSettingsProvider from the
+     user's hanzi_font. It's Roboto-first, so Latin text stays on Roboto and
+     only the ideographs pick up the chosen face (ports the legacy body rule in
+     Learning/web_app/static/shared/styles.css). Falls back to the plain stack
+     before the provider runs / for signed-out visitors. */
+  font-family: var(
+    --han-font-family,
+    var(--font-roboto),
+    Roboto,
+    "Noto Sans",
+    Helvetica,
+    sans-serif
+  );
+}
