@@ -52,6 +52,27 @@ const SCOPING = [
   [".ttp-actions .btn.primary:hover {", ".ttp-overlay .ttp-actions .btn.primary:hover {"],
   [".ttp-actions .btn.secondary {", ".ttp-overlay .ttp-actions .btn.secondary {"],
   [".ttp-actions .btn.secondary:hover {", ".ttp-overlay .ttp-actions .btn.secondary:hover {"],
+
+  // The success popup renders as a sibling of TrainerShell, not inside it, so
+  // it is likewise anchored to its own root. .success-popup-overlay and
+  // .success-popup-overlay.open are that root and are unchanged.
+  [".success-popup {", ".success-popup-overlay .success-popup {"],
+  [".success-popup::before {", ".success-popup-overlay .success-popup::before {"],
+  [".sp-icon-wrap {", ".success-popup-overlay .sp-icon-wrap {"],
+  [".sp-icon-wrap.perfect {", ".success-popup-overlay .sp-icon-wrap.perfect {"],
+  [".sp-icon-wrap.has-missed {", ".success-popup-overlay .sp-icon-wrap.has-missed {"],
+  [".sp-title {", ".success-popup-overlay .sp-title {"],
+  [".sp-stats {", ".success-popup-overlay .sp-stats {"],
+  [".sp-stat {", ".success-popup-overlay .sp-stat {"],
+  [".sp-stat:nth-child(1) {", ".success-popup-overlay .sp-stat:nth-child(1) {"],
+  [".sp-stat:nth-child(2) {", ".success-popup-overlay .sp-stat:nth-child(2) {"],
+  [".sp-stat:nth-child(3) {", ".success-popup-overlay .sp-stat:nth-child(3) {"],
+  [".sp-stat-value {", ".success-popup-overlay .sp-stat-value {"],
+  [".sp-stat-value.correct {", ".success-popup-overlay .sp-stat-value.correct {"],
+  [".sp-stat-value.accuracy {", ".success-popup-overlay .sp-stat-value.accuracy {"],
+  [".sp-stat-label {", ".success-popup-overlay .sp-stat-label {"],
+  [".sp-confetti-canvas {", ".success-popup-overlay .sp-confetti-canvas {"],
+  [".success-popup > *:not(canvas) {", ".success-popup-overlay .success-popup > *:not(canvas) {"],
 ];
 
 function applyScoping(text) {

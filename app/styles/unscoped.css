@@ -140,7 +140,7 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.success-popup {
+.success-popup-overlay .success-popup {
   background: #ffffff;
   border: 1px solid #afcfbd;
   border-radius: 16px;
@@ -156,7 +156,7 @@
   from { opacity: 0; transform: translateY(40px) scale(0.92); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.success-popup::before {
+.success-popup-overlay .success-popup::before {
   content: "";
   position: absolute;
   top: 0;
@@ -172,7 +172,7 @@
   0%   { background-position: 0% 0%; }
   100% { background-position: 300% 0%; }
 }
-.sp-icon-wrap {
+.success-popup-overlay .sp-icon-wrap {
   width: 80px;
   height: 80px;
   border-radius: 50%;
@@ -187,31 +187,31 @@
   from { opacity: 0; transform: scale(0.4); }
   to   { opacity: 1; transform: scale(1); }
 }
-.sp-icon-wrap.perfect {
+.success-popup-overlay .sp-icon-wrap.perfect {
   background: #cbe2d4;
   box-shadow: 0 0 0 1px #afcfbd;
   color: #007a61;
 }
-.sp-icon-wrap.has-missed {
+.success-popup-overlay .sp-icon-wrap.has-missed {
   background: #fff6d8;
   box-shadow: 0 0 0 1px #ead28a;
   color: #d97706;
 }
-.sp-title {
+.success-popup-overlay .sp-title {
   font-size: 1.6rem;
   font-weight: 800;
   color: #111111;
   margin: 0 0 6px;
   letter-spacing: -0.02em;
 }
-.sp-stats {
+.success-popup-overlay .sp-stats {
   display: flex;
   gap: 12px;
   justify-content: center;
   margin-bottom: 8px;
   flex-wrap: wrap;
 }
-.sp-stat {
+.success-popup-overlay .sp-stat {
   background: #cbe2d4;
   border: 1px solid #afcfbd;
   border-radius: 8px;
@@ -220,32 +220,32 @@
   flex: 1;
   animation: spFadeIn 0.4s ease both;
 }
-.sp-stat:nth-child(1) { animation-delay: 0.15s; }
-.sp-stat:nth-child(2) { animation-delay: 0.25s; }
-.sp-stat:nth-child(3) { animation-delay: 0.35s; }
-.sp-stat-value {
+.success-popup-overlay .sp-stat:nth-child(1) { animation-delay: 0.15s; }
+.success-popup-overlay .sp-stat:nth-child(2) { animation-delay: 0.25s; }
+.success-popup-overlay .sp-stat:nth-child(3) { animation-delay: 0.35s; }
+.success-popup-overlay .sp-stat-value {
   font-size: 1.8rem;
   font-weight: 800;
   color: #111111;
   line-height: 1;
   margin-bottom: 4px;
 }
-.sp-stat-value.correct { color: #4ade80; }
-.sp-stat-value.accuracy { color: var(--primary); }
-.sp-stat-label {
+.success-popup-overlay .sp-stat-value.correct { color: #4ade80; }
+.success-popup-overlay .sp-stat-value.accuracy { color: var(--primary); }
+.success-popup-overlay .sp-stat-label {
   font-size: 0.72rem;
   color: #4b594f;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   font-weight: 600;
 }
-.sp-confetti-canvas {
+.success-popup-overlay .sp-confetti-canvas {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 1;
 }
-.success-popup > *:not(canvas) {
+.success-popup-overlay .success-popup > *:not(canvas) {
   position: relative;
   z-index: 2;
 }
