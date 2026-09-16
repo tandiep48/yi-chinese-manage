@@ -176,7 +176,7 @@ export default function DashboardPage() {
             <h2>{t("dashboard.review_title")}</h2>
             <p className="description">{t("dashboard.review_subtitle")}</p>
 
-            <Link className="btn btn-primary w-100 mt-auto" href="/vocab">
+            <Link className="btn btn-primary w-100 mt-auto" href="/vocab-review">
               {t("dashboard.review_button")} <FontAwesomeIcon icon={faPlay} />
             </Link>
           </div>

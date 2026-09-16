@@ -98,6 +98,23 @@ export function getVocabTable(
   );
 }
 
+// GET /api/vocab/review — the combined, priority-ordered review list behind the
+// dashboard's Review card (critical > unsure > incomplete). Same normalized rows
+// and pagination envelope as /api/vocab/table. Mirrors get_review_list() in
+// Learning/web_app/routes/vocab/vocab_routes.py.
+export function getVocabReview(
+  page: number,
+  pageSize: number
+): Promise<VocabTableResponse> {
+  const params = new URLSearchParams({
+    page: String(page),
+    page_size: String(pageSize),
+  });
+  return legacyApiFetch<VocabTableResponse>(
+    `/api/vocab/review?${params.toString()}`
+  );
+}
+
 // The `recent` mode: the user's mastered words, most-recent first.
 export function getLearnedVocab(
   page: number,
