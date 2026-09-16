@@ -34,6 +34,24 @@ const SCOPING = [
   [".pinyin-popover {", ".pinyin-guide .pinyin-popover {"],
   [".pinyin-popover .tone-button {", ".pinyin-guide .pinyin-popover .tone-button {"],
   [".pinyin-popover .tone-button:hover {", ".pinyin-guide .pinyin-popover .tone-button:hover {"],
+
+  // The train-type picker is opened from four different page scopes, so its
+  // rules are anchored to its own overlay root rather than to a page scope.
+  // .ttp-overlay and .ttp-overlay.open are that root and are unchanged.
+  [".ttp-card {", ".ttp-overlay .ttp-card {"],
+  [".ttp-title {", ".ttp-overlay .ttp-title {"],
+  [".ttp-subtitle {", ".ttp-overlay .ttp-subtitle {"],
+  [".ttp-options {", ".ttp-overlay .ttp-options {"],
+  [".ttp-option {", ".ttp-overlay .ttp-option {"],
+  [".ttp-option:hover {", ".ttp-overlay .ttp-option:hover {"],
+  [".ttp-option input {", ".ttp-overlay .ttp-option input {"],
+  [".ttp-error {", ".ttp-overlay .ttp-error {"],
+  [".ttp-actions {", ".ttp-overlay .ttp-actions {"],
+  [".ttp-actions .btn {", ".ttp-overlay .ttp-actions .btn {"],
+  [".ttp-actions .btn.primary {", ".ttp-overlay .ttp-actions .btn.primary {"],
+  [".ttp-actions .btn.primary:hover {", ".ttp-overlay .ttp-actions .btn.primary:hover {"],
+  [".ttp-actions .btn.secondary {", ".ttp-overlay .ttp-actions .btn.secondary {"],
+  [".ttp-actions .btn.secondary:hover {", ".ttp-overlay .ttp-actions .btn.secondary:hover {"],
 ];
 
 function applyScoping(text) {
