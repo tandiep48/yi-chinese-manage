@@ -1,4 +1,8 @@
 
+/* Both practice roots share one token block; import it so this file works on
+   its own, whichever of the two a route happens to pull in. */
+@import "./practice-tokens.css";
+
 /* ── Select pages (level + lesson grids) ── */
 .practice-select { padding: 40px 20px; }
 .practice-select .practice-select-container { width: 100%; max-width: 1120px; margin: 0 auto; }

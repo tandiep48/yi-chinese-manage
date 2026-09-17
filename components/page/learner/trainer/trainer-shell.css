@@ -7,9 +7,9 @@
    shared/train_type_picker.css, shared/success_popup.css}. Learner teal palette,
    scoped so it never leaks into the admin dashboard.
    ───────────────────────────────────────────── */
-.trainer-shell,
-.ttp-overlay,
-.success-popup-overlay {
+/* The two overlays declare the same tokens in overlays.css: the picker opens
+   from pages that never load this file, so it cannot rely on it. */
+.trainer-shell {
   --primary: #007a61;
   --primary-hover: #00634f;
   --success: #22c55e;

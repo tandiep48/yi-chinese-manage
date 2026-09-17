@@ -1,3 +1,23 @@
+/* Learner teal palette, mirroring the block in trainer-shell.css. Both overlays
+   are declared here rather than borrowed from that file: the train-type picker
+   opens from /vocab, the HSK lesson page and the lesson study pages, none of
+   which render a trainer shell, so it would otherwise lose its palette. */
+.ttp-overlay,
+.success-popup-overlay {
+  --primary: #007a61;
+  --primary-hover: #00634f;
+  --success: #22c55e;
+  --danger: #dc2626;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --card-bg: #ffffff;
+  --bg-color: #ffffff;
+  --secondary: #cbe2d4;
+  --secondary-hover: #b5d5c1;
+  --border-soft: #d7e3c6;
+  --warning: #f59e0b;
+}
+
 /* ─────────────────────────────────────────────
    TRAIN-TYPE PICKER overlay (.ttp-overlay).
    Ported from static/shared/train_type_picker.css.
