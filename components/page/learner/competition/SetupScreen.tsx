@@ -15,6 +15,7 @@ import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSe
 import { HSK_LEVELS } from "@/lib/competition/roomLogic";
 import { TIMEOUT_OPTIONS, type CompetitionSetup } from "@/hooks/useCompetitionSetup";
 import type { CompetitionCategory } from "@/lib/types/types";
+import "./competition-multiselect.css";
 
 export function SetupScreen({
   setup,

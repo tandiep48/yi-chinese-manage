@@ -25,6 +25,7 @@ import type { CompetitionRoom, CompetitionScore, CompetitionSession } from "@/li
 import { RankingList } from "./RankingList";
 import "@/components/page/learner/trainer/vocab-trainer.css";
 import "@/components/page/learner/lesson-training/lesson-trainer.css";
+import "./competition-trainer.css";
 
 // A correct multiple-choice answer holds for 800ms here, not the solo trainer's 3s
 // (lesson_trainer_core.js).

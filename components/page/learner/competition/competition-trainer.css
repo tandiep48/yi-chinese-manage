@@ -1,0 +1,71 @@
+
+/* ─────────────────────────────────────────────
+   LEARN TOGETHER — in-room trainer overrides.
+
+   The competition boards reuse the solo trainers' scoped styles
+   (.vocab-trainer .bt-* and .lesson-trainer .lt-*). These rules add the
+   Learn-Together-only keyboard-shortcut badge and re-point the few places
+   that hardcode the teal learner accent at the sage competition palette.
+
+   Imported by SectionScreen, the screen that renders those boards.
+   Tokens come from ./competition-shell.css.
+   ───────────────────────────────────────────── */
+/* Keyboard-shortcut badge on the source cards (Learn Together only), from
+   vocab_training_batch.css. */
+.vocab-trainer .bt-match-item.bt-has-key { padding-inline: 42px; }
+.vocab-trainer .bt-key-hint {
+  position: absolute;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 800;
+  line-height: 1;
+  color: #ffffff;
+  background: var(--primary);
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+/* Lesson-mode rooms (phase 2) reuse the solo lesson trainer's .lesson-trainer .lt-*
+   task styles; these override the few places that hardcode the teal learner accent so
+   the boards read sage inside the competition shell, and restore the legacy
+   competition.css sizing for the audio button and the choice grid. */
+.competition-shell .lesson-trainer .lt-audio-btn {
+  width: 84px;
+  height: 84px;
+  font-size: 30px;
+  box-shadow: 0 4px 14px rgba(87, 104, 86, 0.3);
+}
+.competition-shell .lesson-trainer .lt-mc-area { max-width: 620px; }
+/* competition.css only adjusts the choice button's alignment and size — its fill comes
+   from the scoped .btn above (the legacy page inherits styles.css .btn the same way),
+   NOT from the solo trainer's teal outline. */
+.competition-shell .lesson-trainer .lt-mc-btn {
+  justify-content: flex-start;
+  text-align: left;
+  font-size: 1.05rem;
+}
+.competition-shell .lesson-trainer .lt-mc-btn:hover:not(:disabled) {
+  background: rgba(87, 104, 86, 0.08);
+}
+.competition-shell .lesson-trainer .lt-typing-input:focus {
+  box-shadow: 0 0 0 4px rgba(87, 104, 86, 0.12);
+}
+/* The lesson tasks portal a "btn secondary" Skip/Next into the competition action bar,
+   which only styles .btn.primary; give it the same grey the trainer bottom bar uses. */
+.competition-shell .skip-bottom-btn.btn.secondary {
+  background: #90a496;
+  color: #ffffff;
+  border: none;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+.competition-shell .skip-bottom-btn.btn.secondary:hover { background: #7c8f82; }

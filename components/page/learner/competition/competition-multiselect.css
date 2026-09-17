@@ -1,0 +1,93 @@
+
+/* ─────────────────────────────────────────────
+   LEARN TOGETHER — multi-select dropdown, the scoped port of the legacy
+   shared/multi_select.css that competition.html loads alongside its own CSS.
+
+   These are competition-only overrides for the shared MultiSelect component,
+   so they are scoped under .competition-shell and imported by SetupScreen
+   (the screen that renders the dropdown) rather than by MultiSelect itself.
+   Tokens come from ./competition-shell.css.
+   ───────────────────────────────────────────── */
+/* ── Multi-select dropdown (shared/multi_select.css, scoped) ── */
+.competition-shell .ms-dropdown { position: relative; width: 100%; }
+.competition-shell .ms-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px;
+  height: 38px;
+  box-sizing: border-box;
+  background: #d8efe7;
+  border: 1px solid rgba(87, 104, 86, 0.18);
+  border-radius: 8px;
+  color: #111111;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.competition-shell .ms-toggle:hover:not(:disabled) { border-color: rgba(87, 104, 86, 0.35); }
+.competition-shell .ms-dropdown.open .ms-toggle {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(87, 104, 86, 0.1);
+}
+.competition-shell .ms-toggle:disabled { opacity: 0.55; cursor: not-allowed; }
+.competition-shell .ms-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.competition-shell .ms-label.ms-placeholder { color: #5f7268; font-weight: 400; }
+.competition-shell .ms-caret {
+  font-size: 0.72rem;
+  color: var(--primary);
+  flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.competition-shell .ms-dropdown.open .ms-caret { transform: rotate(180deg); }
+.competition-shell .ms-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: #ffffff;
+  border: 1px solid rgba(87, 104, 86, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.competition-shell .ms-dropdown.open .ms-panel { display: block; }
+.competition-shell .ms-option {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #111111;
+}
+.competition-shell .ms-option:hover { background: rgba(87, 104, 86, 0.08); }
+.competition-shell .ms-option-all {
+  font-weight: 700;
+  border-bottom: 1px solid var(--border-soft);
+  border-radius: 6px 6px 0 0;
+  margin-bottom: 2px;
+}
+.competition-shell .ms-option input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--primary);
+  flex-shrink: 0;
+}
+.competition-shell .ms-group-label {
+  padding: 8px 10px 3px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
