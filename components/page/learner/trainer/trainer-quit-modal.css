@@ -1,0 +1,60 @@
+
+/* ─────────────────────────────────────────────
+   TRAINER QUIT MODAL — the "are you sure you want to quit?" overlay raised
+   from the trainer bottom bar. Rendered by TrainerShell, which imports this
+   alongside ./trainer-shell.css.
+
+   The open state reuses the trainerFadeIn keyframe declared there, so this
+   file is not standalone: it only works under a .trainer-shell root.
+   ───────────────────────────────────────────── */
+.trainer-shell .quit-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 122, 97, 0.36);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.trainer-shell .quit-modal-overlay.open {
+  display: flex;
+  animation: trainerFadeIn 0.15s ease;
+}
+.trainer-shell .quit-modal {
+  background: #ffffff;
+  border: 1px solid rgba(87, 104, 86, 0.3);
+  border-radius: 20px;
+  padding: 36px 32px;
+  max-width: 380px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: trainerSlideUp 0.2s ease;
+}
+.trainer-shell .quit-modal-icon {
+  font-size: 2.4rem;
+  color: var(--warning);
+  margin-bottom: 12px;
+}
+.trainer-shell .quit-modal h3 {
+  font-size: 1.3rem;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+.trainer-shell .quit-modal p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 26px;
+  line-height: 1.5;
+}
+.trainer-shell .quit-modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+@keyframes trainerSlideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to   { transform: none; opacity: 1; }
+}

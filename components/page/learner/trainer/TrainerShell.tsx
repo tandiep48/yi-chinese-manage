@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./trainer-shell.css";
+import "./trainer-quit-modal.css";
 
 const ActionSlotContext = createContext<HTMLElement | null>(null);
 

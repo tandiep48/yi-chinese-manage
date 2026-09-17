@@ -1,0 +1,56 @@
+
+/* ─────────────────────────────────────────────
+   TRAINER RECAP — the results table shown on the trainer complete screen,
+   used by both LessonTrainerRecap and VocabTrainerRecap.
+   Scoped under .trainer-shell, which declares the teal tokens; the complete
+   screen's own card styling lives in ./trainer-shell.css.
+   ───────────────────────────────────────────── */
+.trainer-shell .training-complete-title {
+  margin: 0 0 18px;
+  color: #111111;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  line-height: 1.35;
+  text-align: left;
+}
+.trainer-shell .training-complete-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.55);
+}
+.trainer-shell .training-complete-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.trainer-shell .training-complete-table th,
+.trainer-shell .training-complete-table td {
+  padding: 16px 18px;
+  border: 1px solid #d8d8d8;
+  text-align: left;
+}
+.trainer-shell .training-complete-table th {
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 800;
+}
+.trainer-shell .training-complete-table td {
+  background: rgba(255, 255, 255, 0.72);
+  color: #111111;
+  font-size: 30px;
+  font-weight: 400;
+}
+.trainer-shell .training-empty-state {
+  padding: 24px;
+  text-align: center;
+  color: #111111;
+}
+.trainer-shell .training-complete-actions {
+  margin-top: 24px;
+  justify-content: space-between;
+  gap: 20px;
+}
+.trainer-shell .training-complete-top-actions {
+  margin: 0 0 22px;
+  justify-content: space-between;
+}

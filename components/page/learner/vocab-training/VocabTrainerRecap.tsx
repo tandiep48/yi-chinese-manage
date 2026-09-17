@@ -9,6 +9,7 @@
 import { useT } from "@/components/i18n/I18nProvider";
 import { pickMeaning } from "@/lib/lessons/meaning";
 import type { TrainerWord } from "@/lib/lessons/vocabTrainer";
+import "@/components/page/learner/trainer/trainer-recap.css";
 
 export function VocabTrainerRecap({
   missed,
