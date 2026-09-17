@@ -12,11 +12,7 @@ import {
 } from "@/lib/api/practice";
 import { UnauthenticatedError } from "@/lib/api/client";
 import { useT } from "@/components/i18n/I18nProvider";
-import type {
-  ReviewHistoryFilters,
-  ReviewSessionSummary,
-  ReviewSessionDetail,
-} from "@/lib/types/types";
+import type { ReviewHistoryFilters, ReviewSessionDetail, ReviewSessionSummary } from "@/lib/types/practice";
 import type { ResultFilter, SkillFilter } from "@/lib/review/reviewLogic";
 
 export function useReviewPanel() {

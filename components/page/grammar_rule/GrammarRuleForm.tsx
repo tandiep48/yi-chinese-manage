@@ -5,8 +5,8 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
-import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/types";
-import { GRAMMAR_TYPES } from "@/lib/types/types";
+import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/grammar";
+import { GRAMMAR_TYPES } from "@/lib/types/grammar";
 
 interface GrammarRuleFormProps {
   open: boolean;

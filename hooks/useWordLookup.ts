@@ -9,7 +9,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { lookupWordsBatch } from "@/lib/api/learnerVocab";
 import { isPunctToken } from "@/lib/lessons/tokens";
-import type { LessonPassageLine, VocabLookupMap } from "@/lib/types/types";
+import type { LessonPassageLine } from "@/lib/types/lesson";
+import type { VocabLookupMap } from "@/lib/types/vocab";
 
 const BATCH_SIZE = 80;
 // A newline can never appear inside a single word token, so it is a safe key

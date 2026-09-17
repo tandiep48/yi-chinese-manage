@@ -4,7 +4,7 @@
 // (Learning/web_app/static/learning/learning.js). Reads soft-fail to null so a
 // signed-out visitor still sees the picker.
 
-import type { RecentLearning } from "@/lib/types/types";
+import type { RecentLearning } from "@/lib/types/lesson";
 import { legacyApiFetch } from "./client";
 
 export function getRecentLearning(): Promise<RecentLearning | null> {

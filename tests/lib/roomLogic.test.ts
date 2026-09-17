@@ -14,7 +14,8 @@ import {
   roomSummary,
   vocabActivityTypes,
 } from "@/lib/competition/roomLogic";
-import type { CompetitionRoom, PickerPassage } from "@/lib/types/types";
+import type { CompetitionRoom } from "@/lib/types/competition";
+import type { PickerPassage } from "@/lib/types/lesson";
 
 const LABELS = { lessonPrefix: "Lesson", partPrefix: "Part", other: "Other" };
 

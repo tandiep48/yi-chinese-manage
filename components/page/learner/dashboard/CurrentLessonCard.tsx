@@ -9,7 +9,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookOpen, faUserGraduate, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import type { DashboardLesson } from "@/lib/types/types";
+import type { DashboardLesson } from "@/lib/types/dashboard";
 
 export function CurrentLessonCard({
   loading,

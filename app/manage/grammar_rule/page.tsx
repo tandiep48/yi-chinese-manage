@@ -9,8 +9,8 @@ import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { GrammarRuleTable } from "@/components/page/grammar_rule/GrammarRuleTable";
 import { GrammarRuleForm } from "@/components/page/grammar_rule/GrammarRuleForm";
-import { GRAMMAR_TYPES } from "@/lib/types/types";
-import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/types";
+import { GRAMMAR_TYPES } from "@/lib/types/grammar";
+import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/grammar";
 
 export default function GrammarRulePage() {
   const {

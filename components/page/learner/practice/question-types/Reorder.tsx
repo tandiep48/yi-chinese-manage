@@ -8,7 +8,7 @@
 import { hanNodes } from "@/lib/han/hanText";
 import { answersMatch } from "@/lib/practice/practiceEngine";
 import type { GroupUIState } from "@/hooks/usePracticeEngine";
-import type { PracticeQuestion } from "@/lib/types/types";
+import type { PracticeQuestion } from "@/lib/types/practice";
 import type { TFn } from "./types";
 
 export function Reorder({

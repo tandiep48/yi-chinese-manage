@@ -1,4 +1,4 @@
-import type { Book, BookFormData } from "@/lib/types/types";
+import type { Book, BookFormData } from "@/lib/types/book";
 import { apiFetch } from "./client";
 
 export function listBooks(): Promise<Book[]> {

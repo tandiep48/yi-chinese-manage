@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useGrammar, splitGrammarByType1 } from "@/hooks/useGrammar";
 import * as api from "@/lib/api/lessons";
-import type { LessonGrammarRule } from "@/lib/types/types";
+import type { LessonGrammarRule } from "@/lib/types/lesson";
 
 vi.mock("@/lib/api/lessons");
 

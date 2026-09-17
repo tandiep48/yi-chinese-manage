@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { FlashcardView } from "@/components/page/learner/vocab-learning/FlashcardView";
-import type { LessonVocabRow } from "@/lib/types/types";
+import type { LessonVocabRow } from "@/lib/types/vocab";
 
 vi.mock("@/components/i18n/I18nProvider", () => ({
   useT: () => ({

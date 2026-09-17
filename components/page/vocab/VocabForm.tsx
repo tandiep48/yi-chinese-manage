@@ -5,8 +5,8 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
-import type { Vocab, VocabFormData } from "@/lib/types/types";
-import { HSK_LEVELS } from "@/lib/types/types";
+import type { Vocab, VocabFormData } from "@/lib/types/vocab";
+import { HSK_LEVELS } from "@/lib/types/common";
 
 interface VocabFormProps {
   open: boolean;

@@ -3,7 +3,8 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { useLessonParts } from "@/hooks/useLessonParts";
 import * as lessonsApi from "@/lib/api/lessons";
 import * as booksApi from "@/lib/api/learnerBooks";
-import type { PickerPassage, PickerProgressSummary, LearnerBookDetail } from "@/lib/types/types";
+import type { LearnerBookDetail } from "@/lib/types/book";
+import type { PickerPassage, PickerProgressSummary } from "@/lib/types/lesson";
 
 vi.mock("@/lib/api/lessons");
 vi.mock("@/lib/api/learnerBooks");

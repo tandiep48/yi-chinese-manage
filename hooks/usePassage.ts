@@ -4,7 +4,7 @@
 // All state and CRUD logic for the Passage management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { LessonPassage, PassageFormData } from "@/lib/types/types";
+import type { LessonPassage, PassageFormData } from "@/lib/types/lesson";
 import {
   listPassages,
   createPassage,

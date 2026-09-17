@@ -6,7 +6,7 @@
 // match, and each activity type gets its own independent random grouping so the
 // words paired together differ between skills.
 
-import type { VocabRow } from "@/lib/types/types";
+import type { VocabRow } from "@/lib/types/vocab";
 
 // The trainer's word rows are exactly the normalized rows returned by
 // /api/vocab/words (normalize_vocab_row), which match VocabRow.

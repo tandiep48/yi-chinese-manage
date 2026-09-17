@@ -5,12 +5,7 @@
 // (non-enveloped) JSON, login-required — use legacyApiFetch. Distinct from the
 // admin vocab CRUD in lib/api/vocab.ts.
 
-import type {
-  VocabLookupMap,
-  VocabMode,
-  VocabTableResponse,
-  SavedBook,
-} from "@/lib/types/types";
+import type { SavedBook, VocabLookupMap, VocabMode, VocabTableResponse } from "@/lib/types/vocab";
 import { legacyApiFetch } from "./client";
 
 // Books the current user has saved words in (populates the "Book" mode picker).

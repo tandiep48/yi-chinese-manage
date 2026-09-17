@@ -19,7 +19,7 @@ import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabSelect } from "@/hooks/useVocabSelect";
 import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
-import type { VocabMode, VocabRow } from "@/lib/types/types";
+import type { VocabMode, VocabRow } from "@/lib/types/vocab";
 import { VocabFilterBar } from "./VocabFilterBar";
 import { VocabTable } from "./VocabTable";
 import "./vocab-select.css";

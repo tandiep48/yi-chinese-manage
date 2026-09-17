@@ -3,7 +3,7 @@ import { renderHook, waitFor } from "@testing-library/react";
 import { useRecentLearning } from "@/hooks/useRecentLearning";
 import * as recentApi from "@/lib/api/recent";
 import { useAuth } from "@/components/auth/AuthProvider";
-import type { AuthUser } from "@/lib/types/types";
+import type { AuthUser } from "@/lib/types/user";
 
 vi.mock("@/lib/api/recent");
 vi.mock("@/components/auth/AuthProvider", () => ({ useAuth: vi.fn() }));

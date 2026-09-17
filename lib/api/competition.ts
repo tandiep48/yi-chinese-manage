@@ -4,7 +4,8 @@
 // everything else about a live room flows over the socket (see
 // lib/competition/socket.ts). Login-required and non-enveloped, so legacyApiFetch.
 
-import type { CompetitionRoom, CompetitionRoomSettings, VocabRow } from "@/lib/types/types";
+import type { CompetitionRoom, CompetitionRoomSettings } from "@/lib/types/competition";
+import type { VocabRow } from "@/lib/types/vocab";
 import type { SourcePassage } from "@/lib/competition/roomLogic";
 import { legacyApiFetch } from "./client";
 

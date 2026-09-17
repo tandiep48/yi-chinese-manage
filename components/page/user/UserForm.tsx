@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
-import type { User, UserFormData } from "@/lib/types/types";
+import type { User, UserFormData } from "@/lib/types/user";
 
 interface UserFormProps {
   open: boolean;

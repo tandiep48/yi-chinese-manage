@@ -6,7 +6,7 @@
 import { useState } from "react";
 import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
 import { Pagination } from "@/components/shared/manager_ui/Pagination/Pagination";
-import type { Question } from "@/lib/types/types";
+import type { Question } from "@/lib/types/question";
 
 interface QuestionTableProps {
   items: Question[];

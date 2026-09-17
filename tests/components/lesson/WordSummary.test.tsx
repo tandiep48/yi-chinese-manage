@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import type { LessonVocabRow } from "@/lib/types/types";
+import type { LessonVocabRow } from "@/lib/types/vocab";
 
 const VOCAB: LessonVocabRow[] = [
   { cn: "休息", pinyin: "xiūxī", meaning_vn: "nghỉ ngơi", meaning_en: "to rest", audio_key: "xiuxi_1", hsk_level: "HSK2" },

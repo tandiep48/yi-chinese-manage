@@ -19,7 +19,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faStop, faBackward, faForward } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { practiceAudioUrl } from "@/lib/gcs";
-import type { PracticeCategory } from "@/lib/types/types";
+import type { PracticeCategory } from "@/lib/types/practice";
 
 interface AudioCtx {
   activeSrc: string;

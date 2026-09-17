@@ -5,7 +5,7 @@
 
 import { useState } from "react";
 import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
-import type { Book } from "@/lib/types/types";
+import type { Book } from "@/lib/types/book";
 
 interface BookTableProps {
   items: Book[];

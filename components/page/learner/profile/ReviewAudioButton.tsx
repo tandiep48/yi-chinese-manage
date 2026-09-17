@@ -9,7 +9,7 @@ import { useRef, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import { practiceAudioUrl } from "@/lib/gcs";
-import type { PracticeCategory } from "@/lib/types/types";
+import type { PracticeCategory } from "@/lib/types/practice";
 
 interface Props {
   id: string;

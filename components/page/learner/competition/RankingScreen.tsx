@@ -6,7 +6,7 @@
 // + returnToLobby() in competition.js.
 
 import { useT } from "@/components/i18n/I18nProvider";
-import type { CompetitionScore } from "@/lib/types/types";
+import type { CompetitionScore } from "@/lib/types/competition";
 import { RankingList } from "./RankingList";
 
 export function RankingScreen({

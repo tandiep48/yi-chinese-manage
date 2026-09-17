@@ -9,7 +9,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getVocabReview } from "@/lib/api/learnerVocab";
-import type { VocabRow } from "@/lib/types/types";
+import type { VocabRow } from "@/lib/types/vocab";
 
 export const REVIEW_PAGE_SIZE = 100;
 

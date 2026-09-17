@@ -20,7 +20,7 @@ import { useAudioSequence } from "@/hooks/useAudioSequence";
 import { useWordLookup } from "@/hooks/useWordLookup";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { WordPopup } from "./WordPopup";
-import type { LessonPassageDetail, LessonPassageLine } from "@/lib/types/types";
+import type { LessonPassageDetail, LessonPassageLine } from "@/lib/types/lesson";
 import "./lesson-summary.css";
 
 export function LessonSummary({

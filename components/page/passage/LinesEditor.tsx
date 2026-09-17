@@ -3,7 +3,7 @@
 // components/passage/LinesEditor.tsx
 // Dynamic list editor for lesson_lines inside PassageForm.
 
-import type { LineFormData } from "@/lib/types/types";
+import type { LineFormData } from "@/lib/types/lesson";
 
 interface LinesEditorProps {
   lines: LineFormData[];

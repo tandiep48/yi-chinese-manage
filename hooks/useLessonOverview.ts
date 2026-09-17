@@ -7,7 +7,8 @@
 
 import { useEffect, useState } from "react";
 import { getLessonPassageDetail, getLessonPassageVocab } from "@/lib/api/lessons";
-import type { LessonPassageDetail, LessonVocabRow } from "@/lib/types/types";
+import type { LessonPassageDetail } from "@/lib/types/lesson";
+import type { LessonVocabRow } from "@/lib/types/vocab";
 
 interface UseLessonOverviewReturn {
   loading: boolean;

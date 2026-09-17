@@ -9,7 +9,7 @@ import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { GrammarContextTable } from "@/components/page/grammar_context/GrammarContextTable";
 import { GrammarContextForm } from "@/components/page/grammar_context/GrammarContextForm";
-import type { GrammarContext, GrammarContextFormData } from "@/lib/types/types";
+import type { GrammarContext, GrammarContextFormData } from "@/lib/types/grammar";
 
 export default function GrammarContextPage() {
   const {

@@ -4,7 +4,7 @@
 // All state and CRUD logic for the Books management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { Book, BookFormData } from "@/lib/types/types";
+import type { Book, BookFormData } from "@/lib/types/book";
 import {
   listBooks,
   createBook,

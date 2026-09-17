@@ -3,7 +3,7 @@
 // Learning/web_app/static/review/review.js. Kept framework-free and unit-tested;
 // the React components render from these.
 
-import type { ReviewQuestion, ReviewSessionSummary } from "@/lib/types/types";
+import type { ReviewQuestion, ReviewSessionSummary } from "@/lib/types/practice";
 
 // Split a stored answer / user_answer into comparable tokens (comma, Chinese
 // enumeration comma, or whitespace separated). Mirrors answerTokens().

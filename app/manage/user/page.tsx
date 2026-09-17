@@ -9,7 +9,7 @@ import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { UserTable } from "@/components/page/user/UserTable";
 import { UserForm } from "@/components/page/user/UserForm";
-import type { User, UserFormData } from "@/lib/types/types";
+import type { User, UserFormData } from "@/lib/types/user";
 
 export default function UserPage() {
   const {

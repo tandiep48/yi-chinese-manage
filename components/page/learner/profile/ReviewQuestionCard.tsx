@@ -15,7 +15,7 @@ import {
   isImageFilename,
   questionImageFile,
 } from "@/lib/review/reviewLogic";
-import type { ReviewQuestion } from "@/lib/types/types";
+import type { ReviewQuestion } from "@/lib/types/practice";
 import { ReviewAudioButton } from "./ReviewAudioButton";
 
 interface Props {

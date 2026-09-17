@@ -5,7 +5,7 @@
 // in place, so "check" simply re-renders these with the answer revealed.
 
 import { normalizeAnswer } from "@/lib/practice/practiceEngine";
-import type { PracticeQuestion } from "@/lib/types/types";
+import type { PracticeQuestion } from "@/lib/types/practice";
 import type { TFn } from "./types";
 
 export function QNum({ n, t }: { n: number; t: TFn }) {

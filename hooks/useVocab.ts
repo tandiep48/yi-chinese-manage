@@ -4,7 +4,7 @@
 // All state and CRUD logic for the Vocabulary management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { Vocab, VocabFormData } from "@/lib/types/types";
+import type { Vocab, VocabFormData } from "@/lib/types/vocab";
 import {
   listVocab,
   createVocab,

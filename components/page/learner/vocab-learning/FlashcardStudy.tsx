@@ -22,7 +22,7 @@ import {
   type StrokeAllItem,
 } from "@/components/page/learner/vocab/VocabStrokeModal";
 import { FlashcardView } from "./FlashcardView";
-import type { LessonVocabRow } from "@/lib/types/types";
+import type { LessonVocabRow } from "@/lib/types/vocab";
 import "./flashcards.css";
 
 const HANZI_RE = /[一-鿿]/;

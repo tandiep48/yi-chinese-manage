@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import * as api from "@/lib/api/learnerVocab";
-import type { LessonPassageDetail } from "@/lib/types/types";
+import type { LessonPassageDetail } from "@/lib/types/lesson";
 
 vi.mock("@/lib/api/learnerVocab");
 

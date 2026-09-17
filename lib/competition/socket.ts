@@ -11,13 +11,7 @@
 
 import { io, type Socket } from "socket.io-client";
 import { API_CONSTANTS } from "@/lib/api/constants";
-import type {
-  CompetitionChatMessage,
-  CompetitionRoom,
-  CompetitionRoomSettings,
-  CompetitionScore,
-  CompetitionSession,
-} from "@/lib/types/types";
+import type { CompetitionChatMessage, CompetitionRoom, CompetitionRoomSettings, CompetitionScore, CompetitionSession } from "@/lib/types/competition";
 
 // Server -> client. `joined_room` / `room_settings_saved` are sent to the caller
 // only; the rest are broadcast to everyone in the room.

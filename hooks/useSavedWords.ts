@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { getSavedWords, addSavedWord, removeSavedWord } from "@/lib/api/learnerVocab";
-import type { LessonPassageDetail } from "@/lib/types/types";
+import type { LessonPassageDetail } from "@/lib/types/lesson";
 
 interface UseSavedWordsReturn {
   enabled: boolean;

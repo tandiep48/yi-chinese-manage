@@ -13,7 +13,7 @@ import {
   faListCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import type { RecommendedPractice, RecommendStatus } from "@/lib/types/types";
+import type { RecommendStatus, RecommendedPractice } from "@/lib/types/dashboard";
 import { parseProgress } from "@/lib/recommend/recommendLogic";
 import "./recommend-card.css";
 

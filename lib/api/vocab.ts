@@ -1,4 +1,5 @@
-import type { Vocab, VocabFormData, PaginatedResponse } from "@/lib/types/types";
+import type { PaginatedResponse } from "@/lib/types/common";
+import type { Vocab, VocabFormData } from "@/lib/types/vocab";
 import { API_CONSTANTS } from "./constants";
 import { apiFetch } from "./client";
 

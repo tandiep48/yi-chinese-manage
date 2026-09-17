@@ -14,7 +14,8 @@
 import { useCallback, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonItemKey } from "@/lib/competition/roomLogic";
-import type { CompetitionSession, LessonTask } from "@/lib/types/types";
+import type { CompetitionSession } from "@/lib/types/competition";
+import type { LessonTask } from "@/lib/types/lesson";
 
 export type CompetitionLessonStatus = "playing" | "empty";
 

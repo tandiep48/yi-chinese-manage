@@ -1,8 +1,5 @@
-import type {
-  GrammarContext,
-  GrammarContextFormData,
-  PaginatedResponse,
-} from "@/lib/types/types";
+import type { PaginatedResponse } from "@/lib/types/common";
+import type { GrammarContext, GrammarContextFormData } from "@/lib/types/grammar";
 import { API_CONSTANTS } from "./constants";
 import { apiFetch } from "./client";
 

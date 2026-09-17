@@ -9,7 +9,7 @@
 // to whichever the row actually has (the legacy page was Vietnamese-only).
 
 import { useT } from "@/components/i18n/I18nProvider";
-import type { LessonGrammarRule } from "@/lib/types/types";
+import type { LessonGrammarRule } from "@/lib/types/lesson";
 import type { GrammarSection } from "@/hooks/useGrammar";
 import "@/components/page/learner/lesson/grammar-panel.css";
 

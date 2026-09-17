@@ -4,7 +4,7 @@
 // and shared by the sidebar and bottom-nav shells. No DOM, no React — the hook
 // (hooks/usePracticeEngine.ts) and components own state and rendering.
 
-import type { PracticeGroup, PracticeQuestion, PracticeAnswerRow } from "@/lib/types/types";
+import type { PracticeAnswerRow, PracticeGroup, PracticeQuestion } from "@/lib/types/practice";
 
 // ── Answer normalisation / comparison ────────────────────────────────────────
 // The engine compares chosen vs. correct case-insensitively, trimmed.

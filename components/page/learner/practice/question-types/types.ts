@@ -3,7 +3,7 @@
 // with classifyGroupLayout and hands it exactly these props.
 
 import type { GroupUIState } from "@/hooks/usePracticeEngine";
-import type { PracticeCategory, PracticeGroup } from "@/lib/types/types";
+import type { PracticeCategory, PracticeGroup } from "@/lib/types/practice";
 
 export type TFn = (key: string, vars?: Record<string, string | number>) => string;
 

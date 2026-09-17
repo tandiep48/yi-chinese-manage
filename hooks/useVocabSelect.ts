@@ -23,13 +23,8 @@ import {
   getSavedBooks,
   searchVocab,
 } from "@/lib/api/learnerVocab";
-import type {
-  PickerPassage,
-  SavedBook,
-  VocabMode,
-  VocabRow,
-  VocabTableResponse,
-} from "@/lib/types/types";
+import type { PickerPassage } from "@/lib/types/lesson";
+import type { SavedBook, VocabMode, VocabRow, VocabTableResponse } from "@/lib/types/vocab";
 
 export interface MultiSelectOption {
   value: string;

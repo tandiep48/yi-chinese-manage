@@ -11,7 +11,7 @@ import { useMemo, useRef, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { reorderMatches } from "@/lib/lessons/lessonTrainer";
 import { useLessonTaskFlow } from "@/hooks/useLessonTaskFlow";
-import type { LessonTask } from "@/lib/types/types";
+import type { LessonTask } from "@/lib/types/lesson";
 
 interface Chip {
   id: number;

@@ -9,7 +9,7 @@ import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { BookTable } from "@/components/page/book/BookTable";
 import { BookForm } from "@/components/page/book/BookForm";
-import type { Book, BookFormData } from "@/lib/types/types";
+import type { Book, BookFormData } from "@/lib/types/book";
 
 export default function BookPage() {
   const { items, loading, error, createItem, updateItem, deleteItem } = useBook();

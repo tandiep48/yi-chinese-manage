@@ -7,7 +7,7 @@
 
 import { normalizeAnswer } from "@/lib/practice/practiceEngine";
 import type { GroupUIState } from "@/hooks/usePracticeEngine";
-import type { PracticeQuestion } from "@/lib/types/types";
+import type { PracticeQuestion } from "@/lib/types/practice";
 
 export function KeyButtons({
   q,

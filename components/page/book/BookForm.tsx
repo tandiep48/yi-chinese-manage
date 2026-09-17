@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
-import type { Book, BookFormData } from "@/lib/types/types";
+import type { Book, BookFormData } from "@/lib/types/book";
 
 interface BookFormProps {
   open: boolean;

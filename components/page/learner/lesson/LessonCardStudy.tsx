@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause, faTableList } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonAudioUrl } from "@/lib/audio";
-import type { LessonPassageLine } from "@/lib/types/types";
+import type { LessonPassageLine } from "@/lib/types/lesson";
 
 export function LessonCardStudy({
   lines,

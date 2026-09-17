@@ -4,17 +4,8 @@
 // predate the { success, data } envelope and return raw JSON, login-required —
 // use legacyApiFetch. Distinct from the admin question CRUD in lib/api/question.ts.
 
-import type {
-  PracticeCategory,
-  PracticeGroup,
-  PracticeMultiItem,
-  PracticeSessionData,
-  PracticeAnswerRow,
-  RecommendedPractice,
-  ReviewHistoryFilters,
-  ReviewHistoryResponse,
-  ReviewSessionDetail,
-} from "@/lib/types/types";
+import type { RecommendedPractice } from "@/lib/types/dashboard";
+import type { PracticeAnswerRow, PracticeCategory, PracticeGroup, PracticeMultiItem, PracticeSessionData, ReviewHistoryFilters, ReviewHistoryResponse, ReviewSessionDetail } from "@/lib/types/practice";
 import { legacyApiFetch } from "./client";
 
 // GET /api/practice/recommend — ranked progress groups the user is ready for

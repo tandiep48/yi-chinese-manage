@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { WordPopup } from "@/components/page/learner/lesson/WordPopup";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import type { VocabLookup } from "@/lib/types/types";
+import type { VocabLookup } from "@/lib/types/vocab";
 
 // StrokeOrder pulls in HanziWriter (dynamic import + CDN); stub it out.
 vi.mock("@/components/page/learner/lesson/StrokeOrder", () => ({

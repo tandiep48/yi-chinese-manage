@@ -10,7 +10,8 @@ import { renderHook, act, waitFor } from "@testing-library/react";
 import { useCompetitionTrainer } from "@/hooks/useCompetitionTrainer";
 import * as trainerApi from "@/lib/api/vocabTrainer";
 import * as competitionApi from "@/lib/api/competition";
-import type { CompetitionRoom, CompetitionSession, VocabRow } from "@/lib/types/types";
+import type { CompetitionRoom, CompetitionSession } from "@/lib/types/competition";
+import type { VocabRow } from "@/lib/types/vocab";
 
 vi.mock("@/lib/api/vocabTrainer");
 vi.mock("@/lib/api/competition");

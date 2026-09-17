@@ -1,4 +1,5 @@
-import type { User, UserFormData, PaginatedResponse } from "@/lib/types/types";
+import type { PaginatedResponse } from "@/lib/types/common";
+import type { User, UserFormData } from "@/lib/types/user";
 import { API_CONSTANTS } from "./constants";
 import { apiFetch } from "./client";
 

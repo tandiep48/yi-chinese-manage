@@ -4,7 +4,7 @@
 // The score rows shared by the live scoreboard, the waiting screen and the final
 // ranking — renderScoreList() in Learning/web_app/static/competition/competition.js.
 
-import type { CompetitionScore } from "@/lib/types/types";
+import type { CompetitionScore } from "@/lib/types/competition";
 
 export function RankingList({ scores }: { scores: CompetitionScore[] }) {
   return (

@@ -19,7 +19,7 @@ import {
   submitLessonAnswer,
   completeLessonPart,
 } from "@/lib/api/lessons";
-import type { LessonTask, LessonTaskType } from "@/lib/types/types";
+import type { LessonTask, LessonTaskType } from "@/lib/types/lesson";
 import type { TrainerScreen } from "@/components/page/learner/trainer/TrainerShell";
 
 const WIDE_KEY = "lessonWideLessonTrainer";

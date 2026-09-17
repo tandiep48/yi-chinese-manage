@@ -13,7 +13,7 @@ import { faXmark, faVolumeHigh, faPenNib, faPlus, faCheck } from "@fortawesome/f
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { StrokeOrder } from "./StrokeOrder";
-import type { VocabLookup } from "@/lib/types/types";
+import type { VocabLookup } from "@/lib/types/vocab";
 import "./word-popup.css";
 
 export function WordPopup({

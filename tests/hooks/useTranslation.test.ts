@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useTranslation } from "@/hooks/useTranslation";
 import * as api from "@/lib/api/translation";
-import type { TranslationRow } from "@/lib/types/types";
+import type { TranslationRow } from "@/lib/types/lesson";
 
 vi.mock("@/lib/api/translation");
 

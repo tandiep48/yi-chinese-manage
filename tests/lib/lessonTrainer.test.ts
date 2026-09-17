@@ -6,7 +6,7 @@ import {
   filterTasksByType,
   lessonTaskAudioUrl,
 } from "@/lib/lessons/lessonTrainer";
-import type { LessonTask } from "@/lib/types/types";
+import type { LessonTask } from "@/lib/types/lesson";
 
 function task(over: Partial<LessonTask>): LessonTask {
   return {

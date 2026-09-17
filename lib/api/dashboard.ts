@@ -1,11 +1,4 @@
-import type {
-  DashboardCurrentLesson,
-  GlobalStats,
-  LearnedWordsDay,
-  TimeLearnedDay,
-  RecommendedPractice,
-  RecommendStatus,
-} from "@/lib/types/types";
+import type { DashboardCurrentLesson, GlobalStats, LearnedWordsDay, RecommendStatus, RecommendedPractice, TimeLearnedDay } from "@/lib/types/dashboard";
 import { legacyApiFetch } from "./client";
 
 export function getDashboardCurrentLesson(

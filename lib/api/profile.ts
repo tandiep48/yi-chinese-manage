@@ -5,7 +5,7 @@
 // Avatar upload can't use legacyApiFetch: it posts multipart/form-data, and the
 // browser must set the multipart boundary itself — so no Content-Type header.
 
-import type { ProfileSummaryUser } from "@/lib/types/types";
+import type { ProfileSummaryUser } from "@/lib/types/user";
 import { API_CONSTANTS } from "./constants";
 import { legacyApiFetch, UnauthenticatedError } from "./client";
 

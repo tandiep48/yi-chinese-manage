@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { getPracticeLessons } from "@/lib/api/practice";
-import type { PracticeCategory } from "@/lib/types/types";
+import type { PracticeCategory } from "@/lib/types/practice";
 import "./practice-select.css";
 
 export function PracticeLessonSelect({

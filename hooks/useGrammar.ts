@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from "react";
 import { getPassageGrammar } from "@/lib/api/lessons";
-import type { LessonGrammarRule } from "@/lib/types/types";
+import type { LessonGrammarRule } from "@/lib/types/lesson";
 
 export type GrammarSection = LessonGrammarRule[];
 

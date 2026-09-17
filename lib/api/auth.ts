@@ -1,4 +1,4 @@
-import type { AuthUser } from "@/lib/types/types";
+import type { AuthUser } from "@/lib/types/user";
 import { apiFetch } from "./client";
 
 export function login(username: string, password: string): Promise<AuthUser> {

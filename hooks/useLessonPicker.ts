@@ -14,7 +14,7 @@ import {
   lessonTitle,
   type Progress,
 } from "@/lib/lessons/lessons";
-import type { PickerPassage } from "@/lib/types/types";
+import type { PickerPassage } from "@/lib/types/lesson";
 
 export interface PickerLessonSummary {
   lesson: string;

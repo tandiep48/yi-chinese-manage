@@ -7,7 +7,7 @@
 import { practiceImageUrl } from "@/lib/gcs";
 import { normalizeAnswer } from "@/lib/practice/practiceEngine";
 import type { GroupUIState } from "@/hooks/usePracticeEngine";
-import type { PracticeCategory, PracticeQuestion } from "@/lib/types/types";
+import type { PracticeCategory, PracticeQuestion } from "@/lib/types/practice";
 
 export function ImageOptions({
   q,

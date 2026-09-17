@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useLearnerBooks } from "@/hooks/useLearnerBooks";
 import * as api from "@/lib/api/learnerBooks";
-import type { LearnerBookSummary } from "@/lib/types/types";
+import type { LearnerBookSummary } from "@/lib/types/book";
 
 vi.mock("@/lib/api/learnerBooks");
 

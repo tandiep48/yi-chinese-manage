@@ -4,11 +4,8 @@
 // recommend.js + static/shared/recommend_cards.js. Kept side-effect-free so it
 // can be unit-tested; the hook (useRecommend) and components own state and i18n.
 
-import type {
-  PracticeMultiItem,
-  RecommendedPractice,
-  RecommendStatus,
-} from "@/lib/types/types";
+import type { RecommendStatus, RecommendedPractice } from "@/lib/types/dashboard";
+import type { PracticeMultiItem } from "@/lib/types/practice";
 
 export const RECOMMEND_PAGE_SIZE = 10;
 

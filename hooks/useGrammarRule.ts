@@ -4,7 +4,7 @@
 // All state and CRUD logic for the Grammar Rule management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/types";
+import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/grammar";
 import {
   listGrammarRules,
   createGrammarRule,

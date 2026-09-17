@@ -5,7 +5,7 @@ import { TopBar } from "@/components/layout/TopBar";
 import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
 import { listVocab } from "@/lib/api/vocab";
 import { listPassages } from "@/lib/api/passage";
-import { HSK_LEVELS } from "@/lib/types/types";
+import { HSK_LEVELS } from "@/lib/types/common";
 import Link from "next/link";
 
 async function fetchStats() {

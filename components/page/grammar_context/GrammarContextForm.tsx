@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
-import type { GrammarContext, GrammarContextFormData } from "@/lib/types/types";
+import type { GrammarContext, GrammarContextFormData } from "@/lib/types/grammar";
 
 interface GrammarContextFormProps {
   open: boolean;

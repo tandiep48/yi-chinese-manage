@@ -12,7 +12,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getLessonPassageVocab } from "@/lib/api/lessons";
-import type { LessonVocabRow } from "@/lib/types/types";
+import type { LessonVocabRow } from "@/lib/types/vocab";
 
 const SELECTION_KEY = "selectedVocabFlashcards";
 

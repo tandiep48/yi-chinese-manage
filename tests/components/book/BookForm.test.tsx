@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BookForm } from "@/components/page/book/BookForm";
-import type { Book } from "@/lib/types/types";
+import type { Book } from "@/lib/types/book";
 
 const BOOK: Book = { book_code: "AML", name_en: "A Month in Life", name_vn: "Một tháng" };
 

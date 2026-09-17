@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { getLessonTranslations } from "@/lib/api/translation";
 import { hskLevelFromPassageId } from "@/lib/lessons/lessons";
-import type { TranslationRow } from "@/lib/types/types";
+import type { TranslationRow } from "@/lib/types/lesson";
 
 interface UseTranslationReturn {
   loading: boolean;

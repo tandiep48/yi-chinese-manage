@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { getLearnerBooks } from "@/lib/api/learnerBooks";
-import type { LearnerBookSummary } from "@/lib/types/types";
+import type { LearnerBookSummary } from "@/lib/types/book";
 
 interface UseLearnerBooksReturn {
   loading: boolean;

@@ -1,4 +1,5 @@
-import type { Question, QuestionFormData, PaginatedResponse } from "@/lib/types/types";
+import type { PaginatedResponse } from "@/lib/types/common";
+import type { Question, QuestionFormData } from "@/lib/types/question";
 import { API_CONSTANTS } from "./constants";
 import { apiFetch } from "./client";
 

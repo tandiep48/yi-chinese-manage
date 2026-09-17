@@ -11,7 +11,7 @@ import { VocabReviewPage } from "@/components/page/learner/vocab-review/VocabRev
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import { getVocabReview } from "@/lib/api/learnerVocab";
 import { useRouter } from "next/navigation";
-import type { VocabRow } from "@/lib/types/types";
+import type { VocabRow } from "@/lib/types/vocab";
 
 vi.mock("@/lib/api/learnerVocab", () => ({ getVocabReview: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: vi.fn() }));

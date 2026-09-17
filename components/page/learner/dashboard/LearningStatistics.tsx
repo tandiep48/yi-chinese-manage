@@ -16,12 +16,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { MiniBarChart, formatChartDate } from "./MiniBarChart";
-import type {
-  GlobalStats,
-  GlobalStatsBucket,
-  LearnedWordsDay,
-  TimeLearnedDay,
-} from "@/lib/types/types";
+import type { GlobalStats, GlobalStatsBucket, LearnedWordsDay, TimeLearnedDay } from "@/lib/types/dashboard";
 import "./dashboard-stats.css";
 
 export function LearningStatistics({

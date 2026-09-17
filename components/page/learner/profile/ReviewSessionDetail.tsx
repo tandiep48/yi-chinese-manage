@@ -11,7 +11,7 @@ import type {
   ResultFilter,
   SkillFilter,
 } from "@/lib/review/reviewLogic";
-import type { ReviewSessionDetail as Detail } from "@/lib/types/types";
+import type { ReviewSessionDetail as Detail } from "@/lib/types/practice";
 import { ReviewQuestionCard } from "./ReviewQuestionCard";
 
 interface Props {

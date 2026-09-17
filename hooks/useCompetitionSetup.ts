@@ -28,11 +28,7 @@ import {
   type PassageByLesson,
   type SourcePassage,
 } from "@/lib/competition/roomLogic";
-import type {
-  CompetitionCategory,
-  CompetitionRoom,
-  CompetitionRoomSettings,
-} from "@/lib/types/types";
+import type { CompetitionCategory, CompetitionRoom, CompetitionRoomSettings } from "@/lib/types/competition";
 
 const DEFAULT_MAX_USERS = 8;
 const DEFAULT_TIMEOUT = 15;

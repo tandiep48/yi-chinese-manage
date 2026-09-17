@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import type { LessonPassageDetail } from "@/lib/types/types";
+import type { LessonPassageDetail } from "@/lib/types/lesson";
 
 const PASSAGE: LessonPassageDetail = {
   passage_id: "H2_2_2",

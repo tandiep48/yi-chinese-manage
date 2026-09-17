@@ -14,7 +14,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
 import { HSK_LEVELS } from "@/lib/competition/roomLogic";
 import { TIMEOUT_OPTIONS, type CompetitionSetup } from "@/hooks/useCompetitionSetup";
-import type { CompetitionCategory } from "@/lib/types/types";
+import type { CompetitionCategory } from "@/lib/types/competition";
 import "./competition-multiselect.css";
 
 export function SetupScreen({

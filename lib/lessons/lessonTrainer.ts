@@ -6,7 +6,7 @@
 // they can be unit-tested.
 
 import { lessonAudioUrl } from "@/lib/audio";
-import type { LessonTask, LessonTaskType } from "@/lib/types/types";
+import type { LessonTask, LessonTaskType } from "@/lib/types/lesson";
 
 // Time a correct multiple-choice answer stays on screen before advancing — matches
 // the 3s delay in lesson.js checkAnswer() (typing/reorder instead wait for audio).

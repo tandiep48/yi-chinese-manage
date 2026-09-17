@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TranslationPanel } from "@/components/page/learner/translation/TranslationPanel";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import type { TranslationRow } from "@/lib/types/types";
+import type { TranslationRow } from "@/lib/types/lesson";
 
 const ROWS: TranslationRow[] = [
   { translation_id: "H2_2_1", cn: "起床了吗？", vn: "Dậy chưa?", en: "Are you up?" },

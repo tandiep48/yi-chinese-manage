@@ -4,7 +4,7 @@
 // All state and CRUD logic for the Grammar Context management page.
 
 import { useState, useCallback, useEffect } from "react";
-import type { GrammarContext, GrammarContextFormData } from "@/lib/types/types";
+import type { GrammarContext, GrammarContextFormData } from "@/lib/types/grammar";
 import {
   listGrammarContexts,
   createGrammarContext,

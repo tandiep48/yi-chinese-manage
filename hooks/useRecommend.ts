@@ -10,7 +10,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { getRecommendations } from "@/lib/api/practice";
 import { getVocabHasHistory } from "@/lib/api/learnerVocab";
 import { UnauthenticatedError } from "@/lib/api/client";
-import type { PracticeMultiItem, RecommendedPractice } from "@/lib/types/types";
+import type { RecommendedPractice } from "@/lib/types/dashboard";
+import type { PracticeMultiItem } from "@/lib/types/practice";
 import {
   clampPage,
   filterRecommendations,

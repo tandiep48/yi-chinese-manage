@@ -19,7 +19,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
-import type { LessonVocabRow } from "@/lib/types/types";
+import type { LessonVocabRow } from "@/lib/types/vocab";
 
 const HANZI_RE = /[一-鿿]/;
 

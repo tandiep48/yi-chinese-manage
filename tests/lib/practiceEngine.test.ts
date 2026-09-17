@@ -15,7 +15,7 @@ import {
   allChecked,
   resultIcon,
 } from "@/lib/practice/practiceEngine";
-import type { PracticeGroup, PracticeQuestion } from "@/lib/types/types";
+import type { PracticeGroup, PracticeQuestion } from "@/lib/types/practice";
 
 function q(overrides: Partial<PracticeQuestion> = {}): PracticeQuestion {
   return {

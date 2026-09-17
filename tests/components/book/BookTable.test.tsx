@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { BookTable } from "@/components/page/book/BookTable";
-import type { Book } from "@/lib/types/types";
+import type { Book } from "@/lib/types/book";
 
 const BOOKS: Book[] = [
   { book_code: "AML", name_en: "A Month in Life", name_vn: "Một tháng" },

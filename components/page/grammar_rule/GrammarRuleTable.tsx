@@ -7,7 +7,7 @@ import { useState } from "react";
 import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
 import { SkeletonTable } from "@/components/shared/manager_ui/SkeletonRow/SkeletonRow";
 import { Pagination } from "@/components/shared/manager_ui/Pagination/Pagination";
-import type { GrammarRule } from "@/lib/types/types";
+import type { GrammarRule } from "@/lib/types/grammar";
 
 interface GrammarRuleTableProps {
   items: GrammarRule[];

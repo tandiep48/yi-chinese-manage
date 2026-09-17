@@ -10,7 +10,7 @@ import {
   toMultiItem,
   type RecommendFilters,
 } from "@/lib/recommend/recommendLogic";
-import type { RecommendedPractice } from "@/lib/types/types";
+import type { RecommendedPractice } from "@/lib/types/dashboard";
 
 function makeRec(overrides: Partial<RecommendedPractice> = {}): RecommendedPractice {
   return {

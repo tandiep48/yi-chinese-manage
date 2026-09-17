@@ -18,7 +18,7 @@ import { resolveTrainerWords } from "@/lib/api/vocabTrainer";
 import { getSessionBookWords } from "@/lib/api/competition";
 import { vocabActivityTypes } from "@/lib/competition/roomLogic";
 import { buildActivities, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
-import type { CompetitionRoom, CompetitionSession } from "@/lib/types/types";
+import type { CompetitionRoom, CompetitionSession } from "@/lib/types/competition";
 
 export type CompetitionTrainerStatus = "loading" | "playing" | "empty";
 

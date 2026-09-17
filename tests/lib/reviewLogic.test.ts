@@ -9,7 +9,7 @@ import {
   sessionCardLevels,
   sessionCardLessons,
 } from "@/lib/review/reviewLogic";
-import type { ReviewQuestion, ReviewSessionSummary } from "@/lib/types/types";
+import type { ReviewQuestion, ReviewSessionSummary } from "@/lib/types/practice";
 
 function q(partial: Partial<ReviewQuestion>): ReviewQuestion {
   return {

@@ -14,13 +14,7 @@ import {
   getTimeLearnedLast3Days,
   getRecommendedPractices,
 } from "@/lib/api/dashboard";
-import type {
-  DashboardLesson,
-  GlobalStats,
-  LearnedWordsDay,
-  TimeLearnedDay,
-  RecommendedPractice,
-} from "@/lib/types/types";
+import type { DashboardLesson, GlobalStats, LearnedWordsDay, RecommendedPractice, TimeLearnedDay } from "@/lib/types/dashboard";
 
 interface UseDashboardHomeReturn {
   loading: boolean;

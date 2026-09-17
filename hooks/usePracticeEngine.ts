@@ -21,12 +21,7 @@ import {
   resultIcon,
 } from "@/lib/practice/practiceEngine";
 import { now } from "@/lib/clock";
-import type {
-  PracticeCategory,
-  PracticeGroup,
-  PracticeMultiItem,
-  PracticeAnswerRow,
-} from "@/lib/types/types";
+import type { PracticeAnswerRow, PracticeCategory, PracticeGroup, PracticeMultiItem } from "@/lib/types/practice";
 
 export type Screen = "loading" | "practice" | "result";
 

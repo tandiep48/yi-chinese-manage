@@ -16,7 +16,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { now } from "@/lib/clock";
 import { lessonTaskAudioUrl, MC_CORRECT_DELAY_MS } from "@/lib/lessons/lessonTrainer";
 import { useTrainerActionSlot } from "@/components/page/learner/trainer/TrainerShell";
-import type { LessonTask } from "@/lib/types/types";
+import type { LessonTask } from "@/lib/types/lesson";
 
 export type TaskOutcome = "correct" | "wrong" | "skipped" | null;
 

@@ -14,7 +14,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { AuthUser } from "@/lib/types/types";
+import type { AuthUser } from "@/lib/types/user";
 import {
   login as loginApi,
   register as registerApi,

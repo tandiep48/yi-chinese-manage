@@ -3,7 +3,7 @@
 // the lesson picker flow (HSK level → lesson → part). Ported from
 // Learning/web_app/static/shared/passage_picker.js's Picker object.
 import { LESSON_CONSTANTS, LESSON_COLORS } from './constants';
-import type { PickerPassage, PickerProgressEntry } from '@/lib/types/types';
+import type { PickerPassage, PickerProgressEntry } from "@/lib/types/lesson";
 
 export interface HskLevel {
   key: string; // "HSK1"

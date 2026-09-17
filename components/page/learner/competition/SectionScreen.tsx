@@ -21,7 +21,7 @@ import { TypingTask } from "@/components/page/learner/lesson-training/TypingTask
 import { ReorderTask } from "@/components/page/learner/lesson-training/ReorderTask";
 import { useCompetitionTrainer } from "@/hooks/useCompetitionTrainer";
 import { useCompetitionLessonTrainer } from "@/hooks/useCompetitionLessonTrainer";
-import type { CompetitionRoom, CompetitionScore, CompetitionSession } from "@/lib/types/types";
+import type { CompetitionRoom, CompetitionScore, CompetitionSession } from "@/lib/types/competition";
 import { RankingList } from "./RankingList";
 import "@/components/page/learner/trainer/vocab-trainer.css";
 import "@/components/page/learner/lesson-training/lesson-trainer.css";

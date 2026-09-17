@@ -5,7 +5,8 @@
 // returned as descriptors the components translate.
 
 import type { MultiSelectOption } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
-import type { CompetitionCategory, CompetitionRoom, PickerPassage } from "@/lib/types/types";
+import type { CompetitionCategory, CompetitionRoom } from "@/lib/types/competition";
+import type { PickerPassage } from "@/lib/types/lesson";
 
 // One passage id split into its parts. `lessonKey` scopes a lesson to its HSK level
 // ("H1_2") so lesson numbers never collide across levels.

@@ -4,7 +4,7 @@
 // login-required and return raw (non-enveloped) JSON, so they use legacyApiFetch;
 // they soft-fail to an empty result when signed out, matching the legacy page.
 
-import type { VocabRow } from "@/lib/types/types";
+import type { VocabRow } from "@/lib/types/vocab";
 import { legacyApiFetch } from "./client";
 
 // A selection to resolve into normalized word rows. Any combination of explicit

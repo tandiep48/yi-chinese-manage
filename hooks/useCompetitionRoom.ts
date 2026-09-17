@@ -11,13 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { createCompetitionRoom } from "@/lib/api/competition";
 import { createCompetitionSocket, type CompetitionSocket } from "@/lib/competition/socket";
-import type {
-  CompetitionChatMessage,
-  CompetitionRoom,
-  CompetitionRoomSettings,
-  CompetitionScore,
-  CompetitionSession,
-} from "@/lib/types/types";
+import type { CompetitionChatMessage, CompetitionRoom, CompetitionRoomSettings, CompetitionScore, CompetitionSession } from "@/lib/types/competition";
 
 export type CompetitionScreen = "setup" | "lobby" | "section" | "waiting" | "ranking";
 
