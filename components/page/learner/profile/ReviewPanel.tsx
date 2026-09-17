@@ -18,6 +18,7 @@ import {
   sessionCardLessons,
 } from "@/lib/review/reviewLogic";
 import { ReviewSessionDetail } from "./ReviewSessionDetail";
+import "./review-panel.css";
 
 // Localised session timestamp (review.js fmtDate).
 function fmtDate(iso: string | null, lang: string): string {

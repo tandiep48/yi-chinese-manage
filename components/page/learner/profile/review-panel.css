@@ -1,0 +1,182 @@
+
+/* ─────────────────────────────────────────────
+   PRACTICE REVIEW PANEL — the session list + read-only per-question detail
+   embedded in the profile page. Ported from the Learning app
+   (static/review/review.css).
+
+   Still selector-scoped under .profile-page, because that is where the sage
+   palette tokens (--primary, --secondary, --success, --danger …) are defined
+   and the panel has no root of its own. Moving it to another page means
+   lifting those tokens with it.
+   ───────────────────────────────────────────── */
+
+/* ── States ── */
+.profile-page .state-box { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+.profile-page .state-box .state-icon { font-size: 3rem; margin-bottom: 12px; color: var(--primary); }
+.profile-page .state-box .state-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+.profile-page .state-box .state-sub { font-size: 0.9rem; }
+.profile-page .loading-dots span {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin: 0 3px;
+  animation: profileDotBounce 1.2s infinite ease-in-out;
+}
+.profile-page .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.profile-page .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes profileDotBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-8px); opacity: 1; }
+}
+
+/* ── Filters ── */
+.profile-page .review-filters { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 22px; }
+.profile-page .review-filters .filter-group { display: flex; flex-direction: column; gap: 6px; }
+.profile-page .review-filters .filter-label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); }
+.profile-page .review-filters .filter-select {
+  padding: 8px 12px;
+  border: 1px solid var(--secondary-hover);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+/* ── Pagination ── */
+.profile-page .review-pagination { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; }
+.profile-page .review-page-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: 1px solid var(--secondary-hover);
+  border-radius: 10px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+.profile-page .review-page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.profile-page .review-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.profile-page .review-page-indicator { font-size: 0.9rem; color: var(--text-muted); }
+
+/* ── Session list ── */
+.profile-page #session-list { display: flex; flex-direction: column; gap: 14px; }
+.profile-page .session-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  text-align: left;
+  background: var(--card-bg);
+  border: 1px solid var(--secondary-hover);
+  border-radius: 14px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+.profile-page .session-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(87, 104, 86, 0.12);
+  border-color: var(--primary);
+}
+.profile-page .session-card-title { font-size: 1.05rem; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+.profile-page .session-card-meta { display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 0.85rem; color: var(--text-muted); }
+
+/* ── Detail ── */
+.profile-page .review-back-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+.profile-page .review-back-btn:hover { color: var(--primary); }
+.profile-page .q-review-list { display: flex; flex-direction: column; gap: 18px; }
+.profile-page .q-review-card {
+  background: var(--card-bg);
+  border: 1px solid var(--secondary-hover);
+  border-left: 4px solid var(--secondary-hover);
+  border-radius: 14px;
+  padding: 20px;
+}
+.profile-page .q-review-card.is-correct { border-left-color: var(--success); }
+.profile-page .q-review-card.is-incorrect { border-left-color: var(--danger); }
+.profile-page .q-review-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.profile-page .q-num { font-weight: 700; color: var(--text-main); }
+.profile-page .q-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.profile-page .q-badge.correct { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.profile-page .q-badge.incorrect { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+.profile-page .q-content {
+  background: var(--secondary);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  line-height: 1.7;
+  color: var(--text-main);
+  white-space: pre-wrap;
+}
+.profile-page .q-prompt { font-size: 1.05rem; font-weight: 600; color: var(--text-main); margin-bottom: 12px; }
+.profile-page .q-image { max-width: 100%; max-height: 220px; border-radius: 10px; margin-bottom: 12px; display: block; }
+.profile-page .q-missing { color: var(--text-muted); font-style: italic; margin-bottom: 12px; }
+.profile-page .q-audio { margin-bottom: 12px; }
+.profile-page .q-audio-btn {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.profile-page .q-audio-btn:hover { background: var(--primary-hover); }
+.profile-page .q-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.profile-page .q-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--secondary-hover);
+  border-radius: 10px;
+  background: var(--card-bg);
+}
+.profile-page .q-option.opt-correct,
+.profile-page .q-option.opt-user-correct { border-color: var(--success); background: rgba(16, 185, 129, 0.08); }
+.profile-page .q-option.opt-user-wrong { border-color: var(--danger); background: rgba(239, 68, 68, 0.08); }
+.profile-page .q-option-key {
+  flex-shrink: 0;
+  width: 26px; height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: var(--secondary);
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 0.85rem;
+}
+.profile-page .q-option-val { flex: 1; color: var(--text-main); }
+.profile-page .q-option-img { max-height: 90px; border-radius: 6px; }
+.profile-page .q-option-marks { flex-shrink: 0; display: flex; gap: 8px; color: var(--text-muted); }
+.profile-page .q-option.opt-correct .q-mark.fa-check,
+.profile-page .q-option.opt-user-correct .q-mark.fa-check { color: var(--success); }
+.profile-page .q-option.opt-user-wrong .q-mark.fa-user { color: var(--danger); }
+.profile-page .q-answers { border-top: 1px dashed var(--secondary-hover); padding-top: 12px; display: flex; flex-direction: column; gap: 6px; }
+.profile-page .q-answer-line { display: flex; gap: 10px; font-size: 0.92rem; color: var(--text-main); }
+.profile-page .q-answer-line.bad { color: var(--danger); }
+.profile-page .q-answer-label { min-width: 130px; color: var(--text-muted); font-weight: 600; }
+
+@media (max-width: 600px) {
+  .profile-page .session-card { flex-direction: column; align-items: flex-start; }
+  .profile-page .q-answer-label { min-width: 0; }
+  .profile-page .q-answer-line { flex-direction: column; gap: 2px; }
+}
