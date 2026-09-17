@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import type { PageToken } from "@/lib/recommend/recommendLogic";
+import "./recommend-pagination.css";
 
 export function RecommendPagination({
   page,

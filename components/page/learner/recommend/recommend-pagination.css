@@ -1,0 +1,58 @@
+
+/* ─────────────────────────────────────────────
+   RECOMMEND PAGE — pagination bar (RecommendPagination).
+   Scoped under .recommend-page, which declares the sage tokens; see
+   ./recommend-page.css.
+   ───────────────────────────────────────────── */
+/* Pagination */
+.recommend-page .pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+.recommend-page .page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(87, 104, 86, 0.14);
+  background: rgba(87, 104, 86, 0.05);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.recommend-page .page-btn:hover:not(.disabled):not(.active) {
+  background: rgba(87, 104, 86, 0.12);
+  border-color: rgba(87, 104, 86, 0.3);
+}
+.recommend-page .page-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
+}
+.recommend-page .page-btn.disabled { opacity: 0.35; cursor: not-allowed; }
+.recommend-page .page-ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  user-select: none;
+}
+.recommend-page .page-info {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+

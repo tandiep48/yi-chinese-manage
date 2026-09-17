@@ -15,6 +15,7 @@ import {
 import { useT } from "@/components/i18n/I18nProvider";
 import type { RecommendedPractice, RecommendStatus } from "@/lib/types/types";
 import { parseProgress } from "@/lib/recommend/recommendLogic";
+import "./recommend-card.css";
 
 const STATUS_KEY: Record<RecommendStatus, string> = {
   "Not start": "recommend.status_not_start",
