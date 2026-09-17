@@ -13,6 +13,7 @@ import { faShuffle } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { shuffle } from "@/lib/lessons/vocabTrainer";
 import type { TranslationRow } from "@/lib/types/types";
+import "@/components/page/learner/lesson/translation-panel.css";
 
 export function TranslationPanel({
   rows,

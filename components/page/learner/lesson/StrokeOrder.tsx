@@ -13,6 +13,7 @@ import type HanziWriterInstance from "hanzi-writer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPen, faRotateLeft } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
+import "./stroke-order.css";
 
 export function StrokeOrder({ word }: { word: string }) {
   const { t } = useT();

@@ -1,0 +1,106 @@
+
+/* ─────────────────────────────────────────────
+   WORD POPUP — the vocabulary lookup card raised by clicking a word token in
+   the Lesson Summary (WordPopup). Ported from static/reading/reading.css.
+   Scoped under .lesson-study; tokens come from ./lesson-study.css.
+   ───────────────────────────────────────────── */
+
+.lesson-study .word-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.lesson-study .word-popup {
+  background: #ffffff;
+  border-radius: 20px 20px 0 0;
+  padding: 28px 24px 36px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.15);
+  animation: wordPopupSlideUp 0.22s ease;
+}
+@keyframes wordPopupSlideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.lesson-study .word-popup-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ls-muted);
+  font-size: 0.9rem;
+  transition: background 0.15s;
+}
+.lesson-study .word-popup-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+.lesson-study .word-popup-hanzi {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--ls-primary);
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+.lesson-study .word-popup-pinyin {
+  font-size: 1.05rem;
+  color: var(--ls-muted);
+  margin-bottom: 10px;
+}
+.lesson-study .word-popup-meaning {
+  font-size: 0.95rem;
+  color: var(--ls-text);
+  margin-bottom: 4px;
+}
+.lesson-study .word-popup-meaning-en {
+  color: var(--ls-muted);
+  font-size: 0.88rem;
+}
+.lesson-study .word-popup-not-found {
+  color: var(--ls-muted);
+  font-size: 0.9rem;
+  font-style: italic;
+}
+.lesson-study .word-popup-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+.lesson-study .word-popup-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--ls-secondary);
+  border-radius: 10px;
+  background: var(--ls-primary-light);
+  color: var(--ls-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.lesson-study .word-popup-btn:hover {
+  background: var(--ls-secondary);
+}
+.lesson-study .word-popup-btn.active {
+  background: var(--ls-primary);
+  color: #ffffff;
+  border-color: var(--ls-primary);
+}
+

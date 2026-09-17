@@ -1,0 +1,110 @@
+
+/* ─────────────────────────────────────────────
+   GRAMMAR PANEL — the lesson-wide grammar rules view (GrammarPanel).
+   Ported from static/grammar/grammar.css. Scoped under .lesson-study; tokens
+   come from ./lesson-study.css.
+   ───────────────────────────────────────────── */
+/* Grammar */
+.lesson-study .grammar-content {
+  padding: 4px;
+}
+.lesson-study .grammar-section {
+  padding-bottom: 16px;
+  margin-bottom: 18px;
+  border-bottom: 2px solid rgba(87, 104, 86, 0.12);
+}
+.lesson-study .grammar-section:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+.lesson-study .grammar-title {
+  color: var(--ls-primary);
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0 0 10px;
+  border-bottom: 1px solid rgba(87, 104, 86, 0.1);
+  padding-bottom: 6px;
+}
+.lesson-study .grammar-desc {
+  color: var(--ls-text);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+.lesson-study .grammar-example {
+  background: var(--ls-preview);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 3px solid var(--ls-primary);
+}
+.lesson-study .ex-cn {
+  font-size: 1.15rem;
+  color: var(--ls-text);
+  margin-bottom: 4px;
+}
+.lesson-study .ex-vn {
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+.lesson-study .grammar-dialogue {
+  background: #eef4ec;
+  border-left: 3px solid #7fa07c;
+  padding: 12px 14px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.lesson-study .dlg-cn {
+  font-size: 1.1rem;
+  color: var(--ls-text);
+  font-weight: 600;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+.lesson-study .dlg-vn {
+  font-size: 0.95rem;
+  color: #2b2b2b;
+}
+.lesson-study .grammar-table-ref {
+  margin: 10px 0 15px;
+  padding: 10px;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px dashed #10b981;
+  color: #10b981;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+.lesson-study .grammar-table-container {
+  overflow-x: auto;
+  margin: 15px 0;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #d9ded9;
+}
+.lesson-study .grammar-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.lesson-study .grammar-table th,
+.lesson-study .grammar-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(87, 104, 86, 0.06);
+}
+.lesson-study .grammar-table th {
+  background: var(--ls-primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+.lesson-study .grammar-table td {
+  color: var(--ls-text);
+}
+.lesson-study .grammar-table tr:last-child td {
+  border-bottom: none;
+}
+.lesson-study .grammar-table tbody tr:hover {
+  background: #eef6df;
+}
+

@@ -21,6 +21,7 @@ import { useWordLookup } from "@/hooks/useWordLookup";
 import { useSavedWords } from "@/hooks/useSavedWords";
 import { WordPopup } from "./WordPopup";
 import type { LessonPassageDetail, LessonPassageLine } from "@/lib/types/types";
+import "./lesson-summary.css";
 
 export function LessonSummary({
   passage,

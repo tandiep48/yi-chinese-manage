@@ -28,6 +28,7 @@ import {
 import { useLessonParts, type SidebarPart } from "@/hooks/useLessonParts";
 import { partPickerHref } from "@/lib/lessons/lessons";
 import { useT } from "@/components/i18n/I18nProvider";
+import "./lesson-sidebar.css";
 
 export type StudyDomain = "lesson" | "grammar" | "translation";
 type Section = "parts" | "grammar" | "translation";

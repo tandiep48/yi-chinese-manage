@@ -27,6 +27,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { useAudioSequence } from "@/hooks/useAudioSequence";
 import type { LessonVocabRow } from "@/lib/types/types";
+import "./word-summary.css";
 
 type Col = "cn" | "py" | "vn";
 
