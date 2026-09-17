@@ -15,18 +15,22 @@ interface NavItem {
   href: string;
 }
 
+const LEARNER_HOME = "/learner";
+
 const NAV_ITEMS: NavItem[] = [
-  { labelKey: "nav.dashboard", href: "/" },
-  { labelKey: "nav.hsk", href: "/hsk" },
-  { labelKey: "nav.vocabulary", href: "/vocab" },
-  { labelKey: "nav.recommend", href: "/recommend" },
-  { labelKey: "nav.practice", href: "/practice" },
-  { labelKey: "nav.exam", href: "/exam" },
-  { labelKey: "nav.learn_together", href: "/learn-together" },
+  { labelKey: "nav.dashboard", href: LEARNER_HOME },
+  { labelKey: "nav.hsk", href: "/learner/hsk" },
+  { labelKey: "nav.vocabulary", href: "/learner/vocab" },
+  { labelKey: "nav.recommend", href: "/learner/recommend" },
+  { labelKey: "nav.practice", href: "/learner/practice" },
+  { labelKey: "nav.exam", href: "/learner/exam" },
+  { labelKey: "nav.learn_together", href: "/learner/learn-together" },
 ];
 
+// The learner home is "/learner", a prefix of every other learner route, so it
+// only counts as active on an exact match.
 function isActive(pathname: string, href: string): boolean {
-  return href === "/" ? pathname === "/" : pathname.startsWith(href);
+  return href === LEARNER_HOME ? pathname === LEARNER_HOME : pathname.startsWith(href);
 }
 
 export function TopNav() {
@@ -45,7 +49,7 @@ export function TopNav() {
   return (
     <header className="sticky top-0 z-30 flex items-center gap-2 bg-[#007a61] px-4 py-2.5 text-white shadow-sm">
       {/* Logo */}
-      <Link href="/" className="flex items-center gap-2 pr-3">
+      <Link href={LEARNER_HOME} className="flex items-center gap-2 pr-3">
         <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20 text-sm font-bold text-white">
           易
         </span>
@@ -69,8 +73,8 @@ export function TopNav() {
                 from the shared auth user, so an upload on the profile page shows here
                 immediately. */}
             <Link
-              href="/profile"
-              className={`${linkClass("/profile")} flex items-center gap-2`}
+              href="/learner/profile"
+              className={`${linkClass("/learner/profile")} flex items-center gap-2`}
             >
               {user.avatar_url ? (
                 // eslint-disable-next-line @next/next/no-img-element -- GCS-hosted, arbitrary host
@@ -98,10 +102,10 @@ export function TopNav() {
           </>
         ) : (
           <>
-            <Link href="/login" className={linkClass("/login")}>
+            <Link href="/learner/login" className={linkClass("/learner/login")}>
               {t("nav.login")}
             </Link>
-            <Link href="/register" className={linkClass("/register")}>
+            <Link href="/learner/register" className={linkClass("/learner/register")}>
               {t("nav.register")}
             </Link>
           </>

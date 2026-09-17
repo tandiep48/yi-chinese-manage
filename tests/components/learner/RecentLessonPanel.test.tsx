@@ -35,6 +35,6 @@ describe("RecentLessonPanel", () => {
 
     expect(screen.getByText("HSK2 - Lesson 3 - Part 1")).toBeInTheDocument();
     const link = screen.getByRole("link", { name: "Continue" });
-    expect(link).toHaveAttribute("href", "/lesson?passage_id=H2_3_1");
+    expect(link).toHaveAttribute("href", "/learner/lesson?passage_id=H2_3_1");
   });
 });

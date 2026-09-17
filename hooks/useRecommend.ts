@@ -137,7 +137,7 @@ export function useRecommend() {
       JSON.stringify(selected)
     );
     window.sessionStorage.setItem("practice_referrer", "recommend");
-    window.location.href = "/practice/multi";
+    window.location.href = "/learner/practice/multi";
   }, [selected]);
 
   return {

@@ -18,7 +18,7 @@ describe("LearningTabs", () => {
   beforeEach(() => vi.resetAllMocks());
 
   it("marks the HSK tab active on the /hsk routes", () => {
-    vi.mocked(usePathname).mockReturnValue("/hsk/HSK2");
+    vi.mocked(usePathname).mockReturnValue("/learner/hsk/HSK2");
     renderTabs();
 
     expect(screen.getByText("HSK Lessons")).toHaveClass("active");
@@ -26,7 +26,7 @@ describe("LearningTabs", () => {
   });
 
   it("marks the Books tab active on the /books routes", () => {
-    vi.mocked(usePathname).mockReturnValue("/books/AML");
+    vi.mocked(usePathname).mockReturnValue("/learner/books/AML");
     renderTabs();
 
     expect(screen.getByText("Books")).toHaveClass("active");
@@ -34,10 +34,10 @@ describe("LearningTabs", () => {
   });
 
   it("links each tab to its route", () => {
-    vi.mocked(usePathname).mockReturnValue("/hsk");
+    vi.mocked(usePathname).mockReturnValue("/learner/hsk");
     renderTabs();
 
-    expect(screen.getByText("HSK Lessons")).toHaveAttribute("href", "/hsk");
-    expect(screen.getByText("Books")).toHaveAttribute("href", "/books");
+    expect(screen.getByText("HSK Lessons")).toHaveAttribute("href", "/learner/hsk");
+    expect(screen.getByText("Books")).toHaveAttribute("href", "/learner/books");
   });
 });

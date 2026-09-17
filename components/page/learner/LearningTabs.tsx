@@ -13,12 +13,12 @@ import { useT } from "@/components/i18n/I18nProvider";
 export function LearningTabs() {
   const { t } = useT();
   const pathname = usePathname();
-  const onBooks = pathname.startsWith("/books");
+  const onBooks = pathname.startsWith("/learner/books");
 
   return (
     <div className="learning-tabs" role="tablist">
       <Link
-        href="/hsk"
+        href="/learner/hsk"
         role="tab"
         aria-selected={!onBooks}
         className={`learning-tab${onBooks ? "" : " active"}`}
@@ -26,7 +26,7 @@ export function LearningTabs() {
         {t("books.tab_hsk")}
       </Link>
       <Link
-        href="/books"
+        href="/learner/books"
         role="tab"
         aria-selected={onBooks}
         className={`learning-tab${onBooks ? " active" : ""}`}

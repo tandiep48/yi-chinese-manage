@@ -1,6 +1,6 @@
 
 /* ─────────────────────────────────────────────
-   LEARNER THEME — scoped to the (learner) route group only.
+   LEARNER THEME — scoped to the /learner segment only.
    Ported from the Learning Flask app (static/shared/styles.css):
    sage-green palette, teal site header, Roboto font.
    Does NOT affect /manage (which keeps the slate/indigo admin theme).

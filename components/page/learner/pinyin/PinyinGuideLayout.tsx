@@ -21,7 +21,7 @@ export function PinyinGuideLayout({
   return (
     <div className="pinyin-guide mx-auto w-full max-w-6xl px-4 py-6">
       <div className="mb-5">
-        <Link href="/hsk/HSK1" className="text-sm font-semibold text-[var(--learner-primary)] hover:underline">
+        <Link href="/learner/hsk/HSK1" className="text-sm font-semibold text-[var(--learner-primary)] hover:underline">
           ← {t("pinyin.back_to_lesson_select")}
         </Link>
       </div>
@@ -31,11 +31,11 @@ export function PinyinGuideLayout({
           {t("pinyin.lesson_heading")}
         </h2>
         <nav className="pinyin-toggle">
-          <Link href="/lesson/basic-pinyin" className={active === "basic" ? "active" : ""}>
+          <Link href="/learner/lesson/basic-pinyin" className={active === "basic" ? "active" : ""}>
             {t("pinyin.basic")}
           </Link>
           <span aria-hidden="true"> / </span>
-          <Link href="/lesson/advanced-pinyin" className={active === "advanced" ? "active" : ""}>
+          <Link href="/learner/lesson/advanced-pinyin" className={active === "advanced" ? "active" : ""}>
             {t("pinyin.advanced")}
           </Link>
         </nav>

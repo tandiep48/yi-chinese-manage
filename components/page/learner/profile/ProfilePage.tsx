@@ -26,7 +26,7 @@ export function ProfilePage() {
   return (
     <main className="profile-page">
       <div className="profile-topbar">
-        <Link href="/" className="profile-link">
+        <Link href="/learner" className="profile-link">
           &larr; {t("profile.dashboard")}
         </Link>
       </div>

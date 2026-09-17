@@ -55,7 +55,7 @@ export function VocabSelectPage() {
       // sessionStorage unavailable (private mode); the trainer shows its empty
       // state / redirects rather than crashing.
     }
-    router.push("/vocab-training-batch");
+    router.push("/learner/vocab-training-batch");
   }
 
   function openFlashcards() {
@@ -69,7 +69,7 @@ export function VocabSelectPage() {
       // sessionStorage unavailable (private mode); the target page shows an
       // empty state rather than crashing.
     }
-    router.push("/vocab-learning?source=selection");
+    router.push("/learner/vocab-learning?source=selection");
   }
 
   function openStrokeAll(rows: VocabRow[]) {
@@ -89,7 +89,7 @@ export function VocabSelectPage() {
     <div className="vocab-select">
       <div className="vocab-select-wrap">
         <div className="vocab-top-link">
-          <Link href="/">&larr; {t("picker.back_to_dashboard")}</Link>
+          <Link href="/learner">&larr; {t("picker.back_to_dashboard")}</Link>
         </div>
 
         <div className="vocab-content-card">

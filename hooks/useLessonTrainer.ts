@@ -102,10 +102,10 @@ export function useLessonTrainer(): UseLessonTrainer {
 
   const homeHref = useCallback(() => {
     const ids = passageIdsRef.current;
-    if (!ids.length) return "/hsk";
+    if (!ids.length) return "/learner/hsk";
     return modeRef.current === "master"
       ? partPickerHref(ids[0])
-      : `/lesson?passage_id=${encodeURIComponent(ids[0])}`;
+      : `/learner/lesson?passage_id=${encodeURIComponent(ids[0])}`;
   }, []);
 
   const beginRound = useCallback((roundTasks: LessonTask[]) => {
@@ -142,15 +142,15 @@ export function useLessonTrainer(): UseLessonTrainer {
     // Pinyin-guide placeholders and the Numbers pseudo-part aren't graded lessons.
     const first = passageIds[0];
     if (first === "H1_1_1") {
-      router.replace("/lesson/basic-pinyin");
+      router.replace("/learner/lesson/basic-pinyin");
       return;
     }
     if (first === "H1_1_2") {
-      router.replace("/lesson/advanced-pinyin");
+      router.replace("/learner/lesson/advanced-pinyin");
       return;
     }
     if (!passageIds.length || first === "H1_5_99") {
-      router.replace(passageIds.length ? `/lesson?passage_id=${encodeURIComponent(first)}` : "/hsk");
+      router.replace(passageIds.length ? `/learner/lesson?passage_id=${encodeURIComponent(first)}` : "/learner/hsk");
       return;
     }
 

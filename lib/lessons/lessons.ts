@@ -68,8 +68,8 @@ export function partPickerHref(passageId: string): string {
   const seg = passageId.split("_");
   const lesson = seg.length >= 2 ? seg[1] : "";
   const base = isBookPassageId(passageId)
-    ? `/books/${seg[0]}`
-    : `/hsk/${hskLevelFromPassageId(passageId)}`;
+    ? `/learner/books/${seg[0]}`
+    : `/learner/hsk/${hskLevelFromPassageId(passageId)}`;
   return `${base}/${lesson}`;
 }
 

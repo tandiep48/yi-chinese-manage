@@ -29,7 +29,7 @@ export function CompetitionPage() {
   const setup = useCompetitionSetup();
 
   useEffect(() => {
-    if (!loading && !user) router.replace("/login");
+    if (!loading && !user) router.replace("/learner/login");
   }, [loading, user, router]);
 
   // Create a room, or save the settings of the one being edited.

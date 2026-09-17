@@ -58,12 +58,12 @@ export function LessonSidebar({
 
   const navigateToPart = (id: string) => {
     if (id === passageId) return;
-    router.push(`/lesson?passage_id=${encodeURIComponent(id)}`);
+    router.push(`/learner/lesson?passage_id=${encodeURIComponent(id)}`);
   };
 
   const navigateToDomain = (target: StudyDomain) => {
     if (target === domain) return;
-    const route = target === "grammar" ? "/grammar" : "/translation";
+    const route = target === "grammar" ? "/learner/grammar" : "/learner/translation";
     router.push(`${route}?passage_id=${encodeURIComponent(passageId)}`);
   };
 

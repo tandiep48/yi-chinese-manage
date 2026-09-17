@@ -69,8 +69,8 @@ export function FlashcardStudy({
     }
     router.push(
       passageId
-        ? `/vocab-training-batch?mode=6&passage_id=${encodeURIComponent(passageId)}`
-        : "/vocab-training-batch"
+        ? `/learner/vocab-training-batch?mode=6&passage_id=${encodeURIComponent(passageId)}`
+        : "/learner/vocab-training-batch"
     );
   }
 
@@ -90,7 +90,7 @@ export function FlashcardStudy({
     <LessonStudyShell passageId={passageId ?? ""} domain="lesson">
       {!passageId && (
         <div className="vl-back-row">
-          <Link href="/vocab" className="vl-back">
+          <Link href="/learner/vocab" className="vl-back">
             &larr; {t("vocab_learning.back_to_vocab")}
           </Link>
         </div>

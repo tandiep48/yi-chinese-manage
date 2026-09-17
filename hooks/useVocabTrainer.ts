@@ -139,7 +139,7 @@ export function useVocabTrainer(): UseVocabTrainer {
     }
 
     if (!payload) {
-      router.replace("/vocab");
+      router.replace("/learner/vocab");
       return;
     }
 
@@ -147,7 +147,7 @@ export function useVocabTrainer(): UseVocabTrainer {
       if (cancelled) return;
       clearKeys(keysToClear);
       if (!rows.length) {
-        router.replace("/vocab");
+        router.replace("/learner/vocab");
         return;
       }
       wordsRef.current = rows;
@@ -234,10 +234,10 @@ export function useVocabTrainer(): UseVocabTrainer {
 
   const goHome = useCallback(() => {
     if (passageId) {
-      router.push(`/lesson?passage_id=${encodeURIComponent(passageId)}`);
+      router.push(`/learner/lesson?passage_id=${encodeURIComponent(passageId)}`);
       return;
     }
-    router.push("/vocab");
+    router.push("/learner/vocab");
   }, [router, passageId]);
 
   const activity = activities[index] ?? null;

@@ -11,13 +11,13 @@ import "./practice-select.css";
 
 export function PracticeSelectPage({ category }: { category: PracticeCategory }) {
   const { t } = useT();
-  const base = category === "exam" ? "/exam" : "/practice";
+  const base = category === "exam" ? "/learner/exam" : "/learner/practice";
   const categoryLabel = category === "exam" ? t("dashboard.exam") : t("dashboard.exercise");
 
   return (
     <div className="practice-select">
       <div className="practice-select-container">
-        <Link href="/" className="page-back">
+        <Link href="/learner" className="page-back">
           ← {t("picker.back_to_dashboard")}
         </Link>
         <h1 className="page-title">{categoryLabel}</h1>

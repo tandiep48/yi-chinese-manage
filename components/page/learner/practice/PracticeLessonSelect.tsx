@@ -22,7 +22,7 @@ export function PracticeLessonSelect({
 }) {
   const { t } = useT();
   const router = useRouter();
-  const base = category === "exam" ? "/exam" : "/practice";
+  const base = category === "exam" ? "/learner/exam" : "/learner/practice";
   const categoryLabel = category === "exam" ? t("dashboard.exam") : t("dashboard.exercise");
 
   const [lessons, setLessons] = useState<string[] | null>(null);

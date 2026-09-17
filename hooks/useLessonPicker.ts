@@ -1,7 +1,7 @@
 "use client";
 
 // hooks/useLessonPicker.ts
-// Data for the HSK lesson/part picker (app/(learner)/hsk/[level]/...). Ported
+// Data for the HSK lesson/part picker (app/learner/hsk/[level]/...). Ported
 // from Learning/web_app/static/shared/passage_picker.js's showLessonPicker().
 
 import { useEffect, useState } from "react";

@@ -14,8 +14,8 @@ const ADVANCED_PINYIN_PASSAGE = "H1_1_2";
 export type LessonView = "vocab" | "lesson";
 
 export function lessonHrefForPassage(passageId: string, view?: LessonView): string {
-  if (passageId === BASIC_PINYIN_PASSAGE) return "/lesson/basic-pinyin";
-  if (passageId === ADVANCED_PINYIN_PASSAGE) return "/lesson/advanced-pinyin";
-  const base = `/lesson?passage_id=${encodeURIComponent(passageId)}`;
+  if (passageId === BASIC_PINYIN_PASSAGE) return "/learner/lesson/basic-pinyin";
+  if (passageId === ADVANCED_PINYIN_PASSAGE) return "/learner/lesson/advanced-pinyin";
+  const base = `/learner/lesson?passage_id=${encodeURIComponent(passageId)}`;
   return view ? `${base}&view=${view}` : base;
 }

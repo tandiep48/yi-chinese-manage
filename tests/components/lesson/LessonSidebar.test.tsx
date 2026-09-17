@@ -63,7 +63,7 @@ describe("LessonSidebar", () => {
 
     fireEvent.click(screen.getByText("Translation"));
     fireEvent.click(screen.getAllByText("Translation").at(-1)!);
-    expect(push).toHaveBeenCalledWith("/translation?passage_id=H2_2_2");
+    expect(push).toHaveBeenCalledWith("/learner/translation?passage_id=H2_2_2");
   });
 
   it("navigates to the grammar page from the lesson domain", () => {
@@ -71,7 +71,7 @@ describe("LessonSidebar", () => {
     // Expand Grammar, then click its step.
     fireEvent.click(screen.getByText("Grammar"));
     fireEvent.click(screen.getAllByText("Grammar").at(-1)!);
-    expect(push).toHaveBeenCalledWith("/grammar?passage_id=H2_2_2");
+    expect(push).toHaveBeenCalledWith("/learner/grammar?passage_id=H2_2_2");
   });
 
   it("lists the parts and marks the current one active", () => {
@@ -84,7 +84,7 @@ describe("LessonSidebar", () => {
   it("navigates to a part when clicked, but not the current part", () => {
     renderSidebar();
     fireEvent.click(screen.getByText("Lili likes to run."));
-    expect(push).toHaveBeenCalledWith("/lesson?passage_id=H2_2_1");
+    expect(push).toHaveBeenCalledWith("/learner/lesson?passage_id=H2_2_1");
 
     push.mockClear();
     fireEvent.click(screen.getByText("Too busy."));
@@ -94,7 +94,7 @@ describe("LessonSidebar", () => {
   it("routes back to the HSK part picker", () => {
     renderSidebar();
     fireEvent.click(screen.getByRole("button", { name: "Part Selection" }));
-    expect(push).toHaveBeenCalledWith("/hsk/HSK2/2");
+    expect(push).toHaveBeenCalledWith("/learner/hsk/HSK2/2");
   });
 
   it("routes back to the book part picker for a book passage", () => {
@@ -106,7 +106,7 @@ describe("LessonSidebar", () => {
     });
     renderSidebar(true, "AML_1_1");
     fireEvent.click(screen.getByRole("button", { name: "Part Selection" }));
-    expect(push).toHaveBeenCalledWith("/books/AML/1");
+    expect(push).toHaveBeenCalledWith("/learner/books/AML/1");
   });
 
   it("collapses via the close button and exposes the toggle when closed", () => {

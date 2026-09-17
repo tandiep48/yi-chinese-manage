@@ -69,14 +69,14 @@ export function VocabReviewPage() {
       // sessionStorage unavailable (private mode); the trainer redirects to
       // /vocab rather than crashing.
     }
-    router.push("/vocab-training-batch");
+    router.push("/learner/vocab-training-batch");
   }
 
   return (
     <div className="vocab-review">
       <div className="vocab-review-wrap">
         <div className="vocab-top-link">
-          <Link href="/">&larr; {t("picker.back_to_dashboard")}</Link>
+          <Link href="/learner">&larr; {t("picker.back_to_dashboard")}</Link>
         </div>
 
         <div className="review-content-card">

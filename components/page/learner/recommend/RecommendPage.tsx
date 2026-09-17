@@ -33,7 +33,7 @@ export function RecommendPage() {
   return (
     <div className="recommend-page">
       <div className="recommend-container">
-        <Link href="/" className="page-back">
+        <Link href="/learner" className="page-back">
           ← {t("picker.back_to_dashboard")}
         </Link>
 
@@ -146,7 +146,7 @@ export function RecommendPage() {
             <div className="state-title">{t("recommend.new_user_title")}</div>
             <div className="state-sub">{t("recommend.new_user_sub")}</div>
             <Link
-              href="/vocab"
+              href="/learner/vocab"
               className="btn-start-practice"
               style={{
                 marginTop: 20,

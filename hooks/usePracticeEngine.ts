@@ -91,7 +91,7 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
   const [result, setResult] = useState<{ score: number; total: number; icon: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [referrer, setReferrer] = useState<ReferrerInfo>({
-    href: category === "exam" ? "/exam" : "/practice",
+    href: category === "exam" ? "/learner/exam" : "/learner/practice",
     title: "",
   });
   const sessionIdRef = useRef<number>(0);
@@ -115,11 +115,11 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
         ref = null;
       }
       if (ref === "recommend") {
-        setReferrer({ href: "/recommend", title: "recommend" });
+        setReferrer({ href: "/learner/recommend", title: "recommend" });
       } else if (ref && ref.startsWith("exam-")) {
-        setReferrer({ href: `/exam/${ref.split("-")[1]}`, title: `exam-${ref.split("-")[1]}` });
+        setReferrer({ href: `/learner/exam/${ref.split("-")[1]}`, title: `exam-${ref.split("-")[1]}` });
       } else if (ref && ref.startsWith("practice-")) {
-        setReferrer({ href: `/practice/${ref.split("-")[1]}`, title: `practice-${ref.split("-")[1]}` });
+        setReferrer({ href: `/learner/practice/${ref.split("-")[1]}`, title: `practice-${ref.split("-")[1]}` });
       }
       try {
         let loaded: PracticeGroup[];
@@ -131,7 +131,7 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
             raw = null;
           }
           if (!raw) {
-            window.location.href = "/recommend";
+            window.location.href = "/learner/recommend";
             return;
           }
           const items = JSON.parse(raw) as PracticeMultiItem[];

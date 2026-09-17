@@ -1,7 +1,7 @@
 "use client";
 
 // hooks/useDashboardHome.ts
-// Data for the learner home dashboard (app/(learner)/page.tsx). Ported from
+// Data for the learner home dashboard (app/learner/page.tsx). Ported from
 // Learning/web_app/static/dashboard/dashboard.js's loadHomeDashboard(), against
 // the same (non-enveloped) JSON endpoints.
 

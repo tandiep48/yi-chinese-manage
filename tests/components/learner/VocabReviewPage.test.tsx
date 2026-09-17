@@ -117,7 +117,7 @@ describe("VocabReviewPage", () => {
     expect(sessionStorage.getItem("selectedVocabTrainerWords")).toBe(
       JSON.stringify(["左"])
     );
-    expect(push).toHaveBeenCalledWith("/vocab-training-batch");
+    expect(push).toHaveBeenCalledWith("/learner/vocab-training-batch");
   });
 
   it("offers Load more only while pages remain, then appends them", async () => {
