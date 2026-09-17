@@ -8,7 +8,7 @@
 import { Fragment, type ReactNode } from "react";
 import { hanNodes } from "@/lib/han/hanText";
 import { tokenizeContent } from "@/lib/practice/practiceEngine";
-import type { GroupUIState } from "@/hooks/usePracticeEngine";
+import type { GroupUIState } from "@/lib/practice/groupState";
 
 export function BlankedContent({
   content,

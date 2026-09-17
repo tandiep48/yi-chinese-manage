@@ -14,30 +14,25 @@ import {
   submitPractice,
 } from "@/lib/api/practice";
 import {
-  scoreGroup,
   buildAnswerRows,
   firstUncheckedAfter,
   allChecked,
   resultIcon,
 } from "@/lib/practice/practiceEngine";
+import {
+  applyBlankFocus,
+  applyCheck,
+  applyChipToggle,
+  applyKeySelection,
+  applyMCSelection,
+  applyT6Assignment,
+  freshGroupState,
+  type GroupUIState,
+} from "@/lib/practice/groupState";
 import { now } from "@/lib/clock";
 import type { PracticeAnswerRow, PracticeCategory, PracticeGroup, PracticeMultiItem } from "@/lib/types/practice";
 
 export type Screen = "loading" | "practice" | "result";
-
-// Per-group UI state — the React analog of the engine's groupSaved[] entries.
-export interface GroupUIState {
-  userAnswers: Record<string, string>; // blockId -> selected key(s)
-  chipOrder: Record<string, string[]>; // type 4: blockId -> ordered keys
-  chipShuffle: Record<string, string[]>; // type 4: fixed shuffled pool order
-  blankState: Record<string, Record<number, string>>; // type 6: blockId -> {blankIdx: key}
-  activeBlank: { blockId: string; index: number } | null; // one active blank per group
-  checked: boolean;
-  correctCount: number;
-  correctTotal: number;
-  startTime: number;
-  perQuestionTimeMs: number;
-}
 
 export interface PracticeEngineOptions {
   category: PracticeCategory;
@@ -45,28 +40,6 @@ export interface PracticeEngineOptions {
   lessonId?: string;
   progress?: string; // deep-link to one progress group
   multi?: boolean;
-}
-
-function freshGroupState(group: PracticeGroup): GroupUIState {
-  const chipShuffle: Record<string, string[]> = {};
-  group.questions.forEach((q, idx) => {
-    if (q.type === 4) {
-      // Shuffle once at load (never during render — keeps render pure).
-      chipShuffle[`q-${idx}`] = Object.keys(q.options || {}).sort(() => Math.random() - 0.5);
-    }
-  });
-  return {
-    userAnswers: {},
-    chipOrder: {},
-    chipShuffle,
-    blankState: {},
-    activeBlank: null,
-    checked: false,
-    correctCount: 0,
-    correctTotal: 0,
-    startTime: 0,
-    perQuestionTimeMs: 0,
-  };
 }
 
 interface ReferrerInfo {
@@ -191,10 +164,7 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
   // ── Answer interactions ─────────────────────────────────────────────────────
   const selectMC = useCallback(
     (blockId: string, key: string) => {
-      updateCurrent((s) => {
-        if (s.checked) return s;
-        return { ...s, userAnswers: { ...s.userAnswers, [blockId]: key } };
-      });
+      updateCurrent((s) => applyMCSelection(s, blockId, key));
     },
     [updateCurrent]
   );
@@ -202,41 +172,21 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
   // Unique-key-per-row selection (t5 grouped layouts). Toggling the same key clears it.
   const selectKey = useCallback(
     (blockId: string, key: string) => {
-      updateCurrent((s) => {
-        if (s.checked) return s;
-        const ua = { ...s.userAnswers };
-        if (ua[blockId] === key) delete ua[blockId];
-        else ua[blockId] = key;
-        return { ...s, userAnswers: ua };
-      });
+      updateCurrent((s) => applyKeySelection(s, blockId, key));
     },
     [updateCurrent]
   );
 
   const toggleChip = useCallback(
     (blockId: string, key: string) => {
-      updateCurrent((s) => {
-        if (s.checked) return s;
-        const order = s.chipOrder[blockId] ? [...s.chipOrder[blockId]] : [];
-        const at = order.indexOf(key);
-        if (at >= 0) order.splice(at, 1);
-        else order.push(key);
-        return {
-          ...s,
-          chipOrder: { ...s.chipOrder, [blockId]: order },
-          userAnswers: { ...s.userAnswers, [blockId]: order.join("") },
-        };
-      });
+      updateCurrent((s) => applyChipToggle(s, blockId, key));
     },
     [updateCurrent]
   );
 
   const blankClick = useCallback(
     (blockId: string, index: number) => {
-      updateCurrent((s) => {
-        if (s.checked) return s;
-        return { ...s, activeBlank: { blockId, index } };
-      });
+      updateCurrent((s) => applyBlankFocus(s, blockId, index));
     },
     [updateCurrent]
   );
@@ -245,24 +195,7 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
   // frees the previously placed option back to the pool.
   const assignT6 = useCallback(
     (key: string) => {
-      updateCurrent((s) => {
-        if (s.checked || !s.activeBlank) return s;
-        const { blockId, index } = s.activeBlank;
-        const blockBlanks = { ...(s.blankState[blockId] || {}) };
-        blockBlanks[index] = key;
-        const blankState = { ...s.blankState, [blockId]: blockBlanks };
-        const joined = Object.keys(blockBlanks)
-          .map(Number)
-          .sort((a, b) => a - b)
-          .map((i) => blockBlanks[i] || "")
-          .join("");
-        return {
-          ...s,
-          blankState,
-          userAnswers: { ...s.userAnswers, [blockId]: joined },
-          activeBlank: null,
-        };
-      });
+      updateCurrent((s) => applyT6Assignment(s, key));
     },
     [updateCurrent]
   );
@@ -272,19 +205,13 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
     setStates((prev) => {
       const next = [...prev];
       const s = next[currentIndex];
-      if (!s || s.checked) return prev;
+      if (!s) return prev;
       const group = groups[currentIndex];
-      const { correct } = scoreGroup(group, s.userAnswers);
       const elapsed = Math.max(0, now() - (s.startTime || now()));
-      const perQ = Math.round(elapsed / Math.max(1, group.questions.length));
-      next[currentIndex] = {
-        ...s,
-        checked: true,
-        correctCount: correct,
-        correctTotal: group.questions.length,
-        perQuestionTimeMs: perQ,
-      };
-      setScore((prevScore) => prevScore + correct);
+      const graded = applyCheck(s, group, elapsed);
+      if (!graded) return prev;
+      next[currentIndex] = graded.state;
+      setScore((prevScore) => prevScore + graded.correct);
       return next;
     });
   }, [currentIndex, groups]);

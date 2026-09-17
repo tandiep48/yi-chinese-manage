@@ -2,7 +2,7 @@
 // The prop contract every group layout shares. QuestionGroup picks a layout
 // with classifyGroupLayout and hands it exactly these props.
 
-import type { GroupUIState } from "@/hooks/usePracticeEngine";
+import type { GroupUIState } from "@/lib/practice/groupState";
 import type { PracticeCategory, PracticeGroup } from "@/lib/types/practice";
 
 export type TFn = (key: string, vars?: Record<string, string | number>) => string;

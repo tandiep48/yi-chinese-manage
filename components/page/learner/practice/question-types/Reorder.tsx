@@ -7,7 +7,7 @@
 
 import { hanNodes } from "@/lib/han/hanText";
 import { answersMatch } from "@/lib/practice/practiceEngine";
-import type { GroupUIState } from "@/hooks/usePracticeEngine";
+import type { GroupUIState } from "@/lib/practice/groupState";
 import type { PracticeQuestion } from "@/lib/types/practice";
 import type { TFn } from "./types";
 

@@ -5,7 +5,7 @@
 // true/false pair; anything else falls back to showing "key: value".
 
 import { normalizeAnswer } from "@/lib/practice/practiceEngine";
-import type { GroupUIState } from "@/hooks/usePracticeEngine";
+import type { GroupUIState } from "@/lib/practice/groupState";
 import type { PracticeQuestion } from "@/lib/types/practice";
 import type { TFn } from "./types";
 

@@ -6,7 +6,7 @@
 
 import { hanNodes } from "@/lib/han/hanText";
 import { normalizeAnswer } from "@/lib/practice/practiceEngine";
-import type { GroupUIState } from "@/hooks/usePracticeEngine";
+import type { GroupUIState } from "@/lib/practice/groupState";
 import type { PracticeQuestion } from "@/lib/types/practice";
 
 export function MCOptions({
