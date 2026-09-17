@@ -1,0 +1,40 @@
+
+/* ─────────────────────────────────────────────
+   RECENT LESSON PANEL — the "continue where you left off" banner above the
+   picker grids. Scoped under .lesson-picker for its tokens; see
+   ./lesson-picker.css.
+   ───────────────────────────────────────────── */
+/* Recent-lesson "continue where you left off" panel */
+.lesson-picker .learning-recent-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px;
+  margin-bottom: 22px;
+  background: #cbe2d4;
+  border: 1px solid #afcfbd;
+  border-radius: 8px;
+}
+.lesson-picker .learning-recent-panel h2 {
+  margin: 0 0 6px;
+  text-align: left;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #111111;
+}
+.lesson-picker .learning-recent-panel .subtitle {
+  margin: 0;
+  text-align: left;
+  color: #333333;
+}
+.lesson-picker .learning-continue-btn {
+  width: auto;
+  min-width: 150px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 700px) {
+  .lesson-picker .learning-recent-panel { flex-direction: column; align-items: stretch; }
+  .lesson-picker .learning-continue-btn { width: 100%; }
+}

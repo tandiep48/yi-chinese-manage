@@ -11,6 +11,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useLearnerBook } from "@/hooks/useLearnerBook";
 import { bookCoverUrl } from "@/lib/gcs";
 import "@/components/page/learner/lesson-picker.css";
+import "@/components/page/learner/books.css";
 
 export default function BookLessonsPage({
   params,

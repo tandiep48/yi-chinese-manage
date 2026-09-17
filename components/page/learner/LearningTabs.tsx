@@ -9,6 +9,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
+import "./learning-tabs.css";
 
 export function LearningTabs() {
   const { t } = useT();
