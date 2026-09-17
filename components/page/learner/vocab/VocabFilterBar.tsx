@@ -8,7 +8,7 @@
 
 import { useT } from "@/components/i18n/I18nProvider";
 import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
-import type { MultiSelectOption } from "@/hooks/useVocabSelect";
+import type { MultiSelectOption } from "@/lib/vocab/vocabSelect";
 import type { SavedBook, VocabMode } from "@/lib/types/vocab";
 import "./vocab-filter-bar.css";
 

@@ -14,7 +14,7 @@
 // message. The legacy exitSearchMode() showed that prompt even in the history
 // modes (unsure/unlearn/recent), which load with no filters — nonsensical there.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { getPassages } from "@/lib/api/lessons";
 import {
@@ -23,48 +23,18 @@ import {
   getSavedBooks,
   searchVocab,
 } from "@/lib/api/learnerVocab";
-import type { PickerPassage } from "@/lib/types/lesson";
-import type { SavedBook, VocabMode, VocabRow, VocabTableResponse } from "@/lib/types/vocab";
-
-export interface MultiSelectOption {
-  value: string;
-  label: string;
-  group?: string | null;
-}
-
-// A prompt/loading message (already translated) or the loaded table.
-export interface TableState {
-  status: "prompt" | "loading" | "ready";
-  message: string;
-}
-
-const HISTORY_MODES: ReadonlySet<VocabMode> = new Set([
-  "unsure",
-  "unlearn",
-  "recent",
-]);
-
-const DEFAULT_PAGE_SIZE = 20;
-
-interface PassageMeta extends PickerPassage {
-  lesson: string;
-  part: string;
-}
-
-// 'Other' sinks to the bottom; the rest sort numerically by lesson/part number.
-function numericSort(a: string, b: string): number {
-  if (a === "Other") return 1;
-  if (b === "Other") return -1;
-  return Number(a) - Number(b);
-}
-
-function isHistoryMode(mode: VocabMode): boolean {
-  return HISTORY_MODES.has(mode);
-}
-
-function wordKey(row: VocabRow): string {
-  return row.word || row.cn || "";
-}
+import {
+  DEFAULT_PAGE_SIZE,
+  buildLessonOptions,
+  buildPartOptions,
+  groupPassagesByLesson,
+  isHistoryMode,
+  type MultiSelectOption,
+  type PassageMeta,
+} from "@/lib/vocab/vocabSelect";
+import { useVocabTableState } from "./useVocabTableState";
+import { useWordSelection } from "./useWordSelection";
+import type { SavedBook, VocabMode } from "@/lib/types/vocab";
 
 export function useVocabSelect() {
   const { t } = useT();
@@ -85,15 +55,21 @@ export function useVocabSelect() {
   const [selectedParts, setSelectedParts] = useState<string[]>([]);
 
   const [pageSize, setPageSizeState] = useState(DEFAULT_PAGE_SIZE);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [total, setTotal] = useState(0);
 
-  const [rows, setRows] = useState<VocabRow[]>([]);
-  const [tableState, setTableState] = useState<TableState>(() => ({
-    status: "prompt",
-    message: t("vocab.state_choose_filters"),
-  }));
+  const {
+    rows,
+    setRows,
+    page,
+    setPage,
+    totalPages,
+    total,
+    tableState,
+    setTableState,
+    beginRequest,
+    setReady,
+    setPrompt,
+    setLoading,
+  } = useVocabTableState(t("vocab.state_choose_filters"));
 
   const [searchQuery, setSearchQuery] = useState("");
   // Derived, not stored: we're "in search mode" whenever the box is non-empty.
@@ -101,12 +77,7 @@ export function useVocabSelect() {
   // effect just to flip it back when the query is cleared.
   const searchMode = searchQuery.trim().length > 0;
 
-  const [selectedWords, setSelectedWords] = useState<Map<string, VocabRow>>(
-    () => new Map()
-  );
-
-  // Guards each async load so a stale response can't overwrite a newer one.
-  const requestSeq = useRef(0);
+  const selection = useWordSelection(rows);
 
   const lessonLabel = useCallback(
     (lesson: string) =>
@@ -115,24 +86,6 @@ export function useVocabSelect() {
         : `${t("picker.lesson_prefix")} ${lesson}`,
     [t]
   );
-
-  const setReady = useCallback((data: VocabTableResponse) => {
-    setRows(data.rows ?? []);
-    setPage(data.page ?? 1);
-    setTotalPages(data.total_pages ?? 1);
-    setTotal(data.total ?? 0);
-    setTableState({ status: "ready", message: "" });
-  }, []);
-
-  const setPrompt = useCallback((message: string) => {
-    setRows([]);
-    setTotal(0);
-    setTableState({ status: "prompt", message });
-  }, []);
-
-  const setLoading = useCallback((message: string) => {
-    setTableState({ status: "loading", message });
-  }, []);
 
   // ── Table loading (free / standard / book / unsure / unlearn / recent) ──────
   const loadTable = useCallback(
@@ -160,7 +113,7 @@ export function useVocabSelect() {
         return;
       }
 
-      const seq = ++requestSeq.current;
+      const isCurrent = beginRequest();
       setLoading(t("dashboard.loading_vocabulary"));
       try {
         const data =
@@ -174,50 +127,50 @@ export function useVocabSelect() {
                 page: targetPage,
                 pageSize,
               });
-        if (seq !== requestSeq.current) return;
+        if (!isCurrent()) return;
         if (!data.rows || data.rows.length === 0) {
           setPrompt(t("vocab.no_vocab_found"));
           return;
         }
         setReady(data);
       } catch {
-        if (seq !== requestSeq.current) return;
+        if (!isCurrent()) return;
         setPrompt(t("reading.failed_load_vocabulary"));
       }
     },
-    [mode, hskLevel, selectedParts, selectedBook, pageSize, t, setPrompt, setLoading, setReady]
+    [mode, hskLevel, selectedParts, selectedBook, pageSize, t, beginRequest, setPrompt, setLoading, setReady]
   );
 
   // Load the books the user has saved words in (Book mode picker). Soft-fails to
   // an empty list; prompts to pick a book, or that there are none yet.
   const loadSavedBooks = useCallback(async () => {
-    const seq = ++requestSeq.current;
+    const isCurrent = beginRequest();
     setLoading(t("dashboard.loading_vocabulary"));
     const books = await getSavedBooks();
-    if (seq !== requestSeq.current) return;
+    if (!isCurrent()) return;
     setBookOptions(books);
     setPrompt(t(books.length ? "vocab.choose_book" : "vocab.no_saved_books"));
-  }, [t, setLoading, setPrompt]);
+  }, [t, beginRequest, setLoading, setPrompt]);
 
   // ── Search ─────────────────────────────────────────────────────────────────
   const runSearch = useCallback(
     async (query: string, targetPage: number) => {
-      const seq = ++requestSeq.current;
+      const isCurrent = beginRequest();
       setLoading(t("vocab.searching"));
       try {
         const data = await searchVocab(query, targetPage, pageSize);
-        if (seq !== requestSeq.current) return;
+        if (!isCurrent()) return;
         if (!data.rows || data.rows.length === 0) {
           setPrompt(t("vocab.no_results_for", { query }));
           return;
         }
         setReady(data);
       } catch {
-        if (seq !== requestSeq.current) return;
+        if (!isCurrent()) return;
         setPrompt(t("vocab.search_failed"));
       }
     },
-    [pageSize, t, setPrompt, setLoading, setReady]
+    [pageSize, t, beginRequest, setPrompt, setLoading, setReady]
   );
 
   // Debounced search: a non-empty query runs a search after 300ms. Clearing the
@@ -231,30 +184,19 @@ export function useVocabSelect() {
       runSearch(query, 1);
     }, 300);
     return () => clearTimeout(timer);
-  }, [searchQuery, runSearch]);
+  }, [searchQuery, runSearch, setPage]);
 
   // ── Standard-mode passage loading (HSK -> lessons) ──────────────────────────
   const loadStandardLessons = useCallback(
     async (level: string) => {
-      const seq = ++requestSeq.current;
+      const isCurrent = beginRequest();
       setLoading(t("picker.loading_lessons"));
       try {
         const passages = await getPassages(level);
-        if (seq !== requestSeq.current) return;
-        const grouped: Record<string, PassageMeta[]> = {};
-        passages.forEach((passage) => {
-          const parts = String(passage.passage_id || "").split("_");
-          const lesson = parts.length >= 2 ? parts[1] : "Other";
-          const part = parts.length >= 3 ? parts[2] : passage.passage_id;
-          (grouped[lesson] ||= []).push({ ...passage, lesson, part });
-        });
+        if (!isCurrent()) return;
+        const grouped = groupPassagesByLesson(passages);
         setGroupedPassages(grouped);
-        const options = Object.keys(grouped)
-          .sort(numericSort)
-          .map<MultiSelectOption>((lesson) => ({
-            value: lesson,
-            label: lessonLabel(lesson),
-          }));
+        const options = buildLessonOptions(grouped, lessonLabel);
         setLessonOptions(options);
         setPartOptions([]);
         setSelectedLessons([]);
@@ -267,11 +209,11 @@ export function useVocabSelect() {
           ),
         });
       } catch {
-        if (seq !== requestSeq.current) return;
+        if (!isCurrent()) return;
         setPrompt(t("picker.failed_load_lessons"));
       }
     },
-    [t, lessonLabel, setLoading, setPrompt]
+    [t, lessonLabel, beginRequest, setLoading, setPrompt, setRows, setTableState]
   );
 
   // ── Public handlers ─────────────────────────────────────────────────────────
@@ -296,7 +238,7 @@ export function useVocabSelect() {
         setTableState({ status: "prompt", message: t("vocab.state_choose_filters") });
       }
     },
-    [t, loadSavedBooks]
+    [t, loadSavedBooks, setPage, setRows, setTableState]
   );
 
   const setBook = useCallback(
@@ -306,7 +248,7 @@ export function useVocabSelect() {
       // The load-effect reacts to selectedBook; an empty choice just re-prompts.
       if (!bookCode) setPrompt(t("vocab.choose_book"));
     },
-    [t, setPrompt]
+    [t, setPage, setPrompt]
   );
 
   const setHskLevel = useCallback(
@@ -323,7 +265,7 @@ export function useVocabSelect() {
       if (mode === "standard") loadStandardLessons(level);
       // free mode: the loadTable effect reacts to hskLevel.
     },
-    [mode, t, loadStandardLessons, setPrompt]
+    [mode, t, loadStandardLessons, setPage, setPrompt]
   );
 
   const changeLessons = useCallback(
@@ -336,39 +278,33 @@ export function useVocabSelect() {
         setPrompt(t("vocab.choose_lesson_and_part"));
         return;
       }
-      // Each part option carries its full passage_id; when several lessons are
-      // selected the parts are grouped by lesson so they stay distinguishable.
-      const showGroups = lessons.length > 1;
-      const options: MultiSelectOption[] = [];
-      [...lessons].sort(numericSort).forEach((lesson) => {
-        const passages = groupedPassages[lesson];
-        if (!passages?.length) return;
-        const groupLabel = lessonLabel(lesson);
-        [...passages]
-          .sort((a, b) => Number(a.part) - Number(b.part))
-          .forEach((passage) => {
-            options.push({
-              value: passage.passage_id,
-              label: `${t("picker.part_prefix")} ${passage.part}`,
-              group: showGroups ? groupLabel : null,
-            });
-          });
-      });
+      const options = buildPartOptions(
+        lessons,
+        groupedPassages,
+        lessonLabel,
+        (part) => `${t("picker.part_prefix")} ${part}`
+      );
       setPartOptions(options);
       setPrompt(t("vocab.choose_a_part"));
     },
-    [groupedPassages, t, lessonLabel, setPrompt]
+    [groupedPassages, t, lessonLabel, setPage, setPrompt]
   );
 
-  const changeParts = useCallback((parts: string[]) => {
-    setSelectedParts(parts);
-    setPage(1);
-  }, []);
+  const changeParts = useCallback(
+    (parts: string[]) => {
+      setSelectedParts(parts);
+      setPage(1);
+    },
+    [setPage]
+  );
 
-  const setPageSize = useCallback((size: number) => {
-    setPageSizeState(size || DEFAULT_PAGE_SIZE);
-    setPage(1);
-  }, []);
+  const setPageSize = useCallback(
+    (size: number) => {
+      setPageSizeState(size || DEFAULT_PAGE_SIZE);
+      setPage(1);
+    },
+    [setPage]
+  );
 
   const goToPage = useCallback(
     (delta: number) => {
@@ -384,7 +320,7 @@ export function useVocabSelect() {
       }
       loadTable(next);
     },
-    [page, totalPages, searchMode, searchQuery, runSearch, loadTable]
+    [page, totalPages, searchMode, searchQuery, runSearch, loadTable, setPage]
   );
 
   // React to the filter changes that should (re)load page 1 when not searching:
@@ -409,48 +345,6 @@ export function useVocabSelect() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, hskLevel, selectedParts, selectedBook, pageSize, searchMode]);
-
-  // ── Selection ────────────────────────────────────────────────────────────────
-  const toggleWord = useCallback((row: VocabRow, checked: boolean) => {
-    setSelectedWords((prev) => {
-      const next = new Map(prev);
-      const key = wordKey(row);
-      if (checked) next.set(key, row);
-      else next.delete(key);
-      return next;
-    });
-  }, []);
-
-  const togglePage = useCallback((pageRows: VocabRow[], checked: boolean) => {
-    setSelectedWords((prev) => {
-      const next = new Map(prev);
-      pageRows.forEach((row) => {
-        const key = wordKey(row);
-        if (checked) next.set(key, row);
-        else next.delete(key);
-      });
-      return next;
-    });
-  }, []);
-
-  const clearSelection = useCallback(() => {
-    setSelectedWords(new Map());
-  }, []);
-
-  const isSelected = useCallback(
-    (row: VocabRow) => selectedWords.has(wordKey(row)),
-    [selectedWords]
-  );
-
-  const allOnPageSelected = useMemo(
-    () => rows.length > 0 && rows.every((row) => selectedWords.has(wordKey(row))),
-    [rows, selectedWords]
-  );
-
-  const selectedWordList = useMemo(
-    () => Array.from(selectedWords.values()),
-    [selectedWords]
-  );
 
   return {
     // filters
@@ -483,12 +377,6 @@ export function useVocabSelect() {
     setSearchQuery,
     searchMode,
     // selection
-    toggleWord,
-    togglePage,
-    clearSelection,
-    isSelected,
-    allOnPageSelected,
-    selectedCount: selectedWords.size,
-    selectedWordList,
+    ...selection,
   };
 }
