@@ -1,0 +1,115 @@
+
+/* ─────────────────────────────────────────────
+   LEARNER DASHBOARD — the Learning Statistics block: headline stats, the
+   bar charts and the sub-stat tiles. Tokens come from ./dashboard.css.
+   ───────────────────────────────────────────── */
+
+.ui2-dashboard .stats-overview {
+  background-color: var(--card-bg);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-md);
+  overflow: hidden;
+}
+.ui2-dashboard .main-stats {
+  display: flex;
+  padding: 2rem;
+  background-color: var(--primary-light);
+  border-bottom: 1px solid var(--secondary);
+}
+.ui2-dashboard .primary-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.ui2-dashboard .primary-stat .stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.ui2-dashboard .primary-stat h3 { font-size: 2.5rem; color: var(--text-main); line-height: 1; }
+.ui2-dashboard .stat-divider-vertical {
+  width: 2px;
+  background-color: var(--secondary);
+  margin: 0 2rem;
+}
+.ui2-dashboard .charts-section {
+  padding: 2rem;
+  border-bottom: 1px solid var(--secondary);
+}
+.ui2-dashboard .charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.ui2-dashboard .chart-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  color: var(--text-main);
+  margin-bottom: 1.25rem;
+}
+.ui2-dashboard .chart-canvas-wrap {
+  position: relative;
+  height: 240px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--secondary);
+  border-radius: var(--ui-radius);
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.ui2-dashboard .sub-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 2rem;
+  gap: 1.5rem;
+}
+.ui2-dashboard .sub-stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: var(--ui-radius);
+  background-color: var(--bg-color);
+  transition: background-color 0.3s;
+}
+.ui2-dashboard .sub-stat-card:hover { background-color: var(--primary-light); }
+.ui2-dashboard .icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--primary);
+  box-shadow: var(--ui-shadow-sm);
+  flex-shrink: 0;
+}
+.ui2-dashboard .sub-stat-info .label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.ui2-dashboard .sub-stat-info h4 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+.ui2-dashboard .sub-stat-info .time { font-size: 0.75rem; color: var(--text-light); }
+
+@media (max-width: 992px) {
+  .ui2-dashboard .sub-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .ui2-dashboard .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .ui2-dashboard .main-stats { flex-direction: column; gap: 2rem; }
+  .ui2-dashboard .stat-divider-vertical { width: 100%; height: 2px; margin: 0; }
+  .ui2-dashboard .sub-stats-grid { grid-template-columns: 1fr; }
+}

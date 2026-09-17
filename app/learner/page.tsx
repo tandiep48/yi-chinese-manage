@@ -31,7 +31,9 @@ import {
 import { useT } from "@/components/i18n/I18nProvider";
 import { useDashboardHome } from "@/hooks/useDashboardHome";
 import type { GlobalStatsBucket, RecommendStatus } from "@/lib/types/types";
-import "./dashboard.css";
+import "@/components/page/learner/dashboard/dashboard.css";
+import "@/components/page/learner/dashboard/dashboard-rec-card.css";
+import "@/components/page/learner/dashboard/dashboard-stats.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
