@@ -20,6 +20,7 @@ import { LobbyScreen } from "./LobbyScreen";
 import { SectionScreen } from "./SectionScreen";
 import { WaitingScreen } from "./WaitingScreen";
 import { RankingScreen } from "./RankingScreen";
+import "./competition-shell.css";
 
 export function CompetitionPage() {
   const router = useRouter();

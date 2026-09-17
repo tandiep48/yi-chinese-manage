@@ -10,6 +10,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useLearnerBooks } from "@/hooks/useLearnerBooks";
 import { LearningTabs } from "@/components/page/learner/LearningTabs";
 import { bookCoverUrl } from "@/lib/gcs";
+import "@/components/page/learner/lesson-picker.css";
 
 export default function BooksGridPage() {
   const { t } = useT();

@@ -22,6 +22,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useRecommend } from "@/hooks/useRecommend";
 import { RecommendCard } from "./RecommendCard";
 import { RecommendPagination } from "./RecommendPagination";
+import "./recommend-page.css";
 
 const LEVEL_OPTIONS = ["all", "1", "2", "3", "4", "5", "6"] as const;
 

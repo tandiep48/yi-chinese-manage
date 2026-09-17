@@ -14,6 +14,7 @@ import { badgeUrl } from "@/lib/gcs";
 import { AvatarModal } from "./AvatarModal";
 import { PasswordForm } from "./PasswordForm";
 import { ReviewPanel } from "./ReviewPanel";
+import "./profile-page.css";
 
 export function ProfilePage() {
   const { t } = useT();

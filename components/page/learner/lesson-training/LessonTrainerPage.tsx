@@ -13,6 +13,7 @@ import { ChoiceTask } from "./ChoiceTask";
 import { TypingTask } from "./TypingTask";
 import { ReorderTask } from "./ReorderTask";
 import { LessonTrainerRecap } from "./LessonTrainerRecap";
+import "./lesson-trainer.css";
 
 export function LessonTrainerPage() {
   const trainer = useLessonTrainer();

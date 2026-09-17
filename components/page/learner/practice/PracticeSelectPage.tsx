@@ -7,6 +7,7 @@
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import type { PracticeCategory } from "@/lib/types/types";
+import "./practice-select.css";
 
 export function PracticeSelectPage({ category }: { category: PracticeCategory }) {
   const { t } = useT();

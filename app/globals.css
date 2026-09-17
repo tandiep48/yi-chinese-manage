@@ -1,74 +1,20 @@
 @import "tailwindcss";
 
-/* This file used to hold all 5709 lines of the app's CSS. It is now an ordered
-   manifest: each import below is a verbatim slice of that file, in its original
-   order, so the cascade is byte-for-byte unchanged.
+/* App-wide CSS only: design tokens, base element styles, browser chrome, and
+   the learner route group's theme. This is the one stylesheet the root layout
+   loads, so everything here ships on every route.
 
-   Keep the order as written. `node scripts/check-css-split.mjs` asserts that
-   concatenating these files reproduces the pre-split globals.css exactly, and
-   reordering them breaks that guarantee.
+   Page styles are not here. Each page scope (.lesson-study, .vocab-select, …)
+   lives in a file next to the component that renders its root class, and that
+   component imports it, so a route only downloads the CSS it actually uses.
+   Adding a page's styles here would put them back on every route. */
 
-   Each slice is scoped to a page-root class (.lesson-study, .vocab-select, …)
-   and lives next to the component that renders that root, so styles sit with
-   the code they belong to. */
-
-/* Tokens, base elements and the learner route group's theme. */
 @import "./styles/tokens.css";
 @import "./styles/base.css";
-@import "./styles/learner-theme.css";
 
-/* .ui2-dashboard — learner home (/). */
-@import "./(learner)/dashboard.css";
-
-/* .lesson-picker — the books/ and hsk/ pickers; applied inline by 6 route
-   files, so it has no single owning component. */
-@import "../components/page/learner/lesson-picker.css";
-
-/* .lesson-study — owned by LessonStudyShell (grammar, lesson, lesson-learning,
-   translation, and the flash-card study below). */
-@import "../components/page/learner/lesson/lesson-study.css";
-
-/* App-wide browser chrome: scrollbar, focus ring, ::selection, and the
-   .animate-dot-bounce loader. Nothing else defines these selectors, so this
-   could move up into base.css once the split is verified. */
+/* Scrollbar, focus ring, ::selection and the .animate-dot-bounce loader.
+   Nothing else declares these selectors, so they sit with the other base
+   styles rather than at the position they happened to occupy before. */
 @import "./styles/base-chrome.css";
 
-/* .pinyin-guide, plus the .pinyin-tooltip / .pinyin-popover overlays that
-   AdvancedPinyinTable renders. */
-@import "../components/page/learner/pinyin/pinyin-guide.css";
-
-@import "../components/page/learner/vocab/vocab-select.css";
-@import "../components/page/learner/vocab-review/vocab-review.css";
-
-/* The /vocab-learning flash-card view and stroke modal — also scoped under
-   .lesson-study, which is why it is a separate slice rather than part of
-   lesson-study.css: its rules sit later in the cascade. */
-@import "../components/page/learner/vocab-learning/flashcards.css";
-
-/* .trainer-shell is the chrome shared by both trainers; .vocab-trainer adds
-   the typing and match boards. */
-@import "../components/page/learner/trainer/trainer-shell.css";
-@import "../components/page/learner/trainer/vocab-trainer.css";
-
-/* The two trainer overlays: the train-type picker shown before a drill starts
-   and the popup shown when one ends. Neither renders inside .trainer-shell --
-   the picker is opened from four different pages and the popup is a sibling of
-   the shell -- so each is anchored to its own overlay root instead. */
-@import "../components/page/learner/trainer/overlays.css";
-
-/* .lesson-trainer, plus two deliberate late overrides it carries: the
-   .trainer-shell skip button and the wider .lesson-study lesson-card. Both
-   depend on loading after the files above. */
-@import "../components/page/learner/lesson-training/lesson-trainer.css";
-
-/* Tokens shared by both practice roots, so it must precede both. */
-@import "../components/page/learner/practice/practice-tokens.css";
-@import "../components/page/learner/practice/practice-select.css";
-@import "../components/page/learner/practice/practice-shell.css";
-
-@import "../components/page/learner/profile/profile-page.css";
-@import "../components/page/learner/recommend/recommend-page.css";
-
-/* .competition-shell — Learn Together. Ends with a .vocab-trainer key-hint
-   override that applies to Learn Together only, hence its position here. */
-@import "../components/page/learner/competition/competition-shell.css";
+@import "./styles/learner-theme.css";

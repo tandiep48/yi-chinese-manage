@@ -18,6 +18,7 @@ import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/t
 import { useT } from "@/components/i18n/I18nProvider";
 import { saveRecentLearning } from "@/lib/api/recent";
 import type { PickerPassage } from "@/lib/types/types";
+import "@/components/page/learner/lesson-picker.css";
 
 // Pinyin-guide and Numbers placeholders aren't graded lesson parts.
 const PINYIN_IDS = new Set(["H1_1_1", "H1_1_2"]);

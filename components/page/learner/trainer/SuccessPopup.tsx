@@ -10,6 +10,7 @@ import { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrophy, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
+import "./overlays.css";
 
 const CONFETTI_COLORS = ["#4ade80", "#818cf8", "#f472b6", "#facc15", "#38bdf8", "#fb923c"];
 

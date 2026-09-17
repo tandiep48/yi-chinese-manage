@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
+import "./overlays.css";
 
 export type TrainerEngine = "vocab" | "lesson";
 

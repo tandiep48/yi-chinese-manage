@@ -7,6 +7,7 @@
 
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
+import "./pinyin-guide.css";
 
 export function PinyinGuideLayout({
   active,

@@ -13,6 +13,7 @@ import { hskImageUrl, lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/useLessonPicker";
 import { ProgressLines } from "@/components/page/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
+import "@/components/page/learner/lesson-picker.css";
 
 export default function LessonPickerPage({
   params,

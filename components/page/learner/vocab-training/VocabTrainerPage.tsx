@@ -13,6 +13,7 @@ import { useVocabTrainer } from "@/hooks/useVocabTrainer";
 import { TypingActivity } from "./TypingActivity";
 import { MatchActivity } from "./MatchActivity";
 import { VocabTrainerRecap } from "./VocabTrainerRecap";
+import "@/components/page/learner/trainer/vocab-trainer.css";
 
 export function VocabTrainerPage() {
   const trainer = useVocabTrainer();

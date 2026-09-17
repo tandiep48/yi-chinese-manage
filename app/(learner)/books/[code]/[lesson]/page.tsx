@@ -11,6 +11,7 @@ import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLearnerBook } from "@/hooks/useLearnerBook";
 import { lessonHrefForPassage } from "@/lib/lessons/passageNav";
+import "@/components/page/learner/lesson-picker.css";
 
 export default function BookPartsPage({
   params,

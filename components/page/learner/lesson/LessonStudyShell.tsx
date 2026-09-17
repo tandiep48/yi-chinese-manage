@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { LessonSidebar, type StudyDomain } from "./LessonSidebar";
+import "./lesson-study.css";
 
 export function LessonStudyShell({
   passageId,

@@ -22,6 +22,7 @@ import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePick
 import type { VocabMode, VocabRow } from "@/lib/types/types";
 import { VocabFilterBar } from "./VocabFilterBar";
 import { VocabTable } from "./VocabTable";
+import "./vocab-select.css";
 import {
   VocabStrokeModal,
   type StrokeModalState,

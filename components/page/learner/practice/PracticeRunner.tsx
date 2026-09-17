@@ -24,6 +24,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { usePracticeEngine, type PracticeEngine, type PracticeEngineOptions } from "@/hooks/usePracticeEngine";
 import { PracticeAudioProvider, usePracticeAudio } from "./PracticeAudio";
 import { QuestionGroup } from "./QuestionGroup";
+import "./practice-shell.css";
 
 const RESULT_ICONS: Record<string, IconDefinition> = {
   "fa-trophy": faTrophy,
