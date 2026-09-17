@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { StrokeOrder } from "@/components/page/learner/lesson/StrokeOrder";
+import "./vocab-stroke-modal.css";
 
 export interface StrokeAllItem {
   ch: string;

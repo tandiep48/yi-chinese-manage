@@ -1,0 +1,137 @@
+
+/* ─────────────────────────────────────────────
+   VOCAB SELECTION — the word table itself (header, rows, checkboxes, the
+   hanzi/pinyin/meaning columns and their per-column toggles).
+   Scoped under .vocab-select; tokens come from ./vocab-select.css.
+   ───────────────────────────────────────────── */
+/* ── Table ── */
+.vocab-select .vocab-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border-cell);
+  border-radius: 10px;
+}
+.vocab-select .vocab-table {
+  width: 100%;
+  min-width: 820px;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+}
+.vocab-select .vocab-table th,
+.vocab-select .vocab-table td {
+  border: 1px solid var(--vs-border-cell);
+  padding: 14px 16px;
+  text-align: left;
+  vertical-align: middle;
+}
+.vocab-select .vocab-table thead th {
+  background: var(--vs-primary);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  user-select: none;
+  white-space: nowrap;
+}
+.vocab-select .vocab-table thead th .vocab-column-header-label,
+.vocab-select .vocab-table thead th .vocab-column-toggle { color: #ffffff; }
+.vocab-select .vocab-table tbody tr { transition: background 0.15s; }
+.vocab-select .vocab-table tbody tr:hover,
+.vocab-select .vocab-table tbody tr.playing-highlight { background: var(--vs-row-hover); }
+.vocab-select .vocab-cn { font-size: 1.9rem; color: var(--vs-text); line-height: 1.35; }
+.vocab-select .vocab-pinyin { color: var(--vs-primary); font-size: 1.05rem; }
+.vocab-select .vocab-meaning-vn { color: var(--vs-text-muted); font-size: 1.02rem; line-height: 1.45; }
+
+/* Column widths */
+.vocab-select .vocab-no-col,
+.vocab-select .vocab-no-cell {
+  width: 64px;
+  text-align: center;
+  color: var(--vs-text);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.vocab-select .vocab-select-col { width: 44px; text-align: center; }
+.vocab-select .vocab-select-col input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--vs-primary);
+  cursor: pointer;
+}
+.vocab-select .vocab-tools-col,
+.vocab-select .vocab-tools-cell { width: 104px; text-align: center; white-space: nowrap; }
+.vocab-select .vocab-tools-cell .vocab-stroke-row-btn,
+.vocab-select .vocab-tools-cell .vocab-audio-btn { margin-right: 4px; }
+.vocab-select .vocab-no-audio { color: var(--vs-text-muted); }
+
+/* Header/row icon buttons */
+.vocab-select .vocab-header-icon-btn,
+.vocab-select .vocab-audio-btn,
+.vocab-select .vocab-stroke-row-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--vs-primary);
+  background: var(--vs-primary);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+.vocab-select .vocab-header-icon-btn { margin-right: 6px; }
+.vocab-select .vocab-header-icon-btn:hover,
+.vocab-select .vocab-audio-btn:hover,
+.vocab-select .vocab-stroke-row-btn:hover {
+  background: var(--vs-primary-hover);
+  border-color: var(--vs-primary-hover);
+  transform: scale(1.08);
+}
+.vocab-select .play-icon { transform: translateX(1px); }
+
+/* Column hide toggle */
+.vocab-select .vocab-column-toggle {
+  width: 26px;
+  height: 26px;
+  margin-left: 8px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.82rem;
+  vertical-align: middle;
+}
+.vocab-select .vocab-column-toggle:hover { background: rgba(255, 255, 255, 0.16); }
+
+/* Hide / reveal study logic */
+.vocab-select .clickable-cell { cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+.vocab-select .clickable-cell:hover { background-color: rgba(0, 122, 97, 0.05); }
+.vocab-select .hidden-cell {
+  color: transparent !important;
+  background-color: rgba(0, 122, 97, 0.14) !important;
+  border-radius: 4px;
+}
+.vocab-select .vocab-table.hide-cn .vocab-cn,
+.vocab-select .vocab-table.hide-py .vocab-pinyin,
+.vocab-select .vocab-table.hide-vn .vocab-meaning-vn { color: transparent; }
+.vocab-select .vocab-table.hide-cn .vocab-cn.column-cell-revealed,
+.vocab-select .vocab-table.hide-py .vocab-pinyin.column-cell-revealed,
+.vocab-select .vocab-table.hide-vn .vocab-meaning-vn.column-cell-revealed,
+.vocab-select .vocab-table tr.audio-revealed .vocab-cn,
+.vocab-select .vocab-table tr.audio-revealed .vocab-pinyin,
+.vocab-select .vocab-table tr.audio-revealed .vocab-meaning-vn {
+  color: revert !important;
+  background-color: transparent !important;
+}
+

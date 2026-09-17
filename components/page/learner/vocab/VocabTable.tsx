@@ -26,6 +26,7 @@ import {
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import type { VocabRow } from "@/lib/types/types";
+import "./vocab-table.css";
 
 type ColKey = "cn" | "py" | "vn";
 

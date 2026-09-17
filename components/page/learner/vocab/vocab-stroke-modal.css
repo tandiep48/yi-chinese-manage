@@ -1,0 +1,104 @@
+
+/* ─────────────────────────────────────────────
+   VOCAB SELECTION — stroke-order modal, the hanzi-writer overlay opened from
+   a table row. Scoped under .vocab-select; tokens come from ./vocab-select.css.
+   ───────────────────────────────────────────── */
+
+/* ── Stroke-order modal ── */
+.vocab-select .stroke-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 122, 97, 0.36);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+.vocab-select .stroke-modal {
+  background: var(--vs-surface);
+  border: 1px solid rgba(0, 122, 97, 0.12);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 28px 24px 20px;
+  box-shadow: 0 20px 60px rgba(0, 122, 97, 0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 20px;
+}
+.vocab-select .stroke-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+.vocab-select .stroke-modal-word { font-size: 2rem; font-weight: 700; color: var(--vs-text); line-height: 1.1; }
+.vocab-select .stroke-modal-pinyin { font-size: 0.95rem; color: var(--vs-primary); margin-top: 4px; }
+.vocab-select .stroke-modal-close {
+  background: rgba(0, 122, 97, 0.06);
+  border: none;
+  color: var(--vs-text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+.vocab-select .stroke-modal-close:hover { background: rgba(0, 122, 97, 0.15); color: var(--vs-text); }
+.vocab-select .word-popup-stroke-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.vocab-select .stroke-char-tabs { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.vocab-select .stroke-tab {
+  background: rgba(0, 122, 97, 0.05);
+  border: 1px solid rgba(0, 122, 97, 0.12);
+  color: var(--vs-text-muted);
+  border-radius: 10px;
+  padding: 6px 16px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+.vocab-select .stroke-tab:hover { background: rgba(0, 122, 97, 0.1); color: var(--vs-text); }
+.vocab-select .stroke-tab.active { background: rgba(0, 122, 97, 0.15); border-color: var(--vs-primary); color: var(--vs-primary); }
+.vocab-select .stroke-canvas-wrap { display: flex; justify-content: center; align-items: center; width: 100%; padding: 8px 0; }
+.vocab-select .stroke-container svg,
+.vocab-select .stroke-canvas-wrap svg {
+  background: var(--vs-surface);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 122, 97, 0.1);
+  display: block;
+}
+.vocab-select .stroke-controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; }
+.vocab-select .stroke-btn {
+  background: rgba(0, 122, 97, 0.05);
+  border: 1px solid rgba(0, 122, 97, 0.15);
+  color: var(--vs-primary);
+  padding: 9px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.vocab-select .stroke-btn:hover { background: rgba(0, 122, 97, 0.12); border-color: var(--vs-primary); color: var(--vs-primary-hover); transform: translateY(-1px); }
+.vocab-select .stroke-btn.secondary { background: transparent; border-color: rgba(0, 122, 97, 0.1); color: var(--vs-text-muted); }
+.vocab-select .stroke-btn.secondary:hover { background: rgba(0, 122, 97, 0.05); color: var(--vs-text); }
+.vocab-select .stroke-hint { font-size: 0.75rem; color: var(--vs-text-muted); text-align: center; opacity: 0.6; margin: 0; }
