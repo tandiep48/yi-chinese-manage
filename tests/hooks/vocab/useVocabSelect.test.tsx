@@ -13,7 +13,7 @@ import {
   getLearnedVocab,
   searchVocab,
 } from "@/lib/api/learner/learnerVocab";
-import { useVocabSelect } from "@/hooks/useVocabSelect";
+import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
 import type { VocabRow } from "@/lib/types/vocab";
 
 vi.mock("@/components/i18n/I18nProvider", () => ({

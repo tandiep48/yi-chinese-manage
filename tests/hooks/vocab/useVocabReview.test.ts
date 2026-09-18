@@ -7,7 +7,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 
 import { getVocabReview } from "@/lib/api/learner/learnerVocab";
-import { useVocabReview, REVIEW_PAGE_SIZE } from "@/hooks/useVocabReview";
+import { useVocabReview, REVIEW_PAGE_SIZE } from "@/hooks/vocab/useVocabReview";
 import type { VocabRow } from "@/lib/types/vocab";
 
 vi.mock("@/lib/api/learner/learnerVocab", () => ({ getVocabReview: vi.fn() }));

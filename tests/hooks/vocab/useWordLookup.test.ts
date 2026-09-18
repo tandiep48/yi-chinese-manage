@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useWordLookup } from "@/hooks/useWordLookup";
+import { useWordLookup } from "@/hooks/vocab/useWordLookup";
 import * as api from "@/lib/api/learner/learnerVocab";
 import type { LessonPassageLine } from "@/lib/types/lesson";
 import type { VocabLookup } from "@/lib/types/vocab";

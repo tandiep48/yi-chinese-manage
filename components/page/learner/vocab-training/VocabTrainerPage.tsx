@@ -9,7 +9,7 @@
 import { useEffect } from "react";
 import { TrainerShell } from "@/components/page/learner/trainer/TrainerShell";
 import { SuccessPopup } from "@/components/page/learner/trainer/SuccessPopup";
-import { useVocabTrainer } from "@/hooks/useVocabTrainer";
+import { useVocabTrainer } from "@/hooks/vocab/useVocabTrainer";
 import { TypingActivity } from "./TypingActivity";
 import { MatchActivity } from "./MatchActivity";
 import { VocabTrainerRecap } from "./VocabTrainerRecap";

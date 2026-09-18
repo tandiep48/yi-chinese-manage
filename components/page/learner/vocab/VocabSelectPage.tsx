@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useVocabSelect } from "@/hooks/useVocabSelect";
+import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
 import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
 import type { VocabMode, VocabRow } from "@/lib/types/vocab";
 import { VocabFilterBar } from "./VocabFilterBar";

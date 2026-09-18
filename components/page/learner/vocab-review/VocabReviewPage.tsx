@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useVocabReview } from "@/hooks/useVocabReview";
+import { useVocabReview } from "@/hooks/vocab/useVocabReview";
 import { pickMeaning } from "@/lib/lessons/meaning";
 import { vocabAudioUrl } from "@/lib/audio";
 import "./vocab-review.css";
