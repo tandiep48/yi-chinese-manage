@@ -1,6 +1,6 @@
 "use client";
 
-// components/vocab/VocabForm.tsx
+// components/page/vocab/VocabForm.tsx
 // Create / Edit vocabulary modal form.
 
 import { useEffect, useState } from "react";

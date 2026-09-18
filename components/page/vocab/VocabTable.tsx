@@ -1,6 +1,6 @@
 "use client";
 
-// components/vocab/VocabTable.tsx
+// components/page/vocab/VocabTable.tsx
 // Vocabulary data table with edit/delete actions.
 
 import { useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-// app/user/page.tsx
+// app/manage/user/page.tsx
 // User management page — list, search, create, edit, delete.
 
 import { useEffect, useState } from "react";

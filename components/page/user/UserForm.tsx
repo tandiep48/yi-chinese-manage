@@ -1,6 +1,6 @@
 "use client";
 
-// components/user/UserForm.tsx
+// components/page/user/UserForm.tsx
 // Create / Edit user modal form.
 // On edit, leaving the password blank keeps the current password.
 

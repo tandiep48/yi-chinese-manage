@@ -1,6 +1,6 @@
 "use client";
 
-// components/user/UserTable.tsx
+// components/page/user/UserTable.tsx
 // Users data table with edit/delete actions.
 
 import { useState } from "react";

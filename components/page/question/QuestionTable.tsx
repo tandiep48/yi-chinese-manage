@@ -1,6 +1,6 @@
 "use client";
 
-// components/question/QuestionTable.tsx
+// components/page/question/QuestionTable.tsx
 // Question bank data table with edit/delete actions.
 
 import { useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-// components/question/QuestionForm.tsx
+// components/page/question/QuestionForm.tsx
 // Create / Edit question-bank modal form.
 // `options` is edited as raw JSON (must be a JSON object or blank).
 

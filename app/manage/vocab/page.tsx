@@ -1,6 +1,6 @@
 "use client";
 
-// app/vocab/page.tsx
+// app/manage/vocab/page.tsx
 // Vocabulary management page — list, create, edit, delete.
 
 import { useState } from "react";

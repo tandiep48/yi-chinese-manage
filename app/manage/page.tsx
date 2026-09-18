@@ -1,4 +1,4 @@
-// app/page.tsx
+// app/manage/page.tsx
 // Dashboard — stat cards showing total vocab, total passages, and HSK breakdown.
 
 import { TopBar } from "@/components/layout/TopBar";

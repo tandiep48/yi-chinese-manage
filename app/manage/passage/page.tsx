@@ -1,6 +1,6 @@
 "use client";
 
-// app/passage/page.tsx
+// app/manage/passage/page.tsx
 // Passage management page — list, create, edit, delete, expand lines.
 
 import { useState } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-// components/passage/PassageTable.tsx
+// components/page/passage/PassageTable.tsx
 // Passage list table with expandable lines panel and edit/delete actions.
 
 import { useState } from "react";

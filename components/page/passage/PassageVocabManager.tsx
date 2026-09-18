@@ -1,6 +1,6 @@
 "use client";
 
-// components/passage/PassageVocabManager.tsx
+// components/page/passage/PassageVocabManager.tsx
 // Manage the vocabulary words linked to a single passage:
 //  - lists linked words as removable chips
 //  - a searchable picker to add an existing vocabulary word

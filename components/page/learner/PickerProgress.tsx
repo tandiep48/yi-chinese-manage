@@ -1,6 +1,6 @@
 "use client";
 
-// components/learner/PickerProgress.tsx
+// components/page/learner/PickerProgress.tsx
 // Progress bars for the lesson picker — ports _progressBar() from the
 // Learning app's passage_picker.js (words + lesson-progress bars).
 

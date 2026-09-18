@@ -1,6 +1,6 @@
 "use client";
 
-// components/passage/PassageForm.tsx
+// components/page/passage/PassageForm.tsx
 // Create / Edit passage modal form with embedded LinesEditor.
 
 import { useEffect, useState } from "react";

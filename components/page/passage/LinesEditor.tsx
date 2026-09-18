@@ -1,6 +1,6 @@
 "use client";
 
-// components/passage/LinesEditor.tsx
+// components/page/passage/LinesEditor.tsx
 // Dynamic list editor for lesson_lines inside PassageForm.
 
 import type { LineFormData } from "@/lib/types/lesson";

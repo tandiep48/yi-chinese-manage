@@ -1,6 +1,6 @@
 "use client";
 
-// app/question/page.tsx
+// app/manage/question/page.tsx
 // Question bank management page — list, filter, search, create, edit, delete.
 
 import { useEffect, useState } from "react";
