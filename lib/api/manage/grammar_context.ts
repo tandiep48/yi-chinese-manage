@@ -1,7 +1,7 @@
 import type { PaginatedResponse } from "@/lib/types/common";
 import type { GrammarContext, GrammarContextFormData } from "@/lib/types/grammar";
-import { API_CONSTANTS } from "./constants";
-import { apiFetch } from "./client";
+import { API_CONSTANTS } from "../constants";
+import { apiFetch } from "../client";
 
 export function listGrammarContexts(
   page = 1,

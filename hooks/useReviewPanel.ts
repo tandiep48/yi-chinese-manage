@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   getPracticeHistory,
   getPracticeHistoryDetail,
-} from "@/lib/api/practice";
+} from "@/lib/api/learner/practice";
 import { UnauthenticatedError } from "@/lib/api/client";
 import { useT } from "@/components/i18n/I18nProvider";
 import type { ReviewHistoryFilters, ReviewSessionDetail, ReviewSessionSummary } from "@/lib/types/practice";

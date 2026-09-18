@@ -8,7 +8,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getRecentLearning } from "@/lib/api/recent";
+import { getRecentLearning } from "@/lib/api/learner/recent";
 
 interface UseRecentLearningReturn {
   loading: boolean;

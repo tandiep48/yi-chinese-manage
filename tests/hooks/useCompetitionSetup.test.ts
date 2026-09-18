@@ -6,12 +6,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useCompetitionSetup } from "@/hooks/useCompetitionSetup";
-import * as competitionApi from "@/lib/api/competition";
-import * as learnerVocab from "@/lib/api/learnerVocab";
+import * as competitionApi from "@/lib/api/learner/competition";
+import * as learnerVocab from "@/lib/api/learner/learnerVocab";
 
-vi.mock("@/lib/api/competition");
-vi.mock("@/lib/api/learnerVocab");
-vi.mock("@/lib/api/lessons");
+vi.mock("@/lib/api/learner/competition");
+vi.mock("@/lib/api/learner/learnerVocab");
+vi.mock("@/lib/api/learner/lessons");
 vi.mock("@/components/i18n/I18nProvider", () => ({
   useT: () => ({ t: (key: string) => key, lang: "en" }),
 }));

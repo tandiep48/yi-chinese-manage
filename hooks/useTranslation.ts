@@ -6,7 +6,7 @@
 // from the passage id, then fetch every sentence for that lesson.
 
 import { useEffect, useState } from "react";
-import { getLessonTranslations } from "@/lib/api/translation";
+import { getLessonTranslations } from "@/lib/api/learner/translation";
 import { hskLevelFromPassageId } from "@/lib/lessons/lessons";
 import type { TranslationRow } from "@/lib/types/lesson";
 

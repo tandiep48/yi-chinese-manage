@@ -30,7 +30,7 @@ import {
   type HanziFont,
   type HanziScript,
 } from "@/lib/han/hanConvert";
-import { saveHanziScript, saveHanziFont } from "@/lib/api/userSettings";
+import { saveHanziScript, saveHanziFont } from "@/lib/api/learner/userSettings";
 
 interface HanziSettingsValue {
   script: HanziScript;

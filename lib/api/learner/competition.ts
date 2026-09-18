@@ -7,7 +7,7 @@
 import type { CompetitionRoom, CompetitionRoomSettings } from "@/lib/types/competition";
 import type { VocabRow } from "@/lib/types/vocab";
 import type { SourcePassage } from "@/lib/competition/roomLogic";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 // POST /api/competition/rooms -> { room }. The server normalizes a full activity_type
 // selection back to "all" and answers 404 when the picked parts have no material.

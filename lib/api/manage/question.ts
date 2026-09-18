@@ -1,7 +1,7 @@
 import type { PaginatedResponse } from "@/lib/types/common";
 import type { Question, QuestionFormData } from "@/lib/types/question";
-import { API_CONSTANTS } from "./constants";
-import { apiFetch } from "./client";
+import { API_CONSTANTS } from "../constants";
+import { apiFetch } from "../client";
 
 export interface QuestionFilters {
   category?: string;

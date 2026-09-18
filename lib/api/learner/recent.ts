@@ -5,7 +5,7 @@
 // signed-out visitor still sees the picker.
 
 import type { RecentLearning } from "@/lib/types/lesson";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 export function getRecentLearning(): Promise<RecentLearning | null> {
   return legacyApiFetch<{ recent: RecentLearning | null }>(

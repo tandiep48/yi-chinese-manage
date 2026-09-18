@@ -5,7 +5,7 @@
 // they soft-fail to an empty result when signed out, matching the legacy page.
 
 import type { VocabRow } from "@/lib/types/vocab";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 // A selection to resolve into normalized word rows. Any combination of explicit
 // words and/or passage ids; the server unions and de-dupes them.

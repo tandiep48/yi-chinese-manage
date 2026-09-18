@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useRecentLearning } from "@/hooks/useRecentLearning";
-import * as recentApi from "@/lib/api/recent";
+import * as recentApi from "@/lib/api/learner/recent";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { AuthUser } from "@/lib/types/user";
 
-vi.mock("@/lib/api/recent");
+vi.mock("@/lib/api/learner/recent");
 vi.mock("@/components/auth/AuthProvider", () => ({ useAuth: vi.fn() }));
 
 const authValue = (user: AuthUser | null, loading = false) =>

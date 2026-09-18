@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useGrammar, splitGrammarByType1 } from "@/hooks/useGrammar";
-import * as api from "@/lib/api/lessons";
+import * as api from "@/lib/api/learner/lessons";
 import type { LessonGrammarRule } from "@/lib/types/lesson";
 
-vi.mock("@/lib/api/lessons");
+vi.mock("@/lib/api/learner/lessons");
 
 const RULES: LessonGrammarRule[] = [
   { grammar_id: "g1", type: 1, vietnamese_content: "Chủ đề A" },

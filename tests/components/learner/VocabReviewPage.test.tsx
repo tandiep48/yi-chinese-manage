@@ -9,11 +9,11 @@ import userEvent from "@testing-library/user-event";
 
 import { VocabReviewPage } from "@/components/page/learner/vocab-review/VocabReviewPage";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import { getVocabReview } from "@/lib/api/learnerVocab";
+import { getVocabReview } from "@/lib/api/learner/learnerVocab";
 import { useRouter } from "next/navigation";
 import type { VocabRow } from "@/lib/types/vocab";
 
-vi.mock("@/lib/api/learnerVocab", () => ({ getVocabReview: vi.fn() }));
+vi.mock("@/lib/api/learner/learnerVocab", () => ({ getVocabReview: vi.fn() }));
 vi.mock("next/navigation", () => ({ useRouter: vi.fn() }));
 
 const mockReview = getVocabReview as unknown as ReturnType<typeof vi.fn>;

@@ -5,7 +5,7 @@
 // CRUD in lib/api/book.ts (/api/admin/book). Do not merge the two.
 
 import type { LearnerBookDetail, LearnerBookSummary } from "@/lib/types/book";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 export function getLearnerBooks(): Promise<LearnerBookSummary[]> {
   return legacyApiFetch<{ books: LearnerBookSummary[] }>("/api/lesson/books").then(

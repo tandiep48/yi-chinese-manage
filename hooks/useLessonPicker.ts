@@ -5,7 +5,7 @@
 // from Learning/web_app/static/shared/passage_picker.js's showLessonPicker().
 
 import { useEffect, useState } from "react";
-import { getPassages, getPickerProgress } from "@/lib/api/lessons";
+import { getPassages, getPickerProgress } from "@/lib/api/learner/lessons";
 import {
   groupPassagesByLesson,
   sortLessonNums,

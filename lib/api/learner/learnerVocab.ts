@@ -6,7 +6,7 @@
 // admin vocab CRUD in lib/api/vocab.ts.
 
 import type { SavedBook, VocabLookupMap, VocabMode, VocabTableResponse } from "@/lib/types/vocab";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 // Books the current user has saved words in (populates the "Book" mode picker).
 // Login-required; soft-fails to [] when signed out, like the legacy loadSavedBooks().

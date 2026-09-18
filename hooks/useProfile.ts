@@ -13,7 +13,7 @@ import {
   getProfileSummary,
   uploadAvatar,
   changePassword,
-} from "@/lib/api/profile";
+} from "@/lib/api/learner/profile";
 
 export type MessageType = "" | "success" | "error";
 export interface StatusMessage {

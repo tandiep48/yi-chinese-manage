@@ -5,7 +5,7 @@
 // Learning/web_app/static/learning/learning.js.
 
 import { useEffect, useState } from "react";
-import { getLearnerBook } from "@/lib/api/learnerBooks";
+import { getLearnerBook } from "@/lib/api/learner/learnerBooks";
 import type { LearnerBookDetail } from "@/lib/types/book";
 
 interface UseLearnerBookReturn {

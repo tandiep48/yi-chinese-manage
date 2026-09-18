@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
-import { getPracticeLessons } from "@/lib/api/practice";
+import { getPracticeLessons } from "@/lib/api/learner/practice";
 import type { PracticeCategory } from "@/lib/types/practice";
 import "./practice-select.css";
 

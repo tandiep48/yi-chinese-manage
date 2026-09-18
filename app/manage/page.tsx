@@ -3,8 +3,8 @@
 
 import { TopBar } from "@/components/layout/TopBar";
 import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
-import { listVocab } from "@/lib/api/vocab";
-import { listPassages } from "@/lib/api/passage";
+import { listVocab } from "@/lib/api/manage/vocab";
+import { listPassages } from "@/lib/api/manage/passage";
 import { HSK_LEVELS } from "@/lib/types/common";
 import Link from "next/link";
 

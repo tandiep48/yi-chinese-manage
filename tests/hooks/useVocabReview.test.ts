@@ -6,11 +6,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
 
-import { getVocabReview } from "@/lib/api/learnerVocab";
+import { getVocabReview } from "@/lib/api/learner/learnerVocab";
 import { useVocabReview, REVIEW_PAGE_SIZE } from "@/hooks/useVocabReview";
 import type { VocabRow } from "@/lib/types/vocab";
 
-vi.mock("@/lib/api/learnerVocab", () => ({ getVocabReview: vi.fn() }));
+vi.mock("@/lib/api/learner/learnerVocab", () => ({ getVocabReview: vi.fn() }));
 
 const mockReview = getVocabReview as unknown as ReturnType<typeof vi.fn>;
 

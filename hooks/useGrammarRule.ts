@@ -10,7 +10,7 @@ import {
   createGrammarRule,
   updateGrammarRule,
   deleteGrammarRule,
-} from "@/lib/api/grammar_rule";
+} from "@/lib/api/manage/grammar_rule";
 
 interface UseGrammarRuleReturn {
   items: GrammarRule[];

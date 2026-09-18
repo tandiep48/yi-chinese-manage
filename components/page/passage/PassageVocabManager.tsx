@@ -11,8 +11,8 @@ import {
   listPassageVocab,
   addPassageVocab,
   removePassageVocab,
-} from "@/lib/api/passage";
-import { listVocab } from "@/lib/api/vocab";
+} from "@/lib/api/manage/passage";
+import { listVocab } from "@/lib/api/manage/vocab";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import type { Vocab } from "@/lib/types/vocab";
 

@@ -7,8 +7,8 @@
 // presentational; pure filtering/paging lives in lib/recommend/recommendLogic.
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { getRecommendations } from "@/lib/api/practice";
-import { getVocabHasHistory } from "@/lib/api/learnerVocab";
+import { getRecommendations } from "@/lib/api/learner/practice";
+import { getVocabHasHistory } from "@/lib/api/learner/learnerVocab";
 import { UnauthenticatedError } from "@/lib/api/client";
 import type { RecommendedPractice } from "@/lib/types/dashboard";
 import type { PracticeMultiItem } from "@/lib/types/practice";

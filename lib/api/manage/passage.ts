@@ -1,8 +1,8 @@
 import type { PaginatedResponse } from "@/lib/types/common";
 import type { LessonPassage, PassageFormData } from "@/lib/types/lesson";
 import type { Vocab } from "@/lib/types/vocab";
-import { API_CONSTANTS } from "./constants";
-import { apiFetch } from "./client";
+import { API_CONSTANTS } from "../constants";
+import { apiFetch } from "../client";
 
 export function listPassages(
   page = 1,

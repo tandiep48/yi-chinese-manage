@@ -1,6 +1,6 @@
 import type { LessonGrammarRule, LessonPassageDetail, LessonSessionResponse, PickerPassage, PickerProgressSummary } from "@/lib/types/lesson";
 import type { LessonVocabRow } from "@/lib/types/vocab";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 export function getPassages(hskLevel: string): Promise<PickerPassage[]> {
   return legacyApiFetch<{ passages: PickerPassage[] }>(

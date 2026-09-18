@@ -1,5 +1,5 @@
 import type { Book, BookFormData } from "@/lib/types/book";
-import { apiFetch } from "./client";
+import { apiFetch } from "../client";
 
 export function listBooks(): Promise<Book[]> {
   return apiFetch<Book[]>("/api/admin/book");

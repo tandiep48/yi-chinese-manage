@@ -7,7 +7,7 @@
 // caps lookup-batch at 80 words, so larger lessons are chunked.
 
 import { useEffect, useMemo, useState } from "react";
-import { lookupWordsBatch } from "@/lib/api/learnerVocab";
+import { lookupWordsBatch } from "@/lib/api/learner/learnerVocab";
 import { isPunctToken } from "@/lib/lessons/tokens";
 import type { LessonPassageLine } from "@/lib/types/lesson";
 import type { VocabLookupMap } from "@/lib/types/vocab";

@@ -1,11 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useWordLookup } from "@/hooks/useWordLookup";
-import * as api from "@/lib/api/learnerVocab";
+import * as api from "@/lib/api/learner/learnerVocab";
 import type { LessonPassageLine } from "@/lib/types/lesson";
 import type { VocabLookup } from "@/lib/types/vocab";
 
-vi.mock("@/lib/api/learnerVocab");
+vi.mock("@/lib/api/learner/learnerVocab");
 
 function line(id: number, tokens: string[]): LessonPassageLine {
   return {

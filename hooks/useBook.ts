@@ -10,7 +10,7 @@ import {
   createBook,
   updateBook,
   deleteBook,
-} from "@/lib/api/book";
+} from "@/lib/api/manage/book";
 
 interface UseBookReturn {
   items: Book[];

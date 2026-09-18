@@ -16,7 +16,7 @@ import { useLessonPicker } from "@/hooks/useLessonPicker";
 import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
 import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { useT } from "@/components/i18n/I18nProvider";
-import { saveRecentLearning } from "@/lib/api/recent";
+import { saveRecentLearning } from "@/lib/api/learner/recent";
 import type { PickerPassage } from "@/lib/types/lesson";
 import "@/components/page/learner/lesson-picker.css";
 

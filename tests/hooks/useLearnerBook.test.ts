@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useLearnerBook } from "@/hooks/useLearnerBook";
-import * as api from "@/lib/api/learnerBooks";
+import * as api from "@/lib/api/learner/learnerBooks";
 import type { LearnerBookDetail } from "@/lib/types/book";
 
-vi.mock("@/lib/api/learnerBooks");
+vi.mock("@/lib/api/learner/learnerBooks");
 
 const BOOK: LearnerBookDetail = {
   book_code: "AML",

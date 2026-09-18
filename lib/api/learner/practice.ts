@@ -6,7 +6,7 @@
 
 import type { RecommendedPractice } from "@/lib/types/dashboard";
 import type { PracticeAnswerRow, PracticeCategory, PracticeGroup, PracticeMultiItem, PracticeSessionData, ReviewHistoryFilters, ReviewHistoryResponse, ReviewSessionDetail } from "@/lib/types/practice";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 // GET /api/practice/recommend — ranked progress groups the user is ready for
 // (vocab coverage ≥ 0.80). Login-required raw JSON; the card only needs the

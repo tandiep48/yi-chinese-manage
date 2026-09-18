@@ -7,7 +7,7 @@
 // list, so this is disabled (and never fetches) for HSK passages.
 
 import { useCallback, useEffect, useState } from "react";
-import { getSavedWords, addSavedWord, removeSavedWord } from "@/lib/api/learnerVocab";
+import { getSavedWords, addSavedWord, removeSavedWord } from "@/lib/api/learner/learnerVocab";
 import type { LessonPassageDetail } from "@/lib/types/lesson";
 
 interface UseSavedWordsReturn {

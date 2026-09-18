@@ -6,7 +6,7 @@
 // start training" screens ported from Learning/web_app/static/reading/reading.js.
 
 import { useEffect, useState } from "react";
-import { getLessonPassageDetail, getLessonPassageVocab } from "@/lib/api/lessons";
+import { getLessonPassageDetail, getLessonPassageVocab } from "@/lib/api/learner/lessons";
 import type { LessonPassageDetail } from "@/lib/types/lesson";
 import type { LessonVocabRow } from "@/lib/types/vocab";
 

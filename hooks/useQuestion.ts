@@ -11,7 +11,7 @@ import {
   updateQuestion,
   deleteQuestion,
   type QuestionFilters,
-} from "@/lib/api/question";
+} from "@/lib/api/manage/question";
 
 interface UseQuestionReturn {
   items: Question[];

@@ -22,7 +22,7 @@ import {
   submitVocabBatch,
   type TrainerWordsPayload,
   type VocabTrainerRecord,
-} from "@/lib/api/vocabTrainer";
+} from "@/lib/api/learner/vocabTrainer";
 import type { TrainerScreen } from "@/components/page/learner/trainer/TrainerShell";
 
 const WORDS_KEY = "selectedVocabTrainerWords";

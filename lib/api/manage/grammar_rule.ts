@@ -1,7 +1,7 @@
 import type { PaginatedResponse } from "@/lib/types/common";
 import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/grammar";
-import { API_CONSTANTS } from "./constants";
-import { apiFetch } from "./client";
+import { API_CONSTANTS } from "../constants";
+import { apiFetch } from "../client";
 
 export function listGrammarRules(
   page = 1,

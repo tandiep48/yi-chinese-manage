@@ -14,8 +14,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
-import { resolveTrainerWords } from "@/lib/api/vocabTrainer";
-import { getSessionBookWords } from "@/lib/api/competition";
+import { resolveTrainerWords } from "@/lib/api/learner/vocabTrainer";
+import { getSessionBookWords } from "@/lib/api/learner/competition";
 import { vocabActivityTypes } from "@/lib/competition/roomLogic";
 import { buildActivities, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
 import type { CompetitionRoom, CompetitionSession } from "@/lib/types/competition";

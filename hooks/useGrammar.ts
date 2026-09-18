@@ -6,7 +6,7 @@
 // the flat id-ordered list starts a new section at each type=1 (title) row.
 
 import { useEffect, useState } from "react";
-import { getPassageGrammar } from "@/lib/api/lessons";
+import { getPassageGrammar } from "@/lib/api/learner/lessons";
 import type { LessonGrammarRule } from "@/lib/types/lesson";
 
 export type GrammarSection = LessonGrammarRule[];

@@ -1,5 +1,5 @@
 import type { DashboardCurrentLesson, GlobalStats, LearnedWordsDay, RecommendStatus, RecommendedPractice, TimeLearnedDay } from "@/lib/types/dashboard";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 export function getDashboardCurrentLesson(
   page = 1,

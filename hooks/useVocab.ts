@@ -10,7 +10,7 @@ import {
   createVocab,
   updateVocab,
   deleteVocab,
-} from "@/lib/api/vocab";
+} from "@/lib/api/manage/vocab";
 
 interface UseVocabReturn {
   items: Vocab[];

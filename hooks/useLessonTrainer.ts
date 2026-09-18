@@ -18,7 +18,7 @@ import {
   startLessonSession,
   submitLessonAnswer,
   completeLessonPart,
-} from "@/lib/api/lessons";
+} from "@/lib/api/learner/lessons";
 import type { LessonTask, LessonTaskType } from "@/lib/types/lesson";
 import type { TrainerScreen } from "@/components/page/learner/trainer/TrainerShell";
 

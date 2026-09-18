@@ -5,14 +5,14 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { getLessonPassageVocab } from "@/lib/api/lessons";
+import { getLessonPassageVocab } from "@/lib/api/learner/lessons";
 import { useFlashcardSource } from "@/hooks/useFlashcardSource";
 
 let search = "";
 vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(search),
 }));
-vi.mock("@/lib/api/lessons", () => ({ getLessonPassageVocab: vi.fn() }));
+vi.mock("@/lib/api/learner/lessons", () => ({ getLessonPassageVocab: vi.fn() }));
 
 const mockLessonVocab = getLessonPassageVocab as unknown as ReturnType<typeof vi.fn>;
 

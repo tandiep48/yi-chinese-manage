@@ -11,7 +11,7 @@ import {
   updatePassage,
   deletePassage,
   getPassage,
-} from "@/lib/api/passage";
+} from "@/lib/api/manage/passage";
 
 interface UsePassageReturn {
   items: LessonPassage[];

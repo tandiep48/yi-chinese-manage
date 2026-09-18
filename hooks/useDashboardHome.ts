@@ -13,7 +13,7 @@ import {
   getLearnedWordsLast3Days,
   getTimeLearnedLast3Days,
   getRecommendedPractices,
-} from "@/lib/api/dashboard";
+} from "@/lib/api/learner/dashboard";
 import type { DashboardLesson, GlobalStats, LearnedWordsDay, RecommendedPractice, TimeLearnedDay } from "@/lib/types/dashboard";
 
 interface UseDashboardHomeReturn {

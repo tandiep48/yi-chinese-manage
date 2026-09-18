@@ -5,7 +5,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import type { User, UserFormData } from "@/lib/types/user";
-import { listUsers, createUser, updateUser, deleteUser } from "@/lib/api/user";
+import { listUsers, createUser, updateUser, deleteUser } from "@/lib/api/manage/user";
 
 interface UseUserReturn {
   items: User[];

@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useTranslation } from "@/hooks/useTranslation";
-import * as api from "@/lib/api/translation";
+import * as api from "@/lib/api/learner/translation";
 import type { TranslationRow } from "@/lib/types/lesson";
 
-vi.mock("@/lib/api/translation");
+vi.mock("@/lib/api/learner/translation");
 
 const ROWS: TranslationRow[] = [
   { translation_id: "H2_2_1", cn: "起床了吗？", vn: "Dậy chưa?", en: "Are you up?" },

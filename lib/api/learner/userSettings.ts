@@ -5,7 +5,7 @@
 // from lib/api/user.ts, which is the admin User CRUD over the enveloped
 // /api/admin/user endpoints.
 
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 interface HanziScriptResponse {
   status?: string;

@@ -8,8 +8,8 @@
 // progress).
 
 import { useEffect, useState } from "react";
-import { getPassages, getPickerProgress } from "@/lib/api/lessons";
-import { getLearnerBook } from "@/lib/api/learnerBooks";
+import { getPassages, getPickerProgress } from "@/lib/api/learner/lessons";
+import { getLearnerBook } from "@/lib/api/learner/learnerBooks";
 import {
   groupPassagesByLesson,
   sortPartsByNumber,

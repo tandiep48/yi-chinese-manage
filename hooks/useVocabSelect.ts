@@ -16,13 +16,13 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
-import { getPassages } from "@/lib/api/lessons";
+import { getPassages } from "@/lib/api/learner/lessons";
 import {
   getVocabTable,
   getLearnedVocab,
   getSavedBooks,
   searchVocab,
-} from "@/lib/api/learnerVocab";
+} from "@/lib/api/learner/learnerVocab";
 import {
   DEFAULT_PAGE_SIZE,
   buildLessonOptions,

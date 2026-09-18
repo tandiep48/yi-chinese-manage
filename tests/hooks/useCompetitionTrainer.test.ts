@@ -8,13 +8,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 import { useCompetitionTrainer } from "@/hooks/useCompetitionTrainer";
-import * as trainerApi from "@/lib/api/vocabTrainer";
-import * as competitionApi from "@/lib/api/competition";
+import * as trainerApi from "@/lib/api/learner/vocabTrainer";
+import * as competitionApi from "@/lib/api/learner/competition";
 import type { CompetitionRoom, CompetitionSession } from "@/lib/types/competition";
 import type { VocabRow } from "@/lib/types/vocab";
 
-vi.mock("@/lib/api/vocabTrainer");
-vi.mock("@/lib/api/competition");
+vi.mock("@/lib/api/learner/vocabTrainer");
+vi.mock("@/lib/api/learner/competition");
 vi.mock("@/components/i18n/I18nProvider", () => ({
   useT: () => ({ t: (key: string) => key, lang: "en" }),
 }));

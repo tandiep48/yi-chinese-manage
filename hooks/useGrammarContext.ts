@@ -10,7 +10,7 @@ import {
   createGrammarContext,
   updateGrammarContext,
   deleteGrammarContext,
-} from "@/lib/api/grammar_context";
+} from "@/lib/api/manage/grammar_context";
 
 interface UseGrammarContextReturn {
   items: GrammarContext[];

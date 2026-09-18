@@ -12,7 +12,7 @@ import {
   getPracticeMulti,
   getPracticeProgressGroup,
   submitPractice,
-} from "@/lib/api/practice";
+} from "@/lib/api/learner/practice";
 import {
   buildAnswerRows,
   firstUncheckedAfter,

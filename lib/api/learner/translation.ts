@@ -4,7 +4,7 @@
 // a raw (non-enveloped) JSON endpoint — use legacyApiFetch.
 
 import type { TranslationRow } from "@/lib/types/lesson";
-import { legacyApiFetch } from "./client";
+import { legacyApiFetch } from "../client";
 
 export function getLessonTranslations(
   hskLevel: string,
