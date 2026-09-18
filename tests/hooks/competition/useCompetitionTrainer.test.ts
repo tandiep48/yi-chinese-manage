@@ -7,7 +7,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { useCompetitionTrainer } from "@/hooks/useCompetitionTrainer";
+import { useCompetitionTrainer } from "@/hooks/competition/useCompetitionTrainer";
 import * as trainerApi from "@/lib/api/learner/vocabTrainer";
 import * as competitionApi from "@/lib/api/learner/competition";
 import type { CompetitionRoom, CompetitionSession } from "@/lib/types/competition";

@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import { useCompetitionLessonTrainer } from "@/hooks/useCompetitionLessonTrainer";
+import { useCompetitionLessonTrainer } from "@/hooks/competition/useCompetitionLessonTrainer";
 import type { CompetitionSession } from "@/lib/types/competition";
 import type { LessonTask } from "@/lib/types/lesson";
 

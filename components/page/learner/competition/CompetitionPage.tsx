@@ -13,8 +13,8 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { useCompetitionRoom } from "@/hooks/useCompetitionRoom";
-import { useCompetitionSetup } from "@/hooks/useCompetitionSetup";
+import { useCompetitionRoom } from "@/hooks/competition/useCompetitionRoom";
+import { useCompetitionSetup } from "@/hooks/competition/useCompetitionSetup";
 import { SetupScreen } from "./SetupScreen";
 import { LobbyScreen } from "./LobbyScreen";
 import { SectionScreen } from "./SectionScreen";

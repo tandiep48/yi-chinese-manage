@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
 import { HSK_LEVELS } from "@/lib/competition/roomLogic";
-import { TIMEOUT_OPTIONS, type CompetitionSetup } from "@/hooks/useCompetitionSetup";
+import { TIMEOUT_OPTIONS, type CompetitionSetup } from "@/hooks/competition/useCompetitionSetup";
 import type { CompetitionCategory } from "@/lib/types/competition";
 import "./competition-multiselect.css";
 

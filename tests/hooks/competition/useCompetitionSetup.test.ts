@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
-import { useCompetitionSetup } from "@/hooks/useCompetitionSetup";
+import { useCompetitionSetup } from "@/hooks/competition/useCompetitionSetup";
 import * as competitionApi from "@/lib/api/learner/competition";
 import * as learnerVocab from "@/lib/api/learner/learnerVocab";
 
