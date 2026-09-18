@@ -12,7 +12,7 @@ import {
   faFolderOpen,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useReviewPanel } from "@/hooks/useReviewPanel";
+import { useReviewPanel } from "@/hooks/practice/useReviewPanel";
 import {
   sessionCardLevels,
   sessionCardLessons,

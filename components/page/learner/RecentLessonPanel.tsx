@@ -10,7 +10,7 @@
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import type { TVars } from "@/lib/i18n";
-import { useRecentLearning } from "@/hooks/useRecentLearning";
+import { useRecentLearning } from "@/hooks/profile/useRecentLearning";
 import { lessonHrefForPassage } from "@/lib/lessons/passageNav";
 import "./recent-lesson-panel.css";
 

@@ -7,7 +7,7 @@
 
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useLearnerBooks } from "@/hooks/useLearnerBooks";
+import { useLearnerBooks } from "@/hooks/book/useLearnerBooks";
 import { LearningTabs } from "@/components/page/learner/LearningTabs";
 import { bookCoverUrl } from "@/lib/gcs";
 import "@/components/page/learner/lesson-picker.css";

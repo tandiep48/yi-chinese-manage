@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import type { StatusMessage } from "@/hooks/useProfile";
+import type { StatusMessage } from "@/hooks/profile/useProfile";
 
 interface Props {
   open: boolean;

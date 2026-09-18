@@ -10,7 +10,7 @@
 // components/page/learner/dashboard/.
 
 import { Inter } from "next/font/google";
-import { useDashboardHome } from "@/hooks/useDashboardHome";
+import { useDashboardHome } from "@/hooks/profile/useDashboardHome";
 import { CurrentLessonCard } from "@/components/page/learner/dashboard/CurrentLessonCard";
 import { LearningStatistics } from "@/components/page/learner/dashboard/LearningStatistics";
 import { RecommendedSection } from "@/components/page/learner/dashboard/RecommendedSection";

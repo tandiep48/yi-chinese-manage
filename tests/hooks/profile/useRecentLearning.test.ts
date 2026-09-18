@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useRecentLearning } from "@/hooks/useRecentLearning";
+import { useRecentLearning } from "@/hooks/profile/useRecentLearning";
 import * as recentApi from "@/lib/api/learner/recent";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { AuthUser } from "@/lib/types/user";

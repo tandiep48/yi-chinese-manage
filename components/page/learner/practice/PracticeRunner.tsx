@@ -21,7 +21,7 @@ import {
   type IconDefinition,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { usePracticeEngine, type PracticeEngine, type PracticeEngineOptions } from "@/hooks/usePracticeEngine";
+import { usePracticeEngine, type PracticeEngine, type PracticeEngineOptions } from "@/hooks/practice/usePracticeEngine";
 import { PracticeAudioProvider, usePracticeAudio } from "./PracticeAudio";
 import { QuestionGroup } from "./QuestionGroup";
 import "./practice-shell.css";

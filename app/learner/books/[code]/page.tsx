@@ -8,7 +8,7 @@
 import { use } from "react";
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useLearnerBook } from "@/hooks/useLearnerBook";
+import { useLearnerBook } from "@/hooks/book/useLearnerBook";
 import { bookCoverUrl } from "@/lib/gcs";
 import "@/components/page/learner/lesson-picker.css";
 import "@/components/page/learner/books.css";

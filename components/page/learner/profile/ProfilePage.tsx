@@ -9,7 +9,7 @@ import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useProfile } from "@/hooks/useProfile";
+import { useProfile } from "@/hooks/profile/useProfile";
 import { badgeUrl } from "@/lib/gcs";
 import { AvatarModal } from "./AvatarModal";
 import { PasswordForm } from "./PasswordForm";

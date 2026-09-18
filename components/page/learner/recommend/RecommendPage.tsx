@@ -19,7 +19,7 @@ import {
   faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useRecommend } from "@/hooks/useRecommend";
+import { useRecommend } from "@/hooks/practice/useRecommend";
 import { RecommendCard } from "./RecommendCard";
 import { RecommendPagination } from "./RecommendPagination";
 import "./recommend-page.css";
