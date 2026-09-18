@@ -1,4 +1,4 @@
-// tests/hooks/useFlashcardSource.test.tsx
+// tests/hooks/vocab/useFlashcardSource.test.tsx
 // Resolving the flash-cards word list from the URL: the sessionStorage selection
 // hand-off (read once, then cleared) and the ?passage_id lesson fetch, both
 // normalised to LessonVocabRow.
@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { getLessonPassageVocab } from "@/lib/api/learner/lessons";
-import { useFlashcardSource } from "@/hooks/lesson/useFlashcardSource";
+import { useFlashcardSource } from "@/hooks/vocab/useFlashcardSource";
 
 let search = "";
 vi.mock("next/navigation", () => ({

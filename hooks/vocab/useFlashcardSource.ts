@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useFlashcardSource.ts
+// hooks/vocab/useFlashcardSource.ts
 // Resolves the vocab word list for the /vocab-learning flash-cards page from the
 // URL. Two entries, mirroring the legacy vocab_learning.js DOMContentLoaded flow:
 //   - ?source=selection  → words the /vocab page stashed in sessionStorage
