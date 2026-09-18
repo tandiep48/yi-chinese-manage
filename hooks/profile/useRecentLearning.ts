@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useRecentLearning.ts
+// hooks/profile/useRecentLearning.ts
 // Backs the "Continue where you left off" panel on the learning page. Ported
 // from loadRecentLearning() in Learning/web_app/static/learning/learning.js.
 // Signed-out or on any failure it resolves to no recent lesson (soft-fail), so

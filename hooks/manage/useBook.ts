@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useBook.ts
+// hooks/manage/useBook.ts
 // All state and CRUD logic for the Books management page.
 
 import { useState, useCallback, useEffect } from "react";

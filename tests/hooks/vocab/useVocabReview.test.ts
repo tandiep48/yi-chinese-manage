@@ -1,4 +1,4 @@
-// tests/hooks/useVocabReview.test.ts
+// tests/hooks/vocab/useVocabReview.test.ts
 // Covers the behaviour the review page relies on: the initial load and its
 // failure state, "Load more" appending pages, and the selection set — which
 // survives appends and whose select-all spans only the rows loaded so far.

@@ -1,4 +1,4 @@
-// tests/lib/hanConvert.test.ts
+// tests/lib/han/hanConvert.test.ts
 // Covers the pure font/script helpers and the DOM converter's convert / restore
 // / observer behaviour — including the React-reconciliation edge cases the
 // legacy first-seen WeakMap couldn't handle. Uses a fake converter (no OpenCC

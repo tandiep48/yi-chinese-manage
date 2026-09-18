@@ -1,4 +1,4 @@
-// lib/api/translation.ts
+// lib/api/learner/translation.ts
 // Learner-facing lesson translation endpoint (the Translation study page).
 // Mirrors Learning/web_app/routes/translation/translation_routes.py GET /lesson,
 // a raw (non-enveloped) JSON endpoint — use legacyApiFetch.

@@ -1,4 +1,4 @@
-// tests/hooks/useCompetitionTrainer.test.ts
+// tests/hooks/competition/useCompetitionTrainer.test.ts
 // The in-room trainer: it resolves the room's words once, reports answers straight to
 // the caller (the socket), and — the regression that matters — is keyed on the passage
 // ids rather than the room object, so the room_state broadcasts that arrive whenever a

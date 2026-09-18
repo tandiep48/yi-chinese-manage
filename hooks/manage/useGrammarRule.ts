@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useGrammarRule.ts
+// hooks/manage/useGrammarRule.ts
 // All state and CRUD logic for the Grammar Rule management page.
 
 import { useState, useCallback, useEffect } from "react";

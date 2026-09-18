@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useCompetitionRoom.ts
+// hooks/competition/useCompetitionRoom.ts
 // The Learn Together room state machine: the socket connection plus the five screens
 // of Learning/web_app/static/competition/competition.js (setup / lobby / section /
 // waiting / ranking) and every room action the page can take. The legacy module

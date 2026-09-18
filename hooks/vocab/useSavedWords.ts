@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useSavedWords.ts
+// hooks/vocab/useSavedWords.ts
 // The learner's personal saved-word list for a book-lesson passage, backing the
 // word popup's "Add to list" toggle. Ported from loadSavedWords()/toggleSavedWord()
 // in Learning/web_app/static/reading/reading.js. Only book lessons have a personal

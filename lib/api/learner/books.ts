@@ -1,4 +1,4 @@
-// lib/api/learnerBooks.ts
+// lib/api/learner/books.ts
 // Learner-facing Books browsing endpoints (Books tab of the learning page).
 // These are the raw (non-enveloped) JSON endpoints the Jinja learning page used
 // (Learning/web_app/static/learning/learning.js), distinct from the admin book

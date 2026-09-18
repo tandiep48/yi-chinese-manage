@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/usePassage.ts
+// hooks/manage/usePassage.ts
 // All state and CRUD logic for the Passage management page.
 
 import { useState, useCallback, useEffect } from "react";

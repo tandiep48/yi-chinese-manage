@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useCompetitionSources.ts
+// hooks/competition/useCompetitionSources.ts
 // Where a Learn Together room's questions come from: the source picker (HSK
 // levels, or the books the host has saved words in) and the Lesson -> Part
 // cascade both of them feed. Ports onLevelChange / onBookChange /

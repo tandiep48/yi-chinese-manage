@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useReviewPanel.ts
+// hooks/practice/useReviewPanel.ts
 // Review-panel state machine (Learning/web_app/static/review/review.js): the
 // session-list view with backend filters + paging, and the per-session detail
 // view with its own result/skill filters. Data is login-required raw JSON.

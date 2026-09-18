@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useVocabReview.ts
+// hooks/vocab/useVocabReview.ts
 // State machine for the saved-word review page. Ports the module-level state of
 // Learning/web_app/static/vocab/vocab_review.js: one combined, priority-ordered
 // list from /api/vocab/review that grows page by page via "Load more", a

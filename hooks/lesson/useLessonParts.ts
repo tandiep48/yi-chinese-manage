@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useLessonParts.ts
+// hooks/lesson/useLessonParts.ts
 // Parts of the lesson the given passage belongs to, for the lesson-study
 // sidebar. Ported from loadSidebarParts()/loadSidebarBookParts() in
 // Learning/web_app/static/shared/sidebar.js: HSK passages come from the picker

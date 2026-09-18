@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useWordLookup.ts
+// hooks/vocab/useWordLookup.ts
 // Prefetches vocabulary for every clickable word in a lesson's lines, so the
 // Lesson Summary word popup can show pinyin/meaning instantly. Ported from
 // prefetchTokens() in Learning/web_app/static/reading/reading.js. The backend

@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useWordSelection.ts
+// hooks/vocab/useWordSelection.ts
 // The vocab selection page's cross-page word set. Selection deliberately
 // survives paging and filter changes — the legacy page kept the same global
 // Map — so it is independent of whatever the table is currently showing and

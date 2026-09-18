@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/usePracticeEngine.ts
+// hooks/practice/usePracticeEngine.ts
 // The practice/exam session state machine, ported from the module-level globals
 // of Learning/web_app/static/practice/practice_engine.js. Owns session loading,
 // per-group answer state (persisted across navigation), scoring, and submit.

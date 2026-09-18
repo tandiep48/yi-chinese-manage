@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useUser.ts
+// hooks/manage/useUser.ts
 // All state and CRUD logic for the Users management page.
 
 import { useState, useCallback, useEffect } from "react";

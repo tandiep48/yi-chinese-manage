@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useGrammarContext.ts
+// hooks/manage/useGrammarContext.ts
 // All state and CRUD logic for the Grammar Context management page.
 
 import { useState, useCallback, useEffect } from "react";

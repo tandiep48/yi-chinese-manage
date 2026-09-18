@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useVocabTableState.ts
+// hooks/vocab/useVocabTableState.ts
 // What the vocab selection table is currently showing — its rows, pagination,
 // and whether it holds a prompt, a loading message or data — plus the guard
 // that keeps a slow response from overwriting a newer one.

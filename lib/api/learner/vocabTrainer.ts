@@ -1,4 +1,4 @@
-// lib/api/vocabTrainer.ts
+// lib/api/learner/vocabTrainer.ts
 // Batch vocab trainer endpoints, mirroring Learning/web_app/routes/vocab/
 // vocab_routes.py (/api/vocab/words, /api/vocab/submit-batch). Both are
 // login-required and return raw (non-enveloped) JSON, so they use legacyApiFetch;

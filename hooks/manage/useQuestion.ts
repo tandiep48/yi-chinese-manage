@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useQuestion.ts
+// hooks/manage/useQuestion.ts
 // All state and CRUD logic for the Question Bank management page.
 
 import { useState, useCallback, useEffect } from "react";

@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useLessonOverview.ts
+// hooks/lesson/useLessonOverview.ts
 // Data for a single lesson part's read-only overview screens (Lesson Overview
 // = passage content, Vocab Overview = linked vocabulary) — the "before you
 // start training" screens ported from Learning/web_app/static/reading/reading.js.

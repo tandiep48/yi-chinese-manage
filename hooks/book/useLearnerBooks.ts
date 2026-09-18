@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useLearnerBooks.ts
+// hooks/book/useLearnerBooks.ts
 // Book cover grid for the Books tab. Ported from loadBooks() in
 // Learning/web_app/static/learning/learning.js.
 

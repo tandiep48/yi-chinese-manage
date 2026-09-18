@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useVocabSelect.ts
+// hooks/vocab/useVocabSelect.ts
 // State machine for the learner vocab selection page. Ports the module-level
 // state and the mode/filter reset cascades from
 // Learning/web_app/static/vocab/vocab_select.js into a single hook:

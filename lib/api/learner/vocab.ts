@@ -1,4 +1,4 @@
-// lib/api/learnerVocab.ts
+// lib/api/learner/vocab.ts
 // Learner-facing vocab endpoints for the Lesson Summary word popup — the batch
 // word lookup and the personal saved-word list. Mirrors Learning/web_app/routes/
 // vocab/vocab_routes.py (/api/vocab/lookup-batch, /api/vocab/saved). Raw

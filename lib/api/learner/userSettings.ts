@@ -1,4 +1,4 @@
-// lib/api/userSettings.ts
+// lib/api/learner/userSettings.ts
 // Learner self-service settings — the authenticated user's own display prefs.
 // These predate the { success, data } envelope (see user_routes.py, they return
 // raw { status, hanzi_* } / { error }), so they use legacyApiFetch. Distinct

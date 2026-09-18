@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useVocab.ts
+// hooks/manage/useVocab.ts
 // All state and CRUD logic for the Vocabulary management page.
 
 import { useState, useCallback, useEffect } from "react";

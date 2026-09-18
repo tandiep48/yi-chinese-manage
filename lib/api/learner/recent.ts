@@ -1,4 +1,4 @@
-// lib/api/recent.ts
+// lib/api/learner/recent.ts
 // Recent-learning endpoint backing the "Continue where you left off" panel on
 // the learning page. Raw (non-enveloped) JSON, shared with the Jinja page
 // (Learning/web_app/static/learning/learning.js). Reads soft-fail to null so a

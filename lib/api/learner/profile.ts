@@ -1,4 +1,4 @@
-// lib/api/profile.ts
+// lib/api/learner/profile.ts
 // Learner profile self-service endpoints (Learning/web_app profile.js): the HSK
 // level/avatar summary, avatar upload, and change-password. All login-required
 // and pre-envelope (raw JSON), so they mirror legacyApiFetch's conventions.

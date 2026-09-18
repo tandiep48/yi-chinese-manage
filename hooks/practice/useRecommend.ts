@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useRecommend.ts
+// hooks/practice/useRecommend.ts
 // State machine for the Recommend page — ports the module globals of
 // Learning/web_app/static/recommend/recommend.js (fetch, the four filter tabs,
 // pagination, and the multi-select queue) into a single hook. Components stay

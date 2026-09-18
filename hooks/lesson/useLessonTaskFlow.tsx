@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useLessonTaskFlow.ts
+// hooks/lesson/useLessonTaskFlow.tsx
 // Shared per-task flow for the lesson trainer's three task components, porting the
 // answer / skip / advance handling of Learning/web_app/static/lesson/lesson.js. Each
 // task owns its own Skip→Next button (portaled into the trainer bottom bar, like the

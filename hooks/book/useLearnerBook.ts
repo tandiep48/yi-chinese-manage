@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useLearnerBook.ts
+// hooks/book/useLearnerBook.ts
 // One book's lessons + parts for the Books tab. Ported from openBook() in
 // Learning/web_app/static/learning/learning.js.
 

@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useLessonTrainer.ts
+// hooks/lesson/useLessonTrainer.ts
 // State machine for the solo lesson trainer, porting the session logic of
 // Learning/web_app/static/lesson/lesson.js: entry resolution (a ?passage_id part or a
 // lesson-wide master run stashed in sessionStorage), starting the server session,

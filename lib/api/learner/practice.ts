@@ -1,4 +1,4 @@
-// lib/api/practice.ts
+// lib/api/learner/practice.ts
 // Learner-facing practice/exam endpoints, mirroring
 // Learning/web_app/routes/practice/practice_routes.py (/api/practice/*). These
 // predate the { success, data } envelope and return raw JSON, login-required —

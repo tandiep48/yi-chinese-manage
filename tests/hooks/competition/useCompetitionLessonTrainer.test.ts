@@ -1,4 +1,4 @@
-// tests/hooks/useCompetitionLessonTrainer.test.ts
+// tests/hooks/competition/useCompetitionLessonTrainer.test.ts
 // Lesson-mode Learn Together: the room plays the task list the server generated at
 // session start (already filtered to the room's types), reporting each answer under its
 // passage:line key.

@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useCompetitionSetup.ts
+// hooks/competition/useCompetitionSetup.ts
 // The Learn Together create/edit form, porting the setup half of
 // Learning/web_app/static/competition/competition.js (onModeChange /
 // collectRoomBody / editRoomSettings).

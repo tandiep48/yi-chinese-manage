@@ -1,4 +1,4 @@
-// tests/hooks/useCompetitionSetup.test.ts
+// tests/hooks/competition/useCompetitionSetup.test.ts
 // Book mode's source picker. The distinction that matters: a book-passages lookup that
 // FAILS must not be reported as "this book has no saved words" — that sent us hunting
 // for missing vocabulary when the endpoint was simply not deployed.

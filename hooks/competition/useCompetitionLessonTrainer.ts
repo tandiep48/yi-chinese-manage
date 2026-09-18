@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useCompetitionLessonTrainer.ts
+// hooks/competition/useCompetitionLessonTrainer.ts
 // The in-room lesson trainer for Learn Together, porting startLessonTrainer() /
 // emitLessonAnswer() from Learning/web_app/static/competition/competition.js and the
 // flow of static/lesson/lesson_trainer_core.js.

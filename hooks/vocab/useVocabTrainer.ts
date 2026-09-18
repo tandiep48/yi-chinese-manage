@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useVocabTrainer.ts
+// hooks/vocab/useVocabTrainer.ts
 // State machine for the batch vocab trainer, porting the session logic of
 // Learning/web_app/static/vocab/vocab_training_batch.js (entry resolution, answer
 // recording + per-activity batch flush, the results popup, the recap, and

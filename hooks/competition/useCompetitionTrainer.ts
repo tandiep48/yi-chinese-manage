@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useCompetitionTrainer.ts
+// hooks/competition/useCompetitionTrainer.ts
 // The in-room vocab trainer for Learn Together, porting startTrainer() /
 // resolveRoomWords() / resolveBookWords() / emitVocabAnswer() from
 // Learning/web_app/static/competition/competition.js. It reuses the solo trainer's

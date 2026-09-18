@@ -1,4 +1,4 @@
-// tests/hooks/useVocabSelect.test.tsx
+// tests/hooks/vocab/useVocabSelect.test.tsx
 // Covers the reset cascades and derived state the vocab selection page relies
 // on: mode -> filters resets, the HSK -> lesson -> part grouping (numeric sort
 // with "Other" last, grouped part options across multiple lessons), history

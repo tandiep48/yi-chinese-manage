@@ -1,4 +1,4 @@
-// lib/api/competition.ts
+// lib/api/learner/competition.ts
 // Learn Together REST, mirroring Learning/web_app/routes/competition/
 // competition_routes.py. Room creation and the two book-mode lookups go over HTTP —
 // everything else about a live room flows over the socket (see

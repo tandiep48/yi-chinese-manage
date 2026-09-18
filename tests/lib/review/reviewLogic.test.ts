@@ -1,4 +1,4 @@
-// tests/lib/reviewLogic.test.ts
+// tests/lib/review/reviewLogic.test.ts
 import { describe, it, expect } from "vitest";
 import {
   answerTokens,

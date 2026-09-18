@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useProfile.ts
+// hooks/profile/useProfile.ts
 // Profile header state machine (Learning/web_app/static/profile/profile.js):
 // avatar display + upload modal, and the change-password form. Seeds from the
 // authed user, then refreshes the avatar + HSK level from profile-summary on
