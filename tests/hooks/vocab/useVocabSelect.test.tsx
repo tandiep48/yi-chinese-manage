@@ -12,7 +12,7 @@ import {
   getVocabTable,
   getLearnedVocab,
   searchVocab,
-} from "@/lib/api/learner/learnerVocab";
+} from "@/lib/api/learner/vocab";
 import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
 import type { VocabRow } from "@/lib/types/vocab";
 
@@ -24,7 +24,7 @@ vi.mock("@/components/i18n/I18nProvider", () => ({
 }));
 
 vi.mock("@/lib/api/learner/lessons", () => ({ getPassages: vi.fn() }));
-vi.mock("@/lib/api/learner/learnerVocab", () => ({
+vi.mock("@/lib/api/learner/vocab", () => ({
   getVocabTable: vi.fn(),
   getLearnedVocab: vi.fn(),
   searchVocab: vi.fn(),

@@ -2,12 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useLessonParts } from "@/hooks/lesson/useLessonParts";
 import * as lessonsApi from "@/lib/api/learner/lessons";
-import * as booksApi from "@/lib/api/learner/learnerBooks";
+import * as booksApi from "@/lib/api/learner/books";
 import type { LearnerBookDetail } from "@/lib/types/book";
 import type { PickerPassage, PickerProgressSummary } from "@/lib/types/lesson";
 
 vi.mock("@/lib/api/learner/lessons");
-vi.mock("@/lib/api/learner/learnerBooks");
+vi.mock("@/lib/api/learner/books");
 
 const HSK2_PASSAGES: PickerPassage[] = [
   { passage_id: "H2_2_2", hsk_level: "HSK2", title: "Too busy." },

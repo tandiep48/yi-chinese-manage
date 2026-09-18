@@ -22,7 +22,7 @@ import {
   getLearnedVocab,
   getSavedBooks,
   searchVocab,
-} from "@/lib/api/learner/learnerVocab";
+} from "@/lib/api/learner/vocab";
 import {
   DEFAULT_PAGE_SIZE,
   buildLessonOptions,

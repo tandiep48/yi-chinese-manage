@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from "react";
 import { getPassages, getPickerProgress } from "@/lib/api/learner/lessons";
-import { getLearnerBook } from "@/lib/api/learner/learnerBooks";
+import { getLearnerBook } from "@/lib/api/learner/books";
 import {
   groupPassagesByLesson,
   sortPartsByNumber,

@@ -8,7 +8,7 @@
 // spans only the rows loaded so far.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { getVocabReview } from "@/lib/api/learner/learnerVocab";
+import { getVocabReview } from "@/lib/api/learner/vocab";
 import type { VocabRow } from "@/lib/types/vocab";
 
 export const REVIEW_PAGE_SIZE = 100;

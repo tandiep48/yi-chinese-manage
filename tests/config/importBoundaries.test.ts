@@ -65,7 +65,7 @@ describe("learner code", () => {
 
   it.each([
     ["app/learner/profile/page.tsx", "@/hooks/profile/useProfile"],
-    ["components/page/learner/vocab/VocabPage.tsx", "@/lib/api/learner/learnerVocab"],
+    ["components/page/learner/vocab/VocabPage.tsx", "@/lib/api/learner/vocab"],
     ["app/learner/profile/page.tsx", "@/lib/api/client"],
   ])("allows %s importing %s", async (file, specifier) => {
     expect(await boundaryErrors(file, specifier)).toHaveLength(0);

@@ -18,7 +18,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { getPassages } from "@/lib/api/learner/lessons";
 import { getBookPassages } from "@/lib/api/learner/competition";
-import { getSavedBooks } from "@/lib/api/learner/learnerVocab";
+import { getSavedBooks } from "@/lib/api/learner/vocab";
 import {
   buildLessonOptions,
   buildPartOptions,

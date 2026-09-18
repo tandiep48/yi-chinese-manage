@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { useSavedWords } from "@/hooks/vocab/useSavedWords";
-import * as api from "@/lib/api/learner/learnerVocab";
+import * as api from "@/lib/api/learner/vocab";
 import type { LessonPassageDetail } from "@/lib/types/lesson";
 
-vi.mock("@/lib/api/learner/learnerVocab");
+vi.mock("@/lib/api/learner/vocab");
 
 const HSK: LessonPassageDetail = { passage_id: "H2_2_2", hsk_level: "HSK2", lines: [] };
 const BOOK: LessonPassageDetail = { passage_id: "AML_1_1", hsk_level: null, book_code: "AML", lines: [] };
