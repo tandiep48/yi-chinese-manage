@@ -4,7 +4,7 @@
 // Book management page — list, create, edit, delete.
 
 import { useState } from "react";
-import { useBook } from "@/hooks/useBook";
+import { useBook } from "@/hooks/manage/useBook";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { BookTable } from "@/components/page/book/BookTable";

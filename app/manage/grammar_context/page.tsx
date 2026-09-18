@@ -4,7 +4,7 @@
 // Grammar context management page — list, create, edit, delete.
 
 import { useState } from "react";
-import { useGrammarContext } from "@/hooks/useGrammarContext";
+import { useGrammarContext } from "@/hooks/manage/useGrammarContext";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { GrammarContextTable } from "@/components/page/grammar_context/GrammarContextTable";

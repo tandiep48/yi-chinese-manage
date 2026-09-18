@@ -4,7 +4,7 @@
 // Passage management page — list, create, edit, delete, expand lines.
 
 import { useState } from "react";
-import { usePassage } from "@/hooks/usePassage";
+import { usePassage } from "@/hooks/manage/usePassage";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { PassageTable } from "@/components/page/passage/PassageTable";

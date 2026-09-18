@@ -4,7 +4,7 @@
 // User management page — list, search, create, edit, delete.
 
 import { useEffect, useState } from "react";
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/hooks/manage/useUser";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { UserTable } from "@/components/page/user/UserTable";

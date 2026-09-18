@@ -4,7 +4,7 @@
 // Vocabulary management page — list, create, edit, delete.
 
 import { useState } from "react";
-import { useVocab } from "@/hooks/useVocab";
+import { useVocab } from "@/hooks/manage/useVocab";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { VocabTable } from "@/components/page/vocab/VocabTable";

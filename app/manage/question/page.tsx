@@ -4,7 +4,7 @@
 // Question bank management page — list, filter, search, create, edit, delete.
 
 import { useEffect, useState } from "react";
-import { useQuestion } from "@/hooks/useQuestion";
+import { useQuestion } from "@/hooks/manage/useQuestion";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { QuestionTable } from "@/components/page/question/QuestionTable";

@@ -4,7 +4,7 @@
 // Grammar rule management page — list, create, edit, delete.
 
 import { useState } from "react";
-import { useGrammarRule } from "@/hooks/useGrammarRule";
+import { useGrammarRule } from "@/hooks/manage/useGrammarRule";
 import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { GrammarRuleTable } from "@/components/page/grammar_rule/GrammarRuleTable";
