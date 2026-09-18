@@ -25,7 +25,7 @@ import {
   faLightbulb,
   faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
-import { useLessonParts, type SidebarPart } from "@/hooks/useLessonParts";
+import { useLessonParts, type SidebarPart } from "@/hooks/lesson/useLessonParts";
 import { partPickerHref } from "@/lib/lessons/lessons";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./lesson-sidebar.css";

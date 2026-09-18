@@ -7,7 +7,7 @@
 // Learning/web_app/templates/vocab_learning/vocab_learning.html.
 
 import { Suspense } from "react";
-import { useFlashcardSource } from "@/hooks/useFlashcardSource";
+import { useFlashcardSource } from "@/hooks/lesson/useFlashcardSource";
 import { FlashcardStudy } from "@/components/page/learner/vocab-learning/FlashcardStudy";
 
 function VocabLearningContent() {

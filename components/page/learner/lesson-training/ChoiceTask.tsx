@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeadphonesSimple, faBookOpen, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { answersMatch } from "@/lib/lessons/lessonTrainer";
-import { useLessonTaskFlow } from "@/hooks/useLessonTaskFlow";
+import { useLessonTaskFlow } from "@/hooks/lesson/useLessonTaskFlow";
 import type { LessonTask } from "@/lib/types/lesson";
 
 export function ChoiceTask({

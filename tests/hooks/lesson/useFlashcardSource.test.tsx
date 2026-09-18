@@ -6,7 +6,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { getLessonPassageVocab } from "@/lib/api/learner/lessons";
-import { useFlashcardSource } from "@/hooks/useFlashcardSource";
+import { useFlashcardSource } from "@/hooks/lesson/useFlashcardSource";
 
 let search = "";
 vi.mock("next/navigation", () => ({

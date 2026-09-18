@@ -8,7 +8,7 @@
 
 import { TrainerShell } from "@/components/page/learner/trainer/TrainerShell";
 import { SuccessPopup } from "@/components/page/learner/trainer/SuccessPopup";
-import { useLessonTrainer } from "@/hooks/useLessonTrainer";
+import { useLessonTrainer } from "@/hooks/lesson/useLessonTrainer";
 import { ChoiceTask } from "./ChoiceTask";
 import { TypingTask } from "./TypingTask";
 import { ReorderTask } from "./ReorderTask";

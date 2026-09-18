@@ -9,7 +9,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import type { MissedTask } from "@/hooks/useLessonTrainer";
+import type { MissedTask } from "@/hooks/lesson/useLessonTrainer";
 import "@/components/page/learner/trainer/trainer-recap.css";
 
 export function LessonTrainerRecap({

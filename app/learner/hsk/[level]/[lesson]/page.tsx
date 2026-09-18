@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel, isNumberPart, getPartNumber, lessonColor } from "@/lib/lessons/lessons";
 import { lessonImageUrl } from "@/lib/gcs";
-import { useLessonPicker } from "@/hooks/useLessonPicker";
+import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
 import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
 import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { useT } from "@/components/i18n/I18nProvider";

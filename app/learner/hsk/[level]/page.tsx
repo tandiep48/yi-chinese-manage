@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel } from "@/lib/lessons/lessons";
 import { hskImageUrl, lessonImageUrl } from "@/lib/gcs";
-import { useLessonPicker } from "@/hooks/useLessonPicker";
+import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
 import { ProgressLines } from "@/components/page/learner/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
 import "@/components/page/learner/lesson-picker.css";

@@ -2,12 +2,12 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LessonSidebar } from "@/components/page/learner/lesson/LessonSidebar";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import * as partsHook from "@/hooks/useLessonParts";
-import type { SidebarPart, LessonPartsHeader } from "@/hooks/useLessonParts";
+import * as partsHook from "@/hooks/lesson/useLessonParts";
+import type { SidebarPart, LessonPartsHeader } from "@/hooks/lesson/useLessonParts";
 
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
-vi.mock("@/hooks/useLessonParts");
+vi.mock("@/hooks/lesson/useLessonParts");
 
 const HEADER: LessonPartsHeader = { badge: "HSK2", lessonNum: "2", isBook: false };
 const PARTS: SidebarPart[] = [

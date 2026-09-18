@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useLessonParts } from "@/hooks/useLessonParts";
+import { useLessonParts } from "@/hooks/lesson/useLessonParts";
 import * as lessonsApi from "@/lib/api/learner/lessons";
 import * as booksApi from "@/lib/api/learner/learnerBooks";
 import type { LearnerBookDetail } from "@/lib/types/book";

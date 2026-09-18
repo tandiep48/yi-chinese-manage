@@ -12,7 +12,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListUl, faBookOpen } from "@fortawesome/free-solid-svg-icons";
-import { useLessonOverview } from "@/hooks/useLessonOverview";
+import { useLessonOverview } from "@/hooks/lesson/useLessonOverview";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";

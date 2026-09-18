@@ -9,7 +9,7 @@
 
 import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useLessonOverview } from "@/hooks/useLessonOverview";
+import { useLessonOverview } from "@/hooks/lesson/useLessonOverview";
 import { lessonAudioFolder } from "@/lib/audio";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import { LessonCardStudy } from "@/components/page/learner/lesson/LessonCardStudy";
