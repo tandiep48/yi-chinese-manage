@@ -110,6 +110,16 @@ export function getVocabReview(
   );
 }
 
+// GET /api/vocab/review/count — how many words are waiting in the review list.
+// Use this for a count, NEVER getVocabReview with a small page_size: /review
+// paginates in Python after loading the whole vocabulary table (uncached), so a
+// small page costs exactly as much as a large one. This route skips that load.
+export function getVocabReviewCount(): Promise<number> {
+  return legacyApiFetch<{ total: number }>("/api/vocab/review/count").then(
+    (r) => r.total
+  );
+}
+
 // The `recent` mode: the user's mastered words, most-recent first.
 export function getLearnedVocab(
   page: number,
