@@ -23,6 +23,7 @@ These were chosen explicitly. Do not re-litigate them.
 | Existing routes | **Keep `/learner/vocab-review` and `/learner/recommend`, keep them in TopNav.** Tabs are an additional entry point. |
 | Rollout | **Build alongside** at `/learner/home-v2`, swap `app/learner/page.tsx` at the end. |
 | Progress indicators | Within-current-lesson progress + words-due-in-review count. "Next lesson" is a plain label, no gating. |
+| Lesson flow | A six-step **milestone** per part — see §10. |
 | Plan location | `docs/plans/` (new folder). |
 
 ---
@@ -207,33 +208,16 @@ Smallest surface; proves the Phase 0 seam end to end.
   name collisions. The real card is richer (progress range, recent-word focus)
   and already selectable.
 
-### Phase 4 — Lesson tab
+### Phase 4 — Lesson tab = the milestone
 
-Biggest, highest risk. Do it last.
+Biggest, highest risk. Do it last. Fully specified in §10.
 
-- `LessonTab.tsx` drives a small local machine:
-  `overview → { vocab-learner | vocab-trainer | lesson-learner | lesson-trainer }`,
-  mirrored into `?run=`.
-- Source of truth for the tab header: `useDashboardHome().lesson`
-  (`passage_id`, `hsk_level`, `lesson`, `part`, `passage_ids`).
-- **Progress + what's next both come from one existing, tested hook:**
-  `useLessonParts(passageId)` (`hooks/lesson/useLessonParts.ts:49`) returns the
-  lesson's parts sorted, each with `progress: { learnedWords, totalWords,
-  progressPct }`. Current part → "Part 2 of 4 · 18/30 words". Next entry in the
-  array → "Next: Part 3".
-- Sub-views:
-  - vocab learner → `FlashcardStudy` (already props-driven). **Pass no
-    `passageId`** or add a `shell={false}` flag — with `passageId` it mounts its
-    own `LessonStudyShell`, nesting a collapsible sidebar inside the tab.
-  - lesson learner → `LessonCardStudy` directly (props-driven; do not mount
-    `LessonStudyShell`).
-  - vocab trainer → `VocabTrainerPage` via the Phase 0 seam, `contained`.
-  - lesson trainer → `LessonTrainerPage` via the Phase 0 seam, `contained`.
-- `TrainTypePicker` already renders as a self-rooted overlay — reuse unchanged.
+The Lesson tab does not get its own sub-view machine — it mounts the shared
+`MilestoneRunner` from §10, the same component `/learner/lesson` mounts. The
+tab supplies the `passage_id` from `useDashboardHome().lesson`; everything else
+is the milestone's own state.
 
-**Known gap:** book passages return `progress: null`
-(`useLessonParts.ts:28` — book parts have no mini-stats). If the learner's
-current lesson is a book part, show a deliberate empty state, not `0/0`.
+`?run=` from Phase 1 becomes `?step=` (1–6) inside the lesson tab.
 
 ### Phase 5 — Statistics → profile
 
@@ -358,6 +342,19 @@ components/page/learner/home/LessonTab.tsx
 components/page/learner/home/RecommendTab.tsx
 components/page/learner/home/home-shell.css
 hooks/home/useLearnerHome.ts
+components/page/learner/milestone/MilestoneRunner.tsx      §10
+components/page/learner/milestone/MilestoneBar.tsx         §10
+components/page/learner/milestone/milestone.css            §10
+hooks/lesson/useLessonMilestone.ts                         §10
+lib/api/learner/milestone.ts                               §10
+```
+
+**New in `Learning/` (Flask)** — §10
+```
+web_app/entity/user_lesson_milestone/{__init__,entity,repository,service}.py
+web_app/tests/test_lesson_milestone_routes.py
+migration: CREATE TABLE user_lesson_milestone
+routes/lesson/lesson_routes.py   GET + POST /api/lesson/milestone
 ```
 
 **Changed**
@@ -370,6 +367,9 @@ components/page/learner/trainer/TrainerShell.tsx     contained prop
 components/page/learner/trainer/trainer-shell.css    .contained rules
 components/page/learner/vocab-learning/FlashcardStudy.tsx   shell opt-out
 components/page/learner/vocab-review/VocabReviewPage.tsx    embedded start path
+components/page/learner/lesson/WordSummary.tsx        hideActions prop (§10)
+components/page/learner/lesson/LessonSummary.tsx      hideActions prop (§10)
+app/learner/lesson/page.tsx             branch: book → legacy, HSK → milestone
 app/learner/page.tsx                    Phase 6 swap
 app/learner/profile/…                   Phase 5 stats
 lib/i18n/{en,vi}.json                   home.* keys (tabs, guard modal, next-part label)
@@ -463,9 +463,8 @@ Existing coverage to keep green: `tests/hooks/lesson/useLessonParts.test.ts`,
 
 ## 9. Out of scope
 
-- Further backend changes. The one required addition,
-  `GET /api/vocab/review/count`, is done (§4). Everything else the tabs need is
-  served by existing endpoints.
+- Further backend changes beyond the two named: `GET /api/vocab/review/count`
+  (done, §4) and the milestone table + endpoints (§10).
 - Time gating / spaced-repetition scheduling ("come back in 2 days"). Nothing in
   the codebase implements it — no due dates, no cooldowns, no unlock timestamps.
   "Next lesson" is a plain label.
@@ -474,3 +473,174 @@ Existing coverage to keep green: `tests/hooks/lesson/useLessonParts.test.ts`,
   — the lesson page and part picker deep-link into them with `?passage_id=`.
 - Flipping the `next.config.ts` learner redirects from 307 to 308 (that is a
   launch task).
+
+---
+
+## 10. The lesson milestone (Duolingo-style)
+
+Clicking a part (e.g. HSK1 · Lesson 2 · Part 1) runs a fixed six-step path.
+The learner walks it end to end, then moves on to Part 2.
+
+### 10.1 Locked decisions
+
+| Decision | Choice |
+|---|---|
+| Storage | **New `user_lesson_milestone` table** |
+| Step completion | Passive steps on Continue; graded steps at/above the pass threshold |
+| Gating | **Soft** — nothing locks; the milestone guides, the sidebar still jumps |
+| Surface | Both `/learner/lesson` and the dashboard Lesson tab, one shared component |
+| Book parts | **No milestone** — books keep today's tabbed page |
+| Existing learners | Backfill from existing signals |
+| Replay | Completed overview; any step replayable |
+| Sidebar | Kept |
+
+### 10.2 The six steps
+
+| # | Step | Kind | Completes when |
+|---|---|---|---|
+| 1 | Vocab summary | passive | Continue clicked |
+| 2 | Vocab learner (flashcards) | passive | Continue clicked |
+| 3 | Vocab trainer | graded | run finishes at/above pass threshold |
+| 4 | Lesson summary | passive | Continue clicked |
+| 5 | Lesson learner (line cards) | passive | Continue clicked |
+| 6 | Lesson trainer | graded | run finishes at/above pass threshold |
+
+Step 6 already behaves this way: `mark_lesson_part_completed` only stamps
+`lesson_trainer_completed_at` at/above the threshold
+(`entity/progress/service.py:55`). No behaviour change there.
+
+### 10.3 Data model
+
+New table, following the `user_lesson_part_progress` pattern:
+
+```sql
+CREATE TABLE user_lesson_milestone (
+  user_id      BIGINT      NOT NULL,
+  passage_id   VARCHAR     NOT NULL,
+  step         SMALLINT    NOT NULL,   -- 1..6
+  completed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  PRIMARY KEY (user_id, passage_id, step)
+);
+```
+
+One row per completed step. Writes are `ON CONFLICT DO NOTHING` so a replay
+never moves the original timestamp.
+
+New module `web_app/entity/user_lesson_milestone/` — `entity.py`,
+`repository.py`, `service.py`, `__init__.py` — mirroring
+`entity/user_lesson_part_progress/`.
+
+**Steps 3 and 6 are also derived, never trusted from this table alone.** Their
+authoritative sources already exist:
+
+- step 3 → every word of the part is mastered (`get_learned_words` ∩ part vocab)
+- step 6 → `user_lesson_part_progress.lesson_trainer_completed_at IS NOT NULL`
+
+Effective completion is `stored OR derived`. This is what makes the milestone
+incapable of drifting out of step with mastery data, and it is also the whole
+backfill story.
+
+### 10.4 Backfill — derive on read, write forward
+
+**No migration script and no data backfill.** On read, the effective step set is:
+
+1. stored rows for this (user, passage), plus
+2. step 3 if the part's words are all mastered, plus
+3. step 6 if `lesson_trainer_completed_at` is set, plus
+4. **every step below the highest completed one** — finishing the lesson trainer
+   implies the learner got there.
+
+So a learner who completed HSK1 L1 P1 before this shipped opens it and sees 6/6,
+with no rows in the new table. Rows accrue only as steps are completed from now
+on.
+
+### 10.5 API
+
+```
+GET  /api/lesson/milestone?passage_id=X
+     → { passage_id, total_steps, current_step,
+         steps: [ { step, completed, completed_at } ] }
+
+POST /api/lesson/milestone   { passage_id, step }
+     → marks one step complete (ON CONFLICT DO NOTHING)
+```
+
+`POST` is for the passive steps (1, 2, 4, 5). Step 6 keeps flowing through the
+existing `/api/lesson/part-complete` — do not double-write it. Step 3 is
+recorded by the vocab trainer's existing batch submit; the milestone only reads
+it. `current_step` is the lowest incomplete step, or `total_steps + 1` when the
+part is finished.
+
+### 10.6 Frontend
+
+New shared component `components/page/learner/milestone/`:
+
+- `MilestoneRunner.tsx` — owns the step machine, mirrors `?step=` into the URL.
+- `MilestoneBar.tsx` — the six-segment indicator plus the step title
+  ("Step 3 of 6 · Vocab Trainer").
+- `milestone.css` — subject to the §2 no-nesting invariant.
+- `hooks/lesson/useLessonMilestone.ts` — fetches, advances, exposes `currentStep`.
+
+Each step reuses an existing component unchanged except for chrome:
+
+| # | Component | Note |
+|---|---|---|
+| 1 | `WordSummary` | footer actions hidden |
+| 2 | `FlashcardStudy` | no `passageId`, or `shell={false}` — else it mounts its own `LessonStudyShell` |
+| 3 | `VocabTrainerPage` | Phase 0 seam, `contained` |
+| 4 | `LessonSummary` | footer actions hidden |
+| 5 | `LessonCardStudy` | direct; do not mount `LessonStudyShell` |
+| 6 | `LessonTrainerPage` | Phase 0 seam, `contained` |
+
+**Removed** from the milestone view (not from the components):
+- the Word/Lesson Summary tab bar, `app/learner/lesson/page.tsx:70-89`
+- the Learn/Train footer buttons in `WordSummary` / `LessonSummary`
+
+**Kept:** `LessonStudyShell` + `LessonSidebar`. With soft gating the sidebar is
+how a learner reaches other parts, Grammar and Translation — removing it would
+hard-gate the flow by accident.
+
+**`hideActions` is a new prop, and it is required.** Omitting `onLearn`/`onTrain`
+today renders the buttons **disabled, not hidden** — `LessonSummary.tsx:158`
+says so explicitly ("the read-only view leaves these disabled"). The milestone
+needs them gone, so both summaries need an explicit flag.
+
+### 10.7 Book parts
+
+`/learner/lesson` branches on `passage.book_code`:
+
+- book part → today's tabbed page, unchanged
+- HSK part → `MilestoneRunner`
+
+Books have no curated vocab (`LessonSummary.tsx:160`), so steps 1–3 have no
+content and the milestone does not apply. Two modes in one route is the
+deliberate cost of not inventing a 3-step variant.
+
+### 10.8 Sequencing
+
+Land this **after** Phase 0 (the trainer seams and the `contained` chrome are
+prerequisites for steps 3 and 6) and independently of Phases 1–3. The
+`/learner/lesson` route can ship the milestone before the dashboard exists;
+Phase 4 then mounts the same component.
+
+### 10.9 Tests
+
+```
+Flask   tests/test_lesson_milestone_routes.py
+        GET derives 6/6 from lesson_trainer_completed_at with no stored rows;
+        GET fills in every step below the highest completed;
+        POST is idempotent (ON CONFLICT DO NOTHING keeps the first timestamp);
+        step 3 derives from full word mastery, not from a stored row.
+
+Next    tests/hooks/lesson/useLessonMilestone.test.ts   advance, resume, replay
+        tests/components/milestone/MilestoneRunner.test.tsx
+               passive step advances on Continue;
+               graded step does NOT advance below the pass threshold;
+               a book passage renders the legacy page, not the milestone.
+```
+
+### 10.10 Open question
+
+What happens at the end of step 6 — does Continue navigate straight into Part 2's
+milestone at step 1, or show a "part complete" screen first? Not decided; it
+does not block the rest of the build.
