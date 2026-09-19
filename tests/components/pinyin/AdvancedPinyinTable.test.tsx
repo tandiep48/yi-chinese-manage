@@ -28,43 +28,55 @@ function renderTable() {
   );
 }
 
+// The three tables render ~1350 nodes, hundreds of them role="button" cells, so
+// every *ByRole({ name }) recomputes accessible names across the lot — ~600ms a
+// call, and again after each click. That is what pushed these cases past the 5s
+// default under load. Syllables are unique text, so address them that way and
+// assert the button role explicitly where it is the thing under test.
+const syllable = (text: string) => screen.getByText(text);
+
 describe("AdvancedPinyinTable", () => {
   it("renders the initial headers and final row labels", () => {
     renderTable();
     // 3 tables each repeat the 21 initial column headers.
-    expect(screen.getAllByRole("columnheader", { name: "zh" })).toHaveLength(3);
-    // The bare-final syllable is itself a clickable cell.
-    expect(screen.getByRole("button", { name: "ang" })).toBeInTheDocument();
+    const headers = screen.getAllByText("zh");
+    expect(headers).toHaveLength(3);
+    expect(headers.map((h) => h.tagName)).toEqual(["TH", "TH", "TH"]);
+    // The bare-final syllable appears twice: as the row label and as a clickable
+    // cell. Only the cell carries the button role.
+    const ang = screen.getAllByText("ang");
+    expect(ang.filter((el) => el.getAttribute("role") === "button")).toHaveLength(1);
   });
 
   it("opens a tone popover with the four tones of the clicked syllable", () => {
     renderTable();
-    fireEvent.click(screen.getByRole("button", { name: "bao" }));
-    expect(screen.getByRole("button", { name: "bāo" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "báo" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "bǎo" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "bào" })).toBeInTheDocument();
+    fireEvent.click(syllable("bao"));
+    // The tones are real buttons; check that once here, then by text.
+    expect(syllable("bāo").tagName).toBe("BUTTON");
+    expect(syllable("báo")).toBeInTheDocument();
+    expect(syllable("bǎo")).toBeInTheDocument();
+    expect(syllable("bào")).toBeInTheDocument();
   });
 
   it("speaks the toned syllable and closes the popover when a tone is chosen", () => {
     renderTable();
-    fireEvent.click(screen.getByRole("button", { name: "bao" }));
-    fireEvent.click(screen.getByRole("button", { name: "bǎo" }));
+    fireEvent.click(syllable("bao"));
+    fireEvent.click(syllable("bǎo"));
     // Advanced syllables have no bucket recording, so they are spoken directly
     // (no failing .mp3 request).
     expect(window.speechSynthesis.speak).toHaveBeenCalled();
     const utterance = (window.speechSynthesis.speak as unknown as ReturnType<typeof vi.fn>).mock
       .calls[0][0];
     expect(utterance.text).toBe("bǎo");
-    expect(screen.queryByRole("button", { name: "bǎo" })).not.toBeInTheDocument();
+    expect(screen.queryByText("bǎo")).not.toBeInTheDocument();
   });
 
   it("toggles the popover closed when the same syllable is clicked again", () => {
     renderTable();
-    const cell = screen.getByRole("button", { name: "bao" });
+    const cell = syllable("bao");
     fireEvent.click(cell);
-    expect(screen.getByRole("button", { name: "bāo" })).toBeInTheDocument();
+    expect(syllable("bāo")).toBeInTheDocument();
     fireEvent.click(cell);
-    expect(screen.queryByRole("button", { name: "bāo" })).not.toBeInTheDocument();
+    expect(screen.queryByText("bāo")).not.toBeInTheDocument();
   });
 });
