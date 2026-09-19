@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useGrammar.ts
+// hooks/shared/useGrammar.ts
 // Lesson-wide grammar rules for a passage, split into sections. Ported from
 // loadGrammar()/splitGrammarByType1() in Learning/web_app/static/grammar/grammar.js:
 // the flat id-ordered list starts a new section at each type=1 (title) row.

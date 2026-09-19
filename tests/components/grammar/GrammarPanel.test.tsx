@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { GrammarPanel } from "@/components/page/learner/grammar/GrammarPanel";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
-import type { GrammarSection } from "@/hooks/useGrammar";
+import type { GrammarSection } from "@/hooks/shared/useGrammar";
 
 const SECTIONS: GrammarSection[] = [
   [

@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useAudioSequence.ts
+// hooks/shared/useAudioSequence.ts
 // Small audio controller shared by the lesson-study summaries. Supports playing
 // one clip (with the played item highlighted) and playing a whole sequence in
 // order — the "Auto Play" (Lesson Summary) and "Play All" (Word Summary)

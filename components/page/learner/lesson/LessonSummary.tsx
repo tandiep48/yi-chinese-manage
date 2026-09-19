@@ -16,7 +16,7 @@ import { faPlay, faStop, faEye, faEyeSlash, faVolumeHigh, faGraduationCap, faDum
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonAudioUrl, lessonAudioFolder } from "@/lib/audio";
 import { isPunctToken } from "@/lib/lessons/tokens";
-import { useAudioSequence } from "@/hooks/useAudioSequence";
+import { useAudioSequence } from "@/hooks/shared/useAudioSequence";
 import { useWordLookup } from "@/hooks/vocab/useWordLookup";
 import { useSavedWords } from "@/hooks/vocab/useSavedWords";
 import { WordPopup } from "./WordPopup";

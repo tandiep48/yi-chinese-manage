@@ -25,7 +25,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
-import { useAudioSequence } from "@/hooks/useAudioSequence";
+import { useAudioSequence } from "@/hooks/shared/useAudioSequence";
 import type { LessonVocabRow } from "@/lib/types/vocab";
 import "./word-summary.css";
 

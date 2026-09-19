@@ -8,7 +8,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@/hooks/shared/useTranslation";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import { TranslationPanel } from "@/components/page/learner/translation/TranslationPanel";
 import { hskLevelFromPassageId } from "@/lib/lessons/lessons";

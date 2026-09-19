@@ -1,6 +1,6 @@
 "use client";
 
-// hooks/useTranslation.ts
+// hooks/shared/useTranslation.ts
 // Lesson-wide translation sentences for a passage. Ported from loadTranslation()
 // in Learning/web_app/static/translation/translation.js: derive HSK level + lesson
 // from the passage id, then fetch every sentence for that lesson.

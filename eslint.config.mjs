@@ -12,6 +12,9 @@ const LEARNER_ONLY = [
   "@/hooks/lesson/*",
   "@/hooks/practice/*",
   "@/hooks/profile/*",
+  // "shared" means shared between learner domains, not between the two halves:
+  // these hooks still reach into the learner api.
+  "@/hooks/shared/*",
   "@/hooks/vocab/*",
 ];
 

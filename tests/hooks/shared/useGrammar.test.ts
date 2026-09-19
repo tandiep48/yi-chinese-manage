@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useGrammar, splitGrammarByType1 } from "@/hooks/useGrammar";
+import { useGrammar, splitGrammarByType1 } from "@/hooks/shared/useGrammar";
 import * as api from "@/lib/api/learner/lessons";
 import type { LessonGrammarRule } from "@/lib/types/lesson";
 

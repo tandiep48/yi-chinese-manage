@@ -7,7 +7,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useGrammar } from "@/hooks/useGrammar";
+import { useGrammar } from "@/hooks/shared/useGrammar";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import { GrammarPanel } from "@/components/page/learner/grammar/GrammarPanel";
 import { hskLevelFromPassageId } from "@/lib/lessons/lessons";
