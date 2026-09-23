@@ -9,6 +9,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getRecommendations } from "@/lib/api/learner/practice";
 import { getVocabHasHistory } from "@/lib/api/learner/vocab";
+import { cachedRead, invalidateRead } from "@/lib/api/readCache";
 import { UnauthenticatedError } from "@/lib/api/client";
 import type { RecommendedPractice } from "@/lib/types/dashboard";
 import type { PracticeMultiItem } from "@/lib/types/practice";
@@ -42,7 +43,22 @@ const DEFAULT_FILTERS: RecommendFilters = {
   status: "Not start",
 };
 
-export function useRecommend() {
+// Re-requested on every return to the Recommend tab, because the learner home
+// unmounts the inactive panel. Finishing a practice run changes what is
+// recommended, so the run's exit drops the key.
+const RECOMMEND_CACHE_KEY = "recommend:list";
+
+export function invalidateRecommendations(): void {
+  invalidateRead(RECOMMEND_CACHE_KEY);
+}
+
+export interface RecommendOptions {
+  // Embedded start path: run the queue in the caller's panel instead of stashing
+  // it in sessionStorage and leaving the page for /learner/practice/multi.
+  onStartMulti?: (items: PracticeMultiItem[]) => void;
+}
+
+export function useRecommend({ onStartMulti }: RecommendOptions = {}) {
   const [status, setStatus] = useState<RecommendStatusKind>("loading");
   const [errorKey, setErrorKey] = useState<string>("recommend.connect_failed");
   const [all, setAll] = useState<RecommendedPractice[]>([]);
@@ -54,7 +70,7 @@ export function useRecommend() {
     // status already defaults to "loading"; the fetch resolves it. Avoiding a
     // synchronous setState here keeps react-hooks/set-state-in-effect quiet.
     let cancelled = false;
-    getRecommendations()
+    cachedRead(RECOMMEND_CACHE_KEY, getRecommendations)
       .then(async (recs) => {
         if (cancelled) return;
         if (recs.length === 0) {
@@ -132,14 +148,21 @@ export function useRecommend() {
   }, []);
 
   const startSelected = useCallback(() => {
-    if (selected.length === 0 || typeof window === "undefined") return;
+    if (selected.length === 0) return;
+    // Embedded: hand the queue to the panel. usePracticeEngine takes it as
+    // `items`, so neither handoff key is written and the page never navigates.
+    if (onStartMulti) {
+      onStartMulti(selected);
+      return;
+    }
+    if (typeof window === "undefined") return;
     window.sessionStorage.setItem(
       "multi_practice_queue",
       JSON.stringify(selected)
     );
     window.sessionStorage.setItem("practice_referrer", "recommend");
     window.location.href = "/learner/practice/multi";
-  }, [selected]);
+  }, [selected, onStartMulti]);
 
   return {
     status,

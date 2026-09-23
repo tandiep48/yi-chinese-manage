@@ -20,22 +20,34 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useRecommend } from "@/hooks/practice/useRecommend";
+import type { PracticeMultiItem } from "@/lib/types/practice";
 import { RecommendCard } from "./RecommendCard";
 import { RecommendPagination } from "./RecommendPagination";
 import "./recommend-page.css";
 
 const LEVEL_OPTIONS = ["all", "1", "2", "3", "4", "5", "6"] as const;
 
-export function RecommendPage() {
+interface RecommendPageProps {
+  // Mounted as a panel of the learner home rather than as its own route: the
+  // back-to-dashboard link would point at the page it is already inside.
+  embedded?: boolean;
+  // Embedded start path: run the selected queue in the panel instead of stashing
+  // it and navigating to /learner/practice/multi.
+  onStartMulti?: (items: PracticeMultiItem[]) => void;
+}
+
+export function RecommendPage({ embedded = false, onStartMulti }: RecommendPageProps = {}) {
   const { t } = useT();
-  const rec = useRecommend();
+  const rec = useRecommend({ onStartMulti });
 
   return (
     <div className="recommend-page">
       <div className="recommend-container">
-        <Link href="/learner" className="page-back">
-          ← {t("picker.back_to_dashboard")}
-        </Link>
+        {!embedded && (
+          <Link href="/learner" className="page-back">
+            ← {t("picker.back_to_dashboard")}
+          </Link>
+        )}
 
         <div className="page-header">
           <h1 className="page-title">
