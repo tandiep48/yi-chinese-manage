@@ -20,11 +20,21 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabReview } from "@/hooks/vocab/useVocabReview";
 import { pickMeaning } from "@/lib/lessons/meaning";
 import { vocabAudioUrl } from "@/lib/audio";
+import type { VocabRow } from "@/lib/types/vocab";
 import "./vocab-review.css";
 
 const TRAINER_WORDS_KEY = "selectedVocabTrainerWords";
 
-export function VocabReviewPage() {
+interface VocabReviewPageProps {
+  // Mounted as a panel of the learner home rather than as its own route: the
+  // back-to-dashboard link would point at the page it is already inside.
+  embedded?: boolean;
+  // Embedded start path: run the trainer in the panel with these rows instead of
+  // stashing the selection and navigating to /learner/vocab-training-batch.
+  onStart?: (rows: VocabRow[]) => void;
+}
+
+export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPageProps = {}) {
   const { t, lang } = useT();
   const router = useRouter();
   const review = useVocabReview();
@@ -60,6 +70,13 @@ export function VocabReviewPage() {
 
   function startTraining() {
     if (review.selectedCount === 0) return;
+    // Embedded: hand the rows straight to the panel. They are already normalized
+    // trainer rows, so this also skips the /api/vocab/words resolve the standalone
+    // route pays for.
+    if (onStart) {
+      onStart(review.selectedRows);
+      return;
+    }
     try {
       sessionStorage.setItem(
         TRAINER_WORDS_KEY,
@@ -75,9 +92,11 @@ export function VocabReviewPage() {
   return (
     <div className="vocab-review">
       <div className="vocab-review-wrap">
-        <div className="vocab-top-link">
-          <Link href="/learner">&larr; {t("picker.back_to_dashboard")}</Link>
-        </div>
+        {!embedded && (
+          <div className="vocab-top-link">
+            <Link href="/learner">&larr; {t("picker.back_to_dashboard")}</Link>
+          </div>
+        )}
 
         <div className="review-content-card">
           <div className="review-header">

@@ -9,9 +9,21 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getVocabReview } from "@/lib/api/learner/vocab";
+import { cachedRead, invalidateRead } from "@/lib/api/readCache";
 import type { VocabRow } from "@/lib/types/vocab";
 
 export const REVIEW_PAGE_SIZE = 100;
+
+// The learner home unmounts this panel on every tab switch, so the first page is
+// re-requested each time the learner comes back — and this is the ~1.6s
+// full-table endpoint (§4). Only page 1 is cached: later pages arrive through
+// "Load more", which is a deliberate action, and they are discarded on unmount
+// anyway. Training words changes the list, so a finished run drops the key.
+const REVIEW_CACHE_KEY = "vocab-review:page1";
+
+export function invalidateVocabReview(): void {
+  invalidateRead(REVIEW_CACHE_KEY);
+}
 
 export type ReviewStatus = "loading" | "ready" | "error";
 
@@ -41,7 +53,7 @@ export function useVocabReview() {
 
   useEffect(() => {
     const seq = ++requestSeq.current;
-    getVocabReview(1, REVIEW_PAGE_SIZE)
+    cachedRead(REVIEW_CACHE_KEY, () => getVocabReview(1, REVIEW_PAGE_SIZE))
       .then((data) => {
         if (seq !== requestSeq.current) return;
         setRows(usableRows(data.rows));
@@ -110,6 +122,12 @@ export function useVocabReview() {
 
   const selectedWords = useMemo(() => Array.from(selected.keys()), [selected]);
 
+  // The full rows behind the selection. /api/vocab/review and /api/vocab/words both
+  // return normalize_vocab_row() output (vocab_routes.py:508 and :528), so these are
+  // already trainer rows: an embedded run can start from them without asking the
+  // server to resolve the same words a second time.
+  const selectedRows = useMemo(() => Array.from(selected.values()), [selected]);
+
   return {
     status,
     rows,
@@ -125,5 +143,6 @@ export function useVocabReview() {
       selectedLoadedCount > 0 && selectedLoadedCount < rows.length,
     selectedCount: selected.size,
     selectedWords,
+    selectedRows,
   };
 }
