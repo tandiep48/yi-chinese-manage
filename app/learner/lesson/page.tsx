@@ -8,7 +8,7 @@
 // per-line lesson-card viewer / lesson trainer. Ported from
 // Learning/web_app/templates/{vocab_learning,reading} + static/reading/reading.js.
 
-import { Suspense, useState } from "react";
+import { Suspense, useCallback, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faListUl, faBookOpen } from "@fortawesome/free-solid-svg-icons";
@@ -16,6 +16,7 @@ import { useLessonOverview } from "@/hooks/lesson/useLessonOverview";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
+import { MilestoneRunner } from "@/components/page/learner/milestone/MilestoneRunner";
 import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { useT } from "@/components/i18n/I18nProvider";
 
@@ -41,6 +42,40 @@ function LessonPageContent() {
   const [domain, setDomain] = useState<Domain>(initialDomain);
   const [trainEngine, setTrainEngine] = useState<TrainerEngine | null>(null);
   const { loading, error, passage, vocab, vocabError } = useLessonOverview(passageId);
+
+  // HSK parts run the six-step milestone (docs/plans/dashboard-tabs.md §10); book
+  // parts keep this tabbed page, because books have no curated vocab and so have
+  // no steps 1-3. Two modes in one route is the deliberate cost of not inventing
+  // a three-step variant.
+  const isBookPart = !!passage?.book_code;
+  const showMilestone = !!passageId && !loading && !error && !isBookPart;
+
+  const stepParam = Number(searchParams.get("step"));
+  const initialStep = stepParam >= 1 && stepParam <= 6 ? stepParam : undefined;
+
+  // Mirror the milestone's step into the URL so a refresh lands back on it.
+  // Shallow (replace, not push), matching the learner home's ?tab= handling.
+  const onStepChange = useCallback(
+    (step: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (String(step) === params.get("step")) return;
+      params.set("step", String(step));
+      router.replace(`/learner/lesson?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
+
+  if (showMilestone) {
+    return (
+      <LessonStudyShell passageId={passageId} domain="lesson">
+        <MilestoneRunner
+          passageId={passageId}
+          initialStep={initialStep}
+          onStepChange={onStepChange}
+        />
+      </LessonStudyShell>
+    );
+  }
 
   // Launch a trainer for this part: stash the chosen skills and open the route.
   function launchTraining(engine: TrainerEngine, types: string[]) {

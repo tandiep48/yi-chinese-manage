@@ -29,10 +29,14 @@ export function LessonSummary({
   error,
   onLearn,
   onTrain,
+  hideActions = false,
 }: {
   passage: LessonPassageDetail | null;
   loading: boolean;
   error: string | null;
+  // Remove the Learn/Train footer entirely. Omitting onLearn/onTrain only
+  // *disables* it, which is wrong for a host that drives those steps itself.
+  hideActions?: boolean;
   // Opt-in footer actions (lesson-study page). onLearn opens the lesson-card viewer,
   // onTrain launches the lesson trainer.
   onLearn?: () => void;
@@ -154,9 +158,12 @@ export function LessonSummary({
         </div>
       )}
 
+      {/* Enabled only when the host wires the flow; the read-only view leaves these
+          disabled. Books have no curated vocab, so Learn hides for them. Omitting
+          the handlers disables the footer rather than removing it, so the milestone
+          — which drives the same steps from its own bar — needs hideActions. */}
+      {!hideActions && (
       <div className="lesson-summary-actions">
-        {/* Enabled only when the host wires the flow; the read-only view leaves these
-            disabled. Books have no curated vocab, so Learn hides for them. */}
         {!passage?.book_code && (
           <button
             type="button"
@@ -171,6 +178,7 @@ export function LessonSummary({
           <FontAwesomeIcon icon={faDumbbell} /> {t("reading.train_this_lesson")}
         </button>
       </div>
+      )}
 
       {selectedWord !== null && (
         <WordPopup

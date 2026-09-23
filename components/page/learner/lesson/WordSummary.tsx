@@ -41,10 +41,14 @@ export function WordSummary({
   onTrain,
   onOpenStroke,
   onStrokeAll,
+  hideActions = false,
 }: {
   vocab: LessonVocabRow[];
   loading: boolean;
   error: string | null;
+  // Remove the Learn/Train footer entirely. Omitting onLearn/onTrain only
+  // *disables* it, which is wrong for a host that drives those steps itself.
+  hideActions?: boolean;
   // Opt-in interactions (Flash Cards flow). Learn/Train receive the current
   // on-screen order so a shuffle in the summary carries into the next screen.
   onLearn?: (items: LessonVocabRow[]) => void;
@@ -184,9 +188,12 @@ export function WordSummary({
         </div>
       )}
 
+      {/* Enabled only when the host wires the flow (Flash Cards); the read-only
+          lesson-study page leaves these disabled. Omitting the handlers disables
+          the buttons, it does not remove them, so the milestone — which drives
+          the same steps from its own bar — needs hideActions to be rid of them. */}
+      {!hideActions && (
       <div className="vl-summary-footer">
-        {/* Enabled only when the host wires the flow (Flash Cards); the read-only
-            lesson-study page leaves these disabled. */}
         <button
           type="button"
           className="vl-train-btn vl-learn-btn"
@@ -204,6 +211,7 @@ export function WordSummary({
           <FontAwesomeIcon icon={faDumbbell} /> {t("vocab_learning.train_these_vocab")}
         </button>
       </div>
+      )}
     </div>
   );
 }

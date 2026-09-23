@@ -669,5 +669,17 @@
     "lesson_browse": "Xem danh sách bài học",
     "lesson_loading": "Đang tải bài học…",
     "lesson_empty": "Bạn chưa bắt đầu bài học nào."
+  },
+  "milestone": {
+    "step_counter": "Bước {n}/{total}",
+    "step_aria": "Bước {n}/{total}: {title}",
+    "step_vocab_summary": "Tổng quan từ vựng",
+    "step_vocab_learner": "Học từ vựng",
+    "step_vocab_trainer": "Luyện từ vựng",
+    "step_lesson_summary": "Tổng quan bài học",
+    "step_lesson_learner": "Học bài",
+    "step_lesson_trainer": "Luyện bài",
+    "continue": "Tiếp tục",
+    "no_vocab": "Phần này chưa có từ vựng để luyện."
   }
 }

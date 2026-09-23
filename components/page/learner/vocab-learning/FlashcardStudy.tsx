@@ -32,6 +32,7 @@ export function FlashcardStudy({
   loading,
   error,
   passageId,
+  shell = true,
 }: {
   words: LessonVocabRow[];
   loading: boolean;
@@ -39,6 +40,9 @@ export function FlashcardStudy({
   // When present, LessonStudyShell shows the lesson sidebar (lesson deep-link
   // flow). Absent for the /vocab selection flow, where we show a back link.
   passageId?: string;
+  // The milestone already mounts LessonStudyShell around every step, so it opts
+  // out rather than nesting a second shell (and a second sidebar) inside it.
+  shell?: boolean;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -86,8 +90,8 @@ export function FlashcardStudy({
 
   const openStroke = (word: string, pinyin: string) => setStroke({ mode: "word", word, pinyin });
 
-  return (
-    <LessonStudyShell passageId={passageId ?? ""} domain="lesson">
+  const body = (
+    <>
       {!passageId && (
         <div className="vl-back-row">
           <Link href="/learner/vocab" className="vl-back">
@@ -129,6 +133,13 @@ export function FlashcardStudy({
           onCancel={() => setTrainPickerOpen(false)}
         />
       )}
+    </>
+  );
+
+  if (!shell) return body;
+  return (
+    <LessonStudyShell passageId={passageId ?? ""} domain="lesson">
+      {body}
     </LessonStudyShell>
   );
 }

@@ -669,5 +669,17 @@
     "lesson_browse": "Browse lessons",
     "lesson_loading": "Loading your lesson…",
     "lesson_empty": "You haven't started a lesson yet."
+  },
+  "milestone": {
+    "step_counter": "Step {n} of {total}",
+    "step_aria": "Step {n} of {total}: {title}",
+    "step_vocab_summary": "Vocab Summary",
+    "step_vocab_learner": "Vocab Learner",
+    "step_vocab_trainer": "Vocab Trainer",
+    "step_lesson_summary": "Lesson Summary",
+    "step_lesson_learner": "Lesson Learner",
+    "step_lesson_trainer": "Lesson Trainer",
+    "continue": "Continue",
+    "no_vocab": "This part has no vocabulary to train."
   }
 }

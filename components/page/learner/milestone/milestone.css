@@ -1,0 +1,137 @@
+/* ─────────────────────────────────────────────
+   LESSON MILESTONE — chrome for the six-step runner (docs/plans/dashboard-tabs.md
+   §10.6). The bar, the step frame and the Continue action; nothing else.
+
+   THE INVARIANT (§2): every selector here must end in a class this component
+   owns (`.milestone…`). The steps mount WordSummary, FlashcardStudy,
+   LessonCardStudy and two trainers, each with its own root class and stylesheet
+   — `.vl-…`, `.trainer-shell`, `.lesson-…`. None of them may be styled from
+   here, or the same specificity ties §2 documents come back through a different
+   door. tests/css/milestoneInvariant.test.ts enforces it.
+   ───────────────────────────────────────────── */
+
+.milestone {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+}
+
+/* ── Progress bar ── */
+.milestone-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.milestone-segments {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.milestone-segment-item {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.milestone-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 8px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(87, 104, 86, 0.16);
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s ease, height 0.15s ease;
+}
+.milestone-segment:hover {
+  background: rgba(87, 104, 86, 0.28);
+}
+.milestone-segment:focus-visible {
+  outline: 2px solid var(--learner-primary, #576856);
+  outline-offset: 3px;
+}
+.milestone-segment.is-done {
+  background: var(--learner-primary, #576856);
+}
+/* The current step is taller, not just a different colour — the done/current
+   distinction has to survive being read without colour. */
+.milestone-segment.is-current {
+  height: 14px;
+  background: var(--learner-nav, #007a61);
+}
+
+.milestone-segment-num {
+  /* The number is for assistive tech and the aria-label; the bar reads visually. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.milestone-step-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--learner-text-muted, #738a72);
+}
+
+/* ── Step frame ──
+   Layout only. Whatever mounts inside brings its own root class and stylesheet. */
+.milestone-step {
+  position: relative;
+  min-width: 0;
+}
+
+.milestone-state {
+  padding: clamp(24px, 6vw, 48px) 0;
+  text-align: center;
+  color: var(--learner-text-muted, #738a72);
+}
+
+/* ── Continue ── */
+.milestone-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.milestone-continue {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--learner-primary, #576856);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  padding: 14px 28px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.milestone-continue:hover:not(:disabled) {
+  background: var(--learner-primary-hover, #455544);
+}
+.milestone-continue:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .milestone-actions {
+    justify-content: stretch;
+  }
+  .milestone-continue {
+    width: 100%;
+    justify-content: center;
+  }
+}
