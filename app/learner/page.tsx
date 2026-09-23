@@ -1,60 +1,25 @@
 "use client";
 
 // app/learner/page.tsx
-// Learner home dashboard — layout ported from the Learning app
-// (templates/dashboard/dashboard.html + static/dashboard/dashboard.css).
-// Data wiring ported from static/dashboard/dashboard.js, against the same
-// (non-enveloped) JSON endpoints — see hooks/useDashboardHome.ts.
+// Learner home — one container holding the Word Review, Lesson and Recommend
+// tabs, each running its activity in place instead of navigating away
+// (docs/plans/dashboard-tabs.md, Phase 6 swap).
 //
-// The page is composition only; each block lives in
-// components/page/learner/dashboard/.
+// This replaced the ported Flask dashboard (templates/dashboard/dashboard.html
+// + static/dashboard/dashboard.js): the current-lesson card, the review card and
+// the "Ready to Practice" row are now the tabs themselves, and Learning
+// Statistics moved to /learner/profile in Phase 5.
+//
+// Suspense is required, not decorative: useLearnerHome reads useSearchParams, and
+// Next refuses to prerender a page that does so outside a Suspense boundary.
 
-import { Inter } from "next/font/google";
-import { useDashboardHome } from "@/hooks/profile/useDashboardHome";
-import { CurrentLessonCard } from "@/components/page/learner/dashboard/CurrentLessonCard";
-import { LearningStatistics } from "@/components/page/learner/dashboard/LearningStatistics";
-import { RecommendedSection } from "@/components/page/learner/dashboard/RecommendedSection";
-import { ReviewCard } from "@/components/page/learner/dashboard/ReviewCard";
-import "@/components/page/learner/dashboard/dashboard.css";
+import { Suspense } from "react";
+import { HomeShell } from "@/components/page/learner/home/HomeShell";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-
-export default function DashboardPage() {
-  const {
-    loading,
-    signedOut,
-    hasRecent,
-    lesson,
-    stats,
-    wordsDays,
-    timeDays,
-    recommendations,
-    recommendError,
-    error,
-  } = useDashboardHome();
-
+export default function LearnerHomePage() {
   return (
-    <div className={`${inter.variable} ui2-dashboard`}>
-      <main className="dashboard-main">
-        <div className="top-grid">
-          <CurrentLessonCard
-            loading={loading}
-            signedOut={signedOut}
-            error={error}
-            hasRecent={hasRecent}
-            lesson={lesson}
-          />
-          <ReviewCard />
-        </div>
-
-        <RecommendedSection
-          loading={loading}
-          recommendError={recommendError}
-          recommendations={recommendations}
-        />
-
-        <LearningStatistics stats={stats} wordsDays={wordsDays} timeDays={timeDays} />
-      </main>
-    </div>
+    <Suspense fallback={null}>
+      <HomeShell />
+    </Suspense>
   );
 }
