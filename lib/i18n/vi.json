@@ -488,7 +488,8 @@
     "updating_password": "Đang cập nhật mật khẩu...",
     "could_not_update_password": "Không thể cập nhật mật khẩu.",
     "password_updated": "Đã cập nhật mật khẩu.",
-    "date_unknown": "Không rõ ngày"
+    "date_unknown": "Không rõ ngày",
+    "statistics_loading": "Đang tải số liệu của bạn…"
   },
   "sidebar": {
     "navigation": "Điều Hướng",

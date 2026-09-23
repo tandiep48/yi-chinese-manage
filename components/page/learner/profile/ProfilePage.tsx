@@ -10,8 +10,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCamera } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useProfile } from "@/hooks/profile/useProfile";
+import { useProfileStats } from "@/hooks/profile/useProfileStats";
 import { badgeUrl } from "@/lib/gcs";
 import { AvatarModal } from "./AvatarModal";
+import { LearningStatistics } from "./LearningStatistics";
 import { PasswordForm } from "./PasswordForm";
 import { ReviewPanel } from "./ReviewPanel";
 import "./profile-page.css";
@@ -19,6 +21,7 @@ import "./profile-page.css";
 export function ProfilePage() {
   const { t } = useT();
   const p = useProfile();
+  const s = useProfileStats();
 
   const badge = badgeUrl(p.level);
   const initial = p.username ? p.username[0].toUpperCase() : "";
@@ -71,6 +74,17 @@ export function ProfilePage() {
         onClose={p.closeModal}
         onSubmit={p.submitAvatar}
       />
+
+      {/* Moved off the dashboard in Phase 5 (docs/plans/dashboard-tabs.md §1).
+          The heading comes from .profile-section, like every block here. */}
+      <section className="profile-section">
+        <h2>{t("dashboard.learning_statistics")}</h2>
+        {s.loading ? (
+          <p className="profile-stats-loading">{t("profile.statistics_loading")}</p>
+        ) : (
+          <LearningStatistics stats={s.stats} wordsDays={s.wordsDays} timeDays={s.timeDays} />
+        )}
+      </section>
 
       <section className="profile-section">
         <h2>{t("profile.review_practices")}</h2>

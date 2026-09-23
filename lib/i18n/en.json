@@ -488,7 +488,8 @@
     "updating_password": "Updating password...",
     "could_not_update_password": "Could not update password.",
     "password_updated": "Password updated.",
-    "date_unknown": "Date unknown"
+    "date_unknown": "Date unknown",
+    "statistics_loading": "Loading your statistics…"
   },
   "sidebar": {
     "navigation": "Navigation",

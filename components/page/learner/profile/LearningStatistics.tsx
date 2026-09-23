@@ -1,12 +1,17 @@
 "use client";
 
-// components/page/learner/dashboard/LearningStatistics.tsx
+// components/page/learner/profile/LearningStatistics.tsx
 // The progress block: two headline figures, the two three-day charts, and a
 // per-activity breakdown of questions answered and time spent.
+//
+// Moved here from the dashboard (docs/plans/dashboard-tabs.md Phase 5, §1 "move
+// to /learner/profile"). Its own `.section-header` / `.tag` kicker went with it:
+// those rules live in dashboard.css, which no longer wraps this block, and the
+// profile page gives every block its heading through `.profile-section > h2` the
+// same way ReviewPanel gets one.
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faChartLine,
   faClock,
   faChartColumn,
   faPencil,
@@ -17,7 +22,7 @@ import {
 import { useT } from "@/components/i18n/I18nProvider";
 import { MiniBarChart, formatChartDate } from "./MiniBarChart";
 import type { GlobalStats, GlobalStatsBucket, LearnedWordsDay, TimeLearnedDay } from "@/lib/types/dashboard";
-import "./dashboard-stats.css";
+import "./profile-stats.css";
 
 export function LearningStatistics({
   stats,
@@ -38,17 +43,7 @@ export function LearningStatistics({
   ];
 
   return (
-    <section className="progress-section">
-      <div className="section-header">
-        <div className="title-wrapper">
-          <div className="tag">
-            <FontAwesomeIcon icon={faChartLine} /> {t("dashboard.progress_kicker")}
-          </div>
-          <h2>{t("dashboard.learning_statistics")}</h2>
-        </div>
-      </div>
-
-      <div className="stats-overview">
+    <div className="stats-overview">
         <div className="main-stats">
           <div className="primary-stat">
             <p className="stat-label">{t("dashboard.total_time").toUpperCase()}</p>
@@ -107,8 +102,7 @@ export function LearningStatistics({
               </div>
             </div>
           ))}
-        </div>
       </div>
-    </section>
+    </div>
   );
 }
