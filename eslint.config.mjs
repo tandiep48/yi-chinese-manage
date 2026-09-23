@@ -9,6 +9,7 @@ const LEARNER_ONLY = [
   "@/lib/api/learner/*",
   "@/hooks/book/*",
   "@/hooks/competition/*",
+  "@/hooks/home/*",
   "@/hooks/lesson/*",
   "@/hooks/practice/*",
   "@/hooks/profile/*",

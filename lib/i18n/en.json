@@ -655,5 +655,19 @@
     "stat_tasks": "Tasks",
     "stat_correct": "Correct",
     "stat_accuracy": "Accuracy"
+  },
+  "home": {
+    "tabs_label": "Learning activities",
+    "tab_review": "Word Review",
+    "tab_lesson": "Lesson",
+    "tab_recommend": "Recommend",
+    "loading_panel": "Loading…",
+    "guard_title": "Session in progress",
+    "guard_body": "You have an activity running. Switching tabs will end it — your answers so far are saved.",
+    "guard_stay": "Stay here",
+    "guard_leave": "End and switch",
+    "lesson_browse": "Browse lessons",
+    "lesson_loading": "Loading your lesson…",
+    "lesson_empty": "You haven't started a lesson yet."
   }
 }

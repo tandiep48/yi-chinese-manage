@@ -655,5 +655,19 @@
     "stat_tasks": "Câu",
     "stat_correct": "Đúng",
     "stat_accuracy": "Độ Chính Xác"
+  },
+  "home": {
+    "tabs_label": "Hoạt động học tập",
+    "tab_review": "Ôn từ vựng",
+    "tab_lesson": "Bài học",
+    "tab_recommend": "Gợi ý",
+    "loading_panel": "Đang tải…",
+    "guard_title": "Đang trong phiên học",
+    "guard_body": "Bạn đang có một hoạt động đang chạy. Chuyển tab sẽ kết thúc hoạt động đó — các câu trả lời đã làm vẫn được lưu.",
+    "guard_stay": "Ở lại",
+    "guard_leave": "Kết thúc và chuyển",
+    "lesson_browse": "Xem danh sách bài học",
+    "lesson_loading": "Đang tải bài học…",
+    "lesson_empty": "Bạn chưa bắt đầu bài học nào."
   }
 }
