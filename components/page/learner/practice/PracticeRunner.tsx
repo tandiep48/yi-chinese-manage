@@ -6,7 +6,7 @@
 // (bottom-nav, /practice/multi) — plus the shared topbar, question card, and
 // result screen. State lives in usePracticeEngine; audio in PracticeAudioProvider.
 
-import { useEffect } from "react";
+import { useEffect, type CSSProperties, type ReactNode } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -55,6 +55,17 @@ function RunnerInner(opts: PracticeEngineOptions) {
 
   const backHref = engine.referrer.href;
   const backLabel = backLabelFor(engine.referrer.title, t);
+  // Embedded runs hand back to their container instead of navigating.
+  const back = (className: string, style: CSSProperties | undefined, title: string | undefined, children: ReactNode) =>
+    engine.exit ? (
+      <button type="button" className={className} style={style} title={title} onClick={engine.exit}>
+        {children}
+      </button>
+    ) : (
+      <Link href={backHref} className={className} style={style} title={title}>
+        {children}
+      </Link>
+    );
 
   if (engine.screen === "loading") {
     return (
@@ -93,9 +104,7 @@ function RunnerInner(opts: PracticeEngineOptions) {
               <div className="result-score-label">{t("practice.correct_answers")}</div>
             </div>
             <div className="result-actions">
-              <Link href={backHref} className="p-btn p-btn-check" style={{ textDecoration: "none", textAlign: "center" }}>
-                ← {backLabel}
-              </Link>
+              {back("p-btn p-btn-check", { textDecoration: "none", textAlign: "center" }, undefined, <>← {backLabel}</>)}
               <button type="button" className="p-btn p-btn-next" onClick={engine.retry}>
                 {t("practice.retry")}
               </button>
@@ -137,9 +146,7 @@ function RunnerInner(opts: PracticeEngineOptions) {
     <div className={`practice-shell${variant === "sidebar" ? " ps-shell" : ""}`}>
       <div className="p-screen active" id="screen-practice">
         <div className="p-topbar">
-          <Link href={backHref} className="p-back-btn" title={backLabel}>
-            ←
-          </Link>
+          {back("p-back-btn", undefined, backLabel, "←")}
           <div className="p-progress-wrap">
             <div className="p-progress-bar">
               <div className="p-progress-fill" style={{ width: `${engine.progressPct}%` }} />

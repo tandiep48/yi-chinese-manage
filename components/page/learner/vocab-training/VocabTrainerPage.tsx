@@ -9,14 +9,20 @@
 import { useEffect } from "react";
 import { TrainerShell } from "@/components/page/learner/trainer/TrainerShell";
 import { SuccessPopup } from "@/components/page/learner/trainer/SuccessPopup";
-import { useVocabTrainer } from "@/hooks/vocab/useVocabTrainer";
+import { useVocabTrainer, type VocabTrainerOptions } from "@/hooks/vocab/useVocabTrainer";
 import { TypingActivity } from "./TypingActivity";
 import { MatchActivity } from "./MatchActivity";
 import { VocabTrainerRecap } from "./VocabTrainerRecap";
 import "@/components/page/learner/trainer/vocab-trainer.css";
 
-export function VocabTrainerPage() {
-  const trainer = useVocabTrainer();
+// Props are the embedding seam: with none, this is the standalone
+// /learner/vocab-training-batch route, byte-for-byte as before.
+interface VocabTrainerPageProps extends VocabTrainerOptions {
+  contained?: boolean;
+}
+
+export function VocabTrainerPage({ contained, ...options }: VocabTrainerPageProps = {}) {
+  const trainer = useVocabTrainer(options);
 
   // Enter advances via the current activity's primary action (Check / Continue),
   // unless a text field is focused (typing inputs manage their own Enter).
@@ -47,6 +53,7 @@ export function VocabTrainerPage() {
         progress={trainer.progress}
         counterText={trainer.counterText}
         onQuit={trainer.goHome}
+        contained={contained}
         complete={
           <VocabTrainerRecap
             missed={trainer.missed}

@@ -51,6 +51,16 @@ function clearKeys(keys: string[]) {
   });
 }
 
+export interface VocabTrainerOptions {
+  // Embedded mode: the caller already holds the words, so entry resolution
+  // (sessionStorage + ?mode=6 + the router fallbacks) is skipped entirely.
+  words?: TrainerWord[];
+  // Activity filter, the props equivalent of the vocabTrainerActivityTypes key.
+  types?: VocabActivityType[];
+  // Replaces the goHome navigation — an embedded run has nowhere to push to.
+  onExit?: () => void;
+}
+
 export interface UseVocabTrainer {
   screen: TrainerScreen;
   subtitle: string;
@@ -77,9 +87,10 @@ export interface UseVocabTrainer {
   goHome: () => void;
 }
 
-export function useVocabTrainer(): UseVocabTrainer {
+export function useVocabTrainer(opts: VocabTrainerOptions = {}): UseVocabTrainer {
   const router = useRouter();
   const { t } = useT();
+  const { words: embeddedWords, types: embeddedTypes, onExit } = opts;
 
   const [screen, setScreen] = useState<TrainerScreen>("loading");
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -112,7 +123,18 @@ export function useVocabTrainer(): UseVocabTrainer {
   }, []);
 
   // Entry resolution — mirrors the DOMContentLoaded handler in vocab_training_batch.js.
+  // Embedded callers supply the words up front and this whole block is skipped: no
+  // sessionStorage peek, no ?mode=6 read, and none of the router.replace escapes,
+  // which a panel inside the learner home has nowhere to navigate to.
   useEffect(() => {
+    if (embeddedWords) {
+      typesRef.current = embeddedTypes?.length ? embeddedTypes : undefined;
+      if (!embeddedWords.length) return;
+      wordsRef.current = embeddedWords;
+      start(embeddedWords);
+      return;
+    }
+
     let cancelled = false;
     const params = new URLSearchParams(window.location.search);
 
@@ -166,6 +188,11 @@ export function useVocabTrainer(): UseVocabTrainer {
     pendingRef.current = [];
     submitVocabBatch(sessionIdRef.current, batch);
   }, []);
+
+  // Answers only leave pendingRef on advance(), so an unmount mid-activity would
+  // drop the batch. Harmless on a standalone route (leaving means navigating away
+  // after a flush), but a tab switch unmounts an embedded trainer at any moment.
+  useEffect(() => flush, [flush]);
 
   const recordAnswer = useCallback<UseVocabTrainer["recordAnswer"]>(
     (row, type, userAnswer, isCorrect, responseMs, wrongAttempts = 0) => {
@@ -233,12 +260,17 @@ export function useVocabTrainer(): UseVocabTrainer {
   }, [missed]);
 
   const goHome = useCallback(() => {
+    flush();
+    if (onExit) {
+      onExit();
+      return;
+    }
     if (passageId) {
       router.push(`/learner/lesson?passage_id=${encodeURIComponent(passageId)}`);
       return;
     }
     router.push("/learner/vocab");
-  }, [router, passageId]);
+  }, [router, passageId, onExit, flush]);
 
   const activity = activities[index] ?? null;
 

@@ -58,6 +58,9 @@ interface TrainerShellProps {
   scopeClass?: string;
   // Icon in the quit modal (the lesson trainer shows a warning triangle).
   quitIcon?: boolean;
+  // Embedded in a panel rather than owning the viewport: the bottom bar goes
+  // sticky-within-the-panel instead of fixed to the window.
+  contained?: boolean;
 }
 
 export function TrainerShell({
@@ -71,6 +74,7 @@ export function TrainerShell({
   complete,
   scopeClass = "vocab-trainer",
   quitIcon = false,
+  contained = false,
 }: TrainerShellProps) {
   const { t } = useT();
   const [slot, setSlot] = useState<HTMLElement | null>(null);
@@ -78,7 +82,7 @@ export function TrainerShell({
 
   return (
     <ActionSlotContext.Provider value={slot}>
-      <div className={`trainer-shell ${scopeClass}`}>
+      <div className={`trainer-shell ${scopeClass}${contained ? " contained" : ""}`}>
         <div className="app-container">
           <div className={`screen trainer-loading-screen${screen === "loading" ? " active" : ""}`}>
             <div className="loader" />

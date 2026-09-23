@@ -8,16 +8,35 @@
 
 import { TrainerShell } from "@/components/page/learner/trainer/TrainerShell";
 import { SuccessPopup } from "@/components/page/learner/trainer/SuccessPopup";
-import { useLessonTrainer } from "@/hooks/lesson/useLessonTrainer";
+import { useT } from "@/components/i18n/I18nProvider";
+import { useLessonTrainer, type LessonTrainerOptions } from "@/hooks/lesson/useLessonTrainer";
 import { ChoiceTask } from "./ChoiceTask";
 import { TypingTask } from "./TypingTask";
 import { ReorderTask } from "./ReorderTask";
 import { LessonTrainerRecap } from "./LessonTrainerRecap";
 import "./lesson-trainer.css";
 
-export function LessonTrainerPage() {
-  const trainer = useLessonTrainer();
+// Props are the embedding seam: with none, this is the standalone
+// /learner/lesson-training route, byte-for-byte as before.
+interface LessonTrainerPageProps extends LessonTrainerOptions {
+  contained?: boolean;
+}
+
+export function LessonTrainerPage({ contained, ...options }: LessonTrainerPageProps = {}) {
+  const { t } = useT();
+  const trainer = useLessonTrainer(options);
   const task = trainer.task;
+
+  // Embedded only: the run can't start and there is nowhere to redirect to.
+  if (trainer.blockedKey) {
+    return (
+      <div className="trainer-shell lesson-trainer">
+        <div className="app-container">
+          <p className="trainer-blocked">{t(trainer.blockedKey)}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -29,6 +48,7 @@ export function LessonTrainerPage() {
         counterText={trainer.counterText}
         onQuit={trainer.goHome}
         quitIcon
+        contained={contained}
         complete={
           <LessonTrainerRecap
             missed={trainer.missed}

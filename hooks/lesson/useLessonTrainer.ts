@@ -48,8 +48,22 @@ export interface MissedTask {
   userAnswer: string;
 }
 
+export interface LessonTrainerOptions {
+  // Embedded mode: the caller names the part(s), so entry resolution (sessionStorage
+  // + ?passage_id + the router.replace escapes) is skipped entirely.
+  passageIds?: string[];
+  mode?: "part" | "master";
+  // Task-type filter, the props equivalent of the lessonTrainerActivityTypes key.
+  types?: LessonTaskType[];
+  // Replaces the goHome navigation — an embedded run has nowhere to push to.
+  onExit?: () => void;
+}
+
 export interface UseLessonTrainer {
   screen: TrainerScreen;
+  // Non-null when the run can't start: embedded mode renders this instead of
+  // navigating away. An i18n key, not prose.
+  blockedKey: string | null;
   subtitle: string;
   progress: number;
   counterText: string;
@@ -82,11 +96,14 @@ function shuffle<T>(input: readonly T[]): T[] {
   return arr;
 }
 
-export function useLessonTrainer(): UseLessonTrainer {
+export function useLessonTrainer(opts: LessonTrainerOptions = {}): UseLessonTrainer {
   const router = useRouter();
   const { t } = useT();
+  const { passageIds: embeddedIds, mode: embeddedMode, types: embeddedTypes, onExit } = opts;
+  const embedded = !!embeddedIds;
 
   const [screen, setScreen] = useState<TrainerScreen>("loading");
+  const [blockedKey, setBlockedKey] = useState<string | null>(null);
   const [tasks, setTasks] = useState<LessonTask[]>([]);
   const [index, setIndex] = useState(0);
   const [popupOpen, setPopupOpen] = useState(false);
@@ -122,35 +139,51 @@ export function useLessonTrainer(): UseLessonTrainer {
   // pass; clear only after the session resolves.
   useEffect(() => {
     let cancelled = false;
-    const params = new URLSearchParams(window.location.search);
 
-    const rawTypes = peekJson<string[]>(TYPES_KEY);
-    typesRef.current =
-      Array.isArray(rawTypes) && rawTypes.length ? (rawTypes as LessonTaskType[]) : undefined;
+    // Embedded mode has nowhere to navigate to, so every escape below becomes a
+    // rendered message instead of a router.replace.
+    const bail = (key: string, href: string) => {
+      if (embedded) setBlockedKey(key);
+      else router.replace(href);
+    };
 
-    const wide = peekJson<{ passage_ids?: string[] }>(WIDE_KEY);
     let passageIds: string[] = [];
     let mode: "part" | "master" = "part";
-    if (Array.isArray(wide?.passage_ids) && wide.passage_ids.length) {
-      passageIds = wide.passage_ids;
-      mode = "master";
-    } else if (params.get("passage_id")) {
-      passageIds = [params.get("passage_id")!];
-      mode = "part";
+    if (embedded) {
+      typesRef.current = embeddedTypes?.length ? embeddedTypes : undefined;
+      passageIds = embeddedIds;
+      mode = embeddedMode ?? (embeddedIds.length > 1 ? "master" : "part");
+    } else {
+      const params = new URLSearchParams(window.location.search);
+      const rawTypes = peekJson<string[]>(TYPES_KEY);
+      typesRef.current =
+        Array.isArray(rawTypes) && rawTypes.length ? (rawTypes as LessonTaskType[]) : undefined;
+
+      const wide = peekJson<{ passage_ids?: string[] }>(WIDE_KEY);
+      if (Array.isArray(wide?.passage_ids) && wide.passage_ids.length) {
+        passageIds = wide.passage_ids;
+        mode = "master";
+      } else if (params.get("passage_id")) {
+        passageIds = [params.get("passage_id")!];
+        mode = "part";
+      }
     }
 
     // Pinyin-guide placeholders and the Numbers pseudo-part aren't graded lessons.
     const first = passageIds[0];
     if (first === "H1_1_1") {
-      router.replace("/learner/lesson/basic-pinyin");
+      bail("trainer.not_a_graded_part", "/learner/lesson/basic-pinyin");
       return;
     }
     if (first === "H1_1_2") {
-      router.replace("/learner/lesson/advanced-pinyin");
+      bail("trainer.not_a_graded_part", "/learner/lesson/advanced-pinyin");
       return;
     }
     if (!passageIds.length || first === "H1_5_99") {
-      router.replace(passageIds.length ? `/learner/lesson?passage_id=${encodeURIComponent(first)}` : "/learner/hsk");
+      bail(
+        passageIds.length ? "trainer.not_a_graded_part" : "trainer.no_part_selected",
+        passageIds.length ? `/learner/lesson?passage_id=${encodeURIComponent(first)}` : "/learner/hsk"
+      );
       return;
     }
 
@@ -160,19 +193,19 @@ export function useLessonTrainer(): UseLessonTrainer {
     startLessonSession(passageIds, mode)
       .then((data) => {
         if (cancelled) return;
-        clearKeys([WIDE_KEY, TYPES_KEY]);
+        if (!embedded) clearKeys([WIDE_KEY, TYPES_KEY]);
         sessionIdRef.current = data.session_id ?? now();
         const roundTasks = filterTasksByType(data.tasks ?? [], typesRef.current);
         if (!roundTasks.length) {
-          router.replace(homeHref());
+          bail("trainer.no_tasks", homeHref());
           return;
         }
         beginRound(roundTasks);
       })
       .catch(() => {
         if (cancelled) return;
-        clearKeys([WIDE_KEY, TYPES_KEY]);
-        router.replace(homeHref());
+        if (!embedded) clearKeys([WIDE_KEY, TYPES_KEY]);
+        bail("trainer.load_failed", homeHref());
       });
 
     return () => {
@@ -238,8 +271,12 @@ export function useLessonTrainer(): UseLessonTrainer {
   }, [missed, beginRound]);
 
   const goHome = useCallback(() => {
+    if (onExit) {
+      onExit();
+      return;
+    }
     router.push(homeHref());
-  }, [router, homeHref]);
+  }, [router, homeHref, onExit]);
 
   const task = tasks[index] ?? null;
 
@@ -259,6 +296,7 @@ export function useLessonTrainer(): UseLessonTrainer {
 
   return {
     screen,
+    blockedKey,
     subtitle,
     progress,
     counterText,

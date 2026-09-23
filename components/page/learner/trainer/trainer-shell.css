@@ -194,6 +194,77 @@
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.03);
   z-index: 1000;
 }
+/* Shown in place of the run when an embedded trainer can't start. */
+.trainer-shell .trainer-blocked {
+  padding: clamp(24px, 6vw, 48px) 0;
+  text-align: center;
+  color: #576856;
+}
+
+/* Embedded (`contained`): the bar pins to the bottom of the trainer's own panel
+   instead of the viewport, so the tab bar around it stays reachable and the bar
+   doesn't span the full window width. The 120px bottom padding that clears a
+   fixed bar is no longer needed once the bar is in flow. */
+.trainer-shell.contained .trainer-bottom-bar {
+  position: sticky;
+  bottom: 0;
+  left: auto;
+  width: 100%;
+  z-index: 5;
+}
+/* ── Contained: winning the ties with the host root ──
+   A contained trainer runs *inside* another root that also carries descendant
+   rules — `.lesson-study`, when the milestone's steps 3 and 6 render inside
+   LessonStudyShell on /learner/lesson. `.lesson-study .btn` (lesson-study.css:87)
+   and `.trainer-shell .btn` are both (0,2,0), as are `.lesson-study .app-container`
+   and `.trainer-shell .app-container`, so the winner would be decided by
+   stylesheet source order — which Next does not guarantee across lazily-loaded
+   chunks. Restating the trainer's own values one class higher makes it
+   deterministic. Only the properties the two rule sets disagree on are listed;
+   `.btn.secondary` and `.btn.danger` need nothing, because `.lesson-study`
+   defines no compound for either. */
+.trainer-shell.contained .btn {
+  padding: 15px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  background: var(--secondary);
+  color: var(--text-main);
+}
+.trainer-shell.contained .btn:hover {
+  border-color: transparent;
+  color: var(--text-main);
+}
+.trainer-shell.contained .btn.primary {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: transparent;
+}
+.trainer-shell.contained .btn.primary:hover {
+  background: var(--primary-hover);
+  color: #ffffff;
+}
+.trainer-shell.contained .btn.secondary {
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+.trainer-shell.contained .btn.danger {
+  color: #ffffff;
+}
+
+/* The full container box, not just the bottom padding, because a contained
+   trainer runs inside another root that styles `.app-container` too:
+   `.lesson-study .app-container` (lesson-study.css:26) zeroes the padding and
+   both selectors are (0,2,0), so the winner would be decided by stylesheet
+   source order — which Next does not guarantee across lazily-loaded chunks.
+   At (0,3,0) this one always wins, whichever chunk lands first. */
+.trainer-shell.contained .app-container {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  padding: clamp(16px, 3vw, 32px);
+}
+
 .trainer-shell .trainer-action-slot {
   display: contents;
 }

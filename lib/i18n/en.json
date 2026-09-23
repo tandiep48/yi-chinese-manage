@@ -99,7 +99,11 @@
     "quit_modal_title": "Quit Session?",
     "quit_modal_body": "Your current progress won't be saved.<br>Are you sure you want to quit?",
     "cancel": "Cancel",
-    "yes_quit": "Yes, Quit"
+    "yes_quit": "Yes, Quit",
+    "not_a_graded_part": "This part isn't a graded lesson.",
+    "no_part_selected": "No lesson part selected.",
+    "no_tasks": "There are no tasks for this part yet.",
+    "load_failed": "This lesson couldn't be loaded. Please try again."
   },
   "lesson": {
     "page_title": "Lesson Practice - {hsk_level}",

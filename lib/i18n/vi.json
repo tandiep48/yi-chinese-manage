@@ -99,7 +99,11 @@
     "quit_modal_title": "Thoát Phiên Học?",
     "quit_modal_body": "Tiến độ hiện tại sẽ không được lưu.<br>Bạn có chắc muốn thoát không?",
     "cancel": "Hủy",
-    "yes_quit": "Đồng Ý, Thoát"
+    "yes_quit": "Đồng Ý, Thoát",
+    "not_a_graded_part": "Phần này không phải bài học có chấm điểm.",
+    "no_part_selected": "Chưa chọn phần bài học nào.",
+    "no_tasks": "Phần này chưa có bài tập nào.",
+    "load_failed": "Không tải được bài học này. Vui lòng thử lại."
   },
   "lesson": {
     "page_title": "Luyện Tập Bài Học - {hsk_level}",

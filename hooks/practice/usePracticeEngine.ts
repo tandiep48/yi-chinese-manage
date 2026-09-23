@@ -34,21 +34,41 @@ import type { PracticeAnswerRow, PracticeCategory, PracticeGroup, PracticeMultiI
 
 export type Screen = "loading" | "practice" | "result";
 
+export interface ReferrerInfo {
+  href: string;
+  title: string;
+}
+
 export interface PracticeEngineOptions {
   category: PracticeCategory;
   number?: number | string; // hsk level (absent in multi mode)
   lessonId?: string;
   progress?: string; // deep-link to one progress group
   multi?: boolean;
-}
-
-interface ReferrerInfo {
-  href: string;
-  title: string;
+  // ── Embedded overrides ──
+  // The multi queue as props, instead of the multi_practice_queue handoff.
+  items?: PracticeMultiItem[];
+  // The back target as props, instead of the practice_referrer handoff.
+  referrer?: ReferrerInfo;
+  // Set when the run lives inside a panel: the shell calls this instead of
+  // following referrer.href, which would navigate the whole page away.
+  onExit?: () => void;
+  // Same for "try again", whose standalone implementation is a full page reload.
+  onRetry?: () => void;
 }
 
 export function usePracticeEngine(opts: PracticeEngineOptions) {
-  const { category, number, lessonId, progress, multi } = opts;
+  const {
+    category,
+    number,
+    lessonId,
+    progress,
+    multi,
+    items,
+    referrer: referrerOverride,
+    onExit,
+    onRetry,
+  } = opts;
 
   const [screen, setScreen] = useState<Screen>("loading");
   const [error, setError] = useState<string | null>(null);
@@ -58,10 +78,12 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
   const [score, setScore] = useState(0);
   const [result, setResult] = useState<{ score: number; total: number; icon: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [referrer, setReferrer] = useState<ReferrerInfo>({
-    href: category === "exam" ? "/learner/exam" : "/learner/practice",
-    title: "",
-  });
+  const [referrer, setReferrer] = useState<ReferrerInfo>(
+    referrerOverride ?? {
+      href: category === "exam" ? "/learner/exam" : "/learner/practice",
+      title: "",
+    }
+  );
   const sessionIdRef = useRef<number>(0);
 
   const totalQuestions = useMemo(
@@ -75,12 +97,15 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
     async function load() {
       // Resolve the referrer-aware back target once, alongside the session fetch
       // (reading sessionStorage requires the client, so it belongs in this effect).
+      // An embedded caller passes it in and the handoff key is left untouched.
       let ref: string | null = null;
-      try {
-        ref = window.sessionStorage.getItem("practice_referrer");
-        window.sessionStorage.removeItem("practice_referrer");
-      } catch {
-        ref = null;
+      if (!referrerOverride) {
+        try {
+          ref = window.sessionStorage.getItem("practice_referrer");
+          window.sessionStorage.removeItem("practice_referrer");
+        } catch {
+          ref = null;
+        }
       }
       if (ref === "recommend") {
         setReferrer({ href: "/learner/recommend", title: "recommend" });
@@ -92,18 +117,23 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
       try {
         let loaded: PracticeGroup[];
         if (multi) {
-          let raw: string | null = null;
-          try {
-            raw = window.sessionStorage.getItem("multi_practice_queue");
-          } catch {
-            raw = null;
+          let queue: PracticeMultiItem[] | null = items ?? null;
+          if (!queue) {
+            let raw: string | null = null;
+            try {
+              raw = window.sessionStorage.getItem("multi_practice_queue");
+            } catch {
+              raw = null;
+            }
+            queue = raw ? (JSON.parse(raw) as PracticeMultiItem[]) : null;
           }
-          if (!raw) {
-            window.location.href = "/learner/recommend";
+          if (!queue?.length) {
+            // Embedded runs can't navigate the page away; surface the failure instead.
+            if (onExit) setError("load_failed");
+            else window.location.href = "/learner/recommend";
             return;
           }
-          const items = JSON.parse(raw) as PracticeMultiItem[];
-          const data = await getPracticeMulti(items);
+          const data = await getPracticeMulti(queue);
           loaded = data.groups;
         } else if (progress) {
           const g = await getPracticeProgressGroup(
@@ -260,9 +290,16 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
     setSubmitting(false);
   }, [checkedFlags, groups, states, category, number, lessonId, totalQuestions, score, visit]);
 
+  // The session loads once, in a mount effect, so the standalone "try again" is a
+  // page reload. Embedded, the caller remounts the runner instead — reloading the
+  // page would take the whole dashboard with it.
   const retry = useCallback(() => {
+    if (onRetry) {
+      onRetry();
+      return;
+    }
     window.location.reload();
-  }, []);
+  }, [onRetry]);
 
   // ── Derived values for the shells ───────────────────────────────────────────
   const checkedCount = useMemo(() => checkedFlags.filter(Boolean).length, [checkedFlags]);
@@ -291,6 +328,8 @@ export function usePracticeEngine(opts: PracticeEngineOptions) {
     totalQuestions,
     result,
     referrer,
+    // Non-null only in embedded mode; the shell renders a button, not a link.
+    exit: onExit ?? null,
     // derived
     checkedFlags,
     checkedCount,
