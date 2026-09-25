@@ -59,7 +59,7 @@ describe("ReviewTab — starting a run", () => {
     render(<Harness />);
 
     await screen.findByText("学习");
-    await user.click(screen.getByRole("checkbox", { name: /Select all/i }));
+    await user.click(screen.getByRole("checkbox", { name: /Select visible rows/i }));
     await user.click(screen.getByRole("button", { name: /Start training/ }));
 
     // The trainer's chrome replaces the list, in place.
@@ -74,7 +74,7 @@ describe("ReviewTab — starting a run", () => {
     render(<Harness />);
 
     await screen.findByText("学习");
-    await user.click(screen.getByRole("checkbox", { name: /Select all/i }));
+    await user.click(screen.getByRole("checkbox", { name: /Select visible rows/i }));
     await user.click(screen.getByRole("button", { name: /Start training/ }));
 
     await waitFor(() => expect(runValue()).toBe("vocab-trainer"));
@@ -109,7 +109,7 @@ describe("ReviewTab — ending a run", () => {
     render(<Harness />);
 
     await screen.findByText("学习");
-    await user.click(screen.getByRole("checkbox", { name: /Select all/i }));
+    await user.click(screen.getByRole("checkbox", { name: /Select visible rows/i }));
     await user.click(screen.getByRole("button", { name: /Start training/ }));
     await waitFor(() => expect(runValue()).toBe("vocab-trainer"));
 
@@ -134,7 +134,7 @@ describe("ReviewTab — the standalone route is unchanged", () => {
     );
 
     await screen.findByText("学习");
-    await user.click(screen.getByRole("checkbox", { name: /Select all/i }));
+    await user.click(screen.getByRole("checkbox", { name: /Select visible rows/i }));
     await user.click(screen.getByRole("button", { name: /Start training/ }));
 
     expect(JSON.parse(sessionStorage.getItem("selectedVocabTrainerWords")!)).toEqual(["学习", "你好"]);

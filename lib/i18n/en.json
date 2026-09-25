@@ -221,8 +221,6 @@
     "loading": "Loading your words...",
     "load_failed": "Could not load your words. Please try again.",
     "load_more": "Load more",
-    "select_all": "Select all",
-    "list_title": "Words to review",
     "empty": "Nothing to review right now."
   },
   "grammar": {

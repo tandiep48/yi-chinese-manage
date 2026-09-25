@@ -7,23 +7,39 @@
 // trainer. Ported from Learning/web_app/templates/vocab/vocab_review.html +
 // static/vocab/vocab_review.js.
 //
+// The layout is the vocabulary page's, not a second one: this mounts the same
+// `.vocab-select` shell (vocab-select.css) and the same VocabTable + stroke modal
+// that /learner/vocab does, so review gets that page's study tools — column hide,
+// per-cell reveal, shuffle, play-all, stroke order — for free and there is one
+// table to maintain instead of two. Only what is genuinely different lives here:
+// the heading block, the loaded count, and "Load more" in place of pagination
+// (the review list grows by appending, it does not page).
+//
+// `.vocab-review` is a second class on the SAME element, never a wrapper, and
+// vocab-review.css styles only leaf classes that vocab-select.css and
+// vocab-table.css do not define — no two rules can tie at (0,2,0) (§2).
+//
 // Like the legacy page it hands the selection to /vocab-training-batch through
 // sessionStorage without opening the train-type picker, so the trainer falls back
 // to its default activity mix.
 
-import { useCallback, useEffect, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabReview } from "@/hooks/vocab/useVocabReview";
-import { pickMeaning } from "@/lib/lessons/meaning";
-import { vocabAudioUrl } from "@/lib/audio";
+import { VocabTable } from "@/components/page/learner/vocab/VocabTable";
+import {
+  VocabStrokeModal,
+  type StrokeModalState,
+  type StrokeAllItem,
+} from "@/components/page/learner/vocab/VocabStrokeModal";
 import type { VocabRow } from "@/lib/types/vocab";
+import "@/components/page/learner/vocab/vocab-select.css";
 import "./vocab-review.css";
 
 const TRAINER_WORDS_KEY = "selectedVocabTrainerWords";
+const HANZI_RE = /[一-鿿]/;
 
 interface VocabReviewPageProps {
   // Mounted as a panel of the learner home rather than as its own route: the
@@ -35,38 +51,10 @@ interface VocabReviewPageProps {
 }
 
 export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPageProps = {}) {
-  const { t, lang } = useT();
+  const { t } = useT();
   const router = useRouter();
   const review = useVocabReview();
-
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const selectAllRef = useRef<HTMLInputElement | null>(null);
-
-  // `indeterminate` is a DOM property with no React attribute, so it has to be
-  // written to the node directly.
-  useEffect(() => {
-    if (selectAllRef.current) {
-      selectAllRef.current.indeterminate = review.someSelected;
-    }
-  }, [review.someSelected]);
-
-  useEffect(
-    () => () => {
-      audioRef.current?.pause();
-      audioRef.current = null;
-    },
-    []
-  );
-
-  const playAudio = useCallback((audioKey: string) => {
-    if (!audioKey) return;
-    audioRef.current?.pause();
-    const audio = new Audio(vocabAudioUrl(audioKey));
-    audioRef.current = audio;
-    audio.play().catch(() => {
-      // Autoplay blocked or the object is missing — silent, like the legacy page.
-    });
-  }, []);
+  const [stroke, setStroke] = useState<StrokeModalState>(null);
 
   function startTraining() {
     if (review.selectedCount === 0) return;
@@ -89,119 +77,93 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
     router.push("/learner/vocab-training-batch");
   }
 
+  function openStrokeAll(rows: VocabRow[]) {
+    const queue: StrokeAllItem[] = [];
+    rows.forEach((row) => {
+      const word = row.word || row.cn || "";
+      [...word]
+        .filter((ch) => HANZI_RE.test(ch))
+        .forEach((ch) => queue.push({ ch, word, pinyin: row.pinyin || "" }));
+    });
+    if (queue.length) setStroke({ mode: "all", queue });
+  }
+
+  const showTable = review.status === "ready" && review.rows.length > 0;
+  const stateMessage =
+    review.status === "loading"
+      ? t("vocab_review.loading")
+      : review.status === "error"
+        ? t("vocab_review.load_failed")
+        : t("vocab_review.empty");
+
   return (
-    <div className="vocab-review">
-      <div className="vocab-review-wrap">
+    <div className="vocab-select vocab-review">
+      <div className="vocab-select-wrap">
         {!embedded && (
           <div className="vocab-top-link">
             <Link href="/learner">&larr; {t("picker.back_to_dashboard")}</Link>
           </div>
         )}
 
-        <div className="review-content-card">
-          <div className="review-header">
-            <div>
-              <h1 className="review-heading">{t("vocab_review.heading")}</h1>
+        <div className="vocab-content-card">
+          <div className="vocab-table-header">
+            <div className="review-title-block">
+              <h1 className="review-heading">
+                {t("vocab_review.heading")}
+                {showTable && (
+                  <span className="review-count">{review.rows.length}</span>
+                )}
+              </h1>
               <p className="review-subtitle">{t("vocab_review.subtitle")}</p>
             </div>
-            <button
-              type="button"
-              className="btn primary review-start-btn"
-              onClick={startTraining}
-              disabled={review.selectedCount === 0}
-            >
-              {t("vocab_review.start_training", { count: review.selectedCount })}
-            </button>
+            {/* Not /vocab's `.vocab-action-buttons`: that row is built for three
+                buttons and shrink-wraps around one, which leaves a lone button
+                floating mid-card on a phone. Own class, same button styles. */}
+            <div className="review-actions">
+              <button
+                type="button"
+                className="btn action-primary review-start-btn"
+                onClick={startTraining}
+                disabled={review.selectedCount === 0}
+              >
+                {t("vocab_review.start_training", { count: review.selectedCount })}
+              </button>
+            </div>
           </div>
 
-          {review.status !== "ready" ? (
-            <div className="review-state">
-              {t(
-                review.status === "loading"
-                  ? "vocab_review.loading"
-                  : "vocab_review.load_failed"
-              )}
-            </div>
+          {showTable ? (
+            <VocabTable
+              rows={review.rows}
+              isSelected={review.isSelected}
+              allOnPageSelected={review.allSelected}
+              onToggleWord={review.toggleWord}
+              // The review list is never paginated, so the table's visible rows
+              // and the hook's loaded rows are the same set — shuffle reorders
+              // them, it does not filter.
+              onTogglePage={(_rows, checked) => review.toggleAll(checked)}
+              onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
+              onStrokeAll={openStrokeAll}
+            />
           ) : (
-            <section className="review-section">
-              <div className="review-section-head">
-                <label className="review-select-all">
-                  <input
-                    ref={selectAllRef}
-                    type="checkbox"
-                    checked={review.allSelected}
-                    disabled={review.rows.length === 0}
-                    onChange={(e) => review.toggleAll(e.target.checked)}
-                  />
-                  <span>{t("vocab_review.select_all")}</span>
-                </label>
-                <h2 className="review-section-title">
-                  {t("vocab_review.list_title")}
-                  <span className="review-section-count">
-                    {review.rows.length}
-                  </span>
-                </h2>
-              </div>
+            <div className="vocab-table-state">{stateMessage}</div>
+          )}
 
-              {review.rows.length === 0 ? (
-                <div className="review-empty">{t("vocab_review.empty")}</div>
-              ) : (
-                <div className="review-list">
-                  {review.rows.map((row) => {
-                    const word = row.word || row.cn;
-                    return (
-                      <label className="review-item" key={word}>
-                        <input
-                          type="checkbox"
-                          className="review-item-cb"
-                          checked={review.isSelected(row)}
-                          onChange={(e) =>
-                            review.toggleWord(row, e.target.checked)
-                          }
-                        />
-                        <span className="review-item-word">{word}</span>
-                        <span className="review-item-pinyin">
-                          {row.pinyin || ""}
-                        </span>
-                        <span className="review-item-meaning">
-                          {pickMeaning(row, lang)}
-                        </span>
-                        {row.audio_key && (
-                          <button
-                            type="button"
-                            className="review-audio-btn"
-                            title={t("lesson.play_audio")}
-                            aria-label={t("lesson.play_audio")}
-                            // The button sits inside the row's <label>, so the
-                            // default action would also toggle the checkbox.
-                            onClick={(e) => {
-                              e.preventDefault();
-                              playAudio(row.audio_key);
-                            }}
-                          >
-                            <FontAwesomeIcon icon={faVolumeHigh} aria-hidden />
-                          </button>
-                        )}
-                      </label>
-                    );
-                  })}
-                </div>
-              )}
-
-              {review.canLoadMore && (
-                <button
-                  type="button"
-                  className="btn secondary review-load-more"
-                  onClick={review.loadMore}
-                  disabled={review.loadingMore}
-                >
-                  {t("vocab_review.load_more")}
-                </button>
-              )}
-            </section>
+          {review.canLoadMore && (
+            <div className="vocab-pagination">
+              <button
+                type="button"
+                className="btn secondary"
+                onClick={review.loadMore}
+                disabled={review.loadingMore}
+              >
+                {t("vocab_review.load_more")}
+              </button>
+            </div>
           )}
         </div>
       </div>
+
+      <VocabStrokeModal state={stroke} onClose={() => setStroke(null)} />
     </div>
   );
 }

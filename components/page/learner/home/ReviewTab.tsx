@@ -11,8 +11,9 @@
 // normalize_vocab_row() output, so what the list already holds IS a trainer row —
 // the embedded path saves the POST /api/vocab/words the standalone route makes.
 //
-// Both children keep their own root class and stylesheet (`.vocab-review`,
-// `.trainer-shell.vocab-trainer`), so neither is ever styled by the container (§2).
+// Both children keep their own root class and stylesheet (`.vocab-select
+// .vocab-review`, `.trainer-shell.vocab-trainer`), so neither is ever styled by
+// the container (§2).
 
 import { useEffect, useState } from "react";
 import { VocabReviewPage } from "@/components/page/learner/vocab-review/VocabReviewPage";

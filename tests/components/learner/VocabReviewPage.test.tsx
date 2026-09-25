@@ -2,6 +2,10 @@
 // Covers what the review page renders on top of useVocabReview: the word list and
 // its count, the start button's selection-aware label and disabled state, and the
 // sessionStorage handoff to the batch trainer.
+//
+// The list is the vocabulary page's VocabTable now, so the select-all control is
+// its header checkbox ("Select visible rows") and the meaning column is the one
+// that table defines — VN, falling back to EN — rather than the UI language's.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
@@ -54,13 +58,15 @@ beforeEach(() => {
 describe("VocabReviewPage", () => {
   it("renders each word with its pinyin and meaning, and the loaded count", async () => {
     mockReview.mockResolvedValue(response([row("学习"), row("你好")]));
-    renderPage();
+    const { container } = renderPage();
 
     await screen.findByText("学习");
     expect(screen.getByText("学习-py")).toBeInTheDocument();
-    expect(screen.getByText("学习-en")).toBeInTheDocument();
+    expect(screen.getByText("学习-vn")).toBeInTheDocument();
     expect(screen.getByText("你好")).toBeInTheDocument();
-    expect(screen.getByText("2")).toBeInTheDocument();
+    // Not getByText("2") — the table numbers its rows, so "2" is on the page
+    // twice over. The badge in the heading is the loaded count.
+    expect(container.querySelector(".review-count")).toHaveTextContent("2");
   });
 
   it("shows the empty state when there is nothing to review", async () => {
@@ -86,7 +92,7 @@ describe("VocabReviewPage", () => {
     const start = screen.getByRole("button", { name: /Start training/ });
     expect(start).toBeDisabled();
 
-    // The first checkbox is select-all; the rest are the word rows.
+    // The first checkbox is the table's select-visible-rows; the rest are rows.
     const boxes = screen.getAllByRole("checkbox");
     await user.click(boxes[1]);
 
@@ -99,7 +105,7 @@ describe("VocabReviewPage", () => {
     renderPage();
     await screen.findByText("上");
 
-    await user.click(screen.getAllByRole("checkbox")[0]);
+    await user.click(screen.getByRole("checkbox", { name: /Select visible rows/i }));
 
     expect(screen.getByRole("button", { name: "Start training (2)" })).toBeEnabled();
     screen.getAllByRole("checkbox").forEach((box) => expect(box).toBeChecked());

@@ -221,8 +221,6 @@
     "loading": "Đang tải từ vựng của bạn...",
     "load_failed": "Không thể tải từ vựng. Vui lòng thử lại.",
     "load_more": "Tải thêm",
-    "select_all": "Chọn tất cả",
-    "list_title": "Từ cần ôn tập",
     "empty": "Hiện không có từ nào để ôn tập."
   },
   "grammar": {
