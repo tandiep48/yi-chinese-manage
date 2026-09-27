@@ -61,6 +61,13 @@ export async function legacyApiFetch<T>(
     ...options,
   });
 
+  // The API is JSON-only: a signed-out @login_required call returns a 401 JSON
+  // envelope (app.py unauthorized_handler). Older builds redirected to the Jinja
+  // login page (non-JSON); treat both as "not authenticated".
+  if (res.status === 401) {
+    throw new UnauthenticatedError();
+  }
+
   const contentType = res.headers.get("content-type") || "";
   if (!contentType.includes("application/json")) {
     throw new UnauthenticatedError();
