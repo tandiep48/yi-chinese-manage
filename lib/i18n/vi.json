@@ -15,7 +15,14 @@
     "dashboard": "Bảng điều khiển",
     "hsk": "HSK",
     "practice": "Luyện tập",
-    "profile": "Hồ sơ"
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt",
+    "open_menu": "Mở menu"
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "script": "Kiểu chữ",
+    "font": "Phông chữ"
   },
   "auth": {
     "login_page_title": "Đăng Nhập - Học Tiếng Trung",

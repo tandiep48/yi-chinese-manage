@@ -1,0 +1,65 @@
+/* components/layout/learner-nav.css
+   Styles for the learner sidebar drawer and the settings modal it opens.
+   Imported by LearnerSidebar + LearnerSettingsModal. Colors come from the
+   .learner-theme tokens (app/styles/learner-theme.css) — no hardcoded hex. */
+
+/* ── Mobile drawer backdrop ── */
+.learner-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* ── Settings modal (mirrors .profile-modal) ── */
+.learner-settings-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.learner-settings-modal[hidden] {
+  display: none;
+}
+.learner-settings-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+.learner-settings-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--learner-card);
+  border: 1px solid var(--learner-border);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+}
+.learner-settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.learner-settings-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: var(--learner-text);
+}
+.learner-settings-close {
+  background: none;
+  border: none;
+  color: var(--learner-text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+.learner-settings-close:hover {
+  color: var(--learner-text);
+}

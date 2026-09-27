@@ -15,7 +15,14 @@
     "dashboard": "Dashboard",
     "hsk": "HSK",
     "practice": "Practice",
-    "profile": "Profile"
+    "profile": "Profile",
+    "settings": "Settings",
+    "open_menu": "Open menu"
+  },
+  "settings": {
+    "title": "Settings",
+    "script": "Script",
+    "font": "Font"
   },
   "auth": {
     "login_page_title": "Login - Chinese Learning",
