@@ -34,7 +34,8 @@ Do not blindly write code. Analyze the request and ask for clarification if you 
 - **3.1 Backend Branch:** All work in the `Learning/` folder must be done on the `dev` branch.
 - **3.2 Frontend Branch:** All work in the `yi-chinese-manage/` folder must be done on the `dev` branch.
 - **3.3 Pull Requests:** Only pull the latest code on these branches when explicitly instructed by the user.
-- **3.4 No Committing:** Do not commit code after completing a task. Keep the changes uncommitted so the user can review the results first.
+- **3.4 Commit on Completion:** Commit code once a task item is finished. Keep each commit small and focused on a single item so changes stay easy to review and manage.
+- **3.5 Commit Attribution:** End each commit message created by Claude with the co-author trailer: `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`.
 
 ## 4. UI/UX, Color, and Layout Standards (Tailwind CSS)
 
