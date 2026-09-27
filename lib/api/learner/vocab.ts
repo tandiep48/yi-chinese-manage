@@ -96,10 +96,10 @@ export function getVocabTable(
   });
 }
 
-// GET /api/vocab/review — the combined, priority-ordered review list behind the
-// dashboard's Review card (critical > unsure > incomplete). Same normalized rows
-// and pagination envelope as /api/vocab/table. Mirrors get_review_list() in
-// Learning/web_app/routes/vocab/vocab_routes.py.
+// POST /api/vocab/review/query — the combined, priority-ordered review list behind
+// the dashboard's Review card (critical > unsure > incomplete). Same normalized rows
+// and pagination envelope as /api/vocab/table/query. Mirrors get_review_list_query()
+// in Learning/web_app/routes/vocab/vocab_routes.py.
 export function getVocabReview(
   page: number,
   pageSize: number

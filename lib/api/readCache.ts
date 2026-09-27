@@ -4,7 +4,7 @@
 // The learner home unmounts an inactive tab's panel (docs/plans/dashboard-tabs.md
 // Phase 1), which is what keeps a trainer's answers flushed and the mid-session
 // guard meaningful. The cost is that flipping between tabs re-runs every mount
-// fetch — and one of them, GET /api/vocab/review, is the endpoint §4 measured at
+// fetch — and one of them, POST /api/vocab/review/query, is the endpoint §4 measured at
 // ~1.6s because it loads all 50k vocabulary rows uncached on the server. Caching
 // the *result* keeps the mount policy intact and makes the trip back free.
 //
