@@ -2,6 +2,7 @@ import type { PaginatedResponse } from "@/lib/types/common";
 import type { GrammarRule, GrammarRuleFormData } from "@/lib/types/grammar";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
+import { grammarRuleQuerySchema } from "../schemas/grammar_rule";
 
 export function listGrammarRules(
   page = 1,
@@ -9,13 +10,16 @@ export function listGrammarRules(
   grammarId?: string,
   type?: number
 ): Promise<PaginatedResponse<GrammarRule>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
+  const body = grammarRuleQuerySchema.parse({
+    page,
+    page_size: pageSize,
     ...(grammarId ? { grammar_id: grammarId } : {}),
-    ...(type !== undefined ? { type: String(type) } : {}),
+    ...(type !== undefined ? { type } : {}),
   });
-  return apiFetch<PaginatedResponse<GrammarRule>>(`/api/admin/grammar_rule?${params}`);
+  return apiFetch<PaginatedResponse<GrammarRule>>("/api/admin/grammar_rule/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getGrammarRule(id: number): Promise<GrammarRule> {

@@ -2,6 +2,7 @@ import type { PaginatedResponse } from "@/lib/types/common";
 import type { Question, QuestionFormData } from "@/lib/types/question";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
+import { questionQuerySchema } from "../schemas/question";
 
 export interface QuestionFilters {
   category?: string;
@@ -16,14 +17,15 @@ export function listQuestions(
   pageSize = API_CONSTANTS.DEFAULT_PAGE_SIZE,
   filters: QuestionFilters = {}
 ): Promise<PaginatedResponse<Question>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
-  });
+  const raw: Record<string, unknown> = { page, page_size: pageSize };
   for (const [key, value] of Object.entries(filters)) {
-    if (value) params.set(key, value);
+    if (value) raw[key] = value;
   }
-  return apiFetch<PaginatedResponse<Question>>(`/api/admin/question?${params}`);
+  const body = questionQuerySchema.parse(raw);
+  return apiFetch<PaginatedResponse<Question>>("/api/admin/question/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getQuestion(id: number): Promise<Question> {

@@ -2,18 +2,22 @@ import type { PaginatedResponse } from "@/lib/types/common";
 import type { GrammarContext, GrammarContextFormData } from "@/lib/types/grammar";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
+import { grammarContextQuerySchema } from "../schemas/grammar_context";
 
 export function listGrammarContexts(
   page = 1,
   pageSize = API_CONSTANTS.DEFAULT_PAGE_SIZE,
   grammarId?: string
 ): Promise<PaginatedResponse<GrammarContext>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
+  const body = grammarContextQuerySchema.parse({
+    page,
+    page_size: pageSize,
     ...(grammarId ? { grammar_id: grammarId } : {}),
   });
-  return apiFetch<PaginatedResponse<GrammarContext>>(`/api/admin/grammar_context?${params}`);
+  return apiFetch<PaginatedResponse<GrammarContext>>("/api/admin/grammar_context/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getGrammarContext(id: number): Promise<GrammarContext> {

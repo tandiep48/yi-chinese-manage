@@ -3,20 +3,22 @@ import type { LessonPassage, PassageFormData } from "@/lib/types/lesson";
 import type { Vocab } from "@/lib/types/vocab";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
+import { passageQuerySchema } from "../schemas/passage";
 
 export function listPassages(
   page = 1,
   pageSize = API_CONSTANTS.DEFAULT_PAGE_SIZE,
   hskLevel?: string
 ): Promise<PaginatedResponse<LessonPassage>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
+  const body = passageQuerySchema.parse({
+    page,
+    page_size: pageSize,
     ...(hskLevel ? { hsk_level: hskLevel } : {}),
   });
-  return apiFetch<PaginatedResponse<LessonPassage>>(
-    `/api/admin/passage?${params}`
-  );
+  return apiFetch<PaginatedResponse<LessonPassage>>("/api/admin/passage/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getPassage(passageId: string): Promise<LessonPassage> {

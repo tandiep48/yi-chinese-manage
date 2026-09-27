@@ -2,6 +2,7 @@ import type { PaginatedResponse } from "@/lib/types/common";
 import type { Vocab, VocabFormData } from "@/lib/types/vocab";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
+import { vocabQuerySchema } from "../schemas/vocab";
 
 export function listVocab(
   page = 1,
@@ -9,13 +10,19 @@ export function listVocab(
   hskLevel?: string,
   search?: string
 ): Promise<PaginatedResponse<Vocab>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
+  // The filter now travels in a validated JSON body, not the query string.
+  // Parsing here catches a bad page/size/level in the browser and produces the
+  // exact shape the backend's VocabQuery model expects.
+  const body = vocabQuerySchema.parse({
+    page,
+    page_size: pageSize,
     ...(hskLevel ? { hsk_level: hskLevel } : {}),
-    ...(search ? { search } : {}),
+    ...(search && search.trim() ? { search } : {}),
   });
-  return apiFetch<PaginatedResponse<Vocab>>(`/api/admin/vocab?${params}`);
+  return apiFetch<PaginatedResponse<Vocab>>("/api/admin/vocab/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getVocab(id: number): Promise<Vocab> {

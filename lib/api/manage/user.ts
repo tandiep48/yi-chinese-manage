@@ -2,18 +2,22 @@ import type { PaginatedResponse } from "@/lib/types/common";
 import type { User, UserFormData } from "@/lib/types/user";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
+import { userQuerySchema } from "../schemas/user";
 
 export function listUsers(
   page = 1,
   pageSize = API_CONSTANTS.DEFAULT_PAGE_SIZE,
   search?: string
 ): Promise<PaginatedResponse<User>> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
-    ...(search ? { search } : {}),
+  const body = userQuerySchema.parse({
+    page,
+    page_size: pageSize,
+    ...(search && search.trim() ? { search } : {}),
   });
-  return apiFetch<PaginatedResponse<User>>(`/api/admin/user?${params}`);
+  return apiFetch<PaginatedResponse<User>>("/api/admin/user/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 export function getUser(id: number): Promise<User> {
