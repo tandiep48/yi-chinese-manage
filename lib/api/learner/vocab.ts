@@ -7,6 +7,12 @@
 
 import type { SavedBook, VocabLookupMap, VocabMode, VocabTableResponse } from "@/lib/types/vocab";
 import { legacyApiFetch } from "../client";
+import {
+  vocabTableQuerySchema,
+  vocabReviewQuerySchema,
+  vocabSearchQuerySchema,
+  learnedVocabQuerySchema,
+} from "../schemas/learner_vocab";
 
 // Books the current user has saved words in (populates the "Book" mode picker).
 // Login-required; soft-fails to [] when signed out, like the legacy loadSavedBooks().
@@ -76,21 +82,18 @@ export interface VocabTableParams {
 export function getVocabTable(
   params: VocabTableParams
 ): Promise<VocabTableResponse> {
-  const query = new URLSearchParams({
+  const body = vocabTableQuerySchema.parse({
     mode: params.mode,
-    hsk_level: params.hskLevel ?? "",
-    page: String(params.page),
-    page_size: String(params.pageSize),
+    page: params.page,
+    page_size: params.pageSize,
+    ...(params.hskLevel ? { hsk_level: params.hskLevel } : {}),
+    ...(params.mode === "standard" ? { passages: params.passages ?? [] } : {}),
+    ...(params.mode === "book" && params.bookCode ? { book_code: params.bookCode } : {}),
   });
-  if (params.mode === "standard") {
-    query.set("passages", (params.passages ?? []).join(","));
-  }
-  if (params.mode === "book") {
-    query.set("book_code", params.bookCode ?? "");
-  }
-  return legacyApiFetch<VocabTableResponse>(
-    `/api/vocab/table?${query.toString()}`
-  );
+  return legacyApiFetch<VocabTableResponse>("/api/vocab/table/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 // GET /api/vocab/review — the combined, priority-ordered review list behind the
@@ -101,13 +104,11 @@ export function getVocabReview(
   page: number,
   pageSize: number
 ): Promise<VocabTableResponse> {
-  const params = new URLSearchParams({
-    page: String(page),
-    page_size: String(pageSize),
+  const body = vocabReviewQuerySchema.parse({ page, page_size: pageSize });
+  return legacyApiFetch<VocabTableResponse>("/api/vocab/review/query", {
+    method: "POST",
+    body: JSON.stringify(body),
   });
-  return legacyApiFetch<VocabTableResponse>(
-    `/api/vocab/review?${params.toString()}`
-  );
 }
 
 // GET /api/vocab/review/count — how many words are waiting in the review list.
@@ -125,11 +126,11 @@ export function getLearnedVocab(
   page: number,
   pageSize: number
 ): Promise<VocabTableResponse> {
-  return legacyApiFetch<VocabTableResponse>(
-    `/api/user/learned-vocab?page=${encodeURIComponent(
-      page
-    )}&page_size=${encodeURIComponent(pageSize)}`
-  );
+  const body = learnedVocabQuerySchema.parse({ page, page_size: pageSize });
+  return legacyApiFetch<VocabTableResponse>("/api/user/learned-vocab/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 // Debounced vocabulary search across word / pinyin / meanings.
@@ -138,12 +139,13 @@ export function searchVocab(
   page: number,
   pageSize: number
 ): Promise<VocabTableResponse> {
-  const params = new URLSearchParams({
-    q: query,
-    page: String(page),
-    page_size: String(pageSize),
+  const body = vocabSearchQuerySchema.parse({
+    page,
+    page_size: pageSize,
+    ...(query && query.trim() ? { q: query } : {}),
   });
-  return legacyApiFetch<VocabTableResponse>(
-    `/api/vocab/search?${params.toString()}`
-  );
+  return legacyApiFetch<VocabTableResponse>("/api/vocab/search/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }

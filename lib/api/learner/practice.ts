@@ -7,6 +7,7 @@
 import type { RecommendedPractice } from "@/lib/types/dashboard";
 import type { PracticeAnswerRow, PracticeCategory, PracticeGroup, PracticeMultiItem, PracticeSessionData, ReviewHistoryFilters, ReviewHistoryResponse, ReviewSessionDetail } from "@/lib/types/practice";
 import { legacyApiFetch } from "../client";
+import { practiceHistoryQuerySchema } from "../schemas/practice";
 
 // GET /api/practice/recommend — ranked progress groups the user is ready for
 // (vocab coverage ≥ 0.80). Login-required raw JSON; the card only needs the
@@ -87,13 +88,16 @@ export function submitPractice(
 export function getPracticeHistory(
   filters: ReviewHistoryFilters
 ): Promise<ReviewHistoryResponse> {
-  const qs = new URLSearchParams({
-    level: filters.level,
-    category: filters.category,
-    sort: filters.sort,
-    page: String(filters.page),
+  const body = practiceHistoryQuerySchema.parse({
+    page: filters.page,
+    ...(filters.level ? { level: filters.level } : {}),
+    ...(filters.category ? { category: filters.category } : {}),
+    ...(filters.sort ? { sort: filters.sort } : {}),
   });
-  return legacyApiFetch(`/api/practice/history?${qs.toString()}`);
+  return legacyApiFetch("/api/practice/history/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
 // GET /api/practice/history/<id> — every answered question in one session,
