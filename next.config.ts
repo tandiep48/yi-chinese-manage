@@ -27,6 +27,9 @@ const LEARNER_PREFIXES = [
 ];
 
 const nextConfig: NextConfig = {
+  // Emit a self-contained server bundle (.next/standalone) so the Docker image
+  // ships only the files the server needs — see Dockerfile / DEPLOY.md.
+  output: "standalone",
   async redirects() {
     return [
       { source: "/", destination: "/learner", permanent: false },
