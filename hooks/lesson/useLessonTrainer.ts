@@ -57,6 +57,10 @@ export interface LessonTrainerOptions {
   types?: LessonTaskType[];
   // Replaces the goHome navigation — an embedded run has nowhere to push to.
   onExit?: () => void;
+  // Fires once when a round finishes and its score has been saved (the learner
+  // dismisses the results popup). A milestone host uses it to auto-advance to the
+  // next part; standalone runs pass none and just show the recap.
+  onComplete?: () => void;
 }
 
 export interface UseLessonTrainer {
@@ -99,7 +103,7 @@ function shuffle<T>(input: readonly T[]): T[] {
 export function useLessonTrainer(opts: LessonTrainerOptions = {}): UseLessonTrainer {
   const router = useRouter();
   const { t } = useT();
-  const { passageIds: embeddedIds, mode: embeddedMode, types: embeddedTypes, onExit } = opts;
+  const { passageIds: embeddedIds, mode: embeddedMode, types: embeddedTypes, onExit, onComplete } = opts;
   const embedded = !!embeddedIds;
 
   const [screen, setScreen] = useState<TrainerScreen>("loading");
@@ -238,12 +242,16 @@ export function useLessonTrainer(opts: LessonTrainerOptions = {}): UseLessonTrai
     []
   );
 
-  const finish = useCallback(() => {
+  const finish = useCallback(async () => {
     const total = totalRef.current;
     const correct = Math.max(0, total - missedRef.current.length);
     // Save progress for every passage in the run (master records a %, part completes
     // at the pass threshold; word mastery is server-gated to a perfect round).
-    passageIdsRef.current.forEach((pid) => completeLessonPart(pid, total, correct, modeRef.current));
+    // Awaited (completeLessonPart never throws) so a milestone host that advances on
+    // completion sees the final step counted before it re-reads the milestone.
+    await Promise.all(
+      passageIdsRef.current.map((pid) => completeLessonPart(pid, total, correct, modeRef.current))
+    );
     setPopupStats({ total, correct });
     setPopupOpen(true);
   }, []);
@@ -263,7 +271,10 @@ export function useLessonTrainer(opts: LessonTrainerOptions = {}): UseLessonTrai
     setPopupOpen(false);
     setMissed(missedRef.current.slice());
     setScreen("complete");
-  }, []);
+    // The round is over and its score saved: let a milestone host move on to the
+    // next part. With no host this is a no-op and the recap stays on screen.
+    onComplete?.();
+  }, [onComplete]);
 
   const retryMissed = useCallback(() => {
     if (!missed.length) return;

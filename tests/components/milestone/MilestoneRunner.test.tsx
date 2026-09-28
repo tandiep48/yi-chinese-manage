@@ -8,7 +8,7 @@
 // mocked to a marker — this file is about the machine, not its contents.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import { getMilestone, markMilestoneStep } from "@/lib/api/learner/milestone";
@@ -252,6 +252,71 @@ describe("MilestoneRunner — host wiring", () => {
 
     await waitFor(() => expect(onRunningChange).toHaveBeenCalledWith(false));
     expect(onRunningChange).not.toHaveBeenCalledWith(true);
+  });
+});
+
+describe("MilestoneRunner — auto-advance across parts", () => {
+  const P1 = "H1_2_1";
+  const P2 = "H1_2_2";
+
+  function mk(passageId: string, done: number[]): Milestone {
+    const steps = [1, 2, 3, 4, 5, 6].map((step) => ({
+      step,
+      completed: done.includes(step),
+      completed_at: null,
+    }));
+    const incomplete = steps.filter((s) => !s.completed).map((s) => s.step);
+    return {
+      passage_id: passageId,
+      total_steps: 6,
+      current_step: incomplete.length ? incomplete[0] : 7,
+      steps,
+    };
+  }
+
+  it("moves to the next part when the final step is counted", async () => {
+    // Part 1 finishes fully; part 2 is fresh and opens on its own step 1.
+    mockGet.mockImplementation((pid: string) =>
+      Promise.resolve(pid === P2 ? mk(P2, []) : mk(P1, [1, 2, 3, 4, 5, 6]))
+    );
+    renderRunner({ passageId: P1, passageIds: [P1, P2], initialStep: 6 });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    // The trainer reports a finished, counted round.
+    await act(async () => {
+      lessonTrainerExit();
+    });
+
+    await waitFor(() => expect(mockGet).toHaveBeenCalledWith(P2));
+    // The next part opens at its own resume step, not the carried step 6.
+    await waitFor(() => expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument());
+  });
+
+  it("stays on the last part after its final step — nowhere to advance", async () => {
+    mockGet.mockResolvedValue(mk(P2, [1, 2, 3, 4, 5, 6]));
+    renderRunner({ passageId: P2, passageIds: [P1, P2], initialStep: 6 });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    await act(async () => {
+      lessonTrainerExit();
+    });
+
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
+    expect(body()).toContain("lesson-trainer");
+  });
+
+  it("does not cross a part boundary when the final step was not counted", async () => {
+    mockGet.mockImplementation((pid: string) => Promise.resolve(mk(pid, [1, 2, 3, 4, 5])));
+    renderRunner({ passageId: P1, passageIds: [P1, P2], initialStep: 6 });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    await act(async () => {
+      lessonTrainerExit();
+    });
+
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
+    expect(mockGet).not.toHaveBeenCalledWith(P2);
+    expect(body()).toContain("lesson-trainer");
   });
 });
 

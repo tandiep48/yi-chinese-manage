@@ -19,10 +19,17 @@
 // milestone and advances only if the server counted it. That is also why a
 // trainer quit below the pass threshold leaves the learner on the step.
 //
+// Auto-advance across parts: when the runner is given the lesson's ordered parts
+// (the Lesson tab passes `passageIds`), finishing the *final* step of a part and
+// having the server count it moves on to the next part on its own, opened at its
+// own resume step. The standalone /learner/lesson page passes a single part and
+// so never advances — its URL owns which part is shown. This only crosses a part
+// boundary; within a part the per-step gating below is unchanged.
+//
 // Gating is soft: the bar's segments jump anywhere, and the lesson sidebar still
 // reaches other parts. The milestone guides; it does not lock.
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -49,7 +56,12 @@ import "./milestone.css";
 
 interface MilestoneRunnerProps {
   passageId: string;
+  // The lesson's ordered parts. Given (the Lesson tab), finishing a part's final
+  // step advances to the next entry; `passageId` is the part to open on. Omitted
+  // (the standalone page) means a single part with no cross-part advance.
+  passageIds?: string[];
   // The step to open on (from ?step=), overriding "resume where you left off".
+  // Applies only to the part the learner opened on, not to auto-advanced ones.
   initialStep?: number;
   // Mirrors the viewed step back to the URL, so a refresh lands on it.
   onStepChange?: (step: number) => void;
@@ -60,10 +72,69 @@ interface MilestoneRunnerProps {
 
 export function MilestoneRunner({
   passageId,
+  passageIds,
   initialStep,
   onStepChange,
   onRunningChange,
 }: MilestoneRunnerProps) {
+  // The parts to run through. With no list this is the single given part, so the
+  // standalone page behaves exactly as before.
+  const parts = useMemo(
+    () => (passageIds && passageIds.length ? passageIds : [passageId]),
+    [passageIds, passageId]
+  );
+  const initialIndex = Math.max(0, parts.indexOf(passageId));
+  const [activeIndex, setActiveIndex] = useState(initialIndex);
+
+  // A different lesson can arrive under the same mount (a host can swap the part
+  // without unmounting), so re-seed the active part when the inputs really change.
+  // Keyed on the content, not array identity, so a re-fetch of the same list does
+  // not rewind an in-session advance.
+  const seedKey = `${parts.join("|")}@${passageId}`;
+  const seedRef = useRef(seedKey);
+  useEffect(() => {
+    if (seedRef.current === seedKey) return;
+    seedRef.current = seedKey;
+    setActiveIndex(initialIndex);
+  }, [seedKey, initialIndex]);
+
+  const activePassageId = parts[activeIndex] ?? passageId;
+
+  const advanceToNextPart = useCallback(() => {
+    setActiveIndex((i) => (i + 1 < parts.length ? i + 1 : i));
+  }, [parts.length]);
+
+  return (
+    <MilestonePart
+      // Remount per part so the milestone hook re-seeds to the new part's own
+      // resume step instead of carrying the last part's step across.
+      key={activePassageId}
+      passageId={activePassageId}
+      // The ?step= deep link only seeds the part the learner opened on.
+      initialStep={activeIndex === initialIndex ? initialStep : undefined}
+      onStepChange={onStepChange}
+      onRunningChange={onRunningChange}
+      onPartComplete={advanceToNextPart}
+    />
+  );
+}
+
+interface MilestonePartProps {
+  passageId: string;
+  initialStep?: number;
+  onStepChange?: (step: number) => void;
+  onRunningChange?: (running: boolean) => void;
+  // The final step of this part was finished and counted by the server.
+  onPartComplete?: () => void;
+}
+
+function MilestonePart({
+  passageId,
+  initialStep,
+  onStepChange,
+  onRunningChange,
+  onPartComplete,
+}: MilestonePartProps) {
   const { t } = useT();
   const overview = useLessonOverview(passageId);
   const milestone = useLessonMilestone(passageId, initialStep);
@@ -107,16 +178,21 @@ export function MilestoneRunner({
     return () => hostRef.current.onRunningChange?.(false);
   }, [running]);
 
-  // A trainer's exit (quit, or the recap's Home) hands the step back to us. The
-  // server decides whether it counted.
-  const onTrainerExit = useCallback(() => {
+  // A trainer's exit (quit, its recap's action, or — for the lesson trainer —
+  // finishing a round) hands the step back to us. The server decides whether it
+  // counted; when the counted step is this part's last, move on to the next part.
+  const onTrainerExit = useCallback(async () => {
     // Finishing a part can move the learner on and changes which words are due,
     // so the two cached mount reads that would otherwise show yesterday's answer
     // are dropped here.
     invalidateCurrentLesson();
     invalidateVocabReview();
-    void refreshAfterRun();
-  }, [refreshAfterRun]);
+    const next = await refreshAfterRun();
+    // Only the final step crosses a part boundary; a passed step 3 advances to
+    // step 4 inside refreshAfterRun and must not skip ahead a part here.
+    const finalPassed = next?.steps.find((s) => s.step === next.total_steps)?.completed;
+    if (next && step === next.total_steps && finalPassed) onPartComplete?.();
+  }, [refreshAfterRun, step, onPartComplete]);
 
   if (!passageId) {
     return <p className="milestone-state">{t("reading.failed_load_passage")}</p>;
@@ -201,7 +277,12 @@ export function MilestoneRunner({
           ))}
 
         {step === LESSON_TRAINER_STEP && (
-          <LessonTrainerPage passageIds={[passageId]} contained onExit={onTrainerExit} />
+          <LessonTrainerPage
+            passageIds={[passageId]}
+            contained
+            onExit={onTrainerExit}
+            onComplete={onTrainerExit}
+          />
         )}
       </div>
 

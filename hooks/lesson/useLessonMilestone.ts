@@ -42,7 +42,9 @@ export interface UseLessonMilestone {
   // Continue from a passive step: record it, then move on.
   completeAndAdvance: () => Promise<void>;
   // A graded step's trainer finished: re-read, and advance only if it counted.
-  refreshAfterRun: () => Promise<void>;
+  // Resolves with the refreshed milestone (or null on failure) so a caller can
+  // tell whether the final step just passed and move on to the next part.
+  refreshAfterRun: () => Promise<Milestone | null>;
   saving: boolean;
 }
 
@@ -121,15 +123,16 @@ export function useLessonMilestone(
     setStep((s) => (s === current && s < totalSteps ? s + 1 : s));
   }, [passageId, step, totalSteps, saving]);
 
-  const refreshAfterRun = useCallback(async () => {
+  const refreshAfterRun = useCallback(async (): Promise<Milestone | null> => {
     const current = step;
     const next = await getMilestone(passageId).catch(() => null);
-    if (!next) return;
+    if (!next) return null;
     setMilestone(next);
     // Advance only if the server counted the run — a trainer quit below the pass
     // threshold leaves the learner on the step to try again.
     const passed = next.steps.find((s) => s.step === current)?.completed;
     if (passed && current < next.total_steps) setStep(current + 1);
+    return next;
   }, [passageId, step]);
 
   return {

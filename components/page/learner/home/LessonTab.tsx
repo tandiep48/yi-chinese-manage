@@ -74,6 +74,7 @@ export function LessonTab({ setRun }: HomePanelProps) {
   return (
     <MilestoneRunner
       passageId={lesson.passage_id}
+      passageIds={lesson.passage_ids}
       initialStep={initialStep}
       onStepChange={onStepChange}
       onRunningChange={onRunningChange}
