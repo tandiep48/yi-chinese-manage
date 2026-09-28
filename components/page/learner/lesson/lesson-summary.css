@@ -1,0 +1,125 @@
+
+/* ─────────────────────────────────────────────
+   LESSON SUMMARY — the passage tab of the study page: clickable word tokens,
+   toolbar, preview lines and the footer actions (LessonSummary). Ported from
+   static/reading/reading.css. Scoped under .lesson-study; tokens come from
+   ./lesson-study.css.
+   ───────────────────────────────────────────── */
+/* ── Lesson Summary clickable word tokens + word popup (ported from
+   static/reading/reading.css + static/vocab_learning stroke styles). ────────── */
+.lesson-study .line-token {
+  display: inline;
+  cursor: default;
+}
+.lesson-study .line-token.clickable {
+  cursor: pointer;
+  color: var(--ls-text);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  border-radius: 4px;
+  transition: background 0.15s;
+  margin-right: 4px;
+  display: inline-block;
+}
+.lesson-study .line-token.clickable:hover {
+  background: rgba(0, 122, 97, 0.12);
+}
+
+
+/* Lesson Summary — toolbar + preview lines */
+.lesson-study .lesson-summary-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  background: var(--ls-card);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  padding: 1rem;
+}
+.lesson-study .lesson-summary-toolbar .toolbar-left,
+.lesson-study .lesson-summary-toolbar .toolbar-right { display: flex; gap: 10px; flex-wrap: wrap; }
+.lesson-study .sum-toggle { background: #f1f1f1; min-width: 150px; justify-content: center; }
+.lesson-study .sum-toggle.primary { background: var(--ls-primary); color: #fff; border-color: var(--ls-primary); }
+.lesson-study .lesson-learner-preview { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+.lesson-study .lesson-preview-line {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  background: var(--ls-preview);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+.lesson-study .lesson-preview-line:hover {
+  border-color: var(--ls-secondary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.08);
+  transform: translateY(-2px);
+}
+.lesson-study .lesson-preview-line.playing-highlight {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+}
+.lesson-study .lesson-preview-text { flex: 1; min-width: 0; }
+.lesson-study .lesson-preview-text .hanzi-text { color: #111; font-size: 1.5rem; line-height: 1.5; }
+.lesson-study .lesson-preview-text .pinyin-text { color: var(--ls-primary); font-weight: 600; margin-top: 4px; display: none; }
+.lesson-study .lesson-preview-text .pinyin-text.show { display: block; }
+.lesson-study .lesson-preview-text .meaning-text { color: var(--ls-muted); margin-top: 4px; display: none; }
+.lesson-study .lesson-preview-text .meaning-text.show { display: block; }
+.lesson-study .lesson-passage-audio-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: var(--ls-primary-light);
+  border: 1px solid rgba(0, 122, 97, 0.25);
+  border-radius: 50%;
+  color: var(--ls-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  align-self: center;
+  transition: all 0.18s ease;
+}
+.lesson-study .lesson-passage-audio-btn:hover { background: var(--ls-primary); border-color: var(--ls-primary); color: #fff; }
+.lesson-study .lesson-passage-audio-empty { pointer-events: none; background: transparent; border-color: transparent; }
+
+/* Footer actions (deferred / disabled in this read-only cut) */
+.lesson-study .vl-summary-footer,
+.lesson-study .lesson-summary-actions { display: flex; gap: 1.5rem; }
+.lesson-study .vl-train-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.15rem;
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: var(--ls-primary);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lesson-study .vl-train-btn:hover { background: var(--ls-primary-hover); box-shadow: 0 4px 18px rgba(0, 122, 97, 0.2); }
+.lesson-study .vl-learn-btn { background: transparent; color: var(--ls-primary); border: 2px solid var(--ls-primary); }
+.lesson-study .vl-learn-btn:hover { background: var(--ls-primary-light); }
+.lesson-study .vl-train-btn:disabled { opacity: 0.5; cursor: not-allowed; box-shadow: none; }
+.lesson-study .vl-train-btn:disabled:hover { background: var(--ls-primary); box-shadow: none; }
+.lesson-study .vl-learn-btn:disabled:hover { background: transparent; }
+
+@media (max-width: 700px) {
+  .lesson-study .lesson-summary-toolbar { justify-content: stretch; }
+  .lesson-study .sum-toggle { min-width: 0; flex: 1; }
+}
+@media (max-width: 600px) {
+  .lesson-study .lesson-summary-actions { flex-direction: column; }
+}

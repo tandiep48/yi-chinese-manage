@@ -1,0 +1,114 @@
+# .do/app.yaml — DigitalOcean App Platform spec for Yi Chinese.
+#
+# One app, one public domain. The web (Next.js) component serves everything
+# except /api and /socket.io, which route to the api (Flask) component — so the
+# browser talks to a single origin and there is no CORS or cross-site cookie to
+# manage. See DEPLOY.md for the full setup, secrets and cutover steps.
+#
+# Apply with the DigitalOcean CLI (doctl):
+#   doctl apps create --spec .do/app.yaml            # first time
+#   doctl apps update <APP_ID> --spec .do/app.yaml   # subsequent changes
+#
+# Placeholders marked REPLACE_… are set in the DO dashboard or via
+# `doctl apps update`, never committed here.
+
+name: yi-chinese
+region: sgp # Singapore — nearest DO region; change to taste.
+
+services:
+  # ── Frontend: Next.js (standalone) ─────────────────────────────────────────
+  - name: web
+    github:
+      repo: tandiep48/yi-chinese-manage
+      branch: master
+      deploy_on_push: true
+    dockerfile_path: Dockerfile
+    http_port: 3000
+    instance_count: 1
+    instance_size_slug: basic-xxs
+    routes:
+      - path: /
+    health_check:
+      # "/" 307-redirects to /learner; check the page that returns 200.
+      http_path: /learner
+    envs:
+      # Empty ⇒ the client calls same-origin "/api" + "/socket.io" (routed to the
+      # api component below). NEXT_PUBLIC_* are inlined at build time, hence
+      # RUN_AND_BUILD_TIME.
+      - key: NEXT_PUBLIC_API_URL
+        scope: RUN_AND_BUILD_TIME
+        value: ""
+      - key: NEXT_PUBLIC_GCS_BUCKET_URL
+        scope: RUN_AND_BUILD_TIME
+        value: https://storage.googleapis.com/chinese-learning-audio-assets
+
+  # ── Backend: Flask + Socket.IO (gunicorn eventlet) ─────────────────────────
+  - name: api
+    github:
+      repo: tandiep48/Learning
+      branch: dev_version_2.0
+      deploy_on_push: true
+    source_dir: web_app
+    dockerfile_path: web_app/Dockerfile
+    http_port: 8080
+    instance_count: 1
+    instance_size_slug: basic-xs
+    routes:
+      # Longest-prefix wins, so these take precedence over the web "/" above.
+      # preserve_path_prefix keeps "/api/…" and "/socket.io/…" intact — App
+      # Platform strips the matched prefix otherwise, and Flask/Socket.IO expect
+      # the full path.
+      - path: /api
+        preserve_path_prefix: true
+      - path: /socket.io
+        preserve_path_prefix: true
+    health_check:
+      http_path: /
+    envs:
+      - key: SOCKETIO_ASYNC_MODE
+        value: eventlet
+      - key: WEB_CONCURRENCY
+        value: "1" # >1 needs a Socket.IO message queue (Redis); see DEPLOY.md.
+      - key: DB_SSLMODE
+        value: require
+      - key: FRONTEND_ORIGIN
+        scope: RUN_TIME
+        value: ${APP_URL} # same-origin makes CORS moot; set for completeness.
+      - key: FLASK_SECRET_KEY
+        scope: RUN_TIME
+        type: SECRET
+        value: REPLACE_WITH_64_CHAR_HEX # doctl/dashboard; do not commit.
+      - key: GCS_BUCKET_URL
+        value: https://storage.googleapis.com/chinese-learning-audio-assets
+      - key: GCS_BUCKET_NAME
+        value: chinese-learning-audio-assets
+      # Optional — only avatar uploads need it. Paste the service-account JSON.
+      - key: GCS_SA_KEY_JSON
+        scope: RUN_TIME
+        type: SECRET
+        value: REPLACE_WITH_SERVICE_ACCOUNT_JSON_OR_REMOVE
+      # Database bindings, injected from the managed DB defined below.
+      - key: DB_HOST
+        scope: RUN_TIME
+        value: ${db.HOSTNAME}
+      - key: DB_PORT
+        scope: RUN_TIME
+        value: ${db.PORT}
+      - key: DB_NAME
+        scope: RUN_TIME
+        value: ${db.DATABASE}
+      - key: DB_USER
+        scope: RUN_TIME
+        value: ${db.USERNAME}
+      - key: DB_PASSWORD
+        scope: RUN_TIME
+        value: ${db.PASSWORD}
+
+# Managed Postgres. `production: false` is App Platform's smaller dev database;
+# for a dedicated managed cluster set `production: true` (and optionally
+# `cluster_name:` to attach an existing one). See DEPLOY.md.
+databases:
+  - name: db
+    engine: PG
+    version: "16"
+    production: false

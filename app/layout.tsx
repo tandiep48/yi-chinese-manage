@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { config } from "@fortawesome/fontawesome-svg-core";
+import "@fortawesome/fontawesome-svg-core/styles.css";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/Sidebar";
-import { ToastProvider } from "@/components/ui/Toast";
+import { ToastProvider } from "@/components/shared/manager_ui/Toast/Toast";
+
+// Import Font Awesome's core CSS manually so icons don't flash oversized.
+config.autoAddCss = false;
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +19,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Yi Chinese — Admin",
-  description: "Admin management panel for Yi Chinese learning platform",
+  title: "Yi Chinese",
+  description: "Yi Chinese learning platform",
 };
 
 export default function RootLayout({
@@ -31,16 +35,8 @@ export default function RootLayout({
       // Force light color scheme at HTML level
       style={{ colorScheme: "light" }}
     >
-      <body className="h-full flex bg-slate-100 antialiased">
-        <ToastProvider>
-          {/* Sidebar */}
-          <Sidebar />
-
-          {/* Main content area */}
-          <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-            {children}
-          </div>
-        </ToastProvider>
+      <body className="h-full bg-slate-100 antialiased">
+        <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
   );

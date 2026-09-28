@@ -1,0 +1,19 @@
+
+/* ============================================================
+   PRACTICE / EXAM (learner) — scoped port of the Flask module's
+   practice.css, practice_standard.css, practice_select.css and
+   practice_lesson_select.css. Roots: .practice-shell (engine, both the
+   sidebar and bottom-nav shells) and .practice-select (level/lesson grids).
+   Local tokens mirror the legacy sage palette (#576856).
+   ============================================================ */
+
+.practice-shell,
+.practice-select {
+  --primary: #576856;
+  --primary-hover: #455544;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --success: #10b981;
+  --danger: #ef4444;
+  color: var(--text-main);
+}

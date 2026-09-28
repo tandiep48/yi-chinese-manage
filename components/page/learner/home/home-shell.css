@@ -1,0 +1,342 @@
+/* ─────────────────────────────────────────────
+   LEARNER HOME SHELL — chrome for the tabbed container only.
+
+   THE INVARIANT (docs/plans/dashboard-tabs.md §2): every selector in this file
+   must end in a class this container owns (`.learner-home…`). No
+   `.learner-home .btn`, no `.learner-home .card`, no `.learner-home .tag`.
+
+   Why: the panels' stylesheets share 30 leaf class names across them — `.btn` is
+   defined in four, `.rec-card` and 17 of its siblings in two, with deliberately
+   different designs. Today those never collide because each is prefixed with a
+   single root class and the roots are never ancestors of one another. Nesting the
+   panels under a root that DOES carry descendant rules would make every one of
+   those pairs a specificity tie resolved by stylesheet source order, which Next
+   does not guarantee across lazily-loaded chunks — an intermittent, load-order
+   dependent bug. tests/css/containerInvariants.test.ts fails the build instead.
+
+   `.learner-home` is a new root for the same reason: `.ui2-dashboard` already
+   carries `.ui2-dashboard .btn`, `.ui2-dashboard .tag` and `.ui2-dashboard
+   .rec-card`, and reusing it would reintroduce every tie.
+   ───────────────────────────────────────────── */
+
+/* Flex column, not grid: the tab bar below is `position: sticky`, and a sticky
+   grid item is confined to its own grid area — an `auto` row exactly its own
+   height, so it would never move. A flex item sticks within the flex container. */
+.learner-home {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* ── Tab bar ──
+   Sticky so it stays reachable while a tall panel scrolls — a trainer running in
+   the panel must not be able to scroll its own tabs away (§1, "Trainer
+   presentation: contained in the panel, tab bar stays visible"). The scroll
+   container is the learner layout's `overflow-auto` wrapper; nothing between it
+   and here sets overflow, transform or contain, so sticky holds. */
+.learner-home-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Mobile-first (CLAUDE.md 4.3): the bar scrolls sideways rather than wrapping
+     or squeezing the labels, and the scrollbar itself stays out of the way. */
+  overflow-x: auto;
+  scrollbar-width: none;
+  background: var(--learner-card);
+  border: 1px solid var(--learner-border);
+  border-radius: 16px;
+  padding: 6px;
+}
+.learner-home-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.learner-home-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--learner-text-muted);
+  font: inherit;
+  font-weight: 500;
+  padding: 10px 16px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.learner-home-tab:hover {
+  background: rgba(87, 104, 86, 0.06);
+  color: var(--learner-text);
+}
+.learner-home-tab:focus-visible {
+  outline: 2px solid var(--learner-primary);
+  outline-offset: 2px;
+}
+.learner-home-tab.is-selected {
+  background: var(--learner-primary);
+  color: #ffffff;
+}
+
+.learner-home-tab-count {
+  min-width: 22px;
+  border-radius: 999px;
+  background: rgba(87, 104, 86, 0.12);
+  color: var(--learner-text);
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  padding: 4px 7px;
+  text-align: center;
+}
+.learner-home-tab.is-selected .learner-home-tab-count {
+  background: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+/* ── Panel ──
+   Layout and positioning only. Whatever mounts inside brings its own root class
+   and its own stylesheet; this element must never reach into it. */
+.learner-home-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 320px;
+}
+
+/* ── Lazy-chunk loading state (CLAUDE.md 4.5) ── */
+.learner-home-skeleton {
+  display: grid;
+  gap: 12px;
+  background: var(--learner-card);
+  border: 1px solid var(--learner-border);
+  border-radius: 16px;
+  padding: 24px;
+}
+.learner-home-skeleton-label {
+  /* Announced to screen readers; the bars carry the visual meaning. */
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.learner-home-skeleton-bar {
+  height: 16px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    rgba(87, 104, 86, 0.08) 25%,
+    rgba(87, 104, 86, 0.16) 37%,
+    rgba(87, 104, 86, 0.08) 63%
+  );
+  background-size: 400% 100%;
+  animation: learnerHomeShimmer 1.4s ease infinite;
+}
+.learner-home-skeleton-bar.is-title {
+  height: 28px;
+  max-width: 260px;
+}
+@keyframes learnerHomeShimmer {
+  from {
+    background-position: 100% 50%;
+  }
+  to {
+    background-position: 0 50%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .learner-home-skeleton-bar {
+    animation: none;
+  }
+}
+
+/* ── Mid-session guard ──
+   The trainer's own quit modal can't be reused: trainer-quit-modal.css is scoped
+   under `.trainer-shell` and depends on keyframes declared in trainer-shell.css,
+   so it only works inside that root. Same interaction, own classes. */
+.learner-home-guard {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(0, 122, 97, 0.36);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.learner-home-guard-box {
+  background: var(--learner-card);
+  border: 1px solid rgba(87, 104, 86, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  max-width: 380px;
+  width: 100%;
+  padding: 32px 28px;
+  text-align: center;
+}
+.learner-home-guard-title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  color: var(--learner-text);
+}
+.learner-home-guard-body {
+  margin: 0;
+  color: var(--learner-text-muted);
+}
+.learner-home-guard-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+.learner-home-guard-stay,
+.learner-home-guard-leave {
+  flex: 1;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+}
+.learner-home-guard-stay {
+  background: transparent;
+  border-color: var(--learner-border);
+  color: var(--learner-text);
+}
+.learner-home-guard-stay:hover {
+  background: rgba(87, 104, 86, 0.06);
+}
+.learner-home-guard-leave {
+  background: var(--learner-primary);
+  color: #ffffff;
+}
+.learner-home-guard-leave:hover {
+  background: var(--learner-primary-hover);
+}
+
+/* ── Short panel-level notices (the Lesson tab with no lesson yet) ── */
+.learner-home-note {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  background: var(--learner-card);
+  border: 1px solid var(--learner-border);
+  border-radius: 16px;
+  padding: 24px;
+  color: var(--learner-text-muted);
+}
+.learner-home-note-text {
+  margin: 0;
+}
+.learner-home-note-link {
+  color: var(--learner-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+@media (min-width: 768px) {
+  .learner-home {
+    gap: 24px;
+    padding: 24px;
+  }
+}
+
+/* ── Body: the tab panel and, on wide screens, the current-lesson rail ──
+   A flex item so the sticky tab bar above it still works (see the note on
+   `.learner-home`); the two-column split lives here rather than on the root. */
+.learner-home-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* ── Current-lesson rail (right column on wide screens) ── */
+.learner-home-aside {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  background: var(--learner-card);
+  border: 1px solid var(--learner-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.learner-home-aside-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--learner-text-muted);
+}
+.learner-home-aside-empty {
+  margin: 0;
+  color: var(--learner-text-muted);
+}
+.learner-home-lesson-context {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--learner-text);
+}
+.learner-home-lesson-step {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--learner-text-muted);
+}
+.learner-home-lesson-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(87, 104, 86, 0.14);
+  overflow: hidden;
+}
+.learner-home-lesson-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--learner-primary);
+  transition: width 0.3s ease;
+}
+.learner-home-lesson-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--learner-primary);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.learner-home-lesson-continue:hover {
+  background: var(--learner-primary-hover);
+}
+.learner-home-lesson-continue:focus-visible {
+  outline: 2px solid var(--learner-primary);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  /* Only split when the rail is present, so a signed-out home (no rail) keeps the
+     panel full width instead of reserving an empty column. */
+  .learner-home-body.has-aside {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 24px;
+  }
+}

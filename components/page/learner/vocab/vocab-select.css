@@ -1,0 +1,254 @@
+
+/* ─────────────────────────────────────────────
+   VOCAB SELECTION PAGE — scoped to .vocab-select (learner /vocab flow).
+   Ported from the Learning app:
+     static/shared/vocab_table.css, static/vocab/vocab.css,
+     static/vocab/vocab_select.css, static/shared/multi_select.css.
+   Consolidated onto local --vs-* tokens (teal "canonical" vocab theme).
+   ───────────────────────────────────────────── */
+.vocab-select {
+  --vs-primary:        #007a61;
+  --vs-primary-hover:  #00634f;
+  --vs-card-bg:        #cbe2d4;  /* mint content card */
+  --vs-surface:        #ffffff;
+  --vs-filter-bg:      #d8efe7;  /* selects / multiselect toggles */
+  --vs-filter-hover:   #cde8de;
+  --vs-text:           #111111;
+  --vs-text-muted:     #2b2b2b;
+  --vs-border:         rgba(0, 122, 97, 0.18);
+  --vs-border-cell:    #d9ded9;
+  --vs-row-hover:      #eef6df;
+
+  padding: clamp(20px, 3vw, 40px);
+  color: var(--vs-text);
+}
+
+.vocab-select .vocab-select-wrap {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.vocab-select .vocab-top-link {
+  margin-bottom: 20px;
+}
+.vocab-select .vocab-top-link a {
+  color: var(--vs-primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+.vocab-select .vocab-top-link a:hover {
+  color: var(--vs-primary-hover);
+}
+
+.vocab-select .vocab-content-card {
+  background: var(--vs-card-bg);
+  border: 1px solid #afcfbd;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+  padding: 24px;
+}
+
+/* ── Header row: mode picker + actions ── */
+.vocab-select .vocab-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+.vocab-select .vocab-mode-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.vocab-select .vocab-mode-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--vs-text-muted);
+  white-space: nowrap;
+}
+.vocab-select .vocab-mode-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: var(--vs-surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23007a61'/%3E%3C/svg%3E") no-repeat right 10px center;
+  border: 1px solid var(--vs-border);
+  border-radius: 8px;
+  color: var(--vs-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 7px 30px 7px 12px;
+  cursor: pointer;
+  min-width: 130px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.vocab-select .vocab-mode-select:hover {
+  border-color: rgba(0, 122, 97, 0.35);
+}
+.vocab-select .vocab-mode-select:focus {
+  outline: none;
+  border-color: var(--vs-primary);
+  box-shadow: 0 0 0 3px rgba(0, 122, 97, 0.1);
+}
+
+.vocab-select .vocab-action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
+}
+.vocab-select .selection-count {
+  color: var(--vs-text-muted);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* ── Buttons ── */
+.vocab-select .btn {
+  border-radius: 10px;
+  padding: 9px 16px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+}
+.vocab-select .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.vocab-select .btn.action-primary {
+  background: var(--vs-primary);
+  border-color: var(--vs-primary);
+  color: #ffffff;
+}
+.vocab-select .btn.action-primary:hover:not(:disabled) {
+  background: var(--vs-primary-hover);
+  border-color: var(--vs-primary-hover);
+}
+.vocab-select .btn.action-secondary {
+  background: var(--vs-filter-bg);
+  border-color: var(--vs-filter-bg);
+  color: var(--vs-primary);
+}
+.vocab-select .btn.action-secondary:hover:not(:disabled) {
+  background: #c5e5d9;
+  border-color: #c5e5d9;
+  color: var(--vs-primary-hover);
+}
+.vocab-select .btn.action-outline {
+  background: transparent;
+  border-color: rgba(0, 122, 97, 0.5);
+  color: var(--vs-primary);
+}
+.vocab-select .btn.action-outline:hover:not(:disabled) {
+  background: rgba(0, 122, 97, 0.08);
+  border-color: var(--vs-primary);
+  color: var(--vs-primary-hover);
+}
+.vocab-select .btn.secondary {
+  background: var(--vs-primary);
+  border-color: var(--vs-primary);
+  color: #ffffff;
+}
+.vocab-select .btn.secondary:hover:not(:disabled) {
+  background: var(--vs-primary-hover);
+  border-color: var(--vs-primary-hover);
+}
+
+/* ── Search row ── */
+.vocab-select .vocab-search-row {
+  margin-bottom: 14px;
+}
+.vocab-select .vocab-search-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border);
+  border-radius: 10px;
+  padding: 0 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.vocab-select .vocab-search-wrap:focus-within {
+  border-color: rgba(0, 122, 97, 0.45);
+  box-shadow: 0 0 0 3px rgba(0, 122, 97, 0.1);
+}
+.vocab-select .vocab-search-icon {
+  font-size: 0.9rem;
+  color: var(--vs-primary);
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+.vocab-select .vocab-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--vs-text);
+  padding: 11px 0;
+  min-width: 0;
+}
+.vocab-select .vocab-search-input::placeholder {
+  color: var(--vs-text-muted);
+  opacity: 0.65;
+}
+.vocab-select .vocab-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--vs-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 2px 4px;
+  border-radius: 4px;
+  transition: color 0.15s;
+}
+.vocab-select .vocab-search-clear:hover {
+  color: var(--vs-text);
+}
+
+
+/* ── Table empty / prompt state ── */
+.vocab-select .vocab-table-state {
+  padding: 28px;
+  text-align: center;
+  color: var(--vs-text-muted);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px dashed rgba(0, 122, 97, 0.25);
+  border-radius: 10px;
+}
+
+/* ── Pagination ── */
+.vocab-select .vocab-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+.vocab-select .vocab-pagination span {
+  color: var(--vs-text-muted);
+  min-width: 160px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ── Responsive ── */
+@media (max-width: 760px) {
+  .vocab-select .vocab-content-card { padding: 18px; }
+  .vocab-select .vocab-table-header { flex-direction: column; align-items: stretch; }
+  .vocab-select .vocab-action-buttons { justify-content: stretch; }
+  .vocab-select .vocab-action-buttons .btn { flex: 1; }
+}

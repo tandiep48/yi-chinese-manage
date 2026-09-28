@@ -1,0 +1,25 @@
+# Build output and deps — reinstalled/rebuilt inside the image
+node_modules
+.next
+out
+
+# Local env and secrets — provided at deploy time, never baked into the image
+.env
+.env.*
+
+# Tooling / VCS / tests — not needed to build or run the server
+.git
+.gitignore
+.vscode
+coverage
+tests
+**/*.test.ts
+**/*.test.tsx
+
+# Docs and CI
+Dockerfile
+.dockerignore
+DEPLOY.md
+.do
+README.md
+npm-debug.log*

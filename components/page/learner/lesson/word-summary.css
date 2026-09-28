@@ -1,0 +1,92 @@
+
+/* ─────────────────────────────────────────────
+   WORD SUMMARY — the vocabulary tab of the study page: toolbar, column
+   toggles and the vocab cards (WordSummary). Scoped under .lesson-study;
+   tokens come from ./lesson-study.css.
+   ───────────────────────────────────────────── */
+
+/* Word Summary — toolbar + column toggles */
+.lesson-study .vl-cards-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  background: var(--ls-card);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+.lesson-study .vl-cards-toolbar .toolbar-left,
+.lesson-study .vl-cards-toolbar .toolbar-right {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.lesson-study .vl-col-toggle { background: #f1f1f1; min-width: 150px; justify-content: center; }
+.lesson-study .vl-col-toggle.active { background: var(--ls-primary); color: #fff; border-color: var(--ls-primary); }
+
+/* Word Summary — vocab cards */
+.lesson-study .vl-vocab-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.lesson-study .vocab-card {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  background: var(--ls-preview);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 20px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+}
+.lesson-study .vocab-card:hover {
+  border-color: var(--ls-secondary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.08);
+  transform: translateY(-2px);
+}
+.lesson-study .vocab-card.playing-highlight {
+  border-color: var(--ls-primary);
+  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+}
+.lesson-study .vocab-card .vc-left { display: flex; align-items: center; gap: 1.25rem; width: 28%; min-width: 0; }
+.lesson-study .vocab-card .vc-num { font-size: 0.95rem; font-weight: 700; color: #111; width: 24px; flex-shrink: 0; }
+.lesson-study .vocab-card .vc-char { font-size: 2.2rem; color: #111; line-height: 1; }
+.lesson-study .vocab-card .vc-pinyin { flex: 1; min-width: 0; font-size: 1.1rem; font-weight: 600; color: #111; }
+.lesson-study .vocab-card .vc-meaning { flex: 1; min-width: 0; color: #111; }
+.lesson-study .vocab-card .vc-right { display: flex; gap: 0.5rem; flex-shrink: 0; order: -1; }
+.lesson-study .vocab-card .action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #f7fbf9;
+  color: var(--ls-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lesson-study .vocab-card .action-btn:hover { background: var(--ls-primary); color: #fff; border-color: var(--ls-primary); }
+.lesson-study .vocab-card .action-btn svg { font-size: 1rem; }
+.lesson-study .vl-vocab-cards.hide-cn .vc-char,
+.lesson-study .vl-vocab-cards.hide-py .vc-pinyin,
+.lesson-study .vl-vocab-cards.hide-vn .vc-meaning { visibility: hidden; }
+
+@media (max-width: 700px) {
+  .lesson-study .vl-cards-toolbar { justify-content: stretch; }
+  .lesson-study .vl-col-toggle { min-width: 0; flex: 1; }
+}
+@media (max-width: 600px) {
+  .lesson-study .vocab-card { gap: 0.75rem; padding: 1rem; }
+  .lesson-study .vocab-card .vc-left { width: auto; gap: 0.75rem; }
+  .lesson-study .vocab-card .vc-char { font-size: 1.8rem; }
+  .lesson-study .vl-summary-footer { flex-direction: column; }
+}

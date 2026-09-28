@@ -1,0 +1,142 @@
+
+/* ─────────────────────────────────────────────
+   PROFILE — the Learning Statistics block: headline stats, the bar charts and
+   the sub-stat tiles. Moved here from the dashboard (docs/plans/dashboard-tabs.md
+   Phase 5) and re-scoped `.ui2-dashboard` -> `.profile-page`; the rules are
+   otherwise byte-for-byte what dashboard-stats.css held, verified with a postcss
+   walk of both files.
+
+   Most tokens already exist on `.profile-page` in ./profile-page.css. These seven
+   did not — they were declared on `.ui2-dashboard` in dashboard.css, which no
+   longer wraps this block — so they are added here rather than left to resolve to
+   nothing. `--primary`, `--secondary`, `--card-bg`, `--text-main` and
+   `--text-muted` are deliberately NOT redeclared: the block adopts the profile
+   page's sage palette instead of carrying the dashboard's teal into a page that
+   isn't teal.
+   ───────────────────────────────────────────── */
+
+.profile-page {
+  --primary-light: #e0efe9;
+  --text-light: #9ca3af;
+  --bg-color: #f7fbf9;
+  --ui-radius-sm: 8px;
+  --ui-radius: 16px;
+  --ui-radius-lg: 24px;
+  --ui-shadow-sm: 0 2px 8px rgba(0, 122, 97, 0.04);
+  --ui-shadow-md: 0 4px 20px rgba(0, 122, 97, 0.08);
+}
+
+.profile-page .profile-stats-loading {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.profile-page .stats-overview {
+  background-color: var(--card-bg);
+  border-radius: var(--ui-radius-lg);
+  box-shadow: var(--ui-shadow-md);
+  overflow: hidden;
+}
+.profile-page .main-stats {
+  display: flex;
+  padding: 2rem;
+  background-color: var(--primary-light);
+  border-bottom: 1px solid var(--secondary);
+}
+.profile-page .primary-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.profile-page .primary-stat .stat-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+.profile-page .primary-stat h3 { font-size: 2.5rem; color: var(--text-main); line-height: 1; }
+.profile-page .stat-divider-vertical {
+  width: 2px;
+  background-color: var(--secondary);
+  margin: 0 2rem;
+}
+.profile-page .charts-section {
+  padding: 2rem;
+  border-bottom: 1px solid var(--secondary);
+}
+.profile-page .charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+.profile-page .chart-card h4 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  color: var(--text-main);
+  margin-bottom: 1.25rem;
+}
+.profile-page .chart-canvas-wrap {
+  position: relative;
+  height: 240px;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--secondary);
+  border-radius: var(--ui-radius);
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+
+.profile-page .sub-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 2rem;
+  gap: 1.5rem;
+}
+.profile-page .sub-stat-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: var(--ui-radius);
+  background-color: var(--bg-color);
+  transition: background-color 0.3s;
+}
+.profile-page .sub-stat-card:hover { background-color: var(--primary-light); }
+.profile-page .icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background-color: var(--card-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--primary);
+  box-shadow: var(--ui-shadow-sm);
+  flex-shrink: 0;
+}
+.profile-page .sub-stat-info .label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+.profile-page .sub-stat-info h4 { font-size: 1.25rem; margin-bottom: 0.25rem; }
+.profile-page .sub-stat-info .time { font-size: 0.75rem; color: var(--text-light); }
+
+@media (max-width: 992px) {
+  .profile-page .sub-stats-grid { grid-template-columns: repeat(2, 1fr); }
+  .profile-page .charts-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .profile-page .main-stats { flex-direction: column; gap: 2rem; }
+  .profile-page .stat-divider-vertical { width: 100%; height: 2px; margin: 0; }
+  .profile-page .sub-stats-grid { grid-template-columns: 1fr; }
+}

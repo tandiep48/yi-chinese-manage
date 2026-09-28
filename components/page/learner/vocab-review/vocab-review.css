@@ -1,0 +1,73 @@
+
+/* ─────────────────────────────────────────────
+   VOCAB REVIEW PAGE — the dashboard's "Review" card.
+   The page's chrome (shell, content card, header row, buttons, table, empty
+   state, pagination) is the vocabulary page's: VocabReviewPage carries
+   `.vocab-select` as well, so vocab-select.css + vocab-table.css style all of it.
+
+   This file adds only what review has and /vocab does not — the heading block in
+   the header's left slot, where /vocab puts its mode picker. Every selector here
+   ends in a class those two stylesheets do not define, so nothing can tie with
+   them at equal specificity and be decided by chunk load order (§2).
+   ───────────────────────────────────────────── */
+.vocab-review .review-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.vocab-review .review-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.vocab-review .review-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: rgba(0, 122, 97, 0.14);
+  /* --vs-* is declared on .vocab-select, which is this same element. */
+  color: var(--vs-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.vocab-review .review-subtitle {
+  margin: 0;
+  color: var(--vs-text-muted);
+  font-size: 0.9rem;
+}
+
+.vocab-review .review-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.vocab-review .review-start-btn {
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .vocab-review .review-heading {
+    font-size: 1.15rem;
+  }
+  /* .vocab-table-header stacks here, so the action row spans the card. */
+  .vocab-review .review-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .vocab-review .review-start-btn {
+    width: 100%;
+  }
+}

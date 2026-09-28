@@ -1,0 +1,176 @@
+
+/* ─────────────────────────────────────────────
+   PROFILE PAGE — scoped to .profile-page. Ported from the Learning app
+   (static/profile/profile.css): profile header with avatar upload + HSK
+   badge, and the change-password form.
+   Sage palette + local tokens, same set as the practice pages.
+
+   The embedded practice-review panel lives in ./review-panel.css, imported
+   by ReviewPanel.tsx. Its rules are scoped under .profile-page too, so the
+   tokens declared here are what they resolve against.
+   ───────────────────────────────────────────── */
+.profile-page {
+  --primary: #576856;
+  --primary-hover: #455544;
+  --secondary: #cbe2d4;
+  --secondary-hover: #b5d5c1;
+  --card-bg: #ffffff;
+  --text-main: #111827;
+  --text-muted: #4b5563;
+  --success: #10b981;
+  --danger: #ef4444;
+
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+  color: var(--text-main);
+}
+
+.profile-page h1,
+.profile-page h2 { color: var(--text-main); }
+
+/* Primary buttons (legacy .btn.primary). */
+.profile-page .btn {
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.profile-page .btn.primary { background: var(--primary); color: #fff; }
+.profile-page .btn.primary:hover { background: var(--primary-hover); }
+.profile-page .btn.primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Header ── */
+.profile-page .profile-topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.profile-page .profile-link { color: var(--primary); text-decoration: none; font-weight: 700; }
+.profile-page .profile-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.profile-page .profile-header-main { display: flex; align-items: center; gap: 24px; }
+.profile-page .profile-avatar-wrap {
+  position: relative;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(67, 97, 238, 0.18);
+  border: 1px solid rgba(87, 104, 86, 0.14);
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.profile-page .profile-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.5rem;
+  background: rgba(0, 0, 0, 0.45);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.profile-page .profile-avatar-wrap:hover .profile-avatar-overlay,
+.profile-page .profile-avatar-wrap:focus-visible .profile-avatar-overlay { opacity: 1; }
+.profile-page .profile-avatar-img,
+.profile-page .profile-avatar-fallback { width: 100%; height: 100%; }
+.profile-page .profile-avatar-img { object-fit: cover; }
+.profile-page .profile-avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 2.7rem;
+  font-weight: 800;
+  background: var(--primary);
+}
+.profile-page .profile-heading h1 { text-align: left; margin: 0 0 6px; font-size: 1.6rem; }
+.profile-page .profile-heading p { color: var(--text-muted); margin: 0; }
+.profile-page .profile-badge-col { display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; }
+.profile-page .profile-badge-img { width: auto; height: 150px; max-width: 100%; object-fit: contain; }
+
+/* ── Forms ── */
+.profile-page .avatar-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.profile-page .avatar-form input { color: var(--text-muted); }
+.profile-page .password-form { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; align-items: end; }
+.profile-page .password-form .form-group { margin: 0; }
+.profile-page .password-form label { display: block; color: var(--text-muted); font-weight: 700; margin-bottom: 6px; }
+.profile-page .password-form input {
+  width: 100%;
+  border: 1px solid rgba(87, 104, 86, 0.16);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  color: var(--text-main);
+}
+.profile-page .avatar-submit,
+.profile-page .password-submit { width: auto; }
+.profile-page .password-submit { padding-left: 18px; padding-right: 18px; white-space: nowrap; }
+.profile-page .profile-message { min-height: 22px; margin-top: 10px; color: var(--text-muted); }
+.profile-page .profile-message.error { color: var(--danger); }
+.profile-page .profile-message.success { color: var(--success); }
+
+/* ── Sections ── */
+.profile-page .profile-section {
+  background: rgba(87, 104, 86, 0.04);
+  border: 1px solid rgba(87, 104, 86, 0.08);
+  border-radius: 8px;
+  margin-top: 18px;
+  padding: 20px;
+}
+.profile-page .profile-section h2 { text-align: left; margin: 0 0 14px; font-size: 1.25rem; }
+
+/* ── Avatar modal ── */
+.profile-page .profile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.profile-page .profile-modal[hidden] { display: none; }
+.profile-page .profile-modal-backdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.5); }
+.profile-page .profile-modal-box {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--card-bg);
+  border: 1px solid rgba(87, 104, 86, 0.14);
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+}
+.profile-page .profile-modal-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.profile-page .profile-modal-head h2 { margin: 0; font-size: 1.15rem; }
+.profile-page .profile-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+.profile-page .profile-modal-close:hover { color: var(--text-main); }
+
+@media (max-width: 640px) {
+  .profile-page .profile-header { grid-template-columns: 1fr; justify-items: center; text-align: center; }
+  .profile-page .profile-header-main { align-items: flex-start; flex-direction: column; }
+  .profile-page .password-form { grid-template-columns: 1fr; }
+  .profile-page .password-submit { width: 100%; }
+}
