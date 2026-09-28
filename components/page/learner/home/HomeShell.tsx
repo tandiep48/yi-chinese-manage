@@ -28,6 +28,7 @@ import { getVocabReviewCount } from "@/lib/api/learner/vocab";
 import { useLearnerHome } from "@/hooks/home/useLearnerHome";
 import { HomeTabs } from "./HomeTabs";
 import { HomePanelSkeleton } from "./HomePanelSkeleton";
+import { CurrentLessonPanel } from "./CurrentLessonPanel";
 import "./home-shell.css";
 
 const loading = () => <HomePanelSkeleton />;
@@ -66,21 +67,28 @@ export function HomeShell() {
     <div className="learner-home">
       <HomeTabs tab={home.tab} counts={{ review: reviewCount }} onSelect={home.requestTab} />
 
-      <div
-        className="learner-home-panel"
-        id={`learner-home-panel-${home.tab}`}
-        role="tabpanel"
-        aria-labelledby={`learner-home-tab-${home.tab}`}
-      >
-        {/* Switched rather than mapped, so each panel takes exactly the props it
-            needs — the two that don't run anything yet declare none. */}
-        {home.tab === "review" ? (
-          <ReviewTab run={home.run} setRun={home.setRun} />
-        ) : home.tab === "lesson" ? (
-          <LessonTab run={home.run} setRun={home.setRun} />
-        ) : (
-          <RecommendTab run={home.run} setRun={home.setRun} />
-        )}
+      {/* The panel and, for a signed-in learner, the current-lesson rail beside
+          it. The rail is visible from every tab, so it lives in the shell rather
+          than inside any one panel. */}
+      <div className={`learner-home-body${user ? " has-aside" : ""}`}>
+        <div
+          className="learner-home-panel"
+          id={`learner-home-panel-${home.tab}`}
+          role="tabpanel"
+          aria-labelledby={`learner-home-tab-${home.tab}`}
+        >
+          {/* Switched rather than mapped, so each panel takes exactly the props it
+              needs — the two that don't run anything yet declare none. */}
+          {home.tab === "review" ? (
+            <ReviewTab run={home.run} setRun={home.setRun} />
+          ) : home.tab === "lesson" ? (
+            <LessonTab run={home.run} setRun={home.setRun} />
+          ) : (
+            <RecommendTab run={home.run} setRun={home.setRun} />
+          )}
+        </div>
+
+        {user && <CurrentLessonPanel onContinue={() => home.requestTab("lesson")} />}
       </div>
 
       {home.pendingTab && (

@@ -36,6 +36,10 @@ vi.mock("@/components/page/learner/home/LessonTab", () => ({
 vi.mock("@/components/page/learner/home/RecommendTab", () => ({
   RecommendTab: () => <div data-testid="panel">recommend panel</div>,
 }));
+// The current-lesson rail reads its own data hooks; this file is about the shell.
+vi.mock("@/components/page/learner/home/CurrentLessonPanel", () => ({
+  CurrentLessonPanel: () => <aside data-testid="current-lesson-rail" />,
+}));
 
 const mockCount = vi.mocked(getVocabReviewCount);
 

@@ -252,3 +252,91 @@
     padding: 24px;
   }
 }
+
+/* ── Body: the tab panel and, on wide screens, the current-lesson rail ──
+   A flex item so the sticky tab bar above it still works (see the note on
+   `.learner-home`); the two-column split lives here rather than on the root. */
+.learner-home-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+/* ── Current-lesson rail (right column on wide screens) ── */
+.learner-home-aside {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  background: var(--learner-card);
+  border: 1px solid var(--learner-border);
+  border-radius: 16px;
+  padding: 20px;
+}
+.learner-home-aside-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--learner-text-muted);
+}
+.learner-home-aside-empty {
+  margin: 0;
+  color: var(--learner-text-muted);
+}
+.learner-home-lesson-context {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--learner-text);
+}
+.learner-home-lesson-step {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--learner-text-muted);
+}
+.learner-home-lesson-progress {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(87, 104, 86, 0.14);
+  overflow: hidden;
+}
+.learner-home-lesson-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--learner-primary);
+  transition: width 0.3s ease;
+}
+.learner-home-lesson-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--learner-primary);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.learner-home-lesson-continue:hover {
+  background: var(--learner-primary-hover);
+}
+.learner-home-lesson-continue:focus-visible {
+  outline: 2px solid var(--learner-primary);
+  outline-offset: 2px;
+}
+
+@media (min-width: 1024px) {
+  /* Only split when the rail is present, so a signed-out home (no rail) keeps the
+     panel full width instead of reserving an empty column. */
+  .learner-home-body.has-aside {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 24px;
+  }
+}

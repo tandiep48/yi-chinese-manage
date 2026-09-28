@@ -676,7 +676,8 @@
     "guard_leave": "Kết thúc và chuyển",
     "lesson_browse": "Xem danh sách bài học",
     "lesson_loading": "Đang tải bài học…",
-    "lesson_empty": "Bạn chưa bắt đầu bài học nào."
+    "lesson_empty": "Bạn chưa bắt đầu bài học nào.",
+    "current_lesson": "Bài học hiện tại"
   },
   "milestone": {
     "step_counter": "Bước {n}/{total}",

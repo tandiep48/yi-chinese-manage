@@ -676,7 +676,8 @@
     "guard_leave": "End and switch",
     "lesson_browse": "Browse lessons",
     "lesson_loading": "Loading your lesson…",
-    "lesson_empty": "You haven't started a lesson yet."
+    "lesson_empty": "You haven't started a lesson yet.",
+    "current_lesson": "Current Lesson"
   },
   "milestone": {
     "step_counter": "Step {n} of {total}",
