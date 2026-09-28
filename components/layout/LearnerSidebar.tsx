@@ -1,14 +1,17 @@
 "use client";
 
 // components/layout/LearnerSidebar.tsx
-// Learner-facing navigation. A small floating hamburger button (top-left, over
-// the page) opens an off-canvas drawer that slides in over the content (backdrop
-// dims the page) and is dismissed by the backdrop or its close button. The logo
-// lives inside the drawer. The hanzi script / font / language controls that used
-// to sit inline in the old TopNav now open in a settings modal
-// (LearnerSettingsModal).
+// Learner-facing navigation.
+//   - md and up: a persistent left rail that lives in the page flow (so the main
+//     column sits beside it) and toggles between a full width (icon + label) and
+//     an icon-only rail. The collapsed choice is remembered per browser.
+//   - below md: the rail slides off-canvas; a small floating hamburger opens it as
+//     a drawer over the content (a backdrop dims the page) and the drawer's close
+//     button or the backdrop dismisses it.
+// The logo lives inside the rail. The hanzi script / font / language controls open
+// in a settings modal (LearnerSettingsModal).
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import "./learner-nav.css";
@@ -27,6 +30,7 @@ import {
   faUserPlus,
   faBars,
   faXmark,
+  faChevronLeft,
 } from "@fortawesome/free-solid-svg-icons";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -40,6 +44,7 @@ interface NavItem {
 }
 
 const LEARNER_HOME = "/learner";
+const COLLAPSED_KEY = "learnerNavCollapsed";
 
 const NAV_ITEMS: NavItem[] = [
   { labelKey: "nav.dashboard", href: LEARNER_HOME, icon: faGaugeHigh },
@@ -63,57 +68,93 @@ export function LearnerSidebar() {
   const { user, loading, logout } = useAuth();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Restore the collapsed choice after mount. It can't be read during render —
+  // localStorage is client-only and would diverge from the server-rendered
+  // (expanded) markup — so this is a deliberate one-time sync, not a
+  // render-driving effect. Per-viewer only, wrapped for private / blocked storage.
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (localStorage.getItem(COLLAPSED_KEY) === "1") setCollapsed(true);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
+  const toggleCollapsed = () =>
+    setCollapsed((c) => {
+      const next = !c;
+      try {
+        localStorage.setItem(COLLAPSED_KEY, next ? "1" : "0");
+      } catch {
+        /* storage unavailable */
+      }
+      return next;
+    });
 
   const closeDrawer = () => setDrawerOpen(false);
 
+  // Collapse only ever hides labels / centers icons at md and up; the mobile
+  // drawer is always full width, so its labels stay visible regardless.
+  const hideLabel = collapsed ? "md:hidden" : "";
   const rowCls = (active: boolean) =>
     [
       "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold transition-colors",
+      collapsed ? "md:justify-center" : "",
       active ? "bg-white/20 text-white" : "text-white/90 hover:bg-white/15",
     ].join(" ");
 
   return (
     <>
-      {/* Floating hamburger: opens the drawer, sits over the page top-left.
-          Hidden while the drawer is open (the drawer's own close button takes
-          over). */}
+      {/* Floating hamburger (mobile only): opens the drawer. Hidden while the
+          drawer is open — the drawer's own close button takes over. */}
       {!drawerOpen && (
         <button
           type="button"
           aria-label={t("nav.open_menu")}
           onClick={() => setDrawerOpen(true)}
-          className="fixed left-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-md hover:brightness-110"
+          className="fixed left-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-lg text-white shadow-md hover:brightness-110 md:hidden"
           style={{ backgroundColor: "var(--learner-nav)" }}
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
       )}
 
-      {/* Backdrop behind the open drawer. */}
-      {drawerOpen && <div className="learner-drawer-backdrop" onClick={closeDrawer} />}
+      {/* Backdrop behind the open drawer (mobile only). */}
+      {drawerOpen && <div className="learner-drawer-backdrop md:hidden" onClick={closeDrawer} />}
 
       <aside
         className={[
-          "fixed inset-y-0 left-0 z-40 flex w-64 flex-col text-white shadow-lg",
-          "transition-transform duration-300 ease-in-out",
+          "z-40 flex flex-col text-white shadow-lg transition-all duration-300 ease-in-out",
+          // Mobile: off-canvas fixed drawer.
+          "fixed inset-y-0 left-0 w-64",
           drawerOpen ? "translate-x-0" : "-translate-x-full",
+          // Desktop: in-flow persistent rail whose width toggles.
+          "md:static md:z-auto md:h-full md:translate-x-0 md:shrink-0",
+          collapsed ? "md:w-16" : "md:w-64",
         ].join(" ")}
         style={{ backgroundColor: "var(--learner-nav)" }}
       >
-        {/* Logo + close */}
-        <div className="flex items-center gap-2 px-4 py-4">
-          <Link href={LEARNER_HOME} className="flex flex-1 items-center gap-2 overflow-hidden" onClick={closeDrawer}>
+        {/* Logo + drawer close */}
+        <div className={`flex items-center gap-2 px-4 py-4 ${collapsed ? "md:justify-center md:px-2" : ""}`}>
+          <Link
+            href={LEARNER_HOME}
+            className="flex flex-1 items-center gap-2 overflow-hidden"
+            onClick={closeDrawer}
+          >
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-sm font-bold">
               易
             </span>
-            <span className="truncate text-sm font-extrabold">Yi Chinese</span>
+            <span className={`truncate text-sm font-extrabold ${hideLabel}`}>Yi Chinese</span>
           </Link>
           <button
             type="button"
             aria-label={t("widgets.close")}
             onClick={closeDrawer}
-            className="rounded-lg px-2 py-1.5 hover:bg-white/15"
+            className="rounded-lg px-2 py-1.5 hover:bg-white/15 md:hidden"
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
@@ -126,10 +167,11 @@ export function LearnerSidebar() {
               key={item.href}
               href={item.href}
               onClick={closeDrawer}
+              title={collapsed ? t(item.labelKey) : undefined}
               className={rowCls(isActive(pathname, item.href))}
             >
               <FontAwesomeIcon icon={item.icon} className="h-4 w-4 shrink-0" fixedWidth />
-              <span className="truncate">{t(item.labelKey)}</span>
+              <span className={`truncate ${hideLabel}`}>{t(item.labelKey)}</span>
             </Link>
           ))}
         </nav>
@@ -141,6 +183,7 @@ export function LearnerSidebar() {
               <Link
                 href="/learner/profile"
                 onClick={closeDrawer}
+                title={collapsed ? user.username : undefined}
                 className={rowCls(isActive(pathname, "/learner/profile"))}
               >
                 {user.avatar_url ? (
@@ -151,7 +194,7 @@ export function LearnerSidebar() {
                     {user.username.slice(0, 1).toUpperCase()}
                   </span>
                 )}
-                <span className="truncate">{user.username}</span>
+                <span className={`truncate ${hideLabel}`}>{user.username}</span>
               </Link>
               <button
                 type="button"
@@ -160,10 +203,11 @@ export function LearnerSidebar() {
                   closeDrawer();
                   logout();
                 }}
+                title={collapsed ? t("nav.logout") : undefined}
                 className={`${rowCls(false)} w-full`}
               >
                 <FontAwesomeIcon icon={faRightFromBracket} className="h-4 w-4 shrink-0" fixedWidth />
-                <span className="truncate">{t("nav.logout")}</span>
+                <span className={`truncate ${hideLabel}`}>{t("nav.logout")}</span>
               </button>
             </>
           ) : (
@@ -171,18 +215,20 @@ export function LearnerSidebar() {
               <Link
                 href="/learner/login"
                 onClick={closeDrawer}
+                title={collapsed ? t("nav.login") : undefined}
                 className={rowCls(isActive(pathname, "/learner/login"))}
               >
                 <FontAwesomeIcon icon={faRightToBracket} className="h-4 w-4 shrink-0" fixedWidth />
-                <span className="truncate">{t("nav.login")}</span>
+                <span className={`truncate ${hideLabel}`}>{t("nav.login")}</span>
               </Link>
               <Link
                 href="/learner/register"
                 onClick={closeDrawer}
+                title={collapsed ? t("nav.register") : undefined}
                 className={rowCls(isActive(pathname, "/learner/register"))}
               >
                 <FontAwesomeIcon icon={faUserPlus} className="h-4 w-4 shrink-0" fixedWidth />
-                <span className="truncate">{t("nav.register")}</span>
+                <span className={`truncate ${hideLabel}`}>{t("nav.register")}</span>
               </Link>
             </>
           )}
@@ -193,10 +239,27 @@ export function LearnerSidebar() {
               closeDrawer();
               setSettingsOpen(true);
             }}
+            title={collapsed ? t("nav.settings") : undefined}
             className={`${rowCls(false)} w-full`}
           >
             <FontAwesomeIcon icon={faGear} className="h-4 w-4 shrink-0" fixedWidth />
-            <span className="truncate">{t("nav.settings")}</span>
+            <span className={`truncate ${hideLabel}`}>{t("nav.settings")}</span>
+          </button>
+
+          {/* Collapse toggle — desktop rail only; the mobile drawer uses its own
+              close button instead. */}
+          <button
+            type="button"
+            aria-label={collapsed ? t("nav.expand_menu") : t("nav.collapse_menu")}
+            onClick={toggleCollapsed}
+            className={`${rowCls(false)} hidden w-full md:flex`}
+          >
+            <FontAwesomeIcon
+              icon={faChevronLeft}
+              className={`h-4 w-4 shrink-0 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`}
+              fixedWidth
+            />
+            <span className={`truncate ${hideLabel}`}>{t("nav.collapse_menu")}</span>
           </button>
         </div>
       </aside>

@@ -17,12 +17,12 @@ export default function LearnerLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className={`${roboto.variable} learner-theme flex h-full flex-col`}>
+    <div className={`${roboto.variable} learner-theme flex h-full`}>
       <I18nProvider>
         <AuthProvider>
           <HanziSettingsProvider>
             <LearnerSidebar />
-            <main className="flex flex-1 flex-col overflow-auto">{children}</main>
+            <main className="flex min-w-0 flex-1 flex-col overflow-auto">{children}</main>
           </HanziSettingsProvider>
         </AuthProvider>
       </I18nProvider>

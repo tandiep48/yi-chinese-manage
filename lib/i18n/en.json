@@ -17,7 +17,9 @@
     "practice": "Practice",
     "profile": "Profile",
     "settings": "Settings",
-    "open_menu": "Open menu"
+    "open_menu": "Open menu",
+    "collapse_menu": "Collapse menu",
+    "expand_menu": "Expand menu"
   },
   "settings": {
     "title": "Settings",

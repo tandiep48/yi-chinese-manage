@@ -17,7 +17,9 @@
     "practice": "Luyện tập",
     "profile": "Hồ sơ",
     "settings": "Cài đặt",
-    "open_menu": "Mở menu"
+    "open_menu": "Mở menu",
+    "collapse_menu": "Thu gọn menu",
+    "expand_menu": "Mở rộng menu"
   },
   "settings": {
     "title": "Cài đặt",

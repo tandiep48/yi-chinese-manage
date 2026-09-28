@@ -43,6 +43,7 @@ describe("LearnerSidebar", () => {
   beforeEach(() => {
     vi.mocked(usePathname).mockReturnValue("/learner/vocab");
     mockAuth = { user: null, loading: false, logout: vi.fn() };
+    localStorage.clear();
   });
 
   it("renders every primary nav item linked to its route", () => {
@@ -85,6 +86,27 @@ describe("LearnerSidebar", () => {
     expect(screen.queryByRole("dialog", { name: "Settings" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Settings" }));
     expect(screen.getByRole("dialog", { name: "Settings" })).toBeInTheDocument();
+  });
+
+  it("toggles the desktop rail between full and icon-only and remembers the choice", async () => {
+    const user = userEvent.setup();
+    const { container } = renderSidebar();
+    const aside = container.querySelector("aside") as HTMLElement;
+    expect(aside.className).toContain("md:w-64");
+
+    await user.click(screen.getByRole("button", { name: "Collapse menu" }));
+
+    expect(aside.className).toContain("md:w-16");
+    expect(screen.getByRole("button", { name: "Expand menu" })).toBeInTheDocument();
+    expect(localStorage.getItem("learnerNavCollapsed")).toBe("1");
+  });
+
+  it("restores the collapsed rail from storage on mount", () => {
+    localStorage.setItem("learnerNavCollapsed", "1");
+    const { container } = renderSidebar();
+    const aside = container.querySelector("aside") as HTMLElement;
+    expect(aside.className).toContain("md:w-16");
+    expect(screen.getByRole("button", { name: "Expand menu" })).toBeInTheDocument();
   });
 
   it("opens the drawer backdrop from the hamburger and closes it from the backdrop", async () => {
