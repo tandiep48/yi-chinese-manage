@@ -20,6 +20,7 @@ tests
 Dockerfile
 .dockerignore
 DEPLOY.md
-.do
+deploy
+.github
 README.md
 npm-debug.log*
