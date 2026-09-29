@@ -1,4 +1,4 @@
-# Yi Chinese — single-VM stack for Alibaba Cloud ECS (or any Docker host).
+# Yi Chinese — single-VM stack for Google Cloud Compute Engine (or any Docker host).
 #
 # Four services on one Docker network behind nginx, so the browser sees ONE
 # origin (no CORS, no cross-site cookies): nginx routes /api and /socket.io to

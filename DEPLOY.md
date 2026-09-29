@@ -1,8 +1,8 @@
-# Deploying Yi Chinese to Alibaba Cloud (ECS + Docker Compose)
+# Deploying Yi Chinese to Google Cloud (Compute Engine + Docker Compose)
 
-The whole app runs on **one Alibaba Cloud ECS VM** as a small Docker Compose
-stack, fronted by nginx so the browser talks to a **single origin** (no CORS, no
-cross-site cookies):
+The split app (new Next.js frontend + new Flask/Socket.IO backend) runs on **one
+Google Compute Engine VM** as a small Docker Compose stack, fronted by nginx so
+the browser talks to a **single origin** (no CORS, no cross-site cookies):
 
 | Service | Source | Image | Role |
 |---------|--------|-------|------|
@@ -15,27 +15,42 @@ Compose file: [`deploy/docker-compose.yml`](deploy/docker-compose.yml) ·
 proxy: [`deploy/nginx.conf`](deploy/nginx.conf) ·
 env template: [`deploy/env.example`](deploy/env.example).
 
-> **Why one VM?** It's the cheapest option and fits this app: Flask-SocketIO must
-> run a **single** eventlet worker (`WEB_CONCURRENCY=1`) unless you add a Redis
-> message queue, so horizontal scaling isn't in play yet. Scale up (bigger ECS
-> instance) before scaling out.
+> **Separate from the monolith.** This is a **new, dedicated VM** for the split
+> app on `main_2.0` (Learning) + `master` (yi-chinese-manage). It does not touch
+> the existing `Learning` `main` monolith deployment — different instance,
+> different IP/domain.
+
+> **Why one VM?** Cheapest option and a good fit: Flask-SocketIO must run a
+> **single** eventlet worker (`WEB_CONCURRENCY=1`) unless you add a Redis message
+> queue, so horizontal scaling isn't in play yet. Scale up (bigger machine type)
+> before scaling out.
 
 ---
 
 ## 1. Prerequisites (one-time)
 
-1. **Region / ICP.** For users outside mainland China, create the ECS in an
-   **international region** (e.g. Singapore, `ap-southeast-1`). Mainland-China
-   regions require an **ICP filing** to serve a public website on port 80/443 —
-   a slow legal/manual process. Pick international unless you specifically need
-   mainland hosting.
-2. **ECS instance.** Ubuntu 22.04 LTS, at least **2 vCPU / 4 GB** (the Next.js
-   build is memory-hungry; on a 2 GB box add swap — see §3). Assign a **public
-   IP** (or bind an EIP).
-3. **Security group.** Allow inbound **22** (SSH — restrict to your IP), **80**,
-   and **443**. Do **not** open 5432; Postgres stays on the docker network.
-4. **SSH key.** Create/hold an SSH key pair for the VM; you'll add the private
-   key to GitHub for CI (§5).
+1. **Project & CLI.** Use your existing GCP project (or create one). Install the
+   [`gcloud` CLI](https://cloud.google.com/sdk/docs/install) and
+   `gcloud auth login`, or do the equivalent in the Cloud Console. Enable the
+   **Compute Engine API** if it isn't already.
+2. **VM instance.** Create a Compute Engine instance:
+   - **Image:** Ubuntu 22.04 LTS.
+   - **Machine type:** `e2-medium` (2 vCPU / 4 GB) recommended — the Next.js
+     build is memory-hungry. `e2-small` (2 GB) works only with swap (see §3).
+   - **Region/zone:** pick one near your users (no ICP/filing needed on GCP),
+     e.g. `asia-southeast1` (Singapore).
+   - **Firewall:** check **Allow HTTP traffic** and **Allow HTTPS traffic** (adds
+     the `http-server`/`https-server` tags + rules for tcp:80/443).
+3. **Static external IP.** Reserve a **static** external IP and assign it to the
+   VM (an ephemeral IP changes on stop/start and would break the CI host secret):
+   ```bash
+   gcloud compute addresses create yi-chinese-ip --region=<region>
+   # then attach it to the instance's network interface (Console or gcloud).
+   ```
+4. **SSH access for CI.** GitHub-hosted runners connect from a wide IP range, so
+   the default `default-allow-ssh` rule (tcp:22 from `0.0.0.0/0`) is fine **as
+   long as password auth is off and only key auth is used** (Ubuntu's default).
+   Generate a dedicated deploy key and add its public half to the VM (§5).
 5. Have the GCS bucket URL/name and, if avatar uploads are needed, the Google
    service-account key JSON.
 
@@ -50,15 +65,15 @@ Pushing to those branches triggers the GitHub Actions deploy (§5), which
 
 ## 3. First-time server setup
 
-SSH into the VM and install Docker (Compose v2 ships as the `docker compose`
-plugin):
+SSH into the VM (`gcloud compute ssh <instance> --zone=<zone>`) and install
+Docker (Compose v2 ships as the `docker compose` plugin):
 
 ```bash
 curl -fsSL https://get.docker.com | sh
 sudo usermod -aG docker "$USER"   # log out/in so this takes effect
 ```
 
-*(2 GB instances only)* add swap so `next build` doesn't OOM:
+*(e2-small / 2 GB only)* add swap so `next build` doesn't OOM:
 
 ```bash
 sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
@@ -84,7 +99,7 @@ nano .env   # set PUBLIC_ORIGIN, POSTGRES_PASSWORD, FLASK_SECRET_KEY, GCS_*
 
 - `FLASK_SECRET_KEY` — `python3 -c "import secrets; print(secrets.token_hex(32))"`
 - `POSTGRES_PASSWORD` — a strong password (only used inside the docker network).
-- `PUBLIC_ORIGIN` — `http://<ECS_PUBLIC_IP>` for now; switch to `https://<domain>`
+- `PUBLIC_ORIGIN` — `http://<VM_EXTERNAL_IP>` for now; switch to `https://<domain>`
   after §7.
 
 Bring the stack up (builds all four services):
@@ -118,8 +133,8 @@ docker compose exec api python scripts/import_<name>.py
 > **Backups (your responsibility with a self-hosted DB):** schedule a daily dump,
 > e.g. a cron entry running
 > `docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > /opt/yi-chinese/backups/db-$(date +\%F).sql.gz`
-> and copy it off-box (Alibaba OSS). Consider migrating to **ApsaraDB RDS for
-> PostgreSQL** later if you want managed backups/standby.
+> and copy it off-box (a GCS bucket via `gsutil`). Consider migrating to
+> **Cloud SQL for PostgreSQL** later if you want managed backups/HA.
 
 ## 5. Continuous deploy (GitHub Actions → SSH)
 
@@ -129,7 +144,7 @@ every push to `master`. Add the same workflow to the **Learning** repo on
 
 ```yaml
 # .github/workflows/deploy.yml in tandiep48/Learning
-name: Deploy backend to ECS
+name: Deploy backend to GCE
 on:
   push: { branches: [main_2.0] }
   workflow_dispatch: {}
@@ -140,22 +155,33 @@ jobs:
     steps:
       - uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.ECS_HOST }}
-          username: ${{ secrets.ECS_USER }}
-          key: ${{ secrets.ECS_SSH_KEY }}
+          host: ${{ secrets.GCE_HOST }}
+          username: ${{ secrets.GCE_USER }}
+          key: ${{ secrets.GCE_SSH_KEY }}
           script: /opt/yi-chinese/yi-chinese-manage/deploy/deploy.sh api
+```
+
+Generate a deploy key and register it on the VM:
+
+```bash
+ssh-keygen -t ed25519 -f yi-deploy -C "github-actions"   # no passphrase
+# append yi-deploy.pub to the VM user's ~/.ssh/authorized_keys
 ```
 
 In **each** repo's **Settings → Secrets and variables → Actions**, add:
 
-- `ECS_HOST` — the VM's public IP.
-- `ECS_USER` — the SSH user (e.g. `root` or your sudo user).
-- `ECS_SSH_KEY` — the **private** key whose public half is in the VM's
-  `~/.ssh/authorized_keys`.
+- `GCE_HOST` — the VM's **static** external IP.
+- `GCE_USER` — the SSH user on the VM (the one that owns `/opt/yi-chinese`).
+- `GCE_SSH_KEY` — the **private** key (`yi-deploy`) whose public half is in
+  `authorized_keys`.
 
 [`deploy/deploy.sh`](deploy/deploy.sh) does the work on the VM: pulls the repo,
 `docker compose up -d --build <service>`, and prunes old images. Run it by hand
 too: `deploy.sh web`, `deploy.sh api`, or `deploy.sh all`.
+
+> Prefer no public SSH? GCP supports deploying over the **IAP tunnel** with
+> Workload Identity Federation (no open port 22, no long-lived key). It's more
+> setup; the plain-SSH flow above is the quick path.
 
 ## 6. Verify
 
@@ -164,7 +190,7 @@ docker compose ps          # all services "running"; db is "healthy"
 docker compose logs -f api # watch for startup / DB-connection errors
 ```
 
-Then from a browser (or `curl`) against `http://<ECS_PUBLIC_IP>`:
+Then from a browser (or `curl`) against `http://<VM_EXTERNAL_IP>`:
 
 - `/learner` renders the frontend.
 - `/api/...` returns JSON from Flask.
@@ -173,11 +199,11 @@ Then from a browser (or `curl`) against `http://<ECS_PUBLIC_IP>`:
 
 ## 7. Domain + HTTPS (recommended)
 
-1. Point an A record at the ECS public IP.
-2. Issue a cert (Let's Encrypt via certbot on the host, or an Alibaba SSL cert),
-   mount it into nginx (uncomment the `443` port and `./certs` volume in the
-   compose file), add a `listen 443 ssl;` server block to `nginx.conf`, and
-   redirect 80 → 443.
+1. Point an A record at the VM's static external IP.
+2. Issue a cert (Let's Encrypt via certbot on the host, or a Google-managed cert
+   if you later front the VM with a load balancer), mount it into nginx
+   (uncomment the `443` port and `./certs` volume in the compose file), add a
+   `listen 443 ssl;` server block to `nginx.conf`, and redirect 80 → 443.
 3. Set `PUBLIC_ORIGIN=https://<domain>` in `.env` and rebuild `web`
    (`deploy.sh web`) so the frontend and cookie origin match.
 
@@ -194,7 +220,8 @@ Then from a browser (or `curl`) against `http://<ECS_PUBLIC_IP>`:
   include it, uncomment `INCLUDE_VOSK_MODEL: "true"` under the `api` build args in
   the compose file, or set `VOSK_MODEL_PATH` to a model you mount.
 - **Database TLS:** unset — the app talks to the `db` container over the private
-  docker network in plaintext. Only set `DB_SSLMODE` for an external TLS Postgres.
+  docker network in plaintext. Only set `DB_SSLMODE` for an external TLS Postgres
+  (e.g. if you move to Cloud SQL).
 
 ## Frontend specifics
 

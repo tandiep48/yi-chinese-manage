@@ -1,7 +1,7 @@
-# Redeploy the frontend (web) on the ECS VM when master is pushed.
+# Redeploy the frontend (web) on the Compute Engine VM when master is pushed.
 # The backend repo (tandiep48/Learning) needs an equivalent workflow on
 # main_2.0 that runs `deploy.sh api` — see DEPLOY.md §5.
-name: Deploy frontend to ECS
+name: Deploy frontend to GCE
 
 on:
   push:
@@ -19,7 +19,7 @@ jobs:
       - name: Rebuild & restart web over SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.ECS_HOST }}
-          username: ${{ secrets.ECS_USER }}
-          key: ${{ secrets.ECS_SSH_KEY }}
+          host: ${{ secrets.GCE_HOST }}
+          username: ${{ secrets.GCE_USER }}
+          key: ${{ secrets.GCE_SSH_KEY }}
           script: /opt/yi-chinese/yi-chinese-manage/deploy/deploy.sh web

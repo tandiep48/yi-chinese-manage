@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Server-side deploy for the Yi Chinese stack on Alibaba Cloud ECS.
+# Server-side deploy for the Yi Chinese stack on Google Cloud Compute Engine.
 # Pulls the latest code, rebuilds the affected image(s) and restarts them.
 # Invoked over SSH by GitHub Actions, or run by hand:  deploy.sh [all|web|api]
 set -euo pipefail
