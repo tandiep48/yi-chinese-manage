@@ -118,9 +118,12 @@ The `db` volume starts empty. Load the schema and seed data through the running
 
 ```bash
 cd /opt/yi-chinese
-# Schema (adjust the filename to the one in the backend repo):
-docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
-  < Learning/schema_sql_file/<schema>.sql
+# The db container already has POSTGRES_USER/POSTGRES_DB set — expand them INSIDE
+# it via sh -c '...' (single quotes). Running `psql -U "$POSTGRES_USER"` directly
+# would expand the vars in your host shell, where they are empty (they live in
+# .env, which only Compose reads), and psql would fall back to your Linux login.
+docker compose exec -T db sh -c 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"' \
+  < Learning/schema_sql_file/schema.sql
 ```
 
 Seed content with the backend's `web_app/scripts/import_*.py`. Run them inside
@@ -132,7 +135,7 @@ docker compose exec api python scripts/import_<name>.py
 
 > **Backups (your responsibility with a self-hosted DB):** schedule a daily dump,
 > e.g. a cron entry running
-> `docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > /opt/yi-chinese/backups/db-$(date +\%F).sql.gz`
+> `docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' | gzip > /opt/yi-chinese/backups/db-$(date +\%F).sql.gz`
 > and copy it off-box (a GCS bucket via `gsutil`). Consider migrating to
 > **Cloud SQL for PostgreSQL** later if you want managed backups/HA.
 
