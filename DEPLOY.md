@@ -6,7 +6,7 @@ Postgres database:
 | Component | Repo | Branch | Build | Serves |
 |-----------|------|--------|-------|--------|
 | `web` | `tandiep48/yi-chinese-manage` | `master` | `Dockerfile` (Next.js standalone) | everything except `/api`, `/socket.io` |
-| `api` | `tandiep48/Learning` | `dev_version_2.0` | `web_app/Dockerfile` (Flask + gunicorn eventlet) | `/api/*`, `/socket.io/*` |
+| `api` | `tandiep48/Learning` | `main_2.0` | `web_app/Dockerfile` (Flask + gunicorn eventlet) | `/api/*`, `/socket.io/*` |
 | `db`  | — | — | App Platform managed Postgres | — |
 
 **One origin, no CORS.** App Platform routes `/api` and `/socket.io` to the `api`
@@ -21,28 +21,32 @@ The spec lives in [`.do/app.yaml`](.do/app.yaml).
 
 ## 1. Prerequisites (one-time)
 
-1. Install the DO CLI: `doctl auth init`.
-2. In the DO dashboard, connect GitHub and authorize the **DigitalOcean** app for
-   both `tandiep48/yi-chinese-manage` and `tandiep48/Learning` (required for
-   `deploy_on_push`).
-3. Have the GCS bucket name/URL and, if avatar uploads are needed, the Google
+1. In the [DO dashboard](https://cloud.digitalocean.com/apps), connect GitHub and
+   authorize the **DigitalOcean** app for both `tandiep48/yi-chinese-manage` and
+   `tandiep48/Learning` (required for `deploy_on_push`).
+2. Have the GCS bucket name/URL and, if avatar uploads are needed, the Google
    service-account key JSON.
 
 ## 2. Branch flow
 
 - **Frontend** work happens on `dev` (per CLAUDE.md); `web` deploys from
   **`master`**, so merge `dev → master` to release.
-- **Backend** work and the `api` deploy both live on **`dev_version_2.0`** (the
-  active branch — `dev` is 77 commits behind and would ship stale code).
+- **Backend** work and the `api` deploy both live on **`main_2.0`** (the active
+  branch — `dev` is stale and would ship old code).
 
 `deploy_on_push: true` means a push to those branches redeploys the matching
 component automatically.
 
-## 3. Create the app
+## 3. Create the app (dashboard)
 
-```bash
-doctl apps create --spec .do/app.yaml
-```
+Create the app from the App Spec so the layout matches `.do/app.yaml` exactly:
+
+1. Go to [**Apps → Create → Create App**](https://cloud.digitalocean.com/apps/new).
+2. Choose **Create from App Spec / Import from YAML** (the "Edit your App Spec"
+   option on the create screen), then paste the contents of
+   [`.do/app.yaml`](.do/app.yaml).
+3. Review the parsed resources — `web`, `api`, and the managed `db` — and click
+   **Create Resources**.
 
 This provisions `web`, `api`, and the managed `db`, and injects the DB
 credentials into the `api` component as `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`
@@ -51,8 +55,8 @@ credentials into the `api` component as `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASS
 ## 4. Set secrets
 
 Placeholders in `.do/app.yaml` marked `REPLACE_…` must be set as encrypted values
-(never commit them). In the dashboard (App → Settings → the `api` component →
-Environment Variables), or via `doctl apps update <APP_ID> --spec …`:
+(never commit them). In the dashboard, open **App → Settings → the `api` component
+→ Environment Variables**, add each one, and set its type to **Encrypted**:
 
 - `FLASK_SECRET_KEY` — a stable 64-char hex string (sessions are invalidated on
   restart if this is random):
@@ -64,8 +68,9 @@ Environment Variables), or via `doctl apps update <APP_ID> --spec …`:
 
 ## 5. Load the database schema + data
 
-The managed DB starts empty. Connect with the credentials from
-`doctl apps list` / the DB page (or `${db.DATABASE_URL}`), then:
+The managed DB starts empty. Get the connection string from the dashboard
+(**App → the `db` component → Connection Details**, or the database's own page),
+then:
 
 1. Load the schema from the backend repo's `schema_sql_file/` (e.g.
    `psql "$DATABASE_URL" -f schema_sql_file/<schema>.sql`).
@@ -115,8 +120,8 @@ The managed DB starts empty. Connect with the credentials from
 `.do/app.yaml` uses `production: false` — App Platform's smaller **dev database**,
 which is still managed Postgres and fine to start on. For a dedicated managed
 cluster (backups, larger sizes, standby), set `production: true` (and optionally
-`cluster_name:` to attach an existing cluster), then re-apply the spec. The
-`api` env bindings (`${db.*}`) don't change.
+`cluster_name:` to attach an existing cluster) in **App → Settings → Edit your App
+Spec**, then **Save** to re-apply. The `api` env bindings (`${db.*}`) don't change.
 
 If you enforce certificate verification, switch `DB_SSLMODE` to `verify-full` and
 supply the DB's CA cert (`${db.CA_CERT}`); `require` (the default here) encrypts

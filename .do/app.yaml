@@ -5,12 +5,12 @@
 # browser talks to a single origin and there is no CORS or cross-site cookie to
 # manage. See DEPLOY.md for the full setup, secrets and cutover steps.
 #
-# Apply with the DigitalOcean CLI (doctl):
-#   doctl apps create --spec .do/app.yaml            # first time
-#   doctl apps update <APP_ID> --spec .do/app.yaml   # subsequent changes
+# Apply from the DO dashboard (https://cloud.digitalocean.com/apps):
+#   Create → Create App → import/paste this App Spec        # first time
+#   App → Settings → Edit your App Spec → paste + Save       # subsequent changes
 #
-# Placeholders marked REPLACE_… are set in the DO dashboard or via
-# `doctl apps update`, never committed here.
+# Placeholders marked REPLACE_… are set in the DO dashboard
+# (App → Settings → component → Environment Variables), never committed here.
 
 name: yi-chinese
 region: sgp # Singapore — nearest DO region; change to taste.
@@ -46,7 +46,7 @@ services:
   - name: api
     github:
       repo: tandiep48/Learning
-      branch: dev_version_2.0
+      branch: main_2.0
       deploy_on_push: true
     source_dir: web_app
     dockerfile_path: web_app/Dockerfile
@@ -77,7 +77,7 @@ services:
       - key: FLASK_SECRET_KEY
         scope: RUN_TIME
         type: SECRET
-        value: REPLACE_WITH_64_CHAR_HEX # doctl/dashboard; do not commit.
+        value: REPLACE_WITH_64_CHAR_HEX # set in dashboard; do not commit.
       - key: GCS_BUCKET_URL
         value: https://storage.googleapis.com/chinese-learning-audio-assets
       - key: GCS_BUCKET_NAME
