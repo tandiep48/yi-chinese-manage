@@ -1,195 +1,222 @@
-# Deploying Yi Chinese to DigitalOcean App Platform
+# Deploying Yi Chinese to Alibaba Cloud (ECS + Docker Compose)
 
-This app ships as **one App Platform app** with two components and one managed
-Postgres database:
+The whole app runs on **one Alibaba Cloud ECS VM** as a small Docker Compose
+stack, fronted by nginx so the browser talks to a **single origin** (no CORS, no
+cross-site cookies):
 
-| Component | Repo | Branch | Build | Serves |
-|-----------|------|--------|-------|--------|
-| `web` | `tandiep48/yi-chinese-manage` | `master` | `Dockerfile` (Next.js standalone) | everything except `/api`, `/socket.io` |
-| `api` | `tandiep48/Learning` | `main_2.0` | `web_app/Dockerfile` (Flask + gunicorn eventlet) | `/api/*`, `/socket.io/*` |
-| `db`  | — | — | App Platform managed Postgres | — |
+| Service | Source | Image | Role |
+|---------|--------|-------|------|
+| `nginx` | `deploy/nginx.conf` | `nginx:1.27-alpine` | Only public port (80/443); routes `/api` + `/socket.io` to `api`, else to `web` |
+| `web`   | `tandiep48/yi-chinese-manage` @ `master` | `Dockerfile` (Next.js standalone) | Frontend |
+| `api`   | `tandiep48/Learning` @ `main_2.0` | `web_app/Dockerfile` (Flask + gunicorn eventlet) | `/api/*`, `/socket.io/*` |
+| `db`    | — | `postgres:16-alpine` | Self-hosted Postgres, private to the docker network, data in the `pgdata` volume |
 
-**One origin, no CORS.** App Platform routes `/api` and `/socket.io` to the `api`
-component and everything else to `web`. The frontend is built with
-`NEXT_PUBLIC_API_URL=""`, so the browser calls the API and the Socket.IO server
-on the **same origin** — no cross-site cookies, no CORS preflights. The Flask
-session cookie just works.
+Compose file: [`deploy/docker-compose.yml`](deploy/docker-compose.yml) ·
+proxy: [`deploy/nginx.conf`](deploy/nginx.conf) ·
+env template: [`deploy/env.example`](deploy/env.example).
 
-The spec lives in [`.do/app.yaml`](.do/app.yaml).
+> **Why one VM?** It's the cheapest option and fits this app: Flask-SocketIO must
+> run a **single** eventlet worker (`WEB_CONCURRENCY=1`) unless you add a Redis
+> message queue, so horizontal scaling isn't in play yet. Scale up (bigger ECS
+> instance) before scaling out.
 
 ---
 
 ## 1. Prerequisites (one-time)
 
-1. **Connect GitHub.** In the DO control panel go to
-   **[Settings → Integrations → GitHub](https://cloud.digitalocean.com/account/api/integrations)**
-   (or accept the "Manage Access" prompt the first time you pick a repo during
-   app creation). Grant the **DigitalOcean** GitHub app access to both
-   `tandiep48/yi-chinese-manage` and `tandiep48/Learning` — App Platform can only
-   watch repos it has been granted, and `Autodeploy` (`deploy_on_push`) needs this.
-2. Have the GCS bucket name/URL ready and, if avatar uploads are needed, the
-   Google service-account key JSON file.
+1. **Region / ICP.** For users outside mainland China, create the ECS in an
+   **international region** (e.g. Singapore, `ap-southeast-1`). Mainland-China
+   regions require an **ICP filing** to serve a public website on port 80/443 —
+   a slow legal/manual process. Pick international unless you specifically need
+   mainland hosting.
+2. **ECS instance.** Ubuntu 22.04 LTS, at least **2 vCPU / 4 GB** (the Next.js
+   build is memory-hungry; on a 2 GB box add swap — see §3). Assign a **public
+   IP** (or bind an EIP).
+3. **Security group.** Allow inbound **22** (SSH — restrict to your IP), **80**,
+   and **443**. Do **not** open 5432; Postgres stays on the docker network.
+4. **SSH key.** Create/hold an SSH key pair for the VM; you'll add the private
+   key to GitHub for CI (§5).
+5. Have the GCS bucket URL/name and, if avatar uploads are needed, the Google
+   service-account key JSON.
 
 ## 2. Branch flow
 
 - **Frontend** work happens on `dev` (per CLAUDE.md); `web` deploys from
   **`master`**, so merge `dev → master` to release.
-- **Backend** work and the `api` deploy both live on **`main_2.0`** (the active
-  branch — `dev` is stale and would ship old code).
+- **Backend** work and the `api` deploy both live on **`main_2.0`**.
 
-`deploy_on_push: true` means a push to those branches redeploys the matching
-component automatically.
+Pushing to those branches triggers the GitHub Actions deploy (§5), which
+`git pull`s and rebuilds only the affected service on the VM.
 
-## 3. Create the app (dashboard)
+## 3. First-time server setup
 
-> **Note:** The control panel has **no "upload/paste YAML" button on the create
-> screen** — that only exists for `doctl`/the API. The reliable web workflow is a
-> two-step one: create a minimal app by connecting one repo through the UI, then
-> **replace its whole spec** with [`.do/app.yaml`](.do/app.yaml) from
-> **Settings → App Spec**. Step 3b makes the running app match this repo's spec
-> exactly (both components + the managed DB), instead of hand-entering every field.
+SSH into the VM and install Docker (Compose v2 ships as the `docker compose`
+plugin):
 
-### 3a. Create a starter app from GitHub
+```bash
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker "$USER"   # log out/in so this takes effect
+```
 
-1. In the control panel, click **Create** (top-right) → **App Platform**.
-2. Under **Create from source code**, choose the **GitHub** tab. Authorize the
-   DigitalOcean GitHub app if prompted (see §1).
-3. **Repository:** select `tandiep48/yi-chinese-manage`. **Branch:** `master`.
-   Leave **Source Directory** as `/`. Keep **Autodeploy** checked. Click **Next**.
-4. On the **Resources** screen App Platform will detect the `Dockerfile`. Don't
-   fine-tune anything here yet (§3b overwrites it) — just click **Next**.
-5. Skip **Environment Variables** (**Next**) and, on **Info**, pick the **region**
-   and confirm the app **name** is `yi-chinese`. Click **Next** → **Create App**.
+*(2 GB instances only)* add swap so `next build` doesn't OOM:
 
-The first build will start; you can let it run or cancel it — the next step
-redeploys anyway.
+```bash
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
 
-### 3b. Replace the spec with `.do/app.yaml`
+Lay out the project root and clone **both** repos side by side:
 
-1. Open the app's **Overview** page → **Settings** tab.
-2. Scroll to the **App Spec** section → click **Edit**.
-3. Select all the YAML in the in-browser editor and replace it with the full
-   contents of [`.do/app.yaml`](.do/app.yaml). (Or use **Download**, edit locally,
-   then **Upload**.)
-4. Click **Save**. Confirm the changes in the diff/preview dialog.
+```bash
+sudo mkdir -p /opt/yi-chinese && sudo chown "$USER" /opt/yi-chinese
+cd /opt/yi-chinese
+git clone -b master   https://github.com/tandiep48/yi-chinese-manage.git
+git clone -b main_2.0 https://github.com/tandiep48/Learning.git
+```
 
-App Platform re-reads the spec and provisions what was missing: the `api`
-component (`tandiep48/Learning`, branch `main_2.0`, `web_app/Dockerfile`), the
-routes for `/api` and `/socket.io`, and the managed `db`. It injects the DB
-credentials into `api` as `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD` (from
-`${db.*}`), and `DB_SSLMODE=require` sets the managed DB's TLS. The app
-auto-redeploys after saving.
+Create the runtime env from the template and fill in real values:
 
-## 4. Set secrets
+```bash
+cp yi-chinese-manage/deploy/env.example .env
+nano .env   # set PUBLIC_ORIGIN, POSTGRES_PASSWORD, FLASK_SECRET_KEY, GCS_*
+```
 
-The `REPLACE_…` placeholders in `.do/app.yaml` ship as `type: SECRET`, so after
-§3b they exist but hold the literal placeholder text. Give them real values:
+- `FLASK_SECRET_KEY` — `python3 -c "import secrets; print(secrets.token_hex(32))"`
+- `POSTGRES_PASSWORD` — a strong password (only used inside the docker network).
+- `PUBLIC_ORIGIN` — `http://<ECS_PUBLIC_IP>` for now; switch to `https://<domain>`
+  after §7.
 
-1. Open the app → **Settings** tab.
-2. In the **Components** list, click the **`api`** component.
-3. Find the **Environment Variables** section → click **Edit**.
-4. For each key below, paste the real value, make sure **Encrypt** is checked,
-   then **Save** (the `api` component redeploys):
+Bring the stack up (builds all four services):
 
-- `FLASK_SECRET_KEY` — a stable 64-char hex string (a random one per restart
-  invalidates every session). Generate it locally with:
-  ```bash
-  python -c "import secrets; print(secrets.token_hex(32))"
-  ```
-- `GCS_SA_KEY_JSON` — *(optional)* the full service-account JSON, pasted as one
-  value. Only needed for avatar uploads; public asset reads work without it. The
-  container writes it to a file and points `GOOGLE_APPLICATION_CREDENTIALS` at it
-  (see `web_app/docker-entrypoint.sh`). If uploads aren't used, delete this row
-  from the spec/variables instead of leaving the placeholder.
+```bash
+cd /opt/yi-chinese
+cp yi-chinese-manage/deploy/docker-compose.yml docker-compose.yml
+docker compose up -d --build
+docker compose ps
+```
 
-> Once saved and encrypted, the value shows as `EV[1:…]` in **Settings → App
-> Spec** — that's expected; do not paste that ciphertext back into the repo file.
+## 4. Load the database schema + data
 
-## 5. Load the database schema + data
+The `db` volume starts empty. Load the schema and seed data through the running
+`db` container (no host Postgres client needed):
 
-The managed DB starts empty. Get its connection string from the dashboard:
+```bash
+cd /opt/yi-chinese
+# Schema (adjust the filename to the one in the backend repo):
+docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
+  < Learning/schema_sql_file/<schema>.sql
+```
 
-1. Open the app → **Settings** tab → click the **`db`** component (or find the DB
-   under **Databases** in the left nav).
-2. In **Connection Details**, choose **Connection string** and **Public network**,
-   then copy it. This is your `DATABASE_URL` for the `psql`/Python steps below.
-3. Under the DB's **Settings → Trusted Sources**, add the IP of the machine you'll
-   run the import from (the managed DB rejects outside connections until you do).
+Seed content with the backend's `web_app/scripts/import_*.py`. Run them inside
+the `api` container so they reuse its `DB_*` env and dependencies:
 
-Then, from a machine that has `psql` and Python:
+```bash
+docker compose exec api python scripts/import_<name>.py
+```
 
-1. Load the schema from the backend repo's `schema_sql_file/`:
-   ```bash
-   psql "$DATABASE_URL" -f schema_sql_file/<schema>.sql
-   ```
-2. Seed content with the repo's `web_app/scripts/import_*.py` (they read the same
-   `DB_*` env vars) plus the dictionary workbook, as your data process requires.
+> **Backups (your responsibility with a self-hosted DB):** schedule a daily dump,
+> e.g. a cron entry running
+> `docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" | gzip > /opt/yi-chinese/backups/db-$(date +\%F).sql.gz`
+> and copy it off-box (Alibaba OSS). Consider migrating to **ApsaraDB RDS for
+> PostgreSQL** later if you want managed backups/standby.
+
+## 5. Continuous deploy (GitHub Actions → SSH)
+
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) redeploys `web` on
+every push to `master`. Add the same workflow to the **Learning** repo on
+`main_2.0`, changing only the last line to run `deploy.sh api`:
+
+```yaml
+# .github/workflows/deploy.yml in tandiep48/Learning
+name: Deploy backend to ECS
+on:
+  push: { branches: [main_2.0] }
+  workflow_dispatch: {}
+concurrency: { group: deploy-api, cancel-in-progress: false }
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.ECS_HOST }}
+          username: ${{ secrets.ECS_USER }}
+          key: ${{ secrets.ECS_SSH_KEY }}
+          script: /opt/yi-chinese/yi-chinese-manage/deploy/deploy.sh api
+```
+
+In **each** repo's **Settings → Secrets and variables → Actions**, add:
+
+- `ECS_HOST` — the VM's public IP.
+- `ECS_USER` — the SSH user (e.g. `root` or your sudo user).
+- `ECS_SSH_KEY` — the **private** key whose public half is in the VM's
+  `~/.ssh/authorized_keys`.
+
+[`deploy/deploy.sh`](deploy/deploy.sh) does the work on the VM: pulls the repo,
+`docker compose up -d --build <service>`, and prunes old images. Run it by hand
+too: `deploy.sh web`, `deploy.sh api`, or `deploy.sh all`.
 
 ## 6. Verify
 
-Wait for both components to show **Deployed** (green) on the app's **Overview**,
-then copy the app's public URL from the top of that page (`<app>.ondigitalocean.app`).
+```bash
+docker compose ps          # all services "running"; db is "healthy"
+docker compose logs -f api # watch for startup / DB-connection errors
+```
 
-- `https://<app>.ondigitalocean.app/learner` renders the frontend.
-- `https://<app>.ondigitalocean.app/api/...` returns JSON from Flask;
-  `/` on the `api` component is its health check (green in **Overview**).
+Then from a browser (or `curl`) against `http://<ECS_PUBLIC_IP>`:
+
+- `/learner` renders the frontend.
+- `/api/...` returns JSON from Flask.
 - Sign in and confirm the session cookie sticks (same-origin).
 - Learn Together (Socket.IO) connects over `/socket.io`.
-- If something 500s, open the failing component → **Runtime Logs** in the
-  dashboard (build issues are under **Build Logs** on the deployment).
+
+## 7. Domain + HTTPS (recommended)
+
+1. Point an A record at the ECS public IP.
+2. Issue a cert (Let's Encrypt via certbot on the host, or an Alibaba SSL cert),
+   mount it into nginx (uncomment the `443` port and `./certs` volume in the
+   compose file), add a `listen 443 ssl;` server block to `nginx.conf`, and
+   redirect 80 → 443.
+3. Set `PUBLIC_ORIGIN=https://<domain>` in `.env` and rebuild `web`
+   (`deploy.sh web`) so the frontend and cookie origin match.
 
 ---
 
 ## Backend specifics
 
 - **Server:** `gunicorn --worker-class eventlet --workers 1` (see
-  `web_app/docker-entrypoint.sh`). `SOCKETIO_ASYNC_MODE=eventlet` is required in
-  prod. **Keep `WEB_CONCURRENCY=1`** — Flask-SocketIO needs a shared message queue
-  (e.g. a Redis component + `message_queue=`) before more than one worker/instance
-  can broadcast correctly. Scale vertically (bigger instance) until then.
-- **ffmpeg** is installed in the image (decodes browser audio for the speaking
-  check).
-- **Vosk speaking model** is *not* bundled by default, to keep the image small and
-  the build offline-safe. The rest of the API runs fine without it; only the
-  speaking endpoint errors until a model is present. To include it, build with
-  `--build-arg INCLUDE_VOSK_MODEL=true` (downloads the small Chinese model), or set
-  `VOSK_MODEL_PATH` to a model you provide.
+  `web_app/docker-entrypoint.sh`). Keep `WEB_CONCURRENCY=1` until a Redis message
+  queue is added; more than one worker breaks Socket.IO rooms/broadcasts.
+- **ffmpeg** is baked into the image (decodes browser audio for the speaking check).
+- **Vosk speaking model** is *not* bundled by default. The rest of the API works
+  without it; only the speaking endpoint errors until a model is present. To
+  include it, uncomment `INCLUDE_VOSK_MODEL: "true"` under the `api` build args in
+  the compose file, or set `VOSK_MODEL_PATH` to a model you mount.
+- **Database TLS:** unset — the app talks to the `db` container over the private
+  docker network in plaintext. Only set `DB_SSLMODE` for an external TLS Postgres.
 
 ## Frontend specifics
 
 - `next.config.ts` sets `output: "standalone"`; the image runs `node server.js`.
-- `NEXT_PUBLIC_*` are **build-time** (inlined into the client bundle), so they are
-  scoped `RUN_AND_BUILD_TIME` in the spec. Changing them requires a rebuild, not
-  just a restart.
+- `NEXT_PUBLIC_*` are **build-time** (inlined into the client bundle), passed as
+  build args in the compose file. Changing them needs a rebuild (`deploy.sh web`),
+  not just a restart.
 - At launch, flip the `/learner` redirects in `next.config.ts` from `permanent:
   false` (307) to `true` (308) once the paths stop moving (noted in that file).
 
-## Database: dev vs managed cluster
+## Local smoke test
 
-`.do/app.yaml` uses `production: false` — App Platform's smaller **dev database**,
-which is still managed Postgres and fine to start on. For a dedicated managed
-cluster (backups, larger sizes, standby), set `production: true` (and optionally
-`cluster_name:` to attach an existing cluster) in **App → Settings → Edit your App
-Spec**, then **Save** to re-apply. The `api` env bindings (`${db.*}`) don't change.
-
-If you enforce certificate verification, switch `DB_SSLMODE` to `verify-full` and
-supply the DB's CA cert (`${db.CA_CERT}`); `require` (the default here) encrypts
-without verifying the CA.
-
-## Local Docker smoke test
+The compose file expects both repos side by side, so mirror the VM layout:
 
 ```bash
-# Frontend
-docker build -t yi-web --build-arg NEXT_PUBLIC_API_URL="" \
-  --build-arg NEXT_PUBLIC_GCS_BUCKET_URL="https://storage.googleapis.com/chinese-learning-audio-assets" .
-docker run --rm -p 3000:3000 yi-web
-
-# Backend (from Learning/web_app)
-docker build -t yi-api .
-docker run --rm -p 8080:8080 --env-file .env yi-api
+mkdir yi-local && cd yi-local
+git clone https://github.com/tandiep48/yi-chinese-manage.git
+git clone https://github.com/tandiep48/Learning.git
+cp yi-chinese-manage/deploy/env.example .env     # set PUBLIC_ORIGIN=http://localhost
+cp yi-chinese-manage/deploy/docker-compose.yml docker-compose.yml
+docker compose up --build
 ```
 
-Same-origin routing (`/api`, `/socket.io`) is provided by App Platform's ingress,
-so a local two-container test needs a reverse proxy in front to mirror it; for a
-quick backend check, set `NEXT_PUBLIC_API_URL=http://localhost:8080` when building
-the web image instead.
+Open `http://localhost/learner` — nginx routes `/api` and `/socket.io` to Flask
+exactly as in production.

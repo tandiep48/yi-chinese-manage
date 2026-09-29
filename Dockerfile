@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # Next.js (standalone) image for the Yi Chinese frontend.
-# See DEPLOY.md for the DigitalOcean App Platform setup this feeds.
+# Built by deploy/docker-compose.yml on the ECS VM. See DEPLOY.md.
 
 # ── deps ─ install node_modules against the lockfile only ─────────────────────
 FROM node:22-alpine AS deps
@@ -17,10 +17,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # NEXT_PUBLIC_* are inlined into the client bundle at build time, so they must be
-# present for `next build`, not just at runtime. App Platform passes build-scoped
-# env vars to the Docker build as ARGs (declared here).
+# present for `next build`, not just at runtime. docker-compose passes them as
+# build ARGs (declared here).
 #   - API URL empty ⇒ the client calls same-origin "/api" and "/socket.io", which
-#     App Platform routes to the api component (no CORS, no cross-site cookies).
+#     nginx routes to the api container (no CORS, no cross-site cookies).
 ARG NEXT_PUBLIC_API_URL=""
 ARG NEXT_PUBLIC_GCS_BUCKET_URL=""
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
@@ -33,7 +33,7 @@ FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
-# App Platform injects PORT; default for local `docker run`.
+# Next listens on PORT; nginx proxies to it on the docker network.
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
 

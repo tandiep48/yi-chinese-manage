@@ -1,0 +1,97 @@
+# Yi Chinese — single-VM stack for Alibaba Cloud ECS (or any Docker host).
+#
+# Four services on one Docker network behind nginx, so the browser sees ONE
+# origin (no CORS, no cross-site cookies): nginx routes /api and /socket.io to
+# the Flask `api` container and everything else to the Next.js `web` container.
+#
+# This file is authored in the frontend repo (yi-chinese-manage/deploy/) but is
+# RUN from /opt/yi-chinese/, where deploy.sh copies it. All relative paths below
+# are therefore resolved against /opt/yi-chinese/, which must contain:
+#   ./yi-chinese-manage/   (this repo)         ./Learning/  (backend repo)
+#   ./.env                 (secrets, not committed — see env.example)
+# See DEPLOY.md for the full setup.
+
+name: yi-chinese
+
+services:
+  # ── Frontend: Next.js (standalone) ─────────────────────────────────────────
+  web:
+    build:
+      context: ./yi-chinese-manage
+      dockerfile: Dockerfile
+      args:
+        # Empty ⇒ the client calls same-origin /api + /socket.io (nginx routes
+        # them to `api`). NEXT_PUBLIC_* are inlined at build time, so a change
+        # here needs a rebuild (deploy.sh web), not just a restart.
+        NEXT_PUBLIC_API_URL: ""
+        NEXT_PUBLIC_GCS_BUCKET_URL: ${NEXT_PUBLIC_GCS_BUCKET_URL}
+    restart: unless-stopped
+    expose:
+      - "3000"
+    depends_on:
+      - api
+
+  # ── Backend: Flask + Socket.IO (gunicorn eventlet) ─────────────────────────
+  api:
+    build:
+      context: ./Learning/web_app
+      dockerfile: Dockerfile
+      # Bundle the Chinese Vosk model so the speaking check works out of the box
+      # (larger image, slower build). Off by default.
+      # args:
+      #   INCLUDE_VOSK_MODEL: "true"
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      SOCKETIO_ASYNC_MODE: eventlet
+      # Keep at 1: Flask-SocketIO needs a shared message queue (Redis) before
+      # more than one worker can broadcast correctly. Scale the VM, not this.
+      WEB_CONCURRENCY: "1"
+      # Talk to the db container over the private docker network — no TLS needed,
+      # so DB_SSLMODE stays unset (the app skips ?sslmode when it is empty).
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      FRONTEND_ORIGIN: ${PUBLIC_ORIGIN}
+    expose:
+      - "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # ── Database: PostgreSQL (self-hosted on this VM) ──────────────────────────
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Not published to the host: reachable only from other services on this
+    # network. Back it up with pg_dump (see DEPLOY.md §6).
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Ingress: nginx reverse proxy (the only public port) ────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      # - "443:443"   # enable after mounting TLS certs (DEPLOY.md §7)
+    volumes:
+      - ./yi-chinese-manage/deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      # - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - web
+      - api
+
+volumes:
+  pgdata:

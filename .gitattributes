@@ -1,0 +1,6 @@
+# These files run on the Linux ECS VM — keep LF regardless of the Windows checkout.
+deploy/deploy.sh   text eol=lf
+deploy/nginx.conf  text eol=lf
+deploy/*.yml       text eol=lf
+deploy/env.example text eol=lf
+.github/**/*.yml   text eol=lf
