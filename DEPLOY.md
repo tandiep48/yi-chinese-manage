@@ -21,11 +21,14 @@ The spec lives in [`.do/app.yaml`](.do/app.yaml).
 
 ## 1. Prerequisites (one-time)
 
-1. In the [DO dashboard](https://cloud.digitalocean.com/apps), connect GitHub and
-   authorize the **DigitalOcean** app for both `tandiep48/yi-chinese-manage` and
-   `tandiep48/Learning` (required for `deploy_on_push`).
-2. Have the GCS bucket name/URL and, if avatar uploads are needed, the Google
-   service-account key JSON.
+1. **Connect GitHub.** In the DO control panel go to
+   **[Settings → Integrations → GitHub](https://cloud.digitalocean.com/account/api/integrations)**
+   (or accept the "Manage Access" prompt the first time you pick a repo during
+   app creation). Grant the **DigitalOcean** GitHub app access to both
+   `tandiep48/yi-chinese-manage` and `tandiep48/Learning` — App Platform can only
+   watch repos it has been granted, and `Autodeploy` (`deploy_on_push`) needs this.
+2. Have the GCS bucket name/URL ready and, if avatar uploads are needed, the
+   Google service-account key JSON file.
 
 ## 2. Branch flow
 
@@ -39,55 +42,101 @@ component automatically.
 
 ## 3. Create the app (dashboard)
 
-Create the app from the App Spec so the layout matches `.do/app.yaml` exactly:
+> **Note:** The control panel has **no "upload/paste YAML" button on the create
+> screen** — that only exists for `doctl`/the API. The reliable web workflow is a
+> two-step one: create a minimal app by connecting one repo through the UI, then
+> **replace its whole spec** with [`.do/app.yaml`](.do/app.yaml) from
+> **Settings → App Spec**. Step 3b makes the running app match this repo's spec
+> exactly (both components + the managed DB), instead of hand-entering every field.
 
-1. Go to [**Apps → Create → Create App**](https://cloud.digitalocean.com/apps/new).
-2. Choose **Create from App Spec / Import from YAML** (the "Edit your App Spec"
-   option on the create screen), then paste the contents of
-   [`.do/app.yaml`](.do/app.yaml).
-3. Review the parsed resources — `web`, `api`, and the managed `db` — and click
-   **Create Resources**.
+### 3a. Create a starter app from GitHub
 
-This provisions `web`, `api`, and the managed `db`, and injects the DB
-credentials into the `api` component as `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD`
-(from `${db.*}` in the spec). `DB_SSLMODE=require` is set for the managed DB's TLS.
+1. In the control panel, click **Create** (top-right) → **App Platform**.
+2. Under **Create from source code**, choose the **GitHub** tab. Authorize the
+   DigitalOcean GitHub app if prompted (see §1).
+3. **Repository:** select `tandiep48/yi-chinese-manage`. **Branch:** `master`.
+   Leave **Source Directory** as `/`. Keep **Autodeploy** checked. Click **Next**.
+4. On the **Resources** screen App Platform will detect the `Dockerfile`. Don't
+   fine-tune anything here yet (§3b overwrites it) — just click **Next**.
+5. Skip **Environment Variables** (**Next**) and, on **Info**, pick the **region**
+   and confirm the app **name** is `yi-chinese`. Click **Next** → **Create App**.
+
+The first build will start; you can let it run or cancel it — the next step
+redeploys anyway.
+
+### 3b. Replace the spec with `.do/app.yaml`
+
+1. Open the app's **Overview** page → **Settings** tab.
+2. Scroll to the **App Spec** section → click **Edit**.
+3. Select all the YAML in the in-browser editor and replace it with the full
+   contents of [`.do/app.yaml`](.do/app.yaml). (Or use **Download**, edit locally,
+   then **Upload**.)
+4. Click **Save**. Confirm the changes in the diff/preview dialog.
+
+App Platform re-reads the spec and provisions what was missing: the `api`
+component (`tandiep48/Learning`, branch `main_2.0`, `web_app/Dockerfile`), the
+routes for `/api` and `/socket.io`, and the managed `db`. It injects the DB
+credentials into `api` as `DB_HOST/DB_PORT/DB_NAME/DB_USER/DB_PASSWORD` (from
+`${db.*}`), and `DB_SSLMODE=require` sets the managed DB's TLS. The app
+auto-redeploys after saving.
 
 ## 4. Set secrets
 
-Placeholders in `.do/app.yaml` marked `REPLACE_…` must be set as encrypted values
-(never commit them). In the dashboard, open **App → Settings → the `api` component
-→ Environment Variables**, add each one, and set its type to **Encrypted**:
+The `REPLACE_…` placeholders in `.do/app.yaml` ship as `type: SECRET`, so after
+§3b they exist but hold the literal placeholder text. Give them real values:
 
-- `FLASK_SECRET_KEY` — a stable 64-char hex string (sessions are invalidated on
-  restart if this is random):
-  `python -c "import secrets; print(secrets.token_hex(32))"`
+1. Open the app → **Settings** tab.
+2. In the **Components** list, click the **`api`** component.
+3. Find the **Environment Variables** section → click **Edit**.
+4. For each key below, paste the real value, make sure **Encrypt** is checked,
+   then **Save** (the `api` component redeploys):
+
+- `FLASK_SECRET_KEY` — a stable 64-char hex string (a random one per restart
+  invalidates every session). Generate it locally with:
+  ```bash
+  python -c "import secrets; print(secrets.token_hex(32))"
+  ```
 - `GCS_SA_KEY_JSON` — *(optional)* the full service-account JSON, pasted as one
   value. Only needed for avatar uploads; public asset reads work without it. The
   container writes it to a file and points `GOOGLE_APPLICATION_CREDENTIALS` at it
-  (see `web_app/docker-entrypoint.sh`). Remove this var if uploads aren't used.
+  (see `web_app/docker-entrypoint.sh`). If uploads aren't used, delete this row
+  from the spec/variables instead of leaving the placeholder.
+
+> Once saved and encrypted, the value shows as `EV[1:…]` in **Settings → App
+> Spec** — that's expected; do not paste that ciphertext back into the repo file.
 
 ## 5. Load the database schema + data
 
-The managed DB starts empty. Get the connection string from the dashboard
-(**App → the `db` component → Connection Details**, or the database's own page),
-then:
+The managed DB starts empty. Get its connection string from the dashboard:
 
-1. Load the schema from the backend repo's `schema_sql_file/` (e.g.
-   `psql "$DATABASE_URL" -f schema_sql_file/<schema>.sql`).
+1. Open the app → **Settings** tab → click the **`db`** component (or find the DB
+   under **Databases** in the left nav).
+2. In **Connection Details**, choose **Connection string** and **Public network**,
+   then copy it. This is your `DATABASE_URL` for the `psql`/Python steps below.
+3. Under the DB's **Settings → Trusted Sources**, add the IP of the machine you'll
+   run the import from (the managed DB rejects outside connections until you do).
+
+Then, from a machine that has `psql` and Python:
+
+1. Load the schema from the backend repo's `schema_sql_file/`:
+   ```bash
+   psql "$DATABASE_URL" -f schema_sql_file/<schema>.sql
+   ```
 2. Seed content with the repo's `web_app/scripts/import_*.py` (they read the same
-   `DB_*` env vars) and the dictionary workbook, as your data process requires.
-
-> Tip: run these from a machine with `psql`/Python using the managed DB's
-> connection string; the DB accepts external connections once you add your IP (or
-> the app) to its trusted sources.
+   `DB_*` env vars) plus the dictionary workbook, as your data process requires.
 
 ## 6. Verify
 
+Wait for both components to show **Deployed** (green) on the app's **Overview**,
+then copy the app's public URL from the top of that page (`<app>.ondigitalocean.app`).
+
 - `https://<app>.ondigitalocean.app/learner` renders the frontend.
 - `https://<app>.ondigitalocean.app/api/...` returns JSON from Flask;
-  `/` on the api component is the health check.
+  `/` on the `api` component is its health check (green in **Overview**).
 - Sign in and confirm the session cookie sticks (same-origin).
 - Learn Together (Socket.IO) connects over `/socket.io`.
+- If something 500s, open the failing component → **Runtime Logs** in the
+  dashboard (build issues are under **Build Logs** on the deployment).
 
 ---
 

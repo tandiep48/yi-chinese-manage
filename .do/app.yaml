@@ -5,12 +5,15 @@
 # browser talks to a single origin and there is no CORS or cross-site cookie to
 # manage. See DEPLOY.md for the full setup, secrets and cutover steps.
 #
-# Apply from the DO dashboard (https://cloud.digitalocean.com/apps):
-#   Create → Create App → import/paste this App Spec        # first time
-#   App → Settings → Edit your App Spec → paste + Save       # subsequent changes
+# Apply from the DO dashboard (https://cloud.digitalocean.com/apps). The create
+# screen has no "paste YAML" option, so:
+#   First time:  create a starter app from the web repo via the UI, then
+#                App → Settings → App Spec → Edit → paste this file → Save.
+#   Changes:     App → Settings → App Spec → Edit → paste + Save (auto-redeploys).
+# See DEPLOY.md §3 for the full click-by-click steps.
 #
 # Placeholders marked REPLACE_… are set in the DO dashboard
-# (App → Settings → component → Environment Variables), never committed here.
+# (App → Settings → api component → Environment Variables), never committed here.
 
 name: yi-chinese
 region: sgp # Singapore — nearest DO region; change to taste.
