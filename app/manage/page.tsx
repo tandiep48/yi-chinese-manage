@@ -1,6 +1,13 @@
+"use client";
+
 // app/manage/page.tsx
 // Dashboard — stat cards showing total vocab, total passages, and HSK breakdown.
+// Client component (like every other /manage page): the counts are fetched in
+// the browser, where the same-origin "/api" URL resolves and the Flask-Login
+// session cookie is sent. A server-side fetch here would have neither, and would
+// also stall static prerendering at build time.
 
+import { useEffect, useState } from "react";
 import { TopBar } from "@/components/layout/TopBar";
 import { Badge } from "@/components/shared/manager_ui/Badge/Badge";
 import { listVocab } from "@/lib/api/manage/vocab";
@@ -8,35 +15,51 @@ import { listPassages } from "@/lib/api/manage/passage";
 import { HSK_LEVELS } from "@/lib/types/common";
 import Link from "next/link";
 
-async function fetchStats() {
-  try {
-    const [vocabRes, passageRes, ...hskResults] = await Promise.allSettled([
-      listVocab(1, 1),
-      listPassages(1, 1),
-      ...HSK_LEVELS.map((level) => listVocab(1, 1, level)),
-    ]);
-
-    const totalVocab =
-      vocabRes.status === "fulfilled" ? vocabRes.value.total : null;
-    const totalPassages =
-      passageRes.status === "fulfilled" ? passageRes.value.total : null;
-
-    const hskBreakdown = HSK_LEVELS.map((level, i) => ({
-      level,
-      count:
-        hskResults[i].status === "fulfilled"
-          ? (hskResults[i] as PromiseFulfilledResult<{ total: number }>).value.total
-          : 0,
-    }));
-
-    return { totalVocab, totalPassages, hskBreakdown };
-  } catch {
-    return { totalVocab: null, totalPassages: null, hskBreakdown: [] };
-  }
+interface Stats {
+  totalVocab: number | null;
+  totalPassages: number | null;
+  hskCounts: Record<string, number>;
 }
 
-export default async function DashboardPage() {
-  const { totalVocab, totalPassages, hskBreakdown } = await fetchStats();
+async function fetchStats(): Promise<Stats> {
+  const [vocabRes, passageRes, ...hskResults] = await Promise.allSettled([
+    listVocab(1, 1),
+    listPassages(1, 1),
+    ...HSK_LEVELS.map((level) => listVocab(1, 1, level)),
+  ]);
+
+  const totalVocab =
+    vocabRes.status === "fulfilled" ? vocabRes.value.total : null;
+  const totalPassages =
+    passageRes.status === "fulfilled" ? passageRes.value.total : null;
+
+  const hskCounts: Record<string, number> = {};
+  HSK_LEVELS.forEach((level, i) => {
+    const res = hskResults[i];
+    hskCounts[level] = res.status === "fulfilled" ? res.value.total : 0;
+  });
+
+  return { totalVocab, totalPassages, hskCounts };
+}
+
+export default function DashboardPage() {
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    fetchStats()
+      .then((s) => active && setStats(s))
+      .catch(
+        () =>
+          active &&
+          setStats({ totalVocab: null, totalPassages: null, hskCounts: {} })
+      )
+      .finally(() => active && setLoading(false));
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="flex flex-col flex-1 overflow-auto">
@@ -55,7 +78,8 @@ export default async function DashboardPage() {
             <StatCard
               id="stat-vocab"
               label="Total Vocabulary"
-              value={totalVocab}
+              value={stats?.totalVocab ?? null}
+              loading={loading}
               icon="📖"
               href="/manage/vocab"
               colour="from-indigo-500 to-violet-500"
@@ -63,7 +87,8 @@ export default async function DashboardPage() {
             <StatCard
               id="stat-passages"
               label="Total Passages"
-              value={totalPassages}
+              value={stats?.totalPassages ?? null}
+              loading={loading}
               icon="📝"
               href="/manage/passage"
               colour="from-sky-500 to-cyan-400"
@@ -72,6 +97,7 @@ export default async function DashboardPage() {
               id="stat-levels"
               label="HSK Levels"
               value={HSK_LEVELS.length}
+              loading={false}
               icon="🎯"
               colour="from-emerald-500 to-teal-400"
             />
@@ -84,7 +110,7 @@ export default async function DashboardPage() {
             Vocabulary by HSK Level
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {hskBreakdown.map(({ level, count }) => (
+            {HSK_LEVELS.map((level) => (
               <Link
                 key={level}
                 href={`/manage/vocab?hsk_level=${level}`}
@@ -93,7 +119,11 @@ export default async function DashboardPage() {
               >
                 <Badge label={level} hskLevel={level} />
                 <span className="text-2xl font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
-                  {count}
+                  {loading ? (
+                    <span className="text-slate-300">…</span>
+                  ) : (
+                    stats?.hskCounts[level] ?? 0
+                  )}
                 </span>
                 <span className="text-[10px] text-slate-400">words</span>
               </Link>
@@ -134,12 +164,13 @@ interface StatCardProps {
   id: string;
   label: string;
   value: number | null;
+  loading: boolean;
   icon: string;
   colour: string;
   href?: string;
 }
 
-function StatCard({ id, label, value, icon, colour, href }: StatCardProps) {
+function StatCard({ id, label, value, loading, icon, colour, href }: StatCardProps) {
   const content = (
     <div
       id={id}
@@ -151,7 +182,9 @@ function StatCard({ id, label, value, icon, colour, href }: StatCardProps) {
         <div>
           <p className="text-xs font-medium text-slate-500">{label}</p>
           <p className="mt-1 text-3xl font-bold text-slate-800">
-            {value === null ? (
+            {loading ? (
+              <span className="text-slate-300 text-lg">…</span>
+            ) : value === null ? (
               <span className="text-slate-300 text-lg">Unavailable</span>
             ) : (
               value.toLocaleString()
