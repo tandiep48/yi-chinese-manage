@@ -253,10 +253,10 @@
   }
 }
 
-/* ── Body: the tab panel and, on wide screens, the current-lesson rail ──
+/* ── Main: the tab panel and, on wide screens, the current-lesson rail ──
    A flex item so the sticky tab bar above it still works (see the note on
    `.learner-home`); the two-column split lives here rather than on the root. */
-.learner-home-body {
+.learner-home-main {
   display: grid;
   grid-template-columns: 1fr;
   gap: 16px;
@@ -334,7 +334,7 @@
 @media (min-width: 1024px) {
   /* Only split when the rail is present, so a signed-out home (no rail) keeps the
      panel full width instead of reserving an empty column. */
-  .learner-home-body.has-aside {
+  .learner-home-main--split {
     grid-template-columns: minmax(0, 1fr) 320px;
     align-items: start;
     gap: 24px;

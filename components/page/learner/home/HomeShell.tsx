@@ -69,8 +69,9 @@ export function HomeShell() {
 
       {/* The panel and, for a signed-in learner, the current-lesson rail beside
           it. The rail is visible from every tab, so it lives in the shell rather
-          than inside any one panel. */}
-      <div className={`learner-home-body${user ? " has-aside" : ""}`}>
+          than inside any one panel. The `--split` modifier turns on the two-column
+          layout only when the rail is present. */}
+      <div className={`learner-home-main${user ? " learner-home-main--split" : ""}`}>
         <div
           className="learner-home-panel"
           id={`learner-home-panel-${home.tab}`}
