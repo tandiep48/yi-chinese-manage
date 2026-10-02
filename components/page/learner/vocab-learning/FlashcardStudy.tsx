@@ -33,6 +33,8 @@ export function FlashcardStudy({
   error,
   passageId,
   shell = true,
+  hideSummaryButton = false,
+  lockAtEnd = false,
 }: {
   words: LessonVocabRow[];
   loading: boolean;
@@ -43,6 +45,10 @@ export function FlashcardStudy({
   // The milestone already mounts LessonStudyShell around every step, so it opts
   // out rather than nesting a second shell (and a second sidebar) inside it.
   shell?: boolean;
+  // Milestone chrome (step 2), forwarded to FlashcardView: hide the in-card
+  // Summary shortcut and lock the last card instead of showing Finish.
+  hideSummaryButton?: boolean;
+  lockAtEnd?: boolean;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -121,6 +127,8 @@ export function FlashcardStudy({
           words={learningWords.length ? learningWords : words}
           onOpenStroke={openStroke}
           onShowSummary={() => setScreen("summary")}
+          hideSummaryButton={hideSummaryButton}
+          lockAtEnd={lockAtEnd}
         />
       )}
 

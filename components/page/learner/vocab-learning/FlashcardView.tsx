@@ -27,10 +27,17 @@ export function FlashcardView({
   words,
   onOpenStroke,
   onShowSummary,
+  hideSummaryButton = false,
+  lockAtEnd = false,
 }: {
   words: LessonVocabRow[];
   onOpenStroke: (word: string, pinyin: string) => void;
   onShowSummary: () => void;
+  // Milestone chrome (step 2): the host drives advancing with its own Continue
+  // button, so the in-card Summary shortcut is hidden and the last card locks
+  // instead of turning Next into a Finish that jumps back to the summary.
+  hideSummaryButton?: boolean;
+  lockAtEnd?: boolean;
 }) {
   const { t, lang } = useT();
 
@@ -103,7 +110,7 @@ export function FlashcardView({
 
   function goNext() {
     if (index < total - 1) setIndex((i) => i + 1);
-    else onShowSummary();
+    else if (!lockAtEnd) onShowSummary();
   }
 
   function shuffle() {
@@ -203,16 +210,23 @@ export function FlashcardView({
         <button type="button" className="vl-nav-btn" onClick={goPrev} disabled={index === 0}>
           &larr; {t("reading.prev")}
         </button>
-        <button type="button" className="vl-train-btn" onClick={onShowSummary}>
-          <FontAwesomeIcon icon={faTableList} />
-          <span>{t("reading.summary")}</span>
-        </button>
+        {!hideSummaryButton && (
+          <button type="button" className="vl-train-btn" onClick={onShowSummary}>
+            <FontAwesomeIcon icon={faTableList} />
+            <span>{t("reading.summary")}</span>
+          </button>
+        )}
         <button type="button" className="vl-train-btn" onClick={shuffle} title={t("vocab_learning.shuffle_words_title")}>
           <FontAwesomeIcon icon={faShuffle} />
           <span>{t("vocab_learning.shuffle")}</span>
         </button>
-        <button type="button" className="vl-nav-btn" onClick={goNext}>
-          {isLast ? t("vocab_learning.finish") : t("reading.next")} &rarr;
+        <button
+          type="button"
+          className="vl-nav-btn"
+          onClick={goNext}
+          disabled={lockAtEnd && isLast}
+        >
+          {isLast && !lockAtEnd ? t("vocab_learning.finish") : t("reading.next")} &rarr;
         </button>
       </div>
 

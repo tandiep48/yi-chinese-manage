@@ -244,6 +244,8 @@ function MilestonePart({
             error={overview.vocabError}
             passageId={passageId}
             shell={false}
+            hideSummaryButton
+            lockAtEnd
           />
         )}
 
@@ -271,6 +273,9 @@ function MilestonePart({
               lines={passage.lines ?? []}
               folder={lessonAudioFolder(passage)}
               onShowSummary={() => goToStep(4)}
+              hideSummaryButton
+              hideBackSummary
+              lockAtEnd
             />
           ) : (
             <p className="milestone-state">{t("reading.loading")}</p>

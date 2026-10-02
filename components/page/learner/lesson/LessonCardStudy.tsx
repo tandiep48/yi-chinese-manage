@@ -19,11 +19,20 @@ export function LessonCardStudy({
   lines,
   folder,
   onShowSummary,
+  hideSummaryButton = false,
+  hideBackSummary = false,
+  lockAtEnd = false,
 }: {
   lines: LessonPassageLine[];
   // Lesson-audio folder for the passage (HSK level or book code).
   folder: string;
   onShowSummary: () => void;
+  // Milestone chrome (step 5): the host drives advancing with its own Continue
+  // button, so the in-card Summary controls are hidden and the last line locks
+  // instead of turning Next into a Finish that jumps back to the summary.
+  hideSummaryButton?: boolean;
+  hideBackSummary?: boolean;
+  lockAtEnd?: boolean;
 }) {
   const { t, lang } = useT();
 
@@ -90,7 +99,7 @@ export function LessonCardStudy({
 
   function goNext() {
     if (index < total - 1) setIndex((i) => i + 1);
-    else onShowSummary();
+    else if (!lockAtEnd) onShowSummary();
   }
 
   function onTypingChange(value: string) {
@@ -125,9 +134,11 @@ export function LessonCardStudy({
   return (
     <div id="screen-learning" className="lesson-line-learning">
       <div className="vl-learning-topbar">
-        <button type="button" className="btn secondary" onClick={onShowSummary}>
-          &larr; {t("reading.summary")}
-        </button>
+        {!hideBackSummary && (
+          <button type="button" className="btn secondary" onClick={onShowSummary}>
+            &larr; {t("reading.summary")}
+          </button>
+        )}
         <span className="vl-counter">
           {index + 1} / {total}
         </span>
@@ -168,12 +179,19 @@ export function LessonCardStudy({
         <button type="button" className="vl-nav-btn" onClick={goPrev} disabled={index === 0}>
           &larr; {t("reading.prev")}
         </button>
-        <button type="button" className="vl-train-btn" onClick={onShowSummary}>
-          <FontAwesomeIcon icon={faTableList} />
-          <span>{t("reading.summary")}</span>
-        </button>
-        <button type="button" className="vl-nav-btn" onClick={goNext}>
-          {isLast ? t("grammar.finish") : t("reading.next")} &rarr;
+        {!hideSummaryButton && (
+          <button type="button" className="vl-train-btn" onClick={onShowSummary}>
+            <FontAwesomeIcon icon={faTableList} />
+            <span>{t("reading.summary")}</span>
+          </button>
+        )}
+        <button
+          type="button"
+          className="vl-nav-btn"
+          onClick={goNext}
+          disabled={lockAtEnd && isLast}
+        >
+          {isLast && !lockAtEnd ? t("grammar.finish") : t("reading.next")} &rarr;
         </button>
       </div>
 
