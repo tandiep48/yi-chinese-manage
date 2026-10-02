@@ -65,7 +65,7 @@ export function HomeShell() {
 
   return (
     <>
-      <div className="learner-home">
+      <div className={`learner-home${user ? " has-rail" : ""}`}>
         <HomeTabs tab={home.tab} counts={{ review: reviewCount }} onSelect={home.requestTab} />
 
         {/* The tab panel only. The current-lesson rail is NOT grouped in here — it
@@ -115,11 +115,11 @@ export function HomeShell() {
       </div>
 
       {/* Current-lesson rail: a sibling of `.learner-home`, not a child, so it is
-          not grouped with the tabs/panel. The dock only aligns it to the same page
-          column (width + gutters), since the layout's <main> adds no padding. */}
+          not grouped with the tabs/panel. On web it floats to the right as a fixed
+          rail (Duolingo-style); below lg it stacks under the panel. */}
       {user && (
         <div className="learner-home-aside-dock">
-          <CurrentLessonPanel onContinue={() => home.requestTab("lesson")} />
+          <CurrentLessonPanel />
         </div>
       )}
     </>

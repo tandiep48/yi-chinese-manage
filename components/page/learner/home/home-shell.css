@@ -263,9 +263,13 @@
 
 /* ── Current-lesson rail dock ──
    The rail is a sibling of `.learner-home`, not a child, so it is not grouped
-   with the tabs/panel. This dock gives it the same page column as the home block
-   — the layout's <main> adds no padding, so the width cap, centering and side
-   gutters live here. */
+   with the tabs/panel.
+
+   Below lg it stacks under the panel as a normal block, aligned to the same page
+   column (the layout's <main> adds no padding, so the width cap and gutters live
+   here). At lg and up it floats to the right as a fixed rail (Duolingo-style),
+   staying put while the panel scrolls; `.learner-home.has-rail` reserves the
+   matching space on the right so the panel never slides under it. */
 .learner-home-aside-dock {
   box-sizing: border-box;
   width: 100%;
@@ -319,32 +323,35 @@
   background: var(--learner-primary);
   transition: width 0.3s ease;
 }
-.learner-home-lesson-continue {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 4px;
-  border: 0;
-  border-radius: 12px;
-  background: var(--learner-primary);
-  color: #ffffff;
-  font: inherit;
-  font-weight: 600;
-  padding: 12px 16px;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.learner-home-lesson-continue:hover {
-  background: var(--learner-primary-hover);
-}
-.learner-home-lesson-continue:focus-visible {
-  outline: 2px solid var(--learner-primary);
-  outline-offset: 2px;
-}
 
 @media (min-width: 768px) {
   .learner-home-aside-dock {
     padding: 0 24px 24px;
+  }
+}
+
+/* ── Duolingo-style right rail (web) ──
+   Rail width + the gap and gutter around it; shared by the fixed rail and the
+   space the panel reserves so the two always line up. */
+@media (min-width: 1024px) {
+  .learner-home-aside-dock {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 320px;
+    max-width: 320px;
+    max-height: calc(100vh - 48px);
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+  }
+
+  /* Only a signed-in home has the rail, so only it gives up the right space —
+     a signed-out home stays centred and full width. */
+  .learner-home.has-rail {
+    max-width: none;
+    margin: 0;
+    /* rail (320) + gap (24) + right gutter (24) */
+    padding-right: 368px;
   }
 }

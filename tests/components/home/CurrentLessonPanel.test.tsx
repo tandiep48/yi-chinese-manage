@@ -1,12 +1,11 @@
 // tests/components/home/CurrentLessonPanel.test.tsx
 // The learner home's current-lesson rail: a loading skeleton, an empty state that
-// points at the picker, and the populated card with lesson context, milestone
-// progress and a Continue action. The two data hooks are mocked; i18n is real so
-// assertions use the shipped EN strings.
+// points at the picker, and the populated card with lesson context and milestone
+// progress. The card is informational — it carries no Continue button. The two
+// data hooks are mocked; i18n is real so assertions use the shipped EN strings.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import { useCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { useLessonMilestone } from "@/hooks/lesson/useLessonMilestone";
@@ -48,13 +47,12 @@ const DASH_LESSON = {
   updated_at: null,
 };
 
-function renderPanel(onContinue = vi.fn()) {
+function renderPanel() {
   render(
     <I18nProvider>
-      <CurrentLessonPanel onContinue={onContinue} />
+      <CurrentLessonPanel />
     </I18nProvider>
   );
-  return onContinue;
 }
 
 beforeEach(() => {
@@ -67,7 +65,7 @@ describe("CurrentLessonPanel", () => {
     mockLesson.mockReturnValue({ loading: true, lesson: null, error: null });
     const { container } = render(
       <I18nProvider>
-        <CurrentLessonPanel onContinue={vi.fn()} />
+        <CurrentLessonPanel />
       </I18nProvider>
     );
     expect(container.querySelector("[aria-busy='true']")).not.toBeNull();
@@ -80,12 +78,11 @@ describe("CurrentLessonPanel", () => {
     expect(screen.getByRole("link", { name: "Browse lessons" })).toHaveAttribute("href", "/learner/hsk");
   });
 
-  it("shows the lesson context, milestone progress and a Continue action", async () => {
-    const user = userEvent.setup();
+  it("shows the lesson context and milestone progress, with no Continue button", () => {
     mockLesson.mockReturnValue({ loading: false, lesson: DASH_LESSON, error: null });
     mockMilestone.mockReturnValue(milestone(3, [1, 2]));
 
-    const onContinue = renderPanel();
+    renderPanel();
 
     expect(screen.getByText("HSK2 · Lesson 3 · Part 1")).toBeInTheDocument();
     expect(screen.getByText(/Step 3 of 6/)).toBeInTheDocument();
@@ -93,7 +90,6 @@ describe("CurrentLessonPanel", () => {
     expect(bar).toHaveAttribute("aria-valuenow", "2");
     expect(bar).toHaveAttribute("aria-valuemax", "6");
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
-    expect(onContinue).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("button", { name: /Continue/ })).toBeNull();
   });
 });
