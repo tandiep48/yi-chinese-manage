@@ -138,23 +138,14 @@ export function LearnerSidebar() {
         ].join(" ")}
         style={{ backgroundColor: "var(--learner-nav)" }}
       >
-        {/* Logo + drawer close */}
-        <div className={`flex items-center gap-2 px-4 py-4 ${collapsed ? "md:justify-center md:px-2" : ""}`}>
-          <Link
-            href={LEARNER_HOME}
-            className="flex flex-1 items-center gap-2 overflow-hidden"
-            onClick={closeDrawer}
-          >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/20 text-sm font-bold">
-              易
-            </span>
-            <span className={`truncate text-sm font-extrabold ${hideLabel}`}>Yi Chinese</span>
-          </Link>
+        {/* Drawer close (mobile only) — the brand logo was removed, so on desktop
+            the rail starts straight at the nav and this row collapses away. */}
+        <div className="flex items-center justify-end px-4 py-4 md:hidden">
           <button
             type="button"
             aria-label={t("widgets.close")}
             onClick={closeDrawer}
-            className="rounded-lg px-2 py-1.5 hover:bg-white/15 md:hidden"
+            className="rounded-lg px-2 py-1.5 hover:bg-white/15"
           >
             <FontAwesomeIcon icon={faXmark} />
           </button>
