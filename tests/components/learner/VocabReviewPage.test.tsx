@@ -126,22 +126,37 @@ describe("VocabReviewPage", () => {
     expect(push).toHaveBeenCalledWith("/learner/vocab-training-batch");
   });
 
-  it("offers Load more only while pages remain, then appends them", async () => {
+  it("shows no pager for a single page of results", async () => {
+    mockReview.mockResolvedValue(response([row("独")]));
+    renderPage();
+    await screen.findByText("独");
+
+    expect(screen.queryByRole("button", { name: "Next page" })).toBeNull();
+  });
+
+  it("navigates to the next page and loads its rows", async () => {
     mockReview.mockResolvedValueOnce(
-      response([row("前")], { page: 1, total_pages: 2, total: 2 })
+      response([row("前")], { page: 1, total_pages: 2, total: 60 })
     );
     const user = userEvent.setup();
     renderPage();
     await screen.findByText("前");
 
+    // Page 1: Previous disabled, Next available, the "1-50 of 60" range shown.
+    expect(screen.getByRole("button", { name: "Previous page" })).toBeDisabled();
+    expect(screen.getByText("1-50 of 60")).toBeInTheDocument();
+
     mockReview.mockResolvedValueOnce(
-      response([row("后")], { page: 2, total_pages: 2, total: 2 })
+      response([row("后")], { page: 2, total_pages: 2, total: 60 })
     );
-    await user.click(screen.getByRole("button", { name: "Load more" }));
+    await user.click(screen.getByRole("button", { name: "Next page" }));
 
     await screen.findByText("后");
+    expect(mockReview).toHaveBeenLastCalledWith(2, 50);
+    // The first page's rows are replaced, not appended.
+    expect(screen.queryByText("前")).toBeNull();
     await waitFor(() =>
-      expect(screen.queryByRole("button", { name: "Load more" })).toBeNull()
+      expect(screen.getByRole("button", { name: "Previous page" })).toBeEnabled()
     );
   });
 });
