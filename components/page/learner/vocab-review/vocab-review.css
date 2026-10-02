@@ -58,6 +58,69 @@
   white-space: nowrap;
 }
 
+/* ── Numbered pager ──
+   Own leaf classes (vocab-select.css / vocab-table.css define none of these), so
+   no rule can tie with them at equal specificity and be decided by chunk load
+   order (§2). --vs-* tokens are declared on .vocab-select, this same element. */
+.vocab-review .review-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.vocab-review .review-page-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 38px;
+  height: 38px;
+  padding: 0 10px;
+  border: 1px solid var(--vs-border, rgba(87, 104, 86, 0.2));
+  border-radius: 10px;
+  background: var(--vs-card, #ffffff);
+  color: var(--vs-text, #2f3a2e);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.vocab-review .review-page-btn:hover:not(:disabled):not(.is-active) {
+  background: rgba(0, 122, 97, 0.08);
+  border-color: var(--vs-primary, #007a61);
+}
+.vocab-review .review-page-btn:focus-visible {
+  outline: 2px solid var(--vs-primary, #007a61);
+  outline-offset: 2px;
+}
+.vocab-review .review-page-btn.is-active {
+  background: var(--vs-primary, #007a61);
+  border-color: var(--vs-primary, #007a61);
+  color: #ffffff;
+}
+.vocab-review .review-page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.vocab-review .review-page-ellipsis {
+  min-width: 24px;
+  text-align: center;
+  color: var(--vs-text-muted);
+  font-weight: 700;
+}
+
+.vocab-review .review-page-info {
+  flex-basis: 100%;
+  margin-top: 4px;
+  text-align: center;
+  color: var(--vs-text-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 @media (max-width: 760px) {
   .vocab-review .review-heading {
     font-size: 1.15rem;

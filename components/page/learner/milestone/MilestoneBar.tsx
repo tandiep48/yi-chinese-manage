@@ -39,8 +39,17 @@ export function MilestoneBar({ step, totalSteps, isCompleted, onSelect }: Milest
         {steps.map((n) => {
           const done = isCompleted(n);
           const current = n === step;
+          // The connector leading into this step reads as complete once the
+          // previous step is done, so the finished path fills in as one line.
+          const linkDone = n > 1 && isCompleted(n - 1);
           return (
             <li key={n} className="milestone-segment-item">
+              {n > 1 && (
+                <span
+                  className={`milestone-connector${linkDone ? " is-done" : ""}`}
+                  aria-hidden
+                />
+              )}
               <button
                 type="button"
                 className={`milestone-segment${done ? " is-done" : ""}${current ? " is-current" : ""}`}

@@ -84,4 +84,25 @@ describe("FlashcardView", () => {
     fireEvent.click(screen.getByRole("button", { name: /reading.summary/ }));
     expect(onShowSummary).toHaveBeenCalledTimes(1);
   });
+
+  // ── Milestone chrome (step 2) ──
+  it("hides the Summary button but keeps shuffle when hideSummaryButton is set", () => {
+    setup({ hideSummaryButton: true });
+    expect(screen.queryByRole("button", { name: /reading.summary/ })).toBeNull();
+    expect(screen.getByRole("button", { name: /vocab_learning.shuffle/ })).toBeInTheDocument();
+  });
+
+  it("locks the last card instead of showing Finish when lockAtEnd is set", () => {
+    const { onShowSummary } = setup({ lockAtEnd: true });
+    fireEvent.click(screen.getByRole("button", { name: /reading.next/ }));
+    expect(screen.getByText("2 / 2")).toBeInTheDocument();
+
+    // Still labelled "Next" (never Finish), now disabled, and it does not fall
+    // back to the summary — the host's Continue button advances instead.
+    expect(screen.queryByRole("button", { name: /vocab_learning.finish/ })).toBeNull();
+    const next = screen.getByRole("button", { name: /reading.next/ });
+    expect(next).toBeDisabled();
+    fireEvent.click(next);
+    expect(onShowSummary).not.toHaveBeenCalled();
+  });
 });

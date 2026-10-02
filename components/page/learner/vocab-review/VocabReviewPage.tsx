@@ -12,8 +12,8 @@
 // that /learner/vocab does, so review gets that page's study tools — column hide,
 // per-cell reveal, shuffle, play-all, stroke order — for free and there is one
 // table to maintain instead of two. Only what is genuinely different lives here:
-// the heading block, the loaded count, and "Load more" in place of pagination
-// (the review list grows by appending, it does not page).
+// the heading block, the total count, and the review-scoped numbered pager (the
+// review list is browsed a page at a time, 50 words per page).
 //
 // `.vocab-review` is a second class on the SAME element, never a wrapper, and
 // vocab-review.css styles only leaf classes that vocab-select.css and
@@ -26,8 +26,11 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
-import { useVocabReview } from "@/hooks/vocab/useVocabReview";
+import { useVocabReview, REVIEW_PAGE_SIZE } from "@/hooks/vocab/useVocabReview";
+import { getPageNumbers } from "@/lib/recommend/recommendLogic";
 import { VocabTable } from "@/components/page/learner/vocab/VocabTable";
 import {
   VocabStrokeModal,
@@ -111,7 +114,7 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
               <h1 className="review-heading">
                 {t("vocab_review.heading")}
                 {showTable && (
-                  <span className="review-count">{review.rows.length}</span>
+                  <span className="review-count">{review.totalItems}</span>
                 )}
               </h1>
               <p className="review-subtitle">{t("vocab_review.subtitle")}</p>
@@ -137,9 +140,8 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
               isSelected={review.isSelected}
               allOnPageSelected={review.allSelected}
               onToggleWord={review.toggleWord}
-              // The review list is never paginated, so the table's visible rows
-              // and the hook's loaded rows are the same set — shuffle reorders
-              // them, it does not filter.
+              // The table's visible rows are the current page's rows; select-all
+              // ticks exactly them. Picks on other pages are kept by the hook.
               onTogglePage={(_rows, checked) => review.toggleAll(checked)}
               onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
               onStrokeAll={openStrokeAll}
@@ -148,16 +150,54 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
             <div className="vocab-table-state">{stateMessage}</div>
           )}
 
-          {review.canLoadMore && (
-            <div className="vocab-pagination">
+          {showTable && review.totalPages > 1 && (
+            <div className="review-pagination">
               <button
                 type="button"
-                className="btn secondary"
-                onClick={review.loadMore}
-                disabled={review.loadingMore}
+                className="review-page-btn"
+                aria-label={t("vocab_review.prev_page")}
+                disabled={review.page <= 1 || review.navigating}
+                onClick={() => review.goToPage(review.page - 1)}
               >
-                {t("vocab_review.load_more")}
+                <FontAwesomeIcon icon={faChevronLeft} aria-hidden />
               </button>
+
+              {getPageNumbers(review.page, review.totalPages).map((tok, i) =>
+                tok === "..." ? (
+                  <span key={`e${i}`} className="review-page-ellipsis">
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={tok}
+                    type="button"
+                    className={`review-page-btn${tok === review.page ? " is-active" : ""}`}
+                    aria-current={tok === review.page ? "page" : undefined}
+                    disabled={review.navigating}
+                    onClick={() => review.goToPage(tok)}
+                  >
+                    {tok}
+                  </button>
+                )
+              )}
+
+              <button
+                type="button"
+                className="review-page-btn"
+                aria-label={t("vocab_review.next_page")}
+                disabled={review.page >= review.totalPages || review.navigating}
+                onClick={() => review.goToPage(review.page + 1)}
+              >
+                <FontAwesomeIcon icon={faChevronRight} aria-hidden />
+              </button>
+
+              <span className="review-page-info">
+                {t("vocab_review.page_range", {
+                  start: (review.page - 1) * REVIEW_PAGE_SIZE + 1,
+                  end: Math.min(review.page * REVIEW_PAGE_SIZE, review.totalItems),
+                  total: review.totalItems,
+                })}
+              </span>
             </div>
           )}
         </div>

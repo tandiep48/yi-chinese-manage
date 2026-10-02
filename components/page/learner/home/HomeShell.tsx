@@ -64,56 +64,64 @@ export function HomeShell() {
   }, [user, authLoading, home.run]);
 
   return (
-    <div className="learner-home">
-      <HomeTabs tab={home.tab} counts={{ review: reviewCount }} onSelect={home.requestTab} />
+    <>
+      <div className={`learner-home${user ? " has-rail" : ""}`}>
+        <HomeTabs tab={home.tab} counts={{ review: reviewCount }} onSelect={home.requestTab} />
 
-      {/* The panel and, for a signed-in learner, the current-lesson rail beside
-          it. The rail is visible from every tab, so it lives in the shell rather
-          than inside any one panel. */}
-      <div className={`learner-home-body${user ? " has-aside" : ""}`}>
-        <div
-          className="learner-home-panel"
-          id={`learner-home-panel-${home.tab}`}
-          role="tabpanel"
-          aria-labelledby={`learner-home-tab-${home.tab}`}
-        >
-          {/* Switched rather than mapped, so each panel takes exactly the props it
-              needs — the two that don't run anything yet declare none. */}
-          {home.tab === "review" ? (
-            <ReviewTab run={home.run} setRun={home.setRun} />
-          ) : home.tab === "lesson" ? (
-            <LessonTab run={home.run} setRun={home.setRun} />
-          ) : (
-            <RecommendTab run={home.run} setRun={home.setRun} />
-          )}
-        </div>
-
-        {user && <CurrentLessonPanel onContinue={() => home.requestTab("lesson")} />}
-      </div>
-
-      {home.pendingTab && (
-        <div
-          className="learner-home-guard"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) home.cancelSwitch();
-          }}
-        >
-          <div className="learner-home-guard-box" role="alertdialog" aria-modal="true" aria-labelledby="learner-home-guard-title">
-            <h2 id="learner-home-guard-title" className="learner-home-guard-title">
-              {t("home.guard_title")}
-            </h2>
-            <p className="learner-home-guard-body">{t("home.guard_body")}</p>
-            <div className="learner-home-guard-actions">
-              <button type="button" className="learner-home-guard-stay" onClick={home.cancelSwitch}>
-                {t("home.guard_stay")}
-              </button>
-              <button type="button" className="learner-home-guard-leave" onClick={home.confirmSwitch}>
-                {t("home.guard_leave")}
-              </button>
-            </div>
+        {/* The tab panel only. The current-lesson rail is NOT grouped in here — it
+            sits below as its own sibling block (see the dock after this div). */}
+        <div className="learner-home-main">
+          <div
+            className="learner-home-panel"
+            id={`learner-home-panel-${home.tab}`}
+            role="tabpanel"
+            aria-labelledby={`learner-home-tab-${home.tab}`}
+          >
+            {/* Switched rather than mapped, so each panel takes exactly the props it
+                needs — the two that don't run anything yet declare none. */}
+            {home.tab === "review" ? (
+              <ReviewTab run={home.run} setRun={home.setRun} />
+            ) : home.tab === "lesson" ? (
+              <LessonTab run={home.run} setRun={home.setRun} />
+            ) : (
+              <RecommendTab run={home.run} setRun={home.setRun} />
+            )}
           </div>
         </div>
+
+        {home.pendingTab && (
+          <div
+            className="learner-home-guard"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) home.cancelSwitch();
+            }}
+          >
+            <div className="learner-home-guard-box" role="alertdialog" aria-modal="true" aria-labelledby="learner-home-guard-title">
+              <h2 id="learner-home-guard-title" className="learner-home-guard-title">
+                {t("home.guard_title")}
+              </h2>
+              <p className="learner-home-guard-body">{t("home.guard_body")}</p>
+              <div className="learner-home-guard-actions">
+                <button type="button" className="learner-home-guard-stay" onClick={home.cancelSwitch}>
+                  {t("home.guard_stay")}
+                </button>
+                <button type="button" className="learner-home-guard-leave" onClick={home.confirmSwitch}>
+                  {t("home.guard_leave")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Current-lesson rail: a sibling of `.learner-home`, not a child, so it is
+          not grouped with the tabs/panel. On web it floats to the right as a fixed
+          rail (Duolingo-style); below lg it stacks under the panel. */}
+      {user && (
+        <div className="learner-home-aside-dock">
+          <CurrentLessonPanel />
+        </div>
       )}
-    </div>
+    </>
   );
 }
