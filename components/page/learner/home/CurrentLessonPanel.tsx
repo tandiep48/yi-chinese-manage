@@ -1,11 +1,11 @@
 "use client";
 
 // components/page/learner/home/CurrentLessonPanel.tsx
-// The learner home's right rail: a compact "current lesson" card shown beside the
-// tab panel on wide screens (the current-lesson card the deleted Flask dashboard
-// used to carry). It reads the same lesson the Lesson tab runs — useCurrentLesson
-// is one shared cached request — plus that part's milestone progress, and hands
-// the learner into the Lesson tab to continue.
+// The learner home's right rail: a compact "current lesson" card floated to the
+// right on web (Duolingo-style), showing the current lesson and its milestone
+// progress. It reads the same lesson the Lesson tab runs — useCurrentLesson is one
+// shared cached request — plus that part's milestone progress. It is informational
+// only; it carries no Continue button.
 //
 // It is chrome of the learner home, so every class is a `.learner-home…` the home
 // root owns; it never reaches into a panel's markup (docs/plans/dashboard-tabs.md
@@ -13,14 +13,12 @@
 // just renders the current lesson it is given.
 
 import Link from "next/link";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { useLessonMilestone } from "@/hooks/lesson/useLessonMilestone";
 import { STEP_TITLE_KEYS } from "@/components/page/learner/milestone/MilestoneBar";
 
-export function CurrentLessonPanel({ onContinue }: { onContinue: () => void }) {
+export function CurrentLessonPanel() {
   const { t } = useT();
   const { loading, lesson } = useCurrentLesson();
   // Called unconditionally (hooks rule); an empty id is a no-op inside the hook.
@@ -77,11 +75,6 @@ export function CurrentLessonPanel({ onContinue }: { onContinue: () => void }) {
           </div>
         </>
       )}
-
-      <button type="button" className="learner-home-lesson-continue" onClick={onContinue}>
-        <span>{t("lesson.continue")}</span>
-        <FontAwesomeIcon icon={faArrowRight} aria-hidden />
-      </button>
     </aside>
   );
 }

@@ -229,7 +229,9 @@
     "start_training": "Bắt đầu ({count})",
     "loading": "Đang tải từ vựng của bạn...",
     "load_failed": "Không thể tải từ vựng. Vui lòng thử lại.",
-    "load_more": "Tải thêm",
+    "prev_page": "Trang trước",
+    "next_page": "Trang sau",
+    "page_range": "{start}-{end} trong {total}",
     "empty": "Hiện không có từ nào để ôn tập."
   },
   "grammar": {

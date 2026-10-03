@@ -229,7 +229,9 @@
     "start_training": "Start training ({count})",
     "loading": "Loading your words...",
     "load_failed": "Could not load your words. Please try again.",
-    "load_more": "Load more",
+    "prev_page": "Previous page",
+    "next_page": "Next page",
+    "page_range": "{start}-{end} of {total}",
     "empty": "Nothing to review right now."
   },
   "grammar": {
