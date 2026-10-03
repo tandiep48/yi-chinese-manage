@@ -9,7 +9,7 @@ the browser talks to a **single origin** (no CORS, no cross-site cookies):
 | `nginx` | `deploy/nginx.conf` | `nginx:1.27-alpine` | Only public port (80/443); routes `/api` + `/socket.io` to `api`, else to `web` |
 | `web`   | `tandiep48/yi-chinese-manage` @ `master` | `Dockerfile` (Next.js standalone) | Frontend |
 | `api`   | `tandiep48/Learning` @ `main_2.0` | `web_app/Dockerfile` (Flask + gunicorn eventlet) | `/api/*`, `/socket.io/*` |
-| `db`    | — | `postgres:16-alpine` | Self-hosted Postgres, private to the docker network, data in the `pgdata` volume |
+| `db`    | — | `postgres:18-alpine` | Self-hosted Postgres, private to the docker network, data in the `pgdata` volume |
 
 Compose file: [`deploy/docker-compose.yml`](deploy/docker-compose.yml) ·
 proxy: [`deploy/nginx.conf`](deploy/nginx.conf) ·
