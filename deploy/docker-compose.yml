@@ -70,7 +70,10 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # Postgres 18+ images store data in a version-specific subdirectory and
+      # expect the mount at /var/lib/postgresql (NOT /var/lib/postgresql/data,
+      # the ≤17 convention) — mounting at /data makes PG18 refuse to start.
+      - pgdata:/var/lib/postgresql
     # Not published to the host: reachable only from other services on this
     # network. Back it up with pg_dump (see DEPLOY.md §6).
     healthcheck:
