@@ -32,9 +32,11 @@
 }
 
 /* ── Study layout shell: sidebar + main content ──────────────────────────── */
+/* row-reverse puts the study sidebar on the right while the main column stays in
+   the normal reading flow on the left. */
 .lesson-study .lesson-study-layout {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   align-items: flex-start;
   gap: 24px;
   position: relative;
@@ -42,11 +44,11 @@
 .lesson-study .lesson-study-main {
   flex: 1;
   min-width: 0;
-  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* When collapsed, clear space at top-left for the floating toggle button. */
+/* When collapsed, clear space at top-right for the floating toggle button. */
 .lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
-  padding-left: 52px;
+  padding-right: 52px;
 }
 
 
