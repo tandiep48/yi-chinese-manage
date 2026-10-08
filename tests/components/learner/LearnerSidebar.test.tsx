@@ -79,6 +79,26 @@ describe("LearnerSidebar", () => {
     expect(screen.queryByRole("link", { name: "Login" })).not.toBeInTheDocument();
   });
 
+  it("orders the account block as username, settings, then logout", () => {
+    mockAuth = { user: { username: "tester" }, loading: false, logout: vi.fn() };
+    renderSidebar();
+
+    const username = screen.getByRole("link", { name: /tester/ });
+    const settings = screen.getByRole("button", { name: "Settings" });
+    const logout = screen.getByRole("button", { name: "Logout" });
+
+    // Document order: username → settings → logout.
+    expect(username.compareDocumentPosition(settings) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(settings.compareDocumentPosition(logout) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
+  it("places the collapse toggle above the primary nav", () => {
+    const { container } = renderSidebar();
+    const collapse = screen.getByRole("button", { name: "Collapse menu" });
+    const nav = container.querySelector("nav") as HTMLElement;
+    expect(collapse.compareDocumentPosition(nav) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it("opens the settings modal from the Settings button", async () => {
     const user = userEvent.setup();
     renderSidebar();

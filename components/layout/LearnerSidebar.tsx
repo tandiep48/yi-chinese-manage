@@ -151,6 +151,24 @@ export function LearnerSidebar() {
           </button>
         </div>
 
+        {/* Collapse toggle — desktop rail only, sitting above the nav; the mobile
+            drawer uses its own close button instead. */}
+        <div className="hidden px-2 pt-2 md:block">
+          <button
+            type="button"
+            aria-label={collapsed ? t("nav.expand_menu") : t("nav.collapse_menu")}
+            onClick={toggleCollapsed}
+            className={`${rowCls(false)} w-full`}
+          >
+            <FontAwesomeIcon
+              icon={faChevronLeft}
+              className={`h-4 w-4 shrink-0 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`}
+              fixedWidth
+            />
+            <span className={`truncate ${hideLabel}`}>{t("nav.collapse_menu")}</span>
+          </button>
+        </div>
+
         {/* Primary nav */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
           {NAV_ITEMS.map((item) => (
@@ -167,40 +185,25 @@ export function LearnerSidebar() {
           ))}
         </nav>
 
-        {/* Account + settings */}
+        {/* Account + settings — ordered username, settings, logout. */}
         <div className="space-y-1 border-t border-white/15 px-2 py-2">
           {loading ? null : user ? (
-            <>
-              <Link
-                href="/learner/profile"
-                onClick={closeDrawer}
-                title={collapsed ? user.username : undefined}
-                className={rowCls(isActive(pathname, "/learner/profile"))}
-              >
-                {user.avatar_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- GCS-hosted, arbitrary host
-                  <img src={user.avatar_url} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
-                ) : (
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/25 text-xs font-bold">
-                    {user.username.slice(0, 1).toUpperCase()}
-                  </span>
-                )}
-                <span className={`truncate ${hideLabel}`}>{user.username}</span>
-              </Link>
-              <button
-                type="button"
-                id="topnav-logout-btn"
-                onClick={() => {
-                  closeDrawer();
-                  logout();
-                }}
-                title={collapsed ? t("nav.logout") : undefined}
-                className={`${rowCls(false)} w-full`}
-              >
-                <FontAwesomeIcon icon={faRightFromBracket} className="h-4 w-4 shrink-0" fixedWidth />
-                <span className={`truncate ${hideLabel}`}>{t("nav.logout")}</span>
-              </button>
-            </>
+            <Link
+              href="/learner/profile"
+              onClick={closeDrawer}
+              title={collapsed ? user.username : undefined}
+              className={rowCls(isActive(pathname, "/learner/profile"))}
+            >
+              {user.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element -- GCS-hosted, arbitrary host
+                <img src={user.avatar_url} alt="" className="h-6 w-6 shrink-0 rounded-full object-cover" />
+              ) : (
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/25 text-xs font-bold">
+                  {user.username.slice(0, 1).toUpperCase()}
+                </span>
+              )}
+              <span className={`truncate ${hideLabel}`}>{user.username}</span>
+            </Link>
           ) : (
             <>
               <Link
@@ -237,21 +240,21 @@ export function LearnerSidebar() {
             <span className={`truncate ${hideLabel}`}>{t("nav.settings")}</span>
           </button>
 
-          {/* Collapse toggle — desktop rail only; the mobile drawer uses its own
-              close button instead. */}
-          <button
-            type="button"
-            aria-label={collapsed ? t("nav.expand_menu") : t("nav.collapse_menu")}
-            onClick={toggleCollapsed}
-            className={`${rowCls(false)} hidden w-full md:flex`}
-          >
-            <FontAwesomeIcon
-              icon={faChevronLeft}
-              className={`h-4 w-4 shrink-0 transition-transform duration-300 ${collapsed ? "rotate-180" : ""}`}
-              fixedWidth
-            />
-            <span className={`truncate ${hideLabel}`}>{t("nav.collapse_menu")}</span>
-          </button>
+          {!loading && user && (
+            <button
+              type="button"
+              id="topnav-logout-btn"
+              onClick={() => {
+                closeDrawer();
+                logout();
+              }}
+              title={collapsed ? t("nav.logout") : undefined}
+              className={`${rowCls(false)} w-full`}
+            >
+              <FontAwesomeIcon icon={faRightFromBracket} className="h-4 w-4 shrink-0" fixedWidth />
+              <span className={`truncate ${hideLabel}`}>{t("nav.logout")}</span>
+            </button>
+          )}
         </div>
       </aside>
 
