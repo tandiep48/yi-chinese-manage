@@ -22,11 +22,14 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { now } from "@/lib/clock";
 import { pickMeaning } from "@/lib/lessons/meaning";
-import { MATCH_CONFIG, shuffle, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
+import {
+  AUTO_ADVANCE_DELAY_MS,
+  MATCH_CONFIG,
+  shuffle,
+  type Activity,
+  type TrainerWord,
+} from "@/lib/lessons/vocabTrainer";
 import { useTrainerActionSlot } from "@/components/page/learner/trainer/TrainerShell";
-
-// The board lingers briefly after the last pair is solved in auto-advance mode.
-const AUTO_ADVANCE_DELAY_MS = 500;
 // Source (left) cards are picked with 1-5, by their position in the column. The legacy
 // core badges only the left column, so the port does too.
 const LEFT_KEYS = ["1", "2", "3", "4", "5"];

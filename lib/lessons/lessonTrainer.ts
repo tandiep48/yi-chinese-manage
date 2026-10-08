@@ -8,9 +8,9 @@
 import { lessonAudioUrl } from "@/lib/audio";
 import type { LessonTask, LessonTaskType } from "@/lib/types/lesson";
 
-// Time a correct multiple-choice answer stays on screen before advancing — matches
-// the 3s delay in lesson.js checkAnswer() (typing/reorder instead wait for audio).
-export const MC_CORRECT_DELAY_MS = 3000;
+// Time a correct multiple-choice answer stays on screen before advancing. Shares the
+// trainer-wide auto-advance pacing (typing/reorder instead wait for audio).
+export { AUTO_ADVANCE_DELAY_MS as MC_CORRECT_DELAY_MS } from "./vocabTrainer";
 
 // Reorder / typing answers can mix full-width & half-width punctuation, ideographic
 // punctuation (。、《》「」), and stray whitespace between tokens. Punctuation is
