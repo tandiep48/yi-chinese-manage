@@ -58,7 +58,10 @@ export function LessonSidebar({
   const goBackToPartPicker = () => router.push(partPickerHref(passageId));
 
   const navigateToPart = (id: string) => {
-    if (id === passageId) return;
+    // Only a no-op when the lesson view for this exact part is already on screen.
+    // From the grammar/translation pages the passage is the same, so clicking its
+    // part must still navigate back to the lesson view (it was silently ignored).
+    if (domain === "lesson" && id === passageId) return;
     router.push(`/learner/lesson?passage_id=${encodeURIComponent(id)}`);
   };
 
