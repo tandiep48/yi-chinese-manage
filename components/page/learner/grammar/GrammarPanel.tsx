@@ -11,7 +11,7 @@
 import { useT } from "@/components/i18n/I18nProvider";
 import type { LessonGrammarRule } from "@/lib/types/lesson";
 import type { GrammarSection } from "@/hooks/shared/useGrammar";
-import "@/components/page/learner/lesson/grammar-panel.css";
+import "./grammar-panel.css";
 
 export function GrammarPanel({
   sections,

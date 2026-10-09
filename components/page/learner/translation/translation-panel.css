@@ -2,7 +2,7 @@
 /* ─────────────────────────────────────────────
    TRANSLATION PANEL — the single-card translation drill (TranslationPanel).
    Ported from static/translation/translation.css. Scoped under .lesson-study;
-   tokens come from ./lesson-study.css.
+   tokens come from ../lesson/lesson-study.css.
    ───────────────────────────────────────────── */
 /* Translation — a single-card drill, one sentence at a time (translation.css) */
 .lesson-study .translation-card-view {
