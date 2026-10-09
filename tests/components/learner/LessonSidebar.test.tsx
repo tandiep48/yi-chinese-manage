@@ -50,4 +50,22 @@ describe("LessonSidebar part navigation", () => {
     fireEvent.click(screen.getByText("picker.part_prefix 2"));
     expect(push).toHaveBeenCalledWith("/learner/lesson?passage_id=H1_1_2");
   });
+
+  it("switches the part in place via onSelectPart instead of navigating", () => {
+    // The dashboard passes onSelectPart so part clicks swap the running milestone
+    // without leaving the home tab.
+    const onSelectPart = vi.fn();
+    render(
+      <LessonSidebar
+        passageId="H1_1_1"
+        domain="lesson"
+        open
+        onOpenChange={() => {}}
+        onSelectPart={onSelectPart}
+      />
+    );
+    fireEvent.click(screen.getByText("picker.part_prefix 2"));
+    expect(onSelectPart).toHaveBeenCalledWith("H1_1_2");
+    expect(push).not.toHaveBeenCalled();
+  });
 });

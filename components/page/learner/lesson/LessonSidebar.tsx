@@ -44,11 +44,16 @@ export function LessonSidebar({
   domain = "lesson",
   open,
   onOpenChange,
+  onSelectPart,
 }: {
   passageId: string;
   domain?: StudyDomain;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // When given, picking a part switches it in place via this callback instead of
+  // navigating to /learner/lesson — the dashboard's embedded milestone uses this to
+  // swap the running part without leaving the home tab.
+  onSelectPart?: (passageId: string) => void;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -58,6 +63,10 @@ export function LessonSidebar({
   const goBackToPartPicker = () => router.push(partPickerHref(passageId));
 
   const navigateToPart = (id: string) => {
+    if (onSelectPart) {
+      onSelectPart(id);
+      return;
+    }
     // Only a no-op when the lesson view for this exact part is already on screen.
     // From the grammar/translation pages the passage is the same, so clicking its
     // part must still navigate back to the lesson view (it was silently ignored).

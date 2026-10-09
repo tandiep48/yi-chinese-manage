@@ -14,16 +14,18 @@
 // actually running (steps 3 and 6), which is the only time switching tabs costs
 // the learner a round.
 //
-// MilestoneRunner keeps its own `.milestone` root and stylesheet, and mounts no
-// LessonStudyShell — the sidebar belongs to /learner/lesson, not to a dashboard
-// panel that already has a tab bar for navigation (§2, §10.6).
+// The milestone is wrapped in the shared LessonStudyShell (same as /learner/lesson)
+// so the study sidebar is available from the dashboard: its Parts list switches the
+// running part in place (via onSelectPart → selectedPart state, no navigation),
+// while Grammar / Translation navigate out to their dedicated pages as usual.
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { MilestoneRunner } from "@/components/page/learner/milestone/MilestoneRunner";
+import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import type { HomePanelProps } from "./HomePanel";
 
 export const LESSON_RUN = "lesson-trainer";
@@ -33,6 +35,10 @@ export function LessonTab({ setRun }: HomePanelProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loading, lesson } = useCurrentLesson();
+
+  // The part the sidebar switched to, in place. Null until the learner picks one,
+  // so the dashboard opens on the current lesson from useCurrentLesson.
+  const [selectedPart, setSelectedPart] = useState<string | null>(null);
 
   const stepParam = Number(searchParams.get("step"));
   const initialStep = stepParam >= 1 && stepParam <= 6 ? stepParam : undefined;
@@ -71,13 +77,20 @@ export function LessonTab({ setRun }: HomePanelProps) {
     );
   }
 
+  // A sidebar part switch opens that part at its own resume step, so ?step only
+  // seeds the lesson the dashboard opened on (matching how /learner/lesson drops
+  // ?step when the sidebar navigates to another part).
+  const activePassage = selectedPart ?? lesson.passage_id;
+
   return (
-    <MilestoneRunner
-      passageId={lesson.passage_id}
-      passageIds={lesson.passage_ids}
-      initialStep={initialStep}
-      onStepChange={onStepChange}
-      onRunningChange={onRunningChange}
-    />
+    <LessonStudyShell passageId={activePassage} domain="lesson" onSelectPart={setSelectedPart}>
+      <MilestoneRunner
+        passageId={activePassage}
+        passageIds={lesson.passage_ids}
+        initialStep={selectedPart ? undefined : initialStep}
+        onStepChange={onStepChange}
+        onRunningChange={onRunningChange}
+      />
+    </LessonStudyShell>
   );
 }
