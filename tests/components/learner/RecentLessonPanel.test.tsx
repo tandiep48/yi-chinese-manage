@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { RecentLessonPanel } from "@/components/page/learner/RecentLessonPanel";
+import { RecentLessonPanel } from "@/components/page/learner/picker/RecentLessonPanel";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import * as recentHook from "@/hooks/profile/useRecentLearning";
 

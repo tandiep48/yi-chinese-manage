@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { LearningTabs } from "@/components/page/learner/LearningTabs";
+import { LearningTabs } from "@/components/page/learner/picker/LearningTabs";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import { usePathname } from "next/navigation";
 

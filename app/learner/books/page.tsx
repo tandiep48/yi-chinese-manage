@@ -8,10 +8,10 @@
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLearnerBooks } from "@/hooks/book/useLearnerBooks";
-import { LearningTabs } from "@/components/page/learner/LearningTabs";
+import { LearningTabs } from "@/components/page/learner/picker/LearningTabs";
 import { bookCoverUrl } from "@/lib/gcs";
-import "@/components/page/learner/lesson-picker.css";
-import "@/components/page/learner/books.css";
+import "@/components/page/learner/picker/lesson-picker.css";
+import "@/components/page/learner/picker/books.css";
 
 export default function BooksGridPage() {
   const { t } = useT();

@@ -11,9 +11,9 @@ import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel } from "@/lib/lessons/lessons";
 import { hskImageUrl, lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
-import { ProgressLines } from "@/components/page/learner/PickerProgress";
+import { ProgressLines } from "@/components/page/learner/picker/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
-import "@/components/page/learner/lesson-picker.css";
+import "@/components/page/learner/picker/lesson-picker.css";
 
 export default function LessonPickerPage({
   params,
