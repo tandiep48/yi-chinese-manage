@@ -45,6 +45,7 @@ export function LessonSidebar({
   open,
   onOpenChange,
   onSelectPart,
+  onSelectDomain,
 }: {
   passageId: string;
   domain?: StudyDomain;
@@ -54,6 +55,9 @@ export function LessonSidebar({
   // navigating to /learner/lesson — the dashboard's embedded milestone uses this to
   // swap the running part without leaving the home tab.
   onSelectPart?: (passageId: string) => void;
+  // When given, Grammar / Translation render in place via this callback instead of
+  // navigating to their pages — the dashboard switches its embedded view this way.
+  onSelectDomain?: (target: StudyDomain) => void;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -76,6 +80,10 @@ export function LessonSidebar({
 
   const navigateToDomain = (target: StudyDomain) => {
     if (target === domain) return;
+    if (onSelectDomain) {
+      onSelectDomain(target);
+      return;
+    }
     const route = target === "grammar" ? "/learner/grammar" : "/learner/translation";
     router.push(`${route}?passage_id=${encodeURIComponent(passageId)}`);
   };

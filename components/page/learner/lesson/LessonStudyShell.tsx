@@ -15,6 +15,7 @@ export function LessonStudyShell({
   domain,
   children,
   onSelectPart,
+  onSelectDomain,
 }: {
   passageId: string;
   domain: StudyDomain;
@@ -22,6 +23,9 @@ export function LessonStudyShell({
   // Forwarded to the sidebar: when set, part clicks switch in place instead of
   // navigating to /learner/lesson (used by the dashboard's embedded milestone).
   onSelectPart?: (passageId: string) => void;
+  // Forwarded to the sidebar: when set, Grammar / Translation render in place
+  // instead of navigating to their pages (used by the dashboard).
+  onSelectDomain?: (target: StudyDomain) => void;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -35,6 +39,7 @@ export function LessonStudyShell({
             open={sidebarOpen}
             onOpenChange={setSidebarOpen}
             onSelectPart={onSelectPart}
+            onSelectDomain={onSelectDomain}
           />
         )}
         <div className="lesson-study-main app-container">{children}</div>

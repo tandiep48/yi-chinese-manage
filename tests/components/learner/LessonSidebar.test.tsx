@@ -68,4 +68,23 @@ describe("LessonSidebar part navigation", () => {
     expect(onSelectPart).toHaveBeenCalledWith("H1_1_2");
     expect(push).not.toHaveBeenCalled();
   });
+
+  it("switches to Grammar in place via onSelectDomain instead of navigating", () => {
+    const onSelectDomain = vi.fn();
+    render(
+      <LessonSidebar
+        passageId="H1_1_1"
+        domain="lesson"
+        open
+        onOpenChange={() => {}}
+        onSelectDomain={onSelectDomain}
+      />
+    );
+    // Expand the Grammar accordion (collapsed on the lesson domain), then click its
+    // step — the only .sidebar-step inside the single open accordion body.
+    fireEvent.click(screen.getByText("grammar.page_title"));
+    fireEvent.click(document.querySelector(".acc-body .sidebar-step")!);
+    expect(onSelectDomain).toHaveBeenCalledWith("grammar");
+    expect(push).not.toHaveBeenCalled();
+  });
 });
