@@ -19,9 +19,12 @@ import "@/components/page/learner/trainer/vocab-trainer.css";
 // /learner/vocab-training-batch route, byte-for-byte as before.
 interface VocabTrainerPageProps extends VocabTrainerOptions {
   contained?: boolean;
+  // Label for the recap's exit button (defaults to "Back to vocabulary"); the
+  // milestone passes "Next" because its exit advances to the next step.
+  homeLabel?: string;
 }
 
-export function VocabTrainerPage({ contained, ...options }: VocabTrainerPageProps = {}) {
+export function VocabTrainerPage({ contained, homeLabel, ...options }: VocabTrainerPageProps = {}) {
   const trainer = useVocabTrainer(options);
 
   // Enter advances via the current activity's primary action (Check / Continue),
@@ -60,6 +63,7 @@ export function VocabTrainerPage({ contained, ...options }: VocabTrainerPageProp
             canRetry={trainer.canRetry}
             onRetry={trainer.retryMissed}
             onHome={trainer.goHome}
+            homeLabel={homeLabel}
           />
         }
       >
