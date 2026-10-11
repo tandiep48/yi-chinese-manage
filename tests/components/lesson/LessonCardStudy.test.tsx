@@ -67,6 +67,14 @@ describe("LessonCardStudy", () => {
     expect(screen.getByText("1 / 2")).toBeInTheDocument();
   });
 
+  it("navigates and reveals by tapping the legend buttons (touch)", () => {
+    const { container } = setup();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.next/ }));
+    expect(screen.getByText("再见")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.reveal$/ }));
+    expect(container.querySelector(".vl-meaning")?.textContent).toBe("再见-en");
+  });
+
   it("shows both Summary controls by default and returns to the summary", () => {
     const { onShowSummary } = setup();
     const summaryButtons = screen.getAllByRole("button", { name: /reading.summary/ });

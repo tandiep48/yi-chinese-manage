@@ -120,15 +120,17 @@ export function FlashcardView({
     }
   }
 
-  const { revealed } = useCardControls({
+  const openStroke = () => {
+    if (hasHanzi) onOpenStroke(word.cn, word.pinyin || "");
+  };
+
+  const { revealed, reveal } = useCardControls({
     resetKey: word,
     onPrev: goPrev,
     onNext: goNext,
     onPlayAudio: playAudio,
     onShuffle: shuffle,
-    onStroke: () => {
-      if (hasHanzi) onOpenStroke(word.cn, word.pinyin || "");
-    },
+    onStroke: openStroke,
   });
 
   if (!word) return null;
@@ -171,7 +173,17 @@ export function FlashcardView({
         </div>
       </div>
 
-      <CardShortcutLegend shuffle stroke={hasHanzi} />
+      <CardShortcutLegend
+        onPrev={goPrev}
+        onNext={goNext}
+        onAudioReveal={() => {
+          reveal();
+          playAudio();
+        }}
+        onReveal={reveal}
+        onShuffle={shuffle}
+        onStroke={hasHanzi ? openStroke : undefined}
+      />
     </div>
   );
 }

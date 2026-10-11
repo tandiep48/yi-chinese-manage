@@ -102,7 +102,7 @@ export function LessonCardStudy({
     }
   }
 
-  const { revealed } = useCardControls({
+  const { revealed, reveal } = useCardControls({
     resetKey: index,
     onPrev: goPrev,
     onNext: goNext,
@@ -154,7 +154,15 @@ export function LessonCardStudy({
         </div>
       </div>
 
-      <CardShortcutLegend />
+      <CardShortcutLegend
+        onPrev={goPrev}
+        onNext={goNext}
+        onAudioReveal={() => {
+          reveal();
+          playAudio();
+        }}
+        onReveal={reveal}
+      />
     </div>
   );
 }

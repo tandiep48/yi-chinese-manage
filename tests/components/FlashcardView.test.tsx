@@ -80,6 +80,27 @@ describe("FlashcardView", () => {
     expect(onOpenStroke).toHaveBeenCalledWith("水", "shuǐ");
   });
 
+  // ── Touch path: the legend keys are tappable buttons (phones have no keyboard) ──
+  it("navigates by tapping the legend buttons", () => {
+    setup();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.next/ }));
+    expect(screen.getByText("2 / 2")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.prev/ }));
+    expect(screen.getByText("1 / 2")).toBeInTheDocument();
+  });
+
+  it("reveals by tapping the Reveal button", () => {
+    setup();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.reveal$/ }));
+    expect(screen.getByText("shuǐ")).toBeInTheDocument();
+  });
+
+  it("opens stroke order by tapping the Stroke button", () => {
+    const { onOpenStroke } = setup();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.stroke/ }));
+    expect(onOpenStroke).toHaveBeenCalledWith("水", "shuǐ");
+  });
+
   it("highlights the input when the typed characters match the word", () => {
     setup();
     const input = screen.getByPlaceholderText("vocab_learning.typing_placeholder");
