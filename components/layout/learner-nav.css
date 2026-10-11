@@ -11,6 +11,19 @@
   background: rgba(0, 0, 0, 0.45);
 }
 
+/* ── Content clearance for the floating mobile hamburger ──
+   Below md the hamburger is fixed at the top-left over the content, so push the
+   learner page content down to clear it. At md+ the rail is in-flow, so no
+   offset. Token lives in app/styles/tokens.css. */
+.learner-main {
+  padding-top: var(--hamburger-safe);
+}
+@media (min-width: 768px) {
+  .learner-main {
+    padding-top: 0;
+  }
+}
+
 /* ── Settings modal (mirrors .profile-modal) ── */
 .learner-settings-modal {
   position: fixed;

@@ -22,7 +22,9 @@ export default function LearnerLayout({
         <AuthProvider>
           <HanziSettingsProvider>
             <LearnerSidebar />
-            <main className="flex min-w-0 flex-1 flex-col overflow-auto">{children}</main>
+            <main className="learner-main flex min-w-0 flex-1 flex-col overflow-auto">
+              {children}
+            </main>
           </HanziSettingsProvider>
         </AuthProvider>
       </I18nProvider>
