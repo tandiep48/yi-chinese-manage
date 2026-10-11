@@ -281,12 +281,11 @@
   padding: 12px;
 }
 
-/* Stack the sidebar above the content on narrow screens (column, overriding the
-   desktop row-reverse so the rail sits on top rather than below). */
+/* On narrow screens the sidebar spans the full width and sits above the content.
+   The column stacking itself is set mobile-first on .lesson-study-layout in
+   lesson-study.css (kept in one file so its source order is deterministic);
+   here we only override the sidebar's own width/position. */
 @media (max-width: 768px) {
-  .lesson-study .lesson-study-layout {
-    flex-direction: column;
-  }
   .lesson-study .lesson-sidebar {
     width: 100%;
     max-width: 100%;
