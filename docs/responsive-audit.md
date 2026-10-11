@@ -133,7 +133,16 @@ Checked at 393/768/1280 by driving a live lesson as the test learner.
   practice-shell; question navigator grid wraps, audio scrubber fits (its
   min-width:180 does not overflow), listening and reading/matching question
   types both lay out cleanly.
+- Vocab learning flashcards (lesson "Vocab Learner" step) & vocab batch trainer —
+  verified at 393, no changes needed (trainer shares trainer-shell; flashcard
+  card + input stack cleanly).
+- Competition — setup/lobby verified clean; waiting/ranking reviewed (ranking
+  rows stack at 640, play grid at 900). Hardened the setup/lobby auto-fit grid
+  with minmax(min(100%,300px),1fr) so it can't overflow phones under ~340px.
+- Translation with a passage — verified at 393; uses the lesson-study layout, so
+  it inherits the sidebar-stacking fix.
 
-**Still to do:**
-vocab learning flashcards + batch trainer (populated), competition
-setup/waiting/ranking, translation with a passage.
+**Phase 2 complete:** every learner surface audited is responsive at
+393/768/1280 (or scrolls intentionally where the Flask design did). The
+Playwright guard (`npm run test:e2e`) stays green; session-gated screens were
+checked manually by driving live flows as the test learner.
