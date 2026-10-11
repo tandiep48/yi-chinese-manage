@@ -129,8 +129,11 @@ Checked at 393/768/1280 by driving a live lesson as the test learner.
   stacks mobile-first, rail at 1280. (`a784361`)
 - Lesson trainer — choice / typing / reorder tasks + recap all lay out cleanly
   (no changes needed; reorder chips flex-wrap, recap table has a scroll wrapper).
+- Practice runner & exam runner — verified at 393/768, no changes needed. Shared
+  practice-shell; question navigator grid wraps, audio scrubber fits (its
+  min-width:180 does not overflow), listening and reading/matching question
+  types both lay out cleanly.
 
 **Still to do:**
-practice runner (+ audio scrubber), exam runner, vocab learning flashcards +
-batch trainer (populated), competition setup/waiting/ranking, translation with a
-passage.
+vocab learning flashcards + batch trainer (populated), competition
+setup/waiting/ranking, translation with a passage.
