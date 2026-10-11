@@ -232,7 +232,7 @@ export function VocabTable({
   const tableCls = ["vocab-table", ...[...hiddenColumns].map((c) => `hide-${c}`)].join(" ");
 
   return (
-    <div className="vocab-table-wrap">
+    <div className="vocab-table-wrap" data-overflow-ok>
       <table className={tableCls}>
         <thead>
           <tr>

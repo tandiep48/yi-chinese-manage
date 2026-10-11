@@ -5,9 +5,18 @@
    Scoped under .vocab-select; tokens come from ./vocab-select.css.
    ───────────────────────────────────────────── */
 /* ── Table ── */
-.vocab-select .vocab-table-wrap {
+/* Base (unscoped): wherever the shared VocabTable renders — the dashboard review
+   card and vocab-review both use it, not only .vocab-select — the wide study
+   table scrolls horizontally inside a wrapper that fits the viewport, matching
+   the Flask reference (min-width + overflow-x:auto). `data-overflow-ok` (set on
+   the wrap in VocabTable.tsx) tells the responsive guard this scroll is
+   intentional. See docs/responsive-conventions.md. */
+.vocab-table-wrap {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.vocab-select .vocab-table-wrap {
   background: var(--vs-surface);
   border: 1px solid var(--vs-border-cell);
   border-radius: 10px;
