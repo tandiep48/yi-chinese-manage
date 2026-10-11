@@ -42,7 +42,9 @@
 .competition-setup-grid,
 .competition-lobby-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* min(100%, 300px) so a column can shrink below 300px on very small phones
+     instead of overflowing the row (minmax(300px, …) can't go under 300). */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
   gap: 16px;
 }
 
