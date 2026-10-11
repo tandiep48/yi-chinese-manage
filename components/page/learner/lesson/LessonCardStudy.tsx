@@ -1,18 +1,20 @@
 "use client";
 
 // components/page/learner/lesson/LessonCardStudy.tsx
-// "Learn This Lesson" — the per-line lesson-card viewer for a passage. One line at a
-// time with hanzi / pinyin / meaning, a type-along self-check, audio play/pause and
-// prev / next / summary navigation with a progress bar. Ported from the
-// #screen-lesson-card markup + renderLessonCard()/nextLessonCard()/prevLessonCard()
-// in Learning/web_app/static/reading/reading.js. Speaking practice (mic + ASR) from
-// the original is deferred, matching the vocab FlashcardView.
+// "Learn This Lesson" — the per-line lesson-card viewer for a passage, one line at a
+// time with a typing self-check. Keyboard-driven like the vocab FlashcardView (see
+// useCardControls): A/D move, S reveals pinyin+meaning, W reveals + plays audio.
+// Shuffle and stroke order don't apply to sentences, so Space/Q are omitted. Pinyin +
+// meaning start hidden on each line. Ported from the #screen-lesson-card markup in
+// Learning/web_app/static/reading/reading.js; speaking practice deferred.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause, faTableList } from "@fortawesome/free-solid-svg-icons";
+import { faTableList } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonAudioUrl } from "@/lib/audio";
+import { useCardControls } from "@/hooks/shared/useCardControls";
+import { CardShortcutLegend } from "@/components/page/learner/shared/CardShortcutLegend";
 import type { LessonPassageLine } from "@/lib/types/lesson";
 
 export function LessonCardStudy({
@@ -39,7 +41,6 @@ export function LessonCardStudy({
   const [index, setIndex] = useState(0);
   const [typing, setTyping] = useState("");
   const [success, setSuccess] = useState(false);
-  const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Clear the typing box whenever the card changes (render-phase reset).
@@ -58,10 +59,8 @@ export function LessonCardStudy({
     const tr = line.translations;
     return (lang === "vi" ? tr.vi : tr.en) || tr.en || tr.vi || "";
   }, [line, lang]);
-  const isLast = index === total - 1;
 
-  // Play the current line's audio when it changes. Playback state is driven by the
-  // <audio> element's own events, so nothing sets state synchronously here.
+  // Play the current line's audio when it changes.
   useEffect(() => {
     audioRef.current?.pause();
     const key = lines[index]?.audio_key;
@@ -71,26 +70,17 @@ export function LessonCardStudy({
     }
     const audio = new Audio(lessonAudioUrl(folder, key));
     audioRef.current = audio;
-    audio.onplay = () => setPlaying(true);
-    audio.onpause = () => setPlaying(false);
-    audio.onended = () => setPlaying(false);
-    audio.onerror = () => setPlaying(false);
-    audio.play()?.catch(() => setPlaying(false));
+    audio.play()?.catch(() => {});
     return () => {
       audio.pause();
-      audio.onplay = audio.onpause = audio.onended = audio.onerror = null;
     };
   }, [lines, index, folder]);
 
   function playAudio() {
     const audio = audioRef.current;
     if (!audio) return;
-    if (!audio.paused) {
-      audio.pause();
-      return;
-    }
     audio.currentTime = 0;
-    audio.play()?.catch(() => setPlaying(false));
+    audio.play()?.catch(() => {});
   }
 
   function goPrev() {
@@ -112,22 +102,12 @@ export function LessonCardStudy({
     }
   }
 
-  // Keyboard shortcuts: ←/→ navigate, Space replays audio (ignored while typing).
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
-      if (e.key === "ArrowLeft") goPrev();
-      else if (e.key === "ArrowRight") goNext();
-      else if (e.key === " ") {
-        e.preventDefault();
-        playAudio();
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, total]);
+  const { revealed } = useCardControls({
+    resetKey: index,
+    onPrev: goPrev,
+    onNext: goNext,
+    onPlayAudio: playAudio,
+  });
 
   if (!line) return null;
 
@@ -142,6 +122,12 @@ export function LessonCardStudy({
         <span className="vl-counter">
           {index + 1} / {total}
         </span>
+        {!hideSummaryButton && (
+          <button type="button" className="vl-train-btn" onClick={onShowSummary}>
+            <FontAwesomeIcon icon={faTableList} />
+            <span>{t("reading.summary")}</span>
+          </button>
+        )}
       </div>
 
       <div className="vl-progress-bar vl-card-progress">
@@ -152,8 +138,8 @@ export function LessonCardStudy({
         <div className="vl-hanzi lesson-line-hanzi" lang="zh-CN">
           {content}
         </div>
-        <div className="vl-pinyin">{line.pinyin || ""}</div>
-        <div className="vl-meaning">{meaning}</div>
+        <div className="vl-pinyin">{revealed ? line.pinyin || "" : ""}</div>
+        <div className="vl-meaning">{revealed ? meaning : ""}</div>
 
         <div className="vl-typing-container">
           <input
@@ -166,36 +152,9 @@ export function LessonCardStudy({
             autoComplete="off"
           />
         </div>
-
-        <div className="vl-card-controls">
-          <button type="button" className={`vl-audio-btn${playing ? " playing" : ""}`} onClick={playAudio}>
-            <FontAwesomeIcon icon={playing ? faPause : faPlay} />
-            <span>{t("reading.play_audio")}</span>
-          </button>
-        </div>
       </div>
 
-      <div className="vl-nav-row">
-        <button type="button" className="vl-nav-btn" onClick={goPrev} disabled={index === 0}>
-          &larr; {t("reading.prev")}
-        </button>
-        {!hideSummaryButton && (
-          <button type="button" className="vl-train-btn" onClick={onShowSummary}>
-            <FontAwesomeIcon icon={faTableList} />
-            <span>{t("reading.summary")}</span>
-          </button>
-        )}
-        <button
-          type="button"
-          className="vl-nav-btn"
-          onClick={goNext}
-          disabled={lockAtEnd && isLast}
-        >
-          {isLast && !lockAtEnd ? t("grammar.finish") : t("reading.next")} &rarr;
-        </button>
-      </div>
-
-      <p className="vl-keyboard-tip">{t("vocab_learning.keyboard_tip")}</p>
+      <CardShortcutLegend />
     </div>
   );
 }

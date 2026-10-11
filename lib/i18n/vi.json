@@ -1,4 +1,14 @@
 {
+  "card_shortcuts": {
+    "title": "Phím tắt",
+    "prev": "Trước",
+    "next": "Tiếp",
+    "audio_reveal": "Phát âm + hiện",
+    "reveal": "Hiện nghĩa",
+    "shuffle": "Xáo trộn",
+    "stroke": "Thứ tự nét",
+    "space": "Space"
+  },
   "nav": {
     "language_label": "Ngôn ngữ",
     "brand": "Bảng Điều Khiển Học Tập",
