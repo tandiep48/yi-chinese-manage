@@ -119,10 +119,18 @@ Notes surfaced by the guard beyond the 393px audit:
 Disproven: the Phase 0 "content-width gap" (#4) was a browser-pane capture
 artifact — `html`/`body`/`.learner-theme`/`.learner-main` all fill the full 393px.
 
-### Still to do — session-gated screens (manual)
+### Session-gated screens (manual, not guard-covered)
 
-Not covered by the guard; need live flows and a manual 393/768/1280 pass:
-lesson study view, lesson trainer (choice/typing/reorder + recap), practice
-runner (+ audio scrubber), exam runner, vocab learning flashcards + batch
-trainer (populated), competition setup/waiting/ranking, translation with a
+Checked at 393/768/1280 by driving a live lesson as the test learner.
+
+**Done:**
+- Lesson study view + sidebar — fixed a severe bug: the study layout collapsed
+  its main column to 0px on mobile (cross-file flex-direction load-order). Now
+  stacks mobile-first, rail at 1280. (`a784361`)
+- Lesson trainer — choice / typing / reorder tasks + recap all lay out cleanly
+  (no changes needed; reorder chips flex-wrap, recap table has a scroll wrapper).
+
+**Still to do:**
+practice runner (+ audio scrubber), exam runner, vocab learning flashcards +
+batch trainer (populated), competition setup/waiting/ranking, translation with a
 passage.
