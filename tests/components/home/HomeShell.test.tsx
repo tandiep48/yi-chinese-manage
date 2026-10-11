@@ -24,7 +24,7 @@ vi.mock("next/navigation", () => ({
 }));
 // One stable user object — the real provider holds it in state, and a fresh
 // object each render would re-fire the shell's count effect.
-const AUTH = { user: { id: 1 }, loading: false };
+let AUTH: { user: { id: number } | null; loading: boolean } = { user: { id: 1 }, loading: false };
 vi.mock("@/components/auth/AuthProvider", () => ({ useAuth: () => AUTH }));
 vi.mock("@/lib/api/learner/vocab", () => ({ getVocabReviewCount: vi.fn() }));
 vi.mock("@/components/page/learner/home/ReviewTab", () => ({
@@ -56,6 +56,7 @@ const tab = (name: RegExp) => screen.getByRole("tab", { name });
 beforeEach(() => {
   vi.clearAllMocks();
   search = "";
+  AUTH = { user: { id: 1 }, loading: false };
   mockCount.mockResolvedValue(0);
 });
 
@@ -67,6 +68,14 @@ describe("HomeShell — tabs", () => {
     expect(tab(/Lesson/)).toHaveAttribute("aria-selected", "false");
     expect(tab(/Recommend/)).toHaveAttribute("aria-selected", "false");
     expect(await screen.findByText("review panel")).toBeInTheDocument();
+  });
+
+  it("shows a sign-in prompt and no tabs when signed out", () => {
+    AUTH = { user: null, loading: false };
+    renderShell();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("panel")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Login" })).toHaveAttribute("href", "/learner/login");
   });
 
   it("mounts only the tab named by ?tab=", async () => {

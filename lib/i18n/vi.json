@@ -679,7 +679,8 @@
     "lesson_browse": "Xem danh sách bài học",
     "lesson_loading": "Đang tải bài học…",
     "lesson_empty": "Bạn chưa bắt đầu bài học nào.",
-    "current_lesson": "Bài học hiện tại"
+    "current_lesson": "Bài học hiện tại",
+    "signed_out": "Đăng nhập để xem bài học, ôn tập và gợi ý của bạn."
   },
   "milestone": {
     "step_counter": "Bước {n}/{total}",
