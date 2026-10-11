@@ -103,3 +103,26 @@ Notes surfaced by the guard beyond the 393px audit:
 - `/learner/vocab` overflows **only at 768px** — a missing mid-range breakpoint,
   not visible at phone or desktop width.
 - The dashboard's `.learner-home-tab` row also overflows (not just `.vocab-table`).
+
+### Phase 2 progress — all guarded routes now green ✅
+
+`npm run test:e2e` passes on every audited route at 393/768/1280. Fixes:
+
+| Fix | Pages cleared | Commit |
+| --- | --- | --- |
+| Hamburger clearance (shell `--hamburger-safe`) | every learner page | `93fc833` |
+| Shared `.vocab-table` scroll wrapper (unscoped + `data-overflow-ok`) | dashboard, vocab-review, batch trainer | `d42d2f9` |
+| Pinyin guide tables (scroll-clip fix + marker) | basic/advanced pinyin | `bdfc2e5` |
+| Home tab bar marker | dashboard | `56a6658` |
+| Vocab filter bar `auto-fit` wrap | /vocab at tablet | `39a1663` |
+
+Disproven: the Phase 0 "content-width gap" (#4) was a browser-pane capture
+artifact — `html`/`body`/`.learner-theme`/`.learner-main` all fill the full 393px.
+
+### Still to do — session-gated screens (manual)
+
+Not covered by the guard; need live flows and a manual 393/768/1280 pass:
+lesson study view, lesson trainer (choice/typing/reorder + recap), practice
+runner (+ audio scrubber), exam runner, vocab learning flashcards + batch
+trainer (populated), competition setup/waiting/ranking, translation with a
+passage.
