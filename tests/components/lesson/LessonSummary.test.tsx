@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
@@ -48,6 +48,17 @@ describe("LessonSummary", () => {
     const { container } = renderWith(PASSAGE);
     fireEvent.click(screen.getByRole("button", { name: /Show Meaning/ }));
     expect(container.querySelector(".meaning-text")!.className).toContain("show");
+  });
+
+  it("scrolls the playing line into view", () => {
+    const scrollIntoView = vi.fn();
+    // jsdom implements neither scrollIntoView nor media playback.
+    Element.prototype.scrollIntoView = scrollIntoView;
+    window.HTMLMediaElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+
+    const { container } = renderWith(PASSAGE);
+    fireEvent.click(container.querySelector(".lesson-passage-audio-btn")!);
+    expect(scrollIntoView).toHaveBeenCalled();
   });
 
   it("shows the empty state when a passage has no lines", () => {

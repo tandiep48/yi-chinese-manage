@@ -10,7 +10,7 @@
 // stay disabled), the lesson-study page wires them to the lesson-card viewer and the
 // lesson trainer.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faStop, faEye, faEyeSlash, faVolumeHigh, faGraduationCap, faDumbbell } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -47,6 +47,14 @@ export function LessonSummary({
   const [showMeaning, setShowMeaning] = useState(false);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const { activeKey, sequenceActive, playSingle, toggleSequence } = useAudioSequence();
+
+  // Follow the playing line: scroll whichever line is highlighted into view as the
+  // play-all sequence (or a single line) advances.
+  const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
+  useEffect(() => {
+    if (activeKey == null) return;
+    lineRefs.current[Number(activeKey)]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeKey]);
 
   const lines = useMemo(() => passage?.lines ?? [], [passage]);
   const folder = useMemo(() => (passage ? lessonAudioFolder(passage) : ""), [passage]);
@@ -130,6 +138,9 @@ export function LessonSummary({
             return (
               <div
                 key={line.line_id}
+                ref={(el) => {
+                  lineRefs.current[index] = el;
+                }}
                 className={`lesson-preview-line${activeKey === String(index) ? " playing-highlight" : ""}`}
               >
                 {src ? (
