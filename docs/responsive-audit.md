@@ -73,3 +73,33 @@ panels, trainers, keyboards, cards) and are the highest risk on mobile:
 ## Legend
 
 ✅ no overflow · ❌ overflows (fix needed) · ⚠️ overlaps/minor · ↪ redirect/empty-state
+
+---
+
+## Automated guard (Phase 1)
+
+A Playwright overflow guard now enforces "no horizontal overflow" at **393 /
+768 / 1280px** across the audited routes — see `e2e/README.md` and
+`docs/responsive-conventions.md`. Run:
+
+```bash
+E2E_USERNAME=<learner> E2E_PASSWORD=<pass> npm run test:e2e
+```
+
+### Baseline result (failing = needs Phase 2 fix)
+
+| Route | 393 | 768 | 1280 |
+| --- | --- | --- | --- |
+| `/learner` (dashboard) | ❌ | ❌ | ✅ |
+| `/learner/vocab-review` | ❌ | ❌ | ✅ |
+| `/learner/lesson/basic-pinyin` | ❌ | ❌ | ✅ |
+| `/learner/lesson/advanced-pinyin` | ❌ | ❌ | ❌ |
+| `/learner/vocab` | ✅ | ❌ | ✅ |
+| all other audited routes | ✅ | ✅ | ✅ |
+
+Notes surfaced by the guard beyond the 393px audit:
+- Overflow mostly clears by 1280px (the tables fit), but `advanced-pinyin`
+  overflows even at desktop — investigate in Phase 2.
+- `/learner/vocab` overflows **only at 768px** — a missing mid-range breakpoint,
+  not visible at phone or desktop width.
+- The dashboard's `.learner-home-tab` row also overflows (not just `.vocab-table`).
