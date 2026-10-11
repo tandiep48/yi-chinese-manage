@@ -33,8 +33,11 @@ export function GrammarPanel({
     <div className="grammar-content">
       {sections.map((section, i) => (
         <div key={i} className="grammar-section">
+          {/* grammar_id is shared by every row of a rule (title + description +
+              examples), so it is not unique within a section — the position keeps
+              the key unique. */}
           {section.map((g, j) => (
-            <GrammarItem key={g.grammar_id ?? `${i}-${j}`} rule={g} lang={lang} />
+            <GrammarItem key={`${g.grammar_id ?? "row"}-${j}`} rule={g} lang={lang} />
           ))}
         </div>
       ))}
