@@ -44,9 +44,9 @@
   z-index: 10;
   display: flex;
   align-items: center;
-  gap: 8px;
-  /* Mobile-first (CLAUDE.md 4.3): the bar scrolls sideways rather than wrapping
-     or squeezing the labels, and the scrollbar itself stays out of the way. */
+  gap: 6px;
+  /* overflow-x:auto is a defensive fallback only — the tabs below are flex:1 so
+     all three always fit the phone width without horizontal scrolling. */
   overflow-x: auto;
   scrollbar-width: none;
   background: var(--learner-card);
@@ -58,21 +58,46 @@
   display: none;
 }
 
+/* Mobile-first: the three tabs share the width equally so they fit without a
+   sideways scroll. The count badge is hidden here (the panel heading already
+   shows the review total); both revert to the roomier desktop bar at md+. */
 .learner-home-tab {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
+  justify-content: center;
+  gap: 6px;
+  /* flex-basis:auto (not 0) so each tab is at least its content width and the
+     longer labels aren't truncated; the slack is shared so the bar still fills
+     and all three fit the phone width without a sideways scroll. */
+  flex: 1 1 auto;
+  min-width: 0;
   border: 0;
   border-radius: 12px;
   background: transparent;
   color: var(--learner-text-muted);
   font: inherit;
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: 10px 16px;
+  padding: 10px 8px;
   cursor: pointer;
   white-space: nowrap;
   transition: background 0.15s ease, color 0.15s ease;
+}
+.learner-home-tab-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (min-width: 768px) {
+  .learner-home-tabs {
+    gap: 8px;
+  }
+  .learner-home-tab {
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    gap: 8px;
+    font-size: 1rem;
+    padding: 10px 16px;
+  }
 }
 .learner-home-tab:hover {
   background: rgba(87, 104, 86, 0.06);
@@ -88,6 +113,8 @@
 }
 
 .learner-home-tab-count {
+  /* Hidden on phones so the three labels fit; shown at md+. */
+  display: none;
   min-width: 22px;
   border-radius: 999px;
   background: rgba(87, 104, 86, 0.12);
@@ -97,6 +124,11 @@
   line-height: 1;
   padding: 4px 7px;
   text-align: center;
+}
+@media (min-width: 768px) {
+  .learner-home-tab-count {
+    display: block;
+  }
 }
 .learner-home-tab.is-selected .learner-home-tab-count {
   background: rgba(255, 255, 255, 0.22);

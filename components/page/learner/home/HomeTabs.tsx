@@ -55,12 +55,7 @@ export function HomeTabs({ tab, counts, onSelect }: HomeTabsProps) {
   }
 
   return (
-    <nav
-      className="learner-home-tabs"
-      role="tablist"
-      aria-label={t("home.tabs_label")}
-      data-overflow-ok
-    >
+    <nav className="learner-home-tabs" role="tablist" aria-label={t("home.tabs_label")}>
       {HOME_TABS.map((name, i) => {
         const selected = name === tab;
         const count = counts?.[name];
