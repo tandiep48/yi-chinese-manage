@@ -24,4 +24,6 @@ export const AUTH_ROUTES = [
   "/learner/translation",
   "/learner/vocab-learning",
   "/learner/learn-together",
+  "/learner/hsk/HSK2", // lesson picker (cards + progress bars)
+  "/learner/hsk/HSK2/2", // part picker (long titles must not clip the bars)
 ];
