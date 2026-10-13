@@ -30,8 +30,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabReview, REVIEW_PAGE_SIZE } from "@/hooks/vocab/useVocabReview";
+import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { getPageNumbers } from "@/lib/recommend/recommendLogic";
 import { VocabTable } from "@/components/page/learner/vocab/VocabTable";
+import { VocabCardList } from "@/components/page/learner/vocab/VocabCardList";
 import {
   VocabStrokeModal,
   type StrokeModalState,
@@ -58,6 +60,10 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
   const router = useRouter();
   const review = useVocabReview();
   const [stroke, setStroke] = useState<StrokeModalState>(null);
+  // Phones get the card view (no sideways scrolling); desktop keeps the table.
+  // Scoped to the standalone page for now — the embedded dashboard panel keeps
+  // the table until this is rolled out.
+  const useCards = useMediaQuery("(max-width: 767px)") && !embedded;
 
   function startTraining() {
     if (review.selectedCount === 0) return;
@@ -135,17 +141,28 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
           </div>
 
           {showTable ? (
-            <VocabTable
-              rows={review.rows}
-              isSelected={review.isSelected}
-              allOnPageSelected={review.allSelected}
-              onToggleWord={review.toggleWord}
-              // The table's visible rows are the current page's rows; select-all
-              // ticks exactly them. Picks on other pages are kept by the hook.
-              onTogglePage={(_rows, checked) => review.toggleAll(checked)}
-              onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
-              onStrokeAll={openStrokeAll}
-            />
+            useCards ? (
+              <VocabCardList
+                rows={review.rows}
+                isSelected={review.isSelected}
+                allOnPageSelected={review.allSelected}
+                onToggleWord={review.toggleWord}
+                onTogglePage={(_rows, checked) => review.toggleAll(checked)}
+                onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
+              />
+            ) : (
+              <VocabTable
+                rows={review.rows}
+                isSelected={review.isSelected}
+                allOnPageSelected={review.allSelected}
+                onToggleWord={review.toggleWord}
+                // The table's visible rows are the current page's rows; select-all
+                // ticks exactly them. Picks on other pages are kept by the hook.
+                onTogglePage={(_rows, checked) => review.toggleAll(checked)}
+                onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
+                onStrokeAll={openStrokeAll}
+              />
+            )
           ) : (
             <div className="vocab-table-state">{stateMessage}</div>
           )}
