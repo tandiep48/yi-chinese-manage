@@ -61,9 +61,8 @@ export function VocabReviewPage({ embedded = false, onStart }: VocabReviewPagePr
   const review = useVocabReview();
   const [stroke, setStroke] = useState<StrokeModalState>(null);
   // Phones get the card view (no sideways scrolling); desktop keeps the table.
-  // Scoped to the standalone page for now — the embedded dashboard panel keeps
-  // the table until this is rolled out.
-  const useCards = useMediaQuery("(max-width: 767px)") && !embedded;
+  // Applies to both the standalone page and the embedded dashboard panel.
+  const useCards = useMediaQuery("(max-width: 767px)");
 
   function startTraining() {
     if (review.selectedCount === 0) return;
