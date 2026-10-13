@@ -94,6 +94,14 @@ export function LessonSidebar({
 
   return (
     <>
+      {/* Mobile-only (CSS): dims the lesson behind the open drawer; tap to close. */}
+      {open && (
+        <div
+          className="lesson-sidebar-backdrop"
+          onClick={() => onOpenChange(false)}
+          aria-hidden
+        />
+      )}
       <aside className={`lesson-sidebar${open ? "" : " collapsed"}`}>
         <div className="lesson-sidebar-header">
           <button

@@ -281,19 +281,69 @@
   padding: 12px;
 }
 
-/* On narrow screens the sidebar spans the full width and sits above the content.
-   The column stacking itself is set mobile-first on .lesson-study-layout in
-   lesson-study.css (kept in one file so its source order is deterministic);
-   here we only override the sidebar's own width/position. */
+/* Backdrop behind the open mobile drawer — hidden on desktop. */
+.lesson-study .lesson-sidebar-backdrop {
+  display: none;
+}
+
+/* On narrow screens the sidebar is an off-canvas drawer opened by a sticky
+   toggle, so it never consumes the vertical space above the lesson content
+   (the column stacking set in lesson-study.css no longer applies — the drawer
+   is taken out of flow here). */
 @media (max-width: 768px) {
   .lesson-study .lesson-sidebar {
-    width: 100%;
-    max-width: 100%;
-    position: static;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    width: min(330px, 86vw);
+    max-width: min(330px, 86vw);
+    height: 100%;
     max-height: none;
+    margin: 0;
+    border-radius: 0;
+    z-index: 1100;
+    transform: translateX(0);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -14px 0 44px rgba(0, 0, 0, 0.22);
   }
+  /* Collapsed = slid off-canvas to the right (not width:0), so opening it
+     overlays the content instead of reflowing it. */
   .lesson-study .lesson-sidebar.collapsed {
+    width: min(330px, 86vw);
+    max-width: min(330px, 86vw);
+    transform: translateX(100%);
+    opacity: 1;
+    border-color: rgba(0, 0, 0, 0.05);
     margin-left: 0;
+    pointer-events: none;
+    box-shadow: none;
+  }
+
+  .lesson-study .lesson-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 1090;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  /* Sticky floating toggle that opens the drawer — top-right, clear of the nav
+     hamburger at top-left. */
+  .lesson-study .lesson-sidebar-toggle {
+    position: fixed;
+    top: var(--hamburger-safe);
+    right: 12px;
+    bottom: auto;
+    left: auto;
+    z-index: 1000;
+  }
+
+  /* The desktop collapsed rule reserves space on the right for its toggle; on
+     mobile the toggle is fixed, so the main content keeps the full width. */
+  .lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
+    padding-right: 0;
   }
 }
 
