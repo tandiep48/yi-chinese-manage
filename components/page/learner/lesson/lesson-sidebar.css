@@ -329,21 +329,17 @@
     background: rgba(0, 0, 0, 0.4);
   }
 
-  /* Sticky floating toggle that opens the drawer — top-right, clear of the nav
-     hamburger at top-left. */
+  /* Fixed toggle that opens the drawer. It sits in the top strip (mirroring the
+     nav hamburger at top-left) so it floats above the content rather than over
+     it — the content below keeps full width with no reserved padding, so opening
+     and closing the drawer no longer shifts the page. */
   .lesson-study .lesson-sidebar-toggle {
     position: fixed;
-    top: var(--hamburger-safe);
+    top: 12px;
     right: 12px;
     bottom: auto;
     left: auto;
     z-index: 1000;
-  }
-
-  /* The desktop collapsed rule reserves space on the right for its toggle; on
-     mobile the toggle is fixed, so the main content keeps the full width. */
-  .lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
-    padding-right: 0;
   }
 }
 

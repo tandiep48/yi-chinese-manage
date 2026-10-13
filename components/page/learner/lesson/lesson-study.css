@@ -59,9 +59,15 @@
   min-width: 0;
   transition: padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* When collapsed, clear space at top-right for the floating toggle button. */
-.lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
-  padding-right: 52px;
+/* When collapsed, clear space at top-right for the floating toggle button.
+   Desktop only: on mobile the toggle sits in the top strip (not over the
+   content), so reserving space here would just shift the content in/out as the
+   drawer opens and closes. Kept at md+ in this file so its source order beats
+   the mobile rule deterministically. */
+@media (min-width: 769px) {
+  .lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
+    padding-right: 52px;
+  }
 }
 
 
