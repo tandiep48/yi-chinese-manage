@@ -14,16 +14,25 @@
 // actually running (steps 3 and 6), which is the only time switching tabs costs
 // the learner a round.
 //
-// MilestoneRunner keeps its own `.milestone` root and stylesheet, and mounts no
-// LessonStudyShell — the sidebar belongs to /learner/lesson, not to a dashboard
-// panel that already has a tab bar for navigation (§2, §10.6).
+// The milestone is wrapped in the shared LessonStudyShell (same as /learner/lesson)
+// so the study sidebar is available from the dashboard. All three of its sections
+// act in place, without leaving the home tab: Parts switches the running part (via
+// onSelectPart → selectedPart), and Grammar / Translation swap the panel shown
+// (via onSelectDomain → domain) instead of navigating to their dedicated pages.
 
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
+import { useGrammar } from "@/hooks/shared/useGrammar";
+import { useTranslation } from "@/hooks/shared/useTranslation";
 import { MilestoneRunner } from "@/components/page/learner/milestone/MilestoneRunner";
+import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
+import type { StudyDomain } from "@/components/page/learner/lesson/LessonSidebar";
+import { GrammarPanel } from "@/components/page/learner/grammar/GrammarPanel";
+import { TranslationPanel } from "@/components/page/learner/translation/TranslationPanel";
+import { hskLevelFromPassageId } from "@/lib/lessons/lessons";
 import type { HomePanelProps } from "./HomePanel";
 
 export const LESSON_RUN = "lesson-trainer";
@@ -33,6 +42,19 @@ export function LessonTab({ setRun }: HomePanelProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { loading, lesson } = useCurrentLesson();
+
+  // The part the sidebar switched to, in place. Null until the learner picks one,
+  // so the dashboard opens on the current lesson from useCurrentLesson.
+  const [selectedPart, setSelectedPart] = useState<string | null>(null);
+  // Which study view the sidebar is showing in place: the milestone (lesson),
+  // Grammar or Translation.
+  const [domain, setDomain] = useState<StudyDomain>("lesson");
+
+  // Picking a part always returns to the lesson (milestone) view on that part.
+  const onSelectPart = useCallback((id: string) => {
+    setSelectedPart(id);
+    setDomain("lesson");
+  }, []);
 
   const stepParam = Number(searchParams.get("step"));
   const initialStep = stepParam >= 1 && stepParam <= 6 ? stepParam : undefined;
@@ -71,13 +93,65 @@ export function LessonTab({ setRun }: HomePanelProps) {
     );
   }
 
+  // A sidebar part switch opens that part at its own resume step, so ?step only
+  // seeds the lesson the dashboard opened on (matching how /learner/lesson drops
+  // ?step when the sidebar navigates to another part).
+  const activePassage = selectedPart ?? lesson.passage_id;
+
   return (
-    <MilestoneRunner
-      passageId={lesson.passage_id}
-      passageIds={lesson.passage_ids}
-      initialStep={initialStep}
-      onStepChange={onStepChange}
-      onRunningChange={onRunningChange}
-    />
+    <LessonStudyShell
+      passageId={activePassage}
+      domain={domain}
+      onSelectPart={onSelectPart}
+      onSelectDomain={setDomain}
+    >
+      {domain === "grammar" ? (
+        <GrammarView passageId={activePassage} />
+      ) : domain === "translation" ? (
+        <TranslationView passageId={activePassage} />
+      ) : (
+        <MilestoneRunner
+          passageId={activePassage}
+          passageIds={lesson.passage_ids}
+          initialStep={selectedPart ? undefined : initialStep}
+          onStepChange={onStepChange}
+          onRunningChange={onRunningChange}
+        />
+      )}
+    </LessonStudyShell>
+  );
+}
+
+// Grammar / Translation rendered in place inside the dashboard's LessonStudyShell,
+// mirroring /learner/grammar and /learner/translation (breadcrumb + panel). Each
+// owns its hook so the hook only runs while that view is mounted.
+function lessonBreadcrumb(passageId: string, lessonPrefix: string): string {
+  const seg = passageId.split("_");
+  return seg.length >= 2 ? `${hskLevelFromPassageId(passageId)} · ${lessonPrefix} ${seg[1]}` : "";
+}
+
+function GrammarView({ passageId }: { passageId: string }) {
+  const { t } = useT();
+  const { loading, error, sections } = useGrammar(passageId);
+  return (
+    <>
+      <div className="lesson-study-topbar">
+        <div className="lesson-study-breadcrumb">{lessonBreadcrumb(passageId, t("picker.lesson_prefix"))}</div>
+      </div>
+      <GrammarPanel sections={sections} loading={loading} error={error} />
+    </>
+  );
+}
+
+function TranslationView({ passageId }: { passageId: string }) {
+  const { t } = useT();
+  const { loading, error, rows } = useTranslation(passageId);
+  return (
+    <>
+      <div className="lesson-study-topbar">
+        <div className="lesson-study-breadcrumb">{lessonBreadcrumb(passageId, t("picker.lesson_prefix"))}</div>
+      </div>
+      <TranslationPanel rows={rows} loading={loading} error={error} />
+    </>
   );
 }

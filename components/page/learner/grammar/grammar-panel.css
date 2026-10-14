@@ -2,7 +2,7 @@
 /* ─────────────────────────────────────────────
    GRAMMAR PANEL — the lesson-wide grammar rules view (GrammarPanel).
    Ported from static/grammar/grammar.css. Scoped under .lesson-study; tokens
-   come from ./lesson-study.css.
+   come from ../lesson/lesson-study.css.
    ───────────────────────────────────────────── */
 /* Grammar */
 .lesson-study .grammar-content {

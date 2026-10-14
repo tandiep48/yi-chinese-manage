@@ -113,4 +113,13 @@
   --font-size-3xl:  2.5rem;    /* 40px — stat numbers */
   --font-size-4xl:  3rem;      /* 48px — hero numbers */
   --font-size-5xl:  4rem;      /* 64px — display/hanzi characters */
+
+  /* Responsive layout — mobile-first. See docs/responsive-conventions.md.
+     Standard breakpoints (min-width) used across learner CSS, documented here
+     because CSS @media queries cannot read custom properties:
+        sm 480px · md 768px · lg 1024px · xl 1280px
+     Base styles target phones; layer enhancements up at those widths. */
+  --page-gutter:    1rem;    /* 16px — side padding of page content on phones  */
+  --hamburger-safe: 3.5rem;  /* 56px — top offset so a page header clears the  */
+                             /*        fixed mobile hamburger (below md only)  */
 }

@@ -1,0 +1,233 @@
+/* ─────────────────────────────────────────────
+   VOCAB CARD LIST — the mobile card view rendered in place of the vocab table
+   (VocabCardList). Scoped under .vocab-select so the --vs-* tokens apply
+   (see ./vocab-select.css). Only shown below md; the table stays on desktop.
+   ───────────────────────────────────────────── */
+.vocab-select .vocab-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Select-all-on-page row */
+.vocab-select .vcl-selectall {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 2px 2px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--vs-text-muted);
+}
+.vocab-select .vcl-selectall input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--vs-primary);
+  cursor: pointer;
+}
+
+.vocab-select .vcl-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* One word card: [checkbox] [tappable main] [audio] */
+.vocab-select .vcl-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--vs-surface);
+  border: 1px solid var(--vs-border-cell);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+.vocab-select .vcl-card.is-selected {
+  border-color: var(--vs-primary);
+  background: var(--vs-row-hover);
+}
+
+.vocab-select .vcl-card-check {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  accent-color: var(--vs-primary);
+  cursor: pointer;
+}
+
+/* The whole middle of the card is the tap target for full detail. */
+.vocab-select .vcl-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 44px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.vocab-select .vcl-card-hanzi {
+  flex-shrink: 0;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  color: var(--vs-text);
+}
+.vocab-select .vcl-card-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vocab-select .vcl-card-pinyin {
+  color: var(--vs-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.vocab-select .vcl-card-meaning {
+  color: var(--vs-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.35;
+  /* Keep cards compact: cap the preview at two lines, full text is in detail. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.vocab-select .vcl-card-chevron {
+  flex-shrink: 0;
+  color: var(--vs-text-muted);
+  font-size: 0.8rem;
+  opacity: 0.6;
+}
+
+.vocab-select .vcl-card-audio {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  border: 1px solid var(--vs-primary);
+  background: var(--vs-primary);
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, border-color 0.15s;
+}
+.vocab-select .vcl-card-audio:hover {
+  background: var(--vs-primary-hover);
+  border-color: var(--vs-primary-hover);
+}
+
+/* ── Detail bottom-sheet (tap a card) ──
+   Scoped under .vocab-select so --vs-* tokens apply. A slide-up sheet with the
+   word's full detail; the stroke button defers to the page's VocabStrokeModal. */
+.vocab-select .vcl-sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(30, 49, 36, 0.4);
+}
+.vocab-select .vcl-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: var(--vs-surface);
+  border-radius: 20px 20px 0 0;
+  padding: 28px 22px 32px;
+  box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.22);
+  animation: vclSheetUp 0.25s ease;
+}
+@keyframes vclSheetUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+.vocab-select .vcl-sheet-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(0, 122, 97, 0.08);
+  color: var(--vs-text-muted);
+  font-size: 1.05rem;
+  cursor: pointer;
+}
+.vocab-select .vcl-sheet-close:hover {
+  background: rgba(0, 122, 97, 0.16);
+  color: var(--vs-text);
+}
+.vocab-select .vcl-sheet-hanzi {
+  text-align: center;
+  font-size: 3rem;
+  line-height: 1.1;
+  color: var(--vs-text);
+}
+.vocab-select .vcl-sheet-pinyin {
+  text-align: center;
+  color: var(--vs-primary);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.vocab-select .vcl-sheet-meaning {
+  text-align: center;
+  color: var(--vs-text);
+  font-size: 1rem;
+  line-height: 1.45;
+  margin-top: 10px;
+}
+.vocab-select .vcl-sheet-meaning-en {
+  color: var(--vs-text-muted);
+  margin-top: 4px;
+}
+.vocab-select .vcl-sheet-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.vocab-select .vcl-sheet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--vs-primary);
+  background: var(--vs-primary);
+  color: #ffffff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.vocab-select .vcl-sheet-btn:hover {
+  background: var(--vs-primary-hover);
+  border-color: var(--vs-primary-hover);
+}

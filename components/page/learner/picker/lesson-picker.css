@@ -106,10 +106,11 @@
   color: #333333;
 }
 
-/* Level picker grid */
+/* Level picker grid — auto-fit so cards size to the real container width (the
+   sidebar rail eats width at md+, so fixed column counts overflow). */
 .lesson-picker .level-picker-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
   gap: 22px;
   margin: 28px auto 0;
   max-width: 1080px;
@@ -132,8 +133,8 @@
   box-shadow: 0 10px 26px rgba(87, 104, 86, 0.18);
 }
 .lesson-picker .level-icon {
-  width: 160px;
-  height: 160px;
+  width: min(160px, 70%);
+  aspect-ratio: 1 / 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -153,10 +154,12 @@
   margin-top: auto;
 }
 
-/* Lesson list */
+/* Lesson list — auto-fit so each card keeps enough width for its image + body
+   (a fixed 3-col grid collapsed the body to 0 when the sidebar narrowed the
+   page, overflowing the card). */
 .lesson-picker .lesson-list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 16px;
   margin-top: 20px;
 }
@@ -179,7 +182,8 @@
   box-shadow: 0 8px 24px rgba(87, 104, 86, 0.13);
 }
 .lesson-picker .lesson-card-img-wrap {
-  width: 140px;
+  /* Flexible so the body keeps room for the title + progress on narrow cards. */
+  width: clamp(96px, 34%, 140px);
   flex-shrink: 0;
   background: rgba(87, 104, 86, 0.05);
   display: flex;
@@ -210,6 +214,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--text-main);
+  overflow-wrap: anywhere;
 }
 .lesson-picker .lesson-card-preview {
   font-size: 0.85rem;
@@ -274,11 +279,13 @@
   gap: 12px;
   margin-top: 16px;
 }
+/* Mobile-first: title stacks above the progress so a long title can't push the
+   bars off-screen. Side-by-side (space-between) returns at md+. */
 .lesson-picker .part-list-item {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   padding: 18px 20px;
   background: #ffffff;
   border: 1px solid #d9ded9;
@@ -288,6 +295,14 @@
   text-decoration: none;
   box-shadow: 0 4px 14px rgba(87, 104, 86, 0.06);
   transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+@media (min-width: 768px) {
+  .lesson-picker .part-list-item {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
 }
 .lesson-picker .part-list-item:hover {
   background: #eef6df;
@@ -299,7 +314,8 @@
   color: #111111;
   font-size: 1.05rem;
   font-weight: 800;
-  white-space: nowrap;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .lesson-picker .picker-cards-section { width: 100%; }
 
@@ -357,15 +373,8 @@
   white-space: nowrap;
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .lesson-picker .level-picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-  .lesson-picker .lesson-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-}
-@media (max-width: 400px) {
-  .lesson-picker .level-picker-grid { grid-template-columns: 1fr; }
-  .lesson-picker .lesson-list { grid-template-columns: 1fr; }
-}
+/* Responsive — the level/lesson grids are auto-fit (above), so no fixed-column
+   breakpoints here; they size to the container at every width. */
 @media (max-width: 700px) {
   .lesson-picker .picker-header-section { flex-direction: column; text-align: center; }
   .lesson-picker .picker-lesson-action-buttons { grid-template-columns: 1fr; }

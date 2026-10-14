@@ -8,9 +8,15 @@
    the component. Tokens come from ./vocab-select.css.
    ───────────────────────────────────────────── */
 /* ── Filter bar ── */
+/* Wrap on the bar's own width, not the viewport: at the md breakpoint the
+   sidebar rail becomes in-flow and this bar's container shrinks well below the
+   viewport, so viewport media queries (the old max-width:760/520 steps) left a
+   gap where 4 fixed columns overflowed. auto-fit fits as many >=120px columns as
+   the real container allows and wraps the rest — one row on desktop, fewer on
+   tablet/phone. See docs/responsive-conventions.md. */
 .vocab-select .vocab-filter-bar {
   display: grid;
-  grid-template-columns: repeat(4, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 12px;
   margin-bottom: 14px;
 }
@@ -133,9 +139,3 @@
   color: var(--vs-primary);
 }
 
-@media (max-width: 760px) {
-  .vocab-select .vocab-filter-bar { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 520px) {
-  .vocab-select .vocab-filter-bar { grid-template-columns: 1fr; }
-}

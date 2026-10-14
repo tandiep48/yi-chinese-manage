@@ -21,6 +21,12 @@ export const VOCAB_ACTIVITY_TYPES: VocabActivityType[] = ["typing", "listen", "r
 
 export const GROUP_SIZE = 5; // words per group
 
+// How long a solved activity lingers before auto-advancing to the next one. Shared
+// across every trainer (vocab typing/match, lesson multiple-choice, Learn Together)
+// so the pacing of a correct answer is uniform. Lesson typing/reorder are the one
+// exception: they wait for the task audio to finish instead (see useLessonTaskFlow).
+export const AUTO_ADVANCE_DELAY_MS = 1500;
+
 // Match config per activity. `db` is the vocab_records mode recorded on solve; the
 // left column is the scored anchor (one record per word), the right is paired to it.
 export const MATCH_CONFIG: Record<

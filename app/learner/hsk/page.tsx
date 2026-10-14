@@ -7,9 +7,9 @@ import Link from "next/link";
 import { HSK_LEVELS } from "@/lib/lessons/lessons";
 import { hskImageUrl } from "@/lib/gcs";
 import { useT } from "@/components/i18n/I18nProvider";
-import { LearningTabs } from "@/components/page/learner/LearningTabs";
-import { RecentLessonPanel } from "@/components/page/learner/RecentLessonPanel";
-import "@/components/page/learner/lesson-picker.css";
+import { LearningTabs } from "@/components/page/learner/picker/LearningTabs";
+import { RecentLessonPanel } from "@/components/page/learner/picker/RecentLessonPanel";
+import "@/components/page/learner/picker/lesson-picker.css";
 
 export default function HskLevelPickerPage() {
   const { t } = useT();

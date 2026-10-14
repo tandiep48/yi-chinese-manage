@@ -44,11 +44,20 @@ export function LessonSidebar({
   domain = "lesson",
   open,
   onOpenChange,
+  onSelectPart,
+  onSelectDomain,
 }: {
   passageId: string;
   domain?: StudyDomain;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // When given, picking a part switches it in place via this callback instead of
+  // navigating to /learner/lesson — the dashboard's embedded milestone uses this to
+  // swap the running part without leaving the home tab.
+  onSelectPart?: (passageId: string) => void;
+  // When given, Grammar / Translation render in place via this callback instead of
+  // navigating to their pages — the dashboard switches its embedded view this way.
+  onSelectDomain?: (target: StudyDomain) => void;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -58,12 +67,23 @@ export function LessonSidebar({
   const goBackToPartPicker = () => router.push(partPickerHref(passageId));
 
   const navigateToPart = (id: string) => {
-    if (id === passageId) return;
+    if (onSelectPart) {
+      onSelectPart(id);
+      return;
+    }
+    // Only a no-op when the lesson view for this exact part is already on screen.
+    // From the grammar/translation pages the passage is the same, so clicking its
+    // part must still navigate back to the lesson view (it was silently ignored).
+    if (domain === "lesson" && id === passageId) return;
     router.push(`/learner/lesson?passage_id=${encodeURIComponent(id)}`);
   };
 
   const navigateToDomain = (target: StudyDomain) => {
     if (target === domain) return;
+    if (onSelectDomain) {
+      onSelectDomain(target);
+      return;
+    }
     const route = target === "grammar" ? "/learner/grammar" : "/learner/translation";
     router.push(`${route}?passage_id=${encodeURIComponent(passageId)}`);
   };
@@ -74,6 +94,14 @@ export function LessonSidebar({
 
   return (
     <>
+      {/* Mobile-only (CSS): dims the lesson behind the open drawer; tap to close. */}
+      {open && (
+        <div
+          className="lesson-sidebar-backdrop"
+          onClick={() => onOpenChange(false)}
+          aria-hidden
+        />
+      )}
       <aside className={`lesson-sidebar${open ? "" : " collapsed"}`}>
         <div className="lesson-sidebar-header">
           <button

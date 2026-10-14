@@ -54,7 +54,7 @@ export function invalidateRead(prefix: string): void {
   }
 }
 
-/** Test seam — not used by the app. */
+/** Drop every cached read — called on logout, since the cache is user-scoped. */
 export function clearReadCache(): void {
   store.clear();
 }

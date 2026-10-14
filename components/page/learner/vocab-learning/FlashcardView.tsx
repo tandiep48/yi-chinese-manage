@@ -1,24 +1,19 @@
 "use client";
 
 // components/page/learner/vocab-learning/FlashcardView.tsx
-// The flash-card review screen — one card at a time with hanzi / pinyin /
-// meaning, a typing self-check, audio play/pause, per-card stroke order, and
-// prev / next / shuffle / summary navigation with a progress bar. Ported from
-// the #screen-learning markup + renderWord()/nextWord()/prevWord()/
-// shuffleLearningWords() in Learning/web_app/static/vocab_learning/vocab_learning.js.
-// Speaking practice (mic + ASR) from the original is deferred.
+// The flash-card review screen — one card at a time with a typing self-check, driven
+// entirely by the keyboard (see useCardControls): A/D move, S reveals pinyin+meaning,
+// W reveals + plays audio, Space shuffles, Q opens stroke order. Pinyin + meaning
+// start hidden on each card. Ported from the #screen-learning markup in
+// Learning/web_app/static/vocab_learning/vocab_learning.js; speaking practice deferred.
 
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPlay,
-  faPause,
-  faPenNib,
-  faTableList,
-  faShuffle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faTableList } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
+import { useCardControls } from "@/hooks/shared/useCardControls";
+import { CardShortcutLegend } from "@/components/page/learner/shared/CardShortcutLegend";
 import type { LessonVocabRow } from "@/lib/types/vocab";
 
 const HANZI_RE = /[一-鿿]/;
@@ -45,7 +40,6 @@ export function FlashcardView({
   const [index, setIndex] = useState(0);
   const [typing, setTyping] = useState("");
   const [success, setSuccess] = useState(false);
-  const [playing, setPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Reset the working order when a new word set arrives (render-phase reset).
@@ -69,10 +63,9 @@ export function FlashcardView({
   const total = order.length;
   const word = order[index];
   const meaning = (lang === "vi" ? word?.meaning_vn : word?.meaning_en) || word?.meaning_en || word?.meaning_vn || "";
-  const isLast = index === total - 1;
+  const hasHanzi = !!word && HANZI_RE.test(word.cn);
 
-  // Play the current card's audio when it changes. Playback state is driven by
-  // the <audio> element's own events, so nothing sets state synchronously here.
+  // Play the current card's audio when it changes.
   useEffect(() => {
     audioRef.current?.pause();
     const key = order[index]?.audio_key;
@@ -82,26 +75,17 @@ export function FlashcardView({
     }
     const audio = new Audio(vocabAudioUrl(key));
     audioRef.current = audio;
-    audio.onplay = () => setPlaying(true);
-    audio.onpause = () => setPlaying(false);
-    audio.onended = () => setPlaying(false);
-    audio.onerror = () => setPlaying(false);
-    audio.play()?.catch(() => setPlaying(false));
+    audio.play()?.catch(() => {});
     return () => {
       audio.pause();
-      audio.onplay = audio.onpause = audio.onended = audio.onerror = null;
     };
   }, [order, index]);
 
   function playAudio() {
     const audio = audioRef.current;
     if (!audio) return;
-    if (!audio.paused) {
-      audio.pause();
-      return;
-    }
     audio.currentTime = 0;
-    audio.play()?.catch(() => setPlaying(false));
+    audio.play()?.catch(() => {});
   }
 
   function goPrev() {
@@ -136,24 +120,18 @@ export function FlashcardView({
     }
   }
 
-  // Keyboard shortcuts: ←/→ navigate, Space replays audio (ignored while typing).
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      const target = e.target as HTMLElement | null;
-      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) {
-        return;
-      }
-      if (e.key === "ArrowLeft") goPrev();
-      else if (e.key === "ArrowRight") goNext();
-      else if (e.key === " ") {
-        e.preventDefault();
-        playAudio();
-      }
-    }
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, total]);
+  const openStroke = () => {
+    if (hasHanzi) onOpenStroke(word.cn, word.pinyin || "");
+  };
+
+  const { revealed, reveal } = useCardControls({
+    resetKey: word,
+    onPrev: goPrev,
+    onNext: goNext,
+    onPlayAudio: playAudio,
+    onShuffle: shuffle,
+    onStroke: openStroke,
+  });
 
   if (!word) return null;
 
@@ -163,6 +141,12 @@ export function FlashcardView({
         <span className="vl-counter">
           {index + 1} / {total}
         </span>
+        {!hideSummaryButton && (
+          <button type="button" className="vl-train-btn" onClick={onShowSummary}>
+            <FontAwesomeIcon icon={faTableList} />
+            <span>{t("reading.summary")}</span>
+          </button>
+        )}
       </div>
 
       <div className="vl-progress-bar vl-card-progress">
@@ -173,8 +157,8 @@ export function FlashcardView({
         <div className="vl-hanzi" lang="zh-CN">
           {word.cn}
         </div>
-        <div className="vl-pinyin">{word.pinyin || ""}</div>
-        <div className="vl-meaning">{meaning}</div>
+        <div className="vl-pinyin">{revealed ? word.pinyin || "" : ""}</div>
+        <div className="vl-meaning">{revealed ? meaning : ""}</div>
 
         <div className="vl-typing-container">
           <input
@@ -187,50 +171,19 @@ export function FlashcardView({
             autoComplete="off"
           />
         </div>
-
-        <div className="vl-card-controls">
-          <button type="button" className={`vl-audio-btn${playing ? " playing" : ""}`} onClick={playAudio}>
-            <FontAwesomeIcon icon={playing ? faPause : faPlay} />
-            <span>{t("reading.play_audio")}</span>
-          </button>
-          {HANZI_RE.test(word.cn) && (
-            <button
-              type="button"
-              className="vl-stroke-btn"
-              onClick={() => onOpenStroke(word.cn, word.pinyin || "")}
-            >
-              <FontAwesomeIcon icon={faPenNib} />
-              <span>{t("vocab_learning.stroke_order")}</span>
-            </button>
-          )}
-        </div>
       </div>
 
-      <div className="vl-nav-row">
-        <button type="button" className="vl-nav-btn" onClick={goPrev} disabled={index === 0}>
-          &larr; {t("reading.prev")}
-        </button>
-        {!hideSummaryButton && (
-          <button type="button" className="vl-train-btn" onClick={onShowSummary}>
-            <FontAwesomeIcon icon={faTableList} />
-            <span>{t("reading.summary")}</span>
-          </button>
-        )}
-        <button type="button" className="vl-train-btn" onClick={shuffle} title={t("vocab_learning.shuffle_words_title")}>
-          <FontAwesomeIcon icon={faShuffle} />
-          <span>{t("vocab_learning.shuffle")}</span>
-        </button>
-        <button
-          type="button"
-          className="vl-nav-btn"
-          onClick={goNext}
-          disabled={lockAtEnd && isLast}
-        >
-          {isLast && !lockAtEnd ? t("vocab_learning.finish") : t("reading.next")} &rarr;
-        </button>
-      </div>
-
-      <p className="vl-keyboard-tip">{t("vocab_learning.keyboard_tip")}</p>
+      <CardShortcutLegend
+        onPrev={goPrev}
+        onNext={goNext}
+        onAudioReveal={() => {
+          reveal();
+          playAudio();
+        }}
+        onReveal={reveal}
+        onShuffle={shuffle}
+        onStroke={hasHanzi ? openStroke : undefined}
+      />
     </div>
   );
 }

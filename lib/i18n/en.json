@@ -1,4 +1,14 @@
 {
+  "card_shortcuts": {
+    "title": "Keyboard shortcuts",
+    "prev": "Previous",
+    "next": "Next",
+    "audio_reveal": "Audio + reveal",
+    "reveal": "Reveal",
+    "shuffle": "Shuffle",
+    "stroke": "Stroke order",
+    "space": "Space"
+  },
   "nav": {
     "language_label": "Language",
     "brand": "Learning Dashboard",
@@ -679,7 +689,8 @@
     "lesson_browse": "Browse lessons",
     "lesson_loading": "Loading your lesson…",
     "lesson_empty": "You haven't started a lesson yet.",
-    "current_lesson": "Current Lesson"
+    "current_lesson": "Current Lesson",
+    "signed_out": "Sign in to see your lessons, reviews and recommendations."
   },
   "milestone": {
     "step_counter": "Step {n} of {total}",

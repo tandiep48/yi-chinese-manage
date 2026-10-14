@@ -18,10 +18,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
+import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
 import type { VocabMode, VocabRow } from "@/lib/types/vocab";
 import { VocabFilterBar } from "./VocabFilterBar";
 import { VocabTable } from "./VocabTable";
+import { VocabCardList } from "./VocabCardList";
 import "./vocab-select.css";
 import {
   VocabStrokeModal,
@@ -42,6 +44,9 @@ export function VocabSelectPage() {
   const vocab = useVocabSelect();
   const [stroke, setStroke] = useState<StrokeModalState>(null);
   const [trainPickerOpen, setTrainPickerOpen] = useState(false);
+  // Phones get the card view (no sideways scrolling); desktop keeps the table
+  // with its column study tools.
+  const useCards = useMediaQuery("(max-width: 767px)");
 
   function startTraining(types: string[]) {
     setTrainPickerOpen(false);
@@ -195,15 +200,26 @@ export function VocabSelectPage() {
           )}
 
           {showTable ? (
-            <VocabTable
-              rows={vocab.rows}
-              isSelected={vocab.isSelected}
-              allOnPageSelected={vocab.allOnPageSelected}
-              onToggleWord={vocab.toggleWord}
-              onTogglePage={vocab.togglePage}
-              onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
-              onStrokeAll={openStrokeAll}
-            />
+            useCards ? (
+              <VocabCardList
+                rows={vocab.rows}
+                isSelected={vocab.isSelected}
+                allOnPageSelected={vocab.allOnPageSelected}
+                onToggleWord={vocab.toggleWord}
+                onTogglePage={vocab.togglePage}
+                onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
+              />
+            ) : (
+              <VocabTable
+                rows={vocab.rows}
+                isSelected={vocab.isSelected}
+                allOnPageSelected={vocab.allOnPageSelected}
+                onToggleWord={vocab.toggleWord}
+                onTogglePage={vocab.togglePage}
+                onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
+                onStrokeAll={openStrokeAll}
+              />
+            )
           ) : (
             <div className="vocab-table-state">{vocab.tableState.message}</div>
           )}

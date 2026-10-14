@@ -22,14 +22,13 @@ import { ReorderTask } from "@/components/page/learner/lesson-training/ReorderTa
 import { useCompetitionTrainer } from "@/hooks/competition/useCompetitionTrainer";
 import { useCompetitionLessonTrainer } from "@/hooks/competition/useCompetitionLessonTrainer";
 import type { CompetitionRoom, CompetitionScore, CompetitionSession } from "@/lib/types/competition";
+// A correct multiple-choice answer holds for the shared trainer-wide auto-advance
+// delay, matching the solo and vocab trainers.
+import { AUTO_ADVANCE_DELAY_MS as COMPETITION_MC_DELAY_MS } from "@/lib/lessons/vocabTrainer";
 import { RankingList } from "./RankingList";
 import "@/components/page/learner/trainer/vocab-trainer.css";
 import "@/components/page/learner/lesson-training/lesson-trainer.css";
 import "./competition-trainer.css";
-
-// A correct multiple-choice answer holds for 800ms here, not the solo trainer's 3s
-// (lesson_trainer_core.js).
-const COMPETITION_MC_DELAY_MS = 800;
 
 export function SectionScreen({
   room,

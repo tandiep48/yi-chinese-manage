@@ -55,7 +55,7 @@ export function BasicPinyinTable() {
   };
 
   return (
-    <div className="pinyin-table-wrap">
+    <div className="pinyin-table-wrap" data-overflow-ok>
       <table className="pinyin-basic-table">
         <thead>
           <tr>

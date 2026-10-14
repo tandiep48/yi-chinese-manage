@@ -255,7 +255,12 @@ function MilestonePart({
           ) : trainerWords.length === 0 ? (
             <p className="milestone-state">{t("milestone.no_vocab")}</p>
           ) : (
-            <VocabTrainerPage words={trainerWords} contained onExit={onTrainerExit} />
+            <VocabTrainerPage
+              words={trainerWords}
+              contained
+              onExit={onTrainerExit}
+              homeLabel={t("lesson.next")}
+            />
           ))}
 
         {step === 4 && (

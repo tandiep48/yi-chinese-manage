@@ -1,6 +1,6 @@
 // tests/components/lesson/LessonCardStudy.test.tsx
-// The per-line lesson-card viewer: card content, prev/next navigation (the last
-// line's "Finish" returning to the summary), the Summary controls, and the
+// The per-line lesson-card viewer: card content, hidden-until-revealed pinyin/
+// meaning, keyboard navigation (A/D) and reveal (S), the Summary controls, and the
 // milestone chrome props that hide those controls and lock the last line.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
@@ -35,40 +35,58 @@ beforeEach(() => {
 
 function setup(over: Partial<Parameters<typeof LessonCardStudy>[0]> = {}) {
   const onShowSummary = vi.fn();
-  render(<LessonCardStudy lines={LINES} folder="HSK1" onShowSummary={onShowSummary} {...over} />);
-  return { onShowSummary };
+  const utils = render(
+    <LessonCardStudy lines={LINES} folder="HSK1" onShowSummary={onShowSummary} {...over} />
+  );
+  return { ...utils, onShowSummary };
 }
 
+const press = (key: string) => fireEvent.keyDown(document, { key });
+
 describe("LessonCardStudy", () => {
-  it("renders the first line and a 1 / N counter", () => {
-    setup();
+  it("renders the first line and a 1 / N counter, meaning hidden", () => {
+    const { container } = setup();
     expect(screen.getByText("你好")).toBeInTheDocument();
+    expect(screen.getByText("1 / 2")).toBeInTheDocument();
+    expect(container.querySelector(".vl-meaning")?.textContent).toBe("");
+  });
+
+  it("reveals pinyin and meaning with S", () => {
+    setup();
+    press("s");
+    expect(screen.getByText("你好-py")).toBeInTheDocument();
     expect(screen.getByText("你好-en")).toBeInTheDocument();
+  });
+
+  it("navigates with A / D", () => {
+    setup();
+    press("d");
+    expect(screen.getByText("再见")).toBeInTheDocument();
+    expect(screen.getByText("2 / 2")).toBeInTheDocument();
+    press("a");
     expect(screen.getByText("1 / 2")).toBeInTheDocument();
   });
 
-  it("disables Prev on the first line and advances with Next", () => {
-    setup();
-    expect(screen.getByRole("button", { name: /reading.prev/ })).toBeDisabled();
-    fireEvent.click(screen.getByRole("button", { name: /reading.next/ }));
+  it("navigates and reveals by tapping the legend buttons (touch)", () => {
+    const { container } = setup();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.next/ }));
     expect(screen.getByText("再见")).toBeInTheDocument();
-    expect(screen.getByText("2 / 2")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /card_shortcuts\.reveal$/ }));
+    expect(container.querySelector(".vl-meaning")?.textContent).toBe("再见-en");
   });
 
   it("shows both Summary controls by default and returns to the summary", () => {
     const { onShowSummary } = setup();
-    // The topbar back button and the nav-row Summary button both read "Summary".
     const summaryButtons = screen.getAllByRole("button", { name: /reading.summary/ });
     expect(summaryButtons).toHaveLength(2);
-
     fireEvent.click(summaryButtons[0]);
     expect(onShowSummary).toHaveBeenCalledTimes(1);
   });
 
-  it("shows Finish on the last line and returns to the summary", () => {
+  it("D past the last line returns to the summary", () => {
     const { onShowSummary } = setup();
-    fireEvent.click(screen.getByRole("button", { name: /reading.next/ }));
-    fireEvent.click(screen.getByRole("button", { name: /grammar.finish/ }));
+    press("d");
+    press("d");
     expect(onShowSummary).toHaveBeenCalledTimes(1);
   });
 
@@ -78,15 +96,12 @@ describe("LessonCardStudy", () => {
     expect(screen.queryAllByRole("button", { name: /reading.summary/ })).toHaveLength(0);
   });
 
-  it("locks the last line instead of showing Finish when lockAtEnd is set", () => {
+  it("locks the last line when lockAtEnd is set", () => {
     const { onShowSummary } = setup({ lockAtEnd: true });
-    fireEvent.click(screen.getByRole("button", { name: /reading.next/ }));
+    press("d");
     expect(screen.getByText("2 / 2")).toBeInTheDocument();
-
-    expect(screen.queryByRole("button", { name: /grammar.finish/ })).toBeNull();
-    const next = screen.getByRole("button", { name: /reading.next/ });
-    expect(next).toBeDisabled();
-    fireEvent.click(next);
+    press("d");
     expect(onShowSummary).not.toHaveBeenCalled();
+    expect(screen.getByText("2 / 2")).toBeInTheDocument();
   });
 });

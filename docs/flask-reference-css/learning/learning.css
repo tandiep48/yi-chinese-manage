@@ -1,0 +1,122 @@
+body {
+    background: #ffffff;
+    color: #111111;
+    align-items: flex-start;
+    padding: 40px 20px;
+}
+
+.learning-container {
+    width: 100%;
+    max-width: min(1600px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+
+.learning-action-screen {
+    animation: fadeIn 0.25s ease;
+}
+
+.learning-recent-panel {
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px;
+    margin-bottom: 22px;
+    background: #CBE2D4;
+    border: 1px solid #afcfbd;
+    border-radius: 8px;
+}
+
+.learning-recent-panel h2 {
+    text-align: left;
+    margin-bottom: 6px;
+}
+
+.learning-recent-panel .subtitle {
+    margin-bottom: 0;
+    text-align: left;
+}
+
+.learning-continue-btn {
+    width: auto;
+    min-width: 150px;
+}
+
+.learning-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.learning-back-btn {
+    width: auto;
+}
+
+.learning-home-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.learning-heading h1 {
+    margin-bottom: 8px;
+}
+
+.learning-part-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 22px 0 0;
+}
+
+.learning-part-nav-btn {
+    width: auto;
+    min-width: 150px;
+    text-align: center;
+    align-items: center;
+}
+
+.learning-part-nav-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.learning-guided-panel {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0 6px;
+}
+
+.learning-start-btn {
+    width: min(100%, 320px);
+    justify-content: center;
+    text-align: center;
+}
+
+@media (max-width: 560px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    .learning-topbar {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .learning-recent-panel {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .learning-part-nav {
+        flex-direction: column;
+    }
+
+    .learning-part-nav-btn {
+        width: 100%;
+    }
+
+}

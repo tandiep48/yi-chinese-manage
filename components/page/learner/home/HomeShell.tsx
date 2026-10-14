@@ -21,6 +21,7 @@
 // about data loss.
 
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -62,6 +63,22 @@ export function HomeShell() {
       cancelled = true;
     };
   }, [user, authLoading, home.run]);
+
+  // Signed out (e.g. just after logout): show a sign-in prompt instead of the tabs,
+  // which unmounts every panel so no previous session's data lingers. The read cache
+  // is also cleared on logout (AuthProvider), so a re-login starts fresh.
+  if (!authLoading && !user) {
+    return (
+      <div className="learner-home">
+        <div className="learner-home-note">
+          <p className="learner-home-note-text">{t("home.signed_out")}</p>
+          <Link className="learner-home-note-link" href="/learner/login">
+            {t("nav.login")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -8,7 +8,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import { TypingActivity } from "@/components/page/learner/vocab-training/TypingActivity";
 import { MatchActivity } from "@/components/page/learner/vocab-training/MatchActivity";
-import type { Activity, TrainerWord } from "@/lib/lessons/vocabTrainer";
+import { AUTO_ADVANCE_DELAY_MS, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
 
 vi.mock("@/components/i18n/I18nProvider", () => ({
   useT: () => ({ t: (key: string) => key, lang: "en" }),
@@ -74,7 +74,7 @@ describe("TypingActivity in competition mode", () => {
     expect(onAdvance).not.toHaveBeenCalled();
     typeInto(1, "火");
 
-    act(() => void vi.advanceTimersByTime(400));
+    act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
     expect(onAdvance).toHaveBeenCalledTimes(1);
   });
 
@@ -111,6 +111,26 @@ describe("TypingActivity in competition mode", () => {
     // Solo mode scores the whole group on Check, not per word.
     expect(onRecord).not.toHaveBeenCalled();
   });
+
+  it("scores the last typed word correctly when the group auto-finishes", () => {
+    // Regression: typing the final word used to score it against the not-yet-committed
+    // values state, recording the correct last word as a miss.
+    const onRecord = vi.fn();
+    const onAdvance = vi.fn();
+    render(<TypingActivity activity={activity("typing")} onRecord={onRecord} onAdvance={onAdvance} />);
+
+    typeInto(0, "水");
+    typeInto(1, "火");
+
+    // Every word records once, and crucially the last one is correct.
+    expect(onRecord).toHaveBeenCalledTimes(2);
+    const lastCall = onRecord.mock.calls.find((c) => c[0].word === "火")!;
+    expect(lastCall[2]).toBe("火"); // the typed answer, not stale ""
+    expect(lastCall[3]).toBe(true);
+
+    act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+    expect(onAdvance).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("MatchActivity in competition mode", () => {
@@ -137,7 +157,7 @@ describe("MatchActivity in competition mode", () => {
 
     solvePair("水");
     solvePair("火");
-    act(() => void vi.advanceTimersByTime(600));
+    act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
     expect(onAdvance).toHaveBeenCalledTimes(1);
   });
 

@@ -32,21 +32,42 @@
 }
 
 /* ── Study layout shell: sidebar + main content ──────────────────────────── */
+/* Mobile-first: the sidebar and main stack in one column so the study content
+   gets the full width. At md+ they sit side by side with row-reverse (sidebar on
+   the right, main in the normal reading flow on the left).
+
+   Both the base and the desktop override live in THIS file so their source order
+   is deterministic: the sidebar's own width/position overrides live in
+   lesson-sidebar.css, but flex-direction must not be split across files — at
+   equal specificity a cross-file `row-reverse` could win over a media-query
+   `column` depending on chunk load order and collapse the main column to 0.
+   (min-width:769 pairs with lesson-sidebar.css's max-width:768 — no gap.) */
 .lesson-study .lesson-study-layout {
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 24px;
   position: relative;
+}
+@media (min-width: 769px) {
+  .lesson-study .lesson-study-layout {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+  }
 }
 .lesson-study .lesson-study-main {
   flex: 1;
   min-width: 0;
-  transition: padding-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: padding-right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* When collapsed, clear space at top-left for the floating toggle button. */
-.lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
-  padding-left: 52px;
+/* When collapsed, clear space at top-right for the floating toggle button.
+   Desktop only: on mobile the toggle sits in the top strip (not over the
+   content), so reserving space here would just shift the content in/out as the
+   drawer opens and closes. Kept at md+ in this file so its source order beats
+   the mobile rule deterministically. */
+@media (min-width: 769px) {
+  .lesson-study .lesson-study-layout.sidebar-collapsed .lesson-study-main {
+    padding-right: 52px;
+  }
 }
 
 

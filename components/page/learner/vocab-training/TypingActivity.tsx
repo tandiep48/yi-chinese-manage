@@ -22,12 +22,9 @@ import { vocabAudioUrl } from "@/lib/audio";
 import { now } from "@/lib/clock";
 import { pickMeaning } from "@/lib/lessons/meaning";
 import { useTrainerActionSlot } from "@/components/page/learner/trainer/TrainerShell";
-import type { Activity, TrainerWord } from "@/lib/lessons/vocabTrainer";
+import { AUTO_ADVANCE_DELAY_MS, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
 
 type RowStatus = "none" | "correct" | "incorrect";
-
-// How long the board lingers after the last word is solved in auto-advance mode.
-const AUTO_ADVANCE_DELAY_MS = 350;
 
 export function TypingActivity({
   activity,
@@ -89,15 +86,19 @@ export function TypingActivity({
     }
   }
 
-  function scoreGroup() {
+  // `override` carries the just-typed values when scoring is triggered straight from
+  // handleChange — the keystroke's setValues hasn't committed yet, so reading `values`
+  // would score the last word against its stale (pre-keystroke) text and mark it wrong.
+  function scoreGroup(override?: string[]) {
     if (checked) return;
+    const finals = override ?? values;
     words.forEach((row, i) => {
-      const answer = values[i].trim();
+      const answer = finals[i].trim();
       const isCorrect = answer === row.word;
       const completedAt = completedAtRef.current[i] ?? now();
       onRecord(row, "typing", answer, isCorrect, completedAt - startRef.current);
     });
-    setStatus(words.map((row, i) => (values[i].trim() === row.word ? "correct" : "incorrect")));
+    setStatus(words.map((row, i) => (finals[i].trim() === row.word ? "correct" : "incorrect")));
     setChecked(true);
   }
 
@@ -135,11 +136,14 @@ export function TypingActivity({
         lockWord(idx, value.trim(), true);
         return;
       }
-      // Auto-finish the group once every word is correct.
-      const allCorrect = words.every((w, i) => (i === idx ? value.trim() : values[i].trim()) === w.word);
+      // Auto-finish the group once every word is correct. Build the final values with
+      // this keystroke applied and hand them to scoreGroup, which otherwise reads the
+      // not-yet-committed `values` state and marks the last word wrong.
+      const finals = words.map((_, i) => (i === idx ? value.trim() : values[i].trim()));
+      const allCorrect = words.every((w, i) => finals[i] === w.word);
       if (allCorrect) {
-        scoreGroup();
-        window.setTimeout(onAdvance, 600);
+        scoreGroup(finals);
+        window.setTimeout(onAdvance, AUTO_ADVANCE_DELAY_MS);
       }
     } else {
       completedAtRef.current[idx] = null;

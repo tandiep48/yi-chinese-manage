@@ -19,11 +19,16 @@
   border-bottom: 2px solid var(--learner-primary);
 }
 
-/* Horizontal scroll container so wide tables never break the page layout. */
+/* Horizontal scroll container so wide tables never break the page layout.
+   The table centres itself via `.pinyin-guide table { margin: 0 auto }` when it
+   fits; when it's wider than the wrap those auto margins collapse to 0 so the
+   whole table is reachable by scrolling from the left. (A flex `justify-content:
+   center` here would strand the left overflow out of scroll reach.) The wrap is
+   marked data-overflow-ok in the table components so the responsive guard
+   accepts the intentional scroll — see docs/responsive-conventions.md. */
 .pinyin-guide .pinyin-table-wrap {
   overflow-x: auto;
-  display: flex;
-  justify-content: center;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 1.5rem;
 }
 

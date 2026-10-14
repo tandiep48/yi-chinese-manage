@@ -21,6 +21,7 @@ import {
   logout as logoutApi,
   fetchCurrentUser,
 } from "@/lib/api/auth";
+import { clearReadCache } from "@/lib/api/readCache";
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -81,6 +82,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     await logoutApi();
+    // The dashboard's TTL read cache (current lesson, review pages) is user-scoped,
+    // so drop it here — otherwise the next viewer, or the signed-out dashboard, keeps
+    // serving the previous session's data.
+    clearReadCache();
     setUser(null);
   }, []);
 

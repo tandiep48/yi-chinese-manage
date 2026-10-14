@@ -52,7 +52,7 @@ export function AdvancedPinyinTable() {
   return (
     <div className="pinyin-advanced">
       {tables.map((rows, ti) => (
-        <div className="pinyin-table-wrap" key={ti}>
+        <div className="pinyin-table-wrap" data-overflow-ok key={ti}>
           <table className="pinyin-advanced-table">
             <thead>
               <tr>

@@ -39,6 +39,21 @@ describe("GrammarPanel", () => {
     expect(screen.getByRole("cell", { name: "tall" })).toBeInTheDocument();
   });
 
+  it("renders every row of a section even when rows share a grammar_id", () => {
+    // Real data keys a rule's title + description + examples under one grammar_id,
+    // so keying by grammar_id alone dropped the duplicates (React omits colliding keys).
+    renderPanel([
+      [
+        { grammar_id: "H2-1-1", type: 1, english_content: "Shared Title" },
+        { grammar_id: "H2-1-1", type: 2, english_content: "First line." },
+        { grammar_id: "H2-1-1", type: 2, english_content: "Second line." },
+      ],
+    ]);
+    expect(screen.getByRole("heading", { name: "Shared Title" })).toBeInTheDocument();
+    expect(screen.getByText("First line.")).toBeInTheDocument();
+    expect(screen.getByText("Second line.")).toBeInTheDocument();
+  });
+
   it("shows the loading state", () => {
     renderPanel([], true);
     expect(screen.getByText("Loading grammar...")).toBeInTheDocument();

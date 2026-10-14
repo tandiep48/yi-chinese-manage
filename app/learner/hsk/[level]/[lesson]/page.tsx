@@ -13,12 +13,12 @@ import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
 import { getLevel, isNumberPart, getPartNumber, lessonColor } from "@/lib/lessons/lessons";
 import { lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
-import { LessonProgress, ProgressLines } from "@/components/page/learner/PickerProgress";
+import { LessonProgress, ProgressLines } from "@/components/page/learner/picker/PickerProgress";
 import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { useT } from "@/components/i18n/I18nProvider";
 import { saveRecentLearning } from "@/lib/api/learner/recent";
 import type { PickerPassage } from "@/lib/types/lesson";
-import "@/components/page/learner/lesson-picker.css";
+import "@/components/page/learner/picker/lesson-picker.css";
 
 // Pinyin-guide and Numbers placeholders aren't graded lesson parts.
 const PINYIN_IDS = new Set(["H1_1_1", "H1_1_2"]);
