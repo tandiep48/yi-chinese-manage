@@ -45,9 +45,14 @@ describe("WordSummary", () => {
   it("toggles a column's visibility via the header toggle", () => {
     const { container } = renderWith(VOCAB);
     const cards = container.querySelector(".vl-vocab-cards")!;
-    expect(cards.className).not.toContain("hide-cn");
-    fireEvent.click(screen.getByRole("button", { name: "Character" }));
-    expect(cards.className).toContain("hide-cn");
+    expect(cards.className).not.toContain("hide-py");
+    fireEvent.click(screen.getByRole("button", { name: "Pinyin" }));
+    expect(cards.className).toContain("hide-py");
+  });
+
+  it("does not offer a Character column toggle", () => {
+    renderWith(VOCAB);
+    expect(screen.queryByRole("button", { name: "Character" })).not.toBeInTheDocument();
   });
 
   it("shows the empty state when there is no vocab", () => {

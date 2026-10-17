@@ -128,7 +128,7 @@ export function WordSummary({
           )}
         </div>
         <div className="toolbar-right">
-          {(["cn", "py", "vn"] as Col[]).map((col) => (
+          {(["py", "vn"] as Col[]).map((col) => (
             <button
               key={col}
               type="button"
