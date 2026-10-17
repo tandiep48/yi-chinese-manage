@@ -49,8 +49,9 @@
   display: flex;
   gap: 1.5rem;
   align-items: flex-start;
-  background: var(--ls-preview);
-  border: 1px solid rgba(0, 0, 0, 0.03);
+  /* White line like the /vocab list; only the Chinese sentence carries the teal. */
+  background: #ffffff;
+  border: 1px solid #d9ded9;
   border-radius: 24px;
   padding: 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
@@ -66,7 +67,15 @@
   box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
 }
 .lesson-study .lesson-preview-text { flex: 1; min-width: 0; }
-.lesson-study .lesson-preview-text .hanzi-text { color: #111; font-size: 1.5rem; line-height: 1.5; }
+/* The Chinese sentence is the only teal-filled container on the line. */
+.lesson-study .lesson-preview-text .hanzi-text {
+  color: #111;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  background: var(--ls-secondary);
+  border-radius: 12px;
+  padding: 0.4rem 0.7rem;
+}
 .lesson-study .lesson-preview-text .pinyin-text { color: var(--ls-primary); font-weight: 600; margin-top: 4px; display: none; }
 .lesson-study .lesson-preview-text .pinyin-text.show { display: block; }
 .lesson-study .lesson-preview-text .meaning-text { color: var(--ls-muted); margin-top: 4px; display: none; }

@@ -104,7 +104,7 @@ export function LessonSummary({
         <div className="toolbar-left">
           <button
             type="button"
-            className={`btn${sequenceActive ? " primary" : ""}`}
+            className={`btn vl-toolbar-primary${sequenceActive ? " playing" : ""}`}
             onClick={() => toggleSequence(playable)}
             disabled={playable.length === 0}
           >
