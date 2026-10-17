@@ -25,6 +25,11 @@
 .lesson-study .line-token.clickable:hover {
   background: rgba(0, 122, 97, 0.12);
 }
+/* The preview sentence is built from clickable tokens that carry their own color,
+   so the .hanzi-text teal only reaches punctuation — tint the tokens teal here too. */
+.lesson-study .lesson-preview-text .hanzi-text .line-token.clickable {
+  color: var(--ls-primary);
+}
 
 
 /* Lesson Summary — toolbar + preview lines */
@@ -69,7 +74,7 @@
 .lesson-study .lesson-preview-text { flex: 1; min-width: 0; }
 /* The Chinese sentence is the only teal-filled container on the line. */
 .lesson-study .lesson-preview-text .hanzi-text {
-  color: #111;
+  color: var(--ls-primary);
   font-size: 1.5rem;
   line-height: 1.5;
   background: var(--ls-secondary);
