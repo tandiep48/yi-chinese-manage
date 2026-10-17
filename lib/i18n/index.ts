@@ -7,7 +7,9 @@ import vi from "./vi.json";
 
 export type Lang = "en" | "vi";
 export const SUPPORTED_LANGS: Lang[] = ["en", "vi"];
-export const DEFAULT_LANG: Lang = "en";
+// Vietnamese is the learner-facing default: a first-time visitor (no saved
+// preference) sees VI; the EN/VI switcher still overrides and persists.
+export const DEFAULT_LANG: Lang = "vi";
 export const LANG_LABELS: Record<Lang, string> = { en: "EN", vi: "VI" };
 
 type Dict = Record<string, unknown>;

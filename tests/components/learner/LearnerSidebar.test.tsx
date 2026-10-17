@@ -43,7 +43,10 @@ describe("LearnerSidebar", () => {
   beforeEach(() => {
     vi.mocked(usePathname).mockReturnValue("/learner/vocab");
     mockAuth = { user: null, loading: false, logout: vi.fn() };
+    // Clear the persisted sidebar-collapse state, but keep the language pinned to
+    // EN (the app default is now VI) so these assertions read the shipped EN strings.
     localStorage.clear();
+    localStorage.setItem("ui_language", "en");
   });
 
   it("renders every primary nav item linked to its route", () => {

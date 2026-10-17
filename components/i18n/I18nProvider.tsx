@@ -37,13 +37,15 @@ const I18nCtx = createContext<I18nContextValue>({
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
 
-  // Load the saved preference after mount (localStorage is client-only).
+  // Load the saved preference after mount (localStorage is client-only). With no
+  // saved choice the default (VI) stands, so reflect whichever language resolves
+  // onto <html lang> rather than leaving the server-rendered value.
   useEffect(() => {
     const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && SUPPORTED_LANGS.includes(saved as Lang)) {
-      setLangState(saved as Lang);
-      document.documentElement.lang = saved;
-    }
+    const resolved =
+      saved && SUPPORTED_LANGS.includes(saved as Lang) ? (saved as Lang) : DEFAULT_LANG;
+    if (resolved !== DEFAULT_LANG) setLangState(resolved);
+    document.documentElement.lang = resolved;
   }, []);
 
   const setLang = useCallback((l: Lang) => {
