@@ -51,15 +51,15 @@ vi.mock("@/components/page/learner/vocab-learning/FlashcardStudy", () => ({
   ),
 }));
 vi.mock("@/components/page/learner/vocab-training/VocabTrainerPage", () => ({
-  VocabTrainerPage: ({ onExit }: { onExit?: () => void }) => {
+  VocabTrainerPage: ({ onExit, types }: { onExit?: () => void; types?: string[] }) => {
     vocabTrainerExit = onExit ?? (() => {});
-    return <div data-testid="body">vocab-trainer</div>;
+    return <div data-testid="body">vocab-trainer types={JSON.stringify(types ?? null)}</div>;
   },
 }));
 vi.mock("@/components/page/learner/lesson-training/LessonTrainerPage", () => ({
-  LessonTrainerPage: ({ onExit }: { onExit?: () => void }) => {
+  LessonTrainerPage: ({ onExit, types }: { onExit?: () => void; types?: string[] }) => {
     lessonTrainerExit = onExit ?? (() => {});
-    return <div data-testid="body">lesson-trainer</div>;
+    return <div data-testid="body">lesson-trainer types={JSON.stringify(types ?? null)}</div>;
   },
 }));
 
@@ -191,6 +191,68 @@ describe("MilestoneRunner — graded steps", () => {
     mockResolve.mockResolvedValue([]);
     renderRunner({ initialStep: 3 });
     expect(await screen.findByText(/no vocabulary to train/i)).toBeInTheDocument();
+  });
+});
+
+describe("MilestoneRunner — train-type picker", () => {
+  it("opens the vocab picker on Continue from step 2 instead of advancing", async () => {
+    const user = userEvent.setup();
+    renderRunner({ initialStep: 2 });
+    await waitFor(() => expect(body()).toContain("flashcards"));
+
+    await user.click(screen.getByRole("button", { name: /Continue/ }));
+
+    expect(screen.getByText("What do you want to train?")).toBeInTheDocument();
+    // Still on the learner step; nothing was marked until a skill set is chosen.
+    expect(body()).toContain("flashcards");
+    expect(mockMark).not.toHaveBeenCalled();
+  });
+
+  it("starts the vocab trainer with only the chosen skills", async () => {
+    mockResolve.mockResolvedValue([
+      { word: "学习", cn: "学习", pinyin: "x", meaning_en: "s", meaning_vn: "h", audio_key: "a", level: "HSK1" },
+    ]);
+    const user = userEvent.setup();
+    renderRunner({ initialStep: 2 });
+    await waitFor(() => expect(body()).toContain("flashcards"));
+
+    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("checkbox", { name: "Listening" }));
+    await user.click(screen.getByRole("checkbox", { name: "Reading" }));
+    await user.click(screen.getByRole("button", { name: "Start" }));
+
+    await waitFor(() => expect(body()).toContain("vocab-trainer"));
+    expect(body()).toContain('types=["typing"]');
+    expect(mockMark).toHaveBeenCalledWith(PASSAGE, 2);
+  });
+
+  it("opens the lesson picker on Continue from step 5 and filters the lesson trainer", async () => {
+    const user = userEvent.setup();
+    renderRunner({ initialStep: 5 });
+    await waitFor(() => expect(body()).toContain("lesson-cards"));
+
+    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    // Lesson engine offers a Reorder skill the vocab engine does not.
+    expect(screen.getByRole("checkbox", { name: "Reorder" })).toBeInTheDocument();
+    await user.click(screen.getByRole("checkbox", { name: "Typing" }));
+    await user.click(screen.getByRole("checkbox", { name: "Reorder" }));
+    await user.click(screen.getByRole("button", { name: "Start" }));
+
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+    expect(body()).toContain('types=["listening","meaning"]');
+  });
+
+  it("cancelling the picker leaves the learner on the step", async () => {
+    const user = userEvent.setup();
+    renderRunner({ initialStep: 2 });
+    await waitFor(() => expect(body()).toContain("flashcards"));
+
+    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: "Cancel" }));
+
+    expect(screen.queryByText("What do you want to train?")).not.toBeInTheDocument();
+    expect(body()).toContain("flashcards");
+    expect(mockMark).not.toHaveBeenCalled();
   });
 });
 

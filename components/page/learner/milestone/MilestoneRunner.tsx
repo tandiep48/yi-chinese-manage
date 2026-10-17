@@ -46,11 +46,13 @@ import { LessonCardStudy } from "@/components/page/learner/lesson/LessonCardStud
 import { FlashcardStudy } from "@/components/page/learner/vocab-learning/FlashcardStudy";
 import { VocabTrainerPage } from "@/components/page/learner/vocab-training/VocabTrainerPage";
 import { LessonTrainerPage } from "@/components/page/learner/lesson-training/LessonTrainerPage";
+import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { resolveTrainerWords } from "@/lib/api/learner/vocabTrainer";
 import { invalidateCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { invalidateVocabReview } from "@/hooks/vocab/useVocabReview";
 import { lessonAudioFolder } from "@/lib/audio";
-import type { TrainerWord } from "@/lib/lessons/vocabTrainer";
+import type { TrainerWord, VocabActivityType } from "@/lib/lessons/vocabTrainer";
+import type { LessonTaskType } from "@/lib/types/lesson";
 import { MilestoneBar } from "./MilestoneBar";
 import "./milestone.css";
 
@@ -157,6 +159,34 @@ function MilestonePart({
     };
   }, [step, trainerWords, passageId]);
 
+  // Continuing out of a learner step into its trainer (step 2 → vocab trainer,
+  // step 5 → lesson trainer) first asks which skills to drill, mirroring the
+  // standalone trainers' launch. The chosen ids are passed to the trainer step as
+  // its `types` filter; the other passive steps (1, 4) just advance.
+  const [pickerEngine, setPickerEngine] = useState<TrainerEngine | null>(null);
+  const [vocabTypes, setVocabTypes] = useState<VocabActivityType[] | undefined>(undefined);
+  const [lessonTypes, setLessonTypes] = useState<LessonTaskType[] | undefined>(undefined);
+
+  const handleContinue = useCallback(() => {
+    if (step + 1 === VOCAB_TRAINER_STEP) {
+      setPickerEngine("vocab");
+    } else if (step + 1 === LESSON_TRAINER_STEP) {
+      setPickerEngine("lesson");
+    } else {
+      void completeAndAdvance();
+    }
+  }, [step, completeAndAdvance]);
+
+  const startTrainerWithSkills = useCallback(
+    (ids: string[]) => {
+      if (pickerEngine === "vocab") setVocabTypes(ids as VocabActivityType[]);
+      else if (pickerEngine === "lesson") setLessonTypes(ids as LessonTaskType[]);
+      setPickerEngine(null);
+      void completeAndAdvance();
+    },
+    [pickerEngine, completeAndAdvance]
+  );
+
   // The host callbacks are held in a ref so the effects below can depend on the
   // *value* they report and nothing else. Both hosts build theirs from
   // useSearchParams, so their identity changes on every URL write — and a
@@ -257,6 +287,7 @@ function MilestonePart({
           ) : (
             <VocabTrainerPage
               words={trainerWords}
+              types={vocabTypes}
               contained
               onExit={onTrainerExit}
               homeLabel={t("lesson.next")}
@@ -289,6 +320,7 @@ function MilestonePart({
         {step === LESSON_TRAINER_STEP && (
           <LessonTrainerPage
             passageIds={[passageId]}
+            types={lessonTypes}
             contained
             onExit={onTrainerExit}
             onComplete={onTrainerExit}
@@ -302,12 +334,20 @@ function MilestonePart({
             type="button"
             className="milestone-continue"
             disabled={milestone.saving}
-            onClick={() => void completeAndAdvance()}
+            onClick={handleContinue}
           >
             <span>{t("milestone.continue")}</span>
             <FontAwesomeIcon icon={faArrowRight} aria-hidden />
           </button>
         </div>
+      )}
+
+      {pickerEngine && (
+        <TrainTypePicker
+          engine={pickerEngine}
+          onStart={startTrainerWithSkills}
+          onCancel={() => setPickerEngine(null)}
+        />
       )}
     </div>
   );
