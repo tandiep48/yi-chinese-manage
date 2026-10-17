@@ -39,9 +39,8 @@
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  /* White card like the /vocab list; only the Chinese character carries the teal. */
-  background: #ffffff;
-  border: 1px solid #d9ded9;
+  background: var(--ls-preview);
+  border: 1px solid rgba(0, 0, 0, 0.03);
   border-radius: 20px;
   padding: 1.25rem 1.5rem;
   box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
@@ -58,18 +57,9 @@
 }
 .lesson-study .vocab-card .vc-left { display: flex; align-items: center; gap: 1.25rem; width: 28%; min-width: 0; }
 .lesson-study .vocab-card .vc-num { font-size: 0.95rem; font-weight: 700; color: #111; width: 24px; flex-shrink: 0; }
-/* The character is the only teal-filled container (user rule: teal only where
-   there is a Chinese character). */
-.lesson-study .vocab-card .vc-char {
-  font-size: 2.2rem;
-  color: var(--ls-primary);
-  line-height: 1;
-  background: var(--ls-secondary);
-  border-radius: 12px;
-  padding: 0.3rem 0.7rem;
-}
-.lesson-study .vocab-card .vc-pinyin { flex: 1; min-width: 0; font-size: 1.1rem; font-weight: 600; color: var(--ls-primary); }
-.lesson-study .vocab-card .vc-meaning { flex: 1; min-width: 0; color: var(--ls-muted); }
+.lesson-study .vocab-card .vc-char { font-size: 2.2rem; color: #111; line-height: 1; }
+.lesson-study .vocab-card .vc-pinyin { flex: 1; min-width: 0; font-size: 1.1rem; font-weight: 600; color: #111; }
+.lesson-study .vocab-card .vc-meaning { flex: 1; min-width: 0; color: #111; }
 /* Groups pinyin + meaning for the phone layout below; `contents` keeps them direct
    flex children of the card on desktop, so the wide row is unchanged. */
 .lesson-study .vocab-card .vc-text { display: contents; }
