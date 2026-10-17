@@ -102,6 +102,21 @@ export function sortLessonNums(lessonNums: string[]): string[] {
   });
 }
 
+// Client-side lesson search for the HSK picker: a case-insensitive substring match
+// on the lesson title and its number (e.g. "3" or a word in the title). An empty
+// query returns everything. Generic over the row shape so it has no dependency on
+// the picker hook's type.
+export function filterLessonsByQuery<T extends { lesson: string; title?: string }>(
+  lessons: readonly T[],
+  query: string
+): T[] {
+  const q = query.trim().toLowerCase();
+  if (!q) return [...lessons];
+  return lessons.filter(
+    (ls) => ls.lesson.toLowerCase().includes(q) || (ls.title ?? "").toLowerCase().includes(q)
+  );
+}
+
 // Lesson title = the part-1 passage's title, falling back to any part with one.
 export function lessonTitle(passages: PickerPassage[]): string | undefined {
   const part1 = passages.find((p) => p.passage_id.split('_')[2] === '1');

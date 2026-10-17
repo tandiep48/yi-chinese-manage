@@ -173,6 +173,8 @@
     "loading_parts": "Loading parts...",
     "lessons_available": "{count} lesson(s) available",
     "no_lessons_found": "No lessons found for this level.",
+    "search_placeholder": "Search lessons",
+    "no_lessons_match": "No lessons match your search.",
     "failed_load_lessons": "Failed to load lessons.",
     "pinyin_guide": "Pinyin Guide",
     "parts_count": "{count} part(s)",

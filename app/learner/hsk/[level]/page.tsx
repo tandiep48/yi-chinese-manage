@@ -3,12 +3,12 @@
 // app/learner/hsk/[level]/page.tsx
 // Step 2 of the lesson flow — pick a lesson within an HSK level.
 
-import { use } from "react";
+import { use, useMemo, useState } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGraduationCap } from "@fortawesome/free-solid-svg-icons";
-import { getLevel } from "@/lib/lessons/lessons";
+import { faGraduationCap, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { getLevel, filterLessonsByQuery } from "@/lib/lessons/lessons";
 import { hskImageUrl, lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
 import { ProgressLines } from "@/components/page/learner/picker/PickerProgress";
@@ -26,6 +26,12 @@ export default function LessonPickerPage({
   if (!hsk) notFound();
 
   const { loading, error, lessons } = useLessonPicker(hsk.key);
+
+  const [query, setQuery] = useState("");
+
+  // Client-side filter over the lessons already loaded for this level — the search
+  // runs in the browser against the loaded list, no extra request.
+  const filtered = useMemo(() => filterLessonsByQuery(lessons, query), [lessons, query]);
 
   return (
     <div className="lesson-picker">
@@ -65,6 +71,20 @@ export default function LessonPickerPage({
           </div>
         </div>
 
+        {!loading && !error && lessons.length > 0 && (
+          <div className="picker-search-row">
+            <FontAwesomeIcon icon={faMagnifyingGlass} className="picker-search-icon" aria-hidden />
+            <input
+              type="search"
+              className="picker-search-input"
+              placeholder={t("picker.search_placeholder")}
+              aria-label={t("picker.search_placeholder")}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </div>
+        )}
+
         <div className="lesson-list">
           {error ? (
             <p style={{ color: "var(--danger, #dc2626)", textAlign: "center" }}>
@@ -74,8 +94,12 @@ export default function LessonPickerPage({
             <p style={{ color: "var(--text-muted)", textAlign: "center" }}>
               {t("picker.no_lessons_found")}
             </p>
+          ) : !loading && filtered.length === 0 ? (
+            <p style={{ color: "var(--text-muted)", textAlign: "center" }}>
+              {t("picker.no_lessons_match")}
+            </p>
           ) : (
-            lessons.map((ls) => (
+            filtered.map((ls) => (
               <Link
                 key={ls.lesson}
                 // The pinyin lesson (HSK1 L1) has no real passages — it opens the

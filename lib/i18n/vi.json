@@ -173,6 +173,8 @@
     "loading_parts": "Đang tải phần học...",
     "lessons_available": "{count} bài học",
     "no_lessons_found": "Không tìm thấy bài học nào cho cấp độ này.",
+    "search_placeholder": "Tìm bài học",
+    "no_lessons_match": "Không có bài học nào khớp với tìm kiếm.",
     "failed_load_lessons": "Không thể tải bài học.",
     "pinyin_guide": "Hướng Dẫn Phiên Âm",
     "parts_count": "{count} phần",
