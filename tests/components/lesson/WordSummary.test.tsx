@@ -26,6 +26,16 @@ describe("WordSummary", () => {
     expect(screen.getByText("to rest")).toBeInTheDocument();
   });
 
+  it("groups pinyin and meaning in a text column for the phone layout", () => {
+    // The responsive (phone) CSS stacks pinyin over meaning inside .vc-text; guard
+    // that wrapper so the port of the vocabulary card layout is not silently undone.
+    const { container } = renderWith(VOCAB);
+    const text = container.querySelector(".vocab-card .vc-text");
+    expect(text).not.toBeNull();
+    expect(text!.querySelector(".vc-pinyin")?.textContent).toBe("xiūxī");
+    expect(text!.querySelector(".vc-meaning")?.textContent).toBe("to rest");
+  });
+
   it("renders an audio button only for words that have audio", () => {
     renderWith(VOCAB);
     expect(screen.getByRole("button", { name: /休息/ })).toBeInTheDocument();

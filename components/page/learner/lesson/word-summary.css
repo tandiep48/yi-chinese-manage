@@ -60,6 +60,9 @@
 .lesson-study .vocab-card .vc-char { font-size: 2.2rem; color: #111; line-height: 1; }
 .lesson-study .vocab-card .vc-pinyin { flex: 1; min-width: 0; font-size: 1.1rem; font-weight: 600; color: #111; }
 .lesson-study .vocab-card .vc-meaning { flex: 1; min-width: 0; color: #111; }
+/* Groups pinyin + meaning for the phone layout below; `contents` keeps them direct
+   flex children of the card on desktop, so the wide row is unchanged. */
+.lesson-study .vocab-card .vc-text { display: contents; }
 .lesson-study .vocab-card .vc-right { display: flex; gap: 0.5rem; flex-shrink: 0; order: -1; }
 .lesson-study .vocab-card .action-btn {
   width: 40px;
@@ -80,13 +83,27 @@
 .lesson-study .vl-vocab-cards.hide-py .vc-pinyin,
 .lesson-study .vl-vocab-cards.hide-vn .vc-meaning { visibility: hidden; }
 
-@media (max-width: 700px) {
+/* Phone layout (same breakpoint the vocabulary page switches to cards at): the
+   character sits on the left with pinyin stacked over meaning beside it and the
+   action buttons on the right, instead of three columns cramped into one row. */
+@media (max-width: 767px) {
   .lesson-study .vl-cards-toolbar { justify-content: stretch; }
   .lesson-study .vl-col-toggle { min-width: 0; flex: 1; }
-}
-@media (max-width: 600px) {
-  .lesson-study .vocab-card { gap: 0.75rem; padding: 1rem; }
-  .lesson-study .vocab-card .vc-left { width: auto; gap: 0.75rem; }
-  .lesson-study .vocab-card .vc-char { font-size: 1.8rem; }
+
+  .lesson-study .vocab-card { gap: 0.75rem 1rem; padding: 1rem; align-items: center; }
+  .lesson-study .vocab-card .vc-left { width: auto; gap: 0.75rem; order: 0; }
+  .lesson-study .vocab-card .vc-char { font-size: 1.9rem; }
+  .lesson-study .vocab-card .vc-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    order: 0;
+  }
+  .lesson-study .vocab-card .vc-pinyin,
+  .lesson-study .vocab-card .vc-meaning { flex: none; font-size: 0.95rem; }
+  .lesson-study .vocab-card .vc-pinyin { font-weight: 600; }
+  .lesson-study .vocab-card .vc-right { order: 0; margin-left: 0.25rem; }
   .lesson-study .vl-summary-footer { flex-direction: column; }
 }
