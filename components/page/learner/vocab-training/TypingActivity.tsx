@@ -57,8 +57,17 @@ export function TypingActivity({
 
   const startRef = useRef(now());
   const completedAtRef = useRef<(number | null)[]>(words.map(() => null));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Grow a field to fit its content so an unusually long answer wraps onto new
+  // lines instead of scrolling out of a one-line box — the whole typed text stays
+  // readable, which matters most on a narrow phone.
+  function autoGrow(el: HTMLTextAreaElement | null) {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }
 
   // Focus the first field on mount.
   useEffect(() => {
@@ -155,7 +164,9 @@ export function TypingActivity({
     }
   }
 
-  function handleKeyDown(idx: number, e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(idx: number, e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    // Enter moves to the next field (or scores), never inserting a newline — the
+    // single-line behaviour this textarea replaced.
     if (e.key !== "Enter") return;
     e.preventDefault();
     e.stopPropagation();
@@ -213,19 +224,23 @@ export function TypingActivity({
                   {row.word}
                 </span>
               </div>
-              <input
+              <textarea
                 ref={(el) => {
                   inputRefs.current[idx] = el;
+                  autoGrow(el);
                 }}
-                type="text"
                 className="bt-type-input"
                 lang="zh-CN"
                 autoComplete="off"
                 inputMode="text"
+                rows={1}
                 style={{ fontSize: "30px" }}
                 value={values[idx]}
                 disabled={checked || locked[idx]}
-                onChange={(e) => handleChange(idx, e.target.value)}
+                onChange={(e) => {
+                  handleChange(idx, e.target.value);
+                  autoGrow(e.currentTarget);
+                }}
                 onKeyDown={(e) => handleKeyDown(idx, e)}
                 onPaste={(e) => e.preventDefault()}
                 onDrop={(e) => e.preventDefault()}

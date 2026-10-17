@@ -206,4 +206,20 @@ describe("MatchActivity in competition mode", () => {
     expect(document.querySelector(".bt-key-hint")).toBeNull();
     expect(screen.getByText("lesson.continue")).toBeInTheDocument();
   });
+
+  it("auto-advances in solo mode once the board is fully matched", () => {
+    // Solo used to wait for a manual Continue click; it now auto-advances like
+    // competition, so no correct answer needs a click.
+    const onAdvance = vi.fn();
+    render(<MatchActivity activity={activity("reading")} onRecord={vi.fn()} onAdvance={onAdvance} />);
+
+    solvePair("水");
+    // One pair left: nothing happens even after the delay.
+    act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+    expect(onAdvance).not.toHaveBeenCalled();
+
+    solvePair("火");
+    act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+    expect(onAdvance).toHaveBeenCalledTimes(1);
+  });
 });

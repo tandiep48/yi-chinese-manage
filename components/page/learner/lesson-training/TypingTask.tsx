@@ -29,13 +29,26 @@ export function TypingTask({
   const { t } = useT();
   const { answered, commit, buttonPortal } = useLessonTaskFlow({ task, onResolved, onAdvance });
   const [value, setValue] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   const target = useMemo(() => [...(task.content || "")], [task.content]);
+
+  // Grow the field to fit its content so a long sentence wraps onto new lines
+  // instead of scrolling out of view in a one-line box — the whole typed answer
+  // stays readable, which matters most on a narrow phone.
+  function autoGrow(el: HTMLTextAreaElement | null) {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    autoGrow(inputRef.current);
+  }, [value]);
 
   // Colour each target character by the character typed at the same position. '、'
   // positions consume no input; only a Chinese character is judged (so IME/pinyin
@@ -65,9 +78,12 @@ export function TypingTask({
     if (answersMatch(next, task.correct_answer)) commit(next, true);
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== "Enter" || answered) return;
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    // Enter submits rather than inserting a newline, matching the single-line field
+    // this replaced.
+    if (e.key !== "Enter") return;
     e.preventDefault();
+    if (answered) return;
     const v = value.trim();
     if (v) commit(v, answersMatch(v, task.correct_answer));
   }
@@ -87,13 +103,13 @@ export function TypingTask({
         ))}
       </div>
 
-      <input
+      <textarea
         ref={inputRef}
-        type="text"
         className="lt-typing-input"
         lang="zh-CN"
         autoComplete="off"
         inputMode="text"
+        rows={1}
         placeholder={t("lesson.typing_placeholder")}
         value={value}
         disabled={answered}

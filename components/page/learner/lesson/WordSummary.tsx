@@ -128,7 +128,7 @@ export function WordSummary({
           )}
         </div>
         <div className="toolbar-right">
-          {(["cn", "py", "vn"] as Col[]).map((col) => (
+          {(["py", "vn"] as Col[]).map((col) => (
             <button
               key={col}
               type="button"
@@ -157,8 +157,10 @@ export function WordSummary({
                   {v.cn}
                 </div>
               </div>
-              <div className="vc-pinyin">{v.pinyin}</div>
-              <div className="vc-meaning">{(lang === "vi" ? v.meaning_vn : v.meaning_en) || v.meaning_en || v.meaning_vn}</div>
+              <div className="vc-text">
+                <div className="vc-pinyin">{v.pinyin}</div>
+                <div className="vc-meaning">{(lang === "vi" ? v.meaning_vn : v.meaning_en) || v.meaning_en || v.meaning_vn}</div>
+              </div>
               <div className="vc-right">
                 {onOpenStroke && HANZI_RE.test(v.cn) ? (
                   <button

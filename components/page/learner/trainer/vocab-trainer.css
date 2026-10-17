@@ -51,11 +51,19 @@
   width: 100%;
   padding: 10px 12px;
   font-size: 1.25rem;
+  line-height: 1.4;
+  font-family: inherit;
   text-align: center;
   border: 1px solid var(--border-soft);
   border-radius: 10px;
   background: #ffffff;
   color: #111111;
+  /* A textarea so a long answer wraps instead of scrolling out of view; JS grows
+     the height to fit its content. */
+  box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 .vocab-trainer .bt-type-input:focus {
   outline: none;

@@ -17,6 +17,7 @@
    offset. Token lives in app/styles/tokens.css. */
 .learner-main {
   padding-top: var(--hamburger-safe);
+  background: #ffffff;
 }
 @media (min-width: 768px) {
   .learner-main {

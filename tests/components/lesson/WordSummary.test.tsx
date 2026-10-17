@@ -26,6 +26,16 @@ describe("WordSummary", () => {
     expect(screen.getByText("to rest")).toBeInTheDocument();
   });
 
+  it("groups pinyin and meaning in a text column for the phone layout", () => {
+    // The responsive (phone) CSS stacks pinyin over meaning inside .vc-text; guard
+    // that wrapper so the port of the vocabulary card layout is not silently undone.
+    const { container } = renderWith(VOCAB);
+    const text = container.querySelector(".vocab-card .vc-text");
+    expect(text).not.toBeNull();
+    expect(text!.querySelector(".vc-pinyin")?.textContent).toBe("xiūxī");
+    expect(text!.querySelector(".vc-meaning")?.textContent).toBe("to rest");
+  });
+
   it("renders an audio button only for words that have audio", () => {
     renderWith(VOCAB);
     expect(screen.getByRole("button", { name: /休息/ })).toBeInTheDocument();
@@ -35,9 +45,14 @@ describe("WordSummary", () => {
   it("toggles a column's visibility via the header toggle", () => {
     const { container } = renderWith(VOCAB);
     const cards = container.querySelector(".vl-vocab-cards")!;
-    expect(cards.className).not.toContain("hide-cn");
-    fireEvent.click(screen.getByRole("button", { name: "Character" }));
-    expect(cards.className).toContain("hide-cn");
+    expect(cards.className).not.toContain("hide-py");
+    fireEvent.click(screen.getByRole("button", { name: "Pinyin" }));
+    expect(cards.className).toContain("hide-py");
+  });
+
+  it("does not offer a Character column toggle", () => {
+    renderWith(VOCAB);
+    expect(screen.queryByRole("button", { name: "Character" })).not.toBeInTheDocument();
   });
 
   it("shows the empty state when there is no vocab", () => {

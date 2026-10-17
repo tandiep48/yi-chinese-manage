@@ -1,8 +1,11 @@
 "use client";
 
 // components/i18n/I18nProvider.tsx
-// Client-side language context (EN / VI). Persists the choice to localStorage.
-// Wire to the backend user preference later.
+// Client-side language context (EN / VI). For a signed-in user the account's saved
+// language is the source of truth — the Flask backend reads it (get_current_lang)
+// when it builds server-side content such as the lesson-trainer meaning options, so
+// this provider loads it on mount and writes it back on change. localStorage holds
+// the choice for guests and for an instant first paint before the account loads.
 
 import {
   createContext,
@@ -19,6 +22,7 @@ import {
   type Lang,
   type TVars,
 } from "@/lib/i18n";
+import { loadUiLanguage, saveUiLanguage } from "@/lib/api/learner/userSettings";
 
 const STORAGE_KEY = "ui_language";
 
@@ -37,24 +41,55 @@ const I18nCtx = createContext<I18nContextValue>({
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
 
-  // Load the saved preference after mount (localStorage is client-only).
-  useEffect(() => {
-    const saved = window.localStorage.getItem(STORAGE_KEY);
-    if (saved && SUPPORTED_LANGS.includes(saved as Lang)) {
-      setLangState(saved as Lang);
-      document.documentElement.lang = saved;
-    }
-  }, []);
-
-  const setLang = useCallback((l: Lang) => {
+  // Apply a language to React state, <html lang>, and the local cache.
+  const applyLang = useCallback((l: Lang) => {
     setLangState(l);
     try {
       window.localStorage.setItem(STORAGE_KEY, l);
     } catch {
       // ignore storage errors
     }
-    document.documentElement.lang = l;
+    if (typeof document !== "undefined") document.documentElement.lang = l;
   }, []);
+
+  // Resolve the language on mount: show the saved choice (or the VI default) at
+  // once, then reconcile with the signed-in account's saved preference — the source
+  // of truth, which also drives server-built content like lesson-trainer options.
+  // Guests and failures keep the local choice.
+  useEffect(() => {
+    let cancelled = false;
+
+    let saved: string | null = null;
+    try {
+      saved = window.localStorage.getItem(STORAGE_KEY);
+    } catch {
+      // ignore storage errors
+    }
+    const resolved =
+      saved && SUPPORTED_LANGS.includes(saved as Lang) ? (saved as Lang) : DEFAULT_LANG;
+    if (resolved !== DEFAULT_LANG) setLangState(resolved);
+    if (typeof document !== "undefined") document.documentElement.lang = resolved;
+
+    // Reconcile with the account preference once it loads (async — safe to set here).
+    loadUiLanguage().then((backend) => {
+      if (cancelled || !backend || !SUPPORTED_LANGS.includes(backend as Lang)) return;
+      applyLang(backend as Lang);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyLang]);
+
+  // Changing the language persists to the account so the backend builds its content
+  // (e.g. lesson-trainer options) in the same language; best-effort for guests.
+  const setLang = useCallback(
+    (l: Lang) => {
+      applyLang(l);
+      void saveUiLanguage(l).catch(() => {});
+    },
+    [applyLang]
+  );
 
   const t = useCallback(
     (key: string, vars?: TVars) => translate(key, lang, vars),

@@ -98,6 +98,28 @@
   border-color: var(--danger);
   color: #ffffff;
 }
+/* ── Contained (milestone step 6): restore the MC border ──
+   `.trainer-shell.contained .btn` (trainer-shell.css, 0,3,0) restates the base
+   button and would otherwise strip these buttons' border, transparent fill and
+   primary text, and sits at a (0,3,0) tie with the answered states above.
+   Restating the MC styles one class higher (0,4,0) makes them win
+   deterministically — the same approach trainer-shell.css documents for its
+   own `.btn.primary`/`.secondary` under `.contained`. */
+.trainer-shell.contained.lesson-trainer .lt-mc-btn {
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
+}
+.trainer-shell.contained.lesson-trainer .lt-mc-btn.lt-correct {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+.trainer-shell.contained.lesson-trainer .lt-mc-btn.lt-wrong {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
+}
 .lesson-trainer .mc-btn-inner {
   display: flex;
   align-items: center;
@@ -139,8 +161,12 @@
 .lesson-trainer .lt-typing-input {
   width: 100%;
   max-width: 560px;
-  height: 60px;
+  /* A textarea so a long sentence wraps onto new lines on a narrow screen rather
+     than scrolling out of a fixed one-line box; JS grows the height to fit. */
+  min-height: 60px;
   font-size: 30px;
+  line-height: 1.4;
+  font-family: inherit;
   text-align: center;
   box-sizing: border-box;
   background: #ffffff;
@@ -148,6 +174,9 @@
   border: 1px solid #d8d8d8;
   border-radius: 10px;
   padding: 8px 12px;
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 .lesson-trainer .lt-typing-input:focus {
   outline: none;

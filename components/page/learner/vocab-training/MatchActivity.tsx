@@ -9,7 +9,8 @@
 // count; wrong pairs flash and reset, and the board must be fully matched to continue.
 //
 // Two modes, like the legacy core:
-//   - solo (default): a Continue button unlocks once the board is fully matched.
+//   - solo (default): a fully-matched board auto-advances after a short pause; the
+//     Continue button is a skip-the-wait shortcut that advances immediately.
 //   - autoAdvance (Learn Together): the board advances on its own the moment every
 //     pair is solved, a Skip button reveals whatever is left (scored wrong) before
 //     Next, and `keyboardShortcuts` lets 1-5 pick the source cards.
@@ -141,13 +142,16 @@ export function MatchActivity({
     if (selectedLeft) evaluate(selectedLeft, word);
   }
 
-  // Auto-advance mode: a fully-matched board moves on by itself. A skipped board does
-  // not — it waits for the learner to read the revealed pairs and press Next.
+  // A fully-matched board moves on by itself after a short pause, in solo as well as
+  // Learn Together — matching the typing activity, so no correct answer needs a manual
+  // Continue click. The solo Continue button stays as a skip-the-wait shortcut. A
+  // skipped board (auto-advance mode only) does not auto-advance: it waits for the
+  // learner to read the revealed pairs and press Next.
   useEffect(() => {
-    if (!autoAdvance || revealed || !allSolved) return;
+    if (revealed || !allSolved) return;
     const id = window.setTimeout(onAdvance, AUTO_ADVANCE_DELAY_MS);
     return () => window.clearTimeout(id);
-  }, [autoAdvance, revealed, allSolved, onAdvance]);
+  }, [revealed, allSolved, onAdvance]);
 
   // 1-5 pick a source card by its position, unless a text field has focus.
   useEffect(() => {
