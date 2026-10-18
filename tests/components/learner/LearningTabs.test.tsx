@@ -39,5 +39,24 @@ describe("LearningTabs", () => {
 
     expect(screen.getByText("HSK Lessons")).toHaveAttribute("href", "/learner/hsk");
     expect(screen.getByText("Books")).toHaveAttribute("href", "/learner/books");
+    expect(screen.getByText("Practice")).toHaveAttribute("href", "/learner/practice");
+    expect(screen.getByText("Exam")).toHaveAttribute("href", "/learner/exam");
+  });
+
+  it("marks Practice active on its routes without lighting the others", () => {
+    vi.mocked(usePathname).mockReturnValue("/learner/practice/3");
+    renderTabs();
+
+    expect(screen.getByText("Practice")).toHaveClass("active");
+    expect(screen.getByText("Exam")).not.toHaveClass("active");
+    expect(screen.getByText("HSK Lessons")).not.toHaveClass("active");
+  });
+
+  it("marks Exam active on its routes", () => {
+    vi.mocked(usePathname).mockReturnValue("/learner/exam");
+    renderTabs();
+
+    expect(screen.getByText("Exam")).toHaveClass("active");
+    expect(screen.getByText("Practice")).not.toHaveClass("active");
   });
 });

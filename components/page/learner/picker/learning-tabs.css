@@ -1,16 +1,18 @@
 
 /* ─────────────────────────────────────────────
-   LEARNING TABS — the HSK / Books tab bar at the top of the learning pages.
-   Scoped under .lesson-picker, which is where the sage tokens (--primary,
-   --text-muted) are declared; see ./lesson-picker.css.
+   LEARNING TABS — the HSK / Books / Practice / Exam tab bar at the top of the
+   learning pages. Unscoped so it styles the same on the picker pages (.lesson-picker)
+   and the practice/exam select pages; the sage tokens carry fallbacks for any page
+   that does not declare them.
    ───────────────────────────────────────────── */
-.lesson-picker .learning-tabs {
+.learning-tabs {
   display: flex;
   gap: 8px;
   margin-bottom: 24px;
   border-bottom: 2px solid #e3e3e3;
+  flex-wrap: wrap;
 }
-.lesson-picker .learning-tab {
+.learning-tab {
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
@@ -18,11 +20,11 @@
   padding: 10px 20px;
   font: inherit;
   font-weight: 700;
-  color: var(--text-muted);
+  color: var(--text-muted, #738a72);
   cursor: pointer;
   text-decoration: none;
 }
-.lesson-picker .learning-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+.learning-tab.active {
+  color: var(--primary, #576856);
+  border-bottom-color: var(--primary, #576856);
 }

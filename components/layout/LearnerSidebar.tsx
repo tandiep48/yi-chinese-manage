@@ -21,8 +21,6 @@ import {
   faLayerGroup,
   faBook,
   faStar,
-  faDumbbell,
-  faPenToSquare,
   faUsers,
   faGear,
   faRightFromBracket,
@@ -46,13 +44,13 @@ interface NavItem {
 const LEARNER_HOME = "/learner";
 const COLLAPSED_KEY = "learnerNavCollapsed";
 
+// Practice and Exam are not here: they live as tabs on the learning page
+// (LearningTabs) alongside HSK and Books.
 const NAV_ITEMS: NavItem[] = [
   { labelKey: "nav.dashboard", href: LEARNER_HOME, icon: faGaugeHigh },
   { labelKey: "nav.hsk", href: "/learner/hsk", icon: faLayerGroup },
   { labelKey: "nav.vocabulary", href: "/learner/vocab", icon: faBook },
   { labelKey: "nav.recommend", href: "/learner/recommend", icon: faStar },
-  { labelKey: "nav.practice", href: "/learner/practice", icon: faDumbbell },
-  { labelKey: "nav.exam", href: "/learner/exam", icon: faPenToSquare },
   { labelKey: "nav.learn_together", href: "/learner/learn-together", icon: faUsers },
 ];
 
