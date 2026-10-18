@@ -17,21 +17,27 @@ export function LessonTrainerRecap({
   canRetry,
   onRetry,
   onHome,
+  hideHome = false,
 }: {
   missed: MissedTask[];
   canRetry: boolean;
   onRetry: () => void;
   onHome: () => void;
+  // Hidden inside the milestone: its sticky Previous / Next bar owns navigation, so
+  // this "back to menu" button would be a dead-end there.
+  hideHome?: boolean;
 }) {
   const { t } = useT();
 
   return (
     <>
-      <div className="nav-buttons training-complete-actions training-complete-top-actions">
-        <button type="button" className="btn primary" onClick={onHome}>
-          {t("lesson.back_to_menu")}
-        </button>
-      </div>
+      {!hideHome && (
+        <div className="nav-buttons training-complete-actions training-complete-top-actions">
+          <button type="button" className="btn primary" onClick={onHome}>
+            {t("lesson.back_to_menu")}
+          </button>
+        </div>
+      )}
 
       <div className="lesson-complete-icon" aria-hidden>
         <FontAwesomeIcon icon={faCircleCheck} />

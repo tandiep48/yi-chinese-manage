@@ -31,7 +31,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLessonOverview } from "@/hooks/lesson/useLessonOverview";
 import {
@@ -224,6 +224,17 @@ function MilestonePart({
     if (next && step === next.total_steps && finalPassed) onPartComplete?.();
   }, [refreshAfterRun, step, onPartComplete]);
 
+  // The fixed bottom bar is the milestone's one navigation control. Previous
+  // always steps back (soft gating: any earlier step is replayable). Next
+  // continues a passive step, or on a graded trainer step re-reads the milestone
+  // and advances only if the server counted the run (`onTrainerExit`) -- the
+  // pass-gating the trainers' own recap buttons used to carry.
+  const onTrainerStep = step === VOCAB_TRAINER_STEP || step === LESSON_TRAINER_STEP;
+  const handleNext = useCallback(() => {
+    if (onTrainerStep) void onTrainerExit();
+    else handleContinue();
+  }, [onTrainerStep, onTrainerExit, handleContinue]);
+
   if (!passageId) {
     return <p className="milestone-state">{t("reading.failed_load_passage")}</p>;
   }
@@ -232,7 +243,6 @@ function MilestonePart({
   }
 
   const passage = overview.passage;
-  const showContinue = isPassiveStep(step);
 
   // `.lesson-study` is the scope the four study steps are styled under:
   // word-summary.css, lesson-summary.css and flashcards.css define every rule as
@@ -290,7 +300,6 @@ function MilestonePart({
               types={vocabTypes}
               contained
               onExit={onTrainerExit}
-              homeLabel={t("lesson.next")}
             />
           ))}
 
@@ -328,19 +337,26 @@ function MilestonePart({
         )}
       </div>
 
-      {showContinue && (
-        <div className="milestone-actions">
-          <button
-            type="button"
-            className="milestone-continue"
-            disabled={milestone.saving}
-            onClick={handleContinue}
-          >
-            <span>{t("milestone.continue")}</span>
-            <FontAwesomeIcon icon={faArrowRight} aria-hidden />
-          </button>
-        </div>
-      )}
+      <div className="milestone-navbar">
+        <button
+          type="button"
+          className="milestone-nav-btn milestone-nav-prev"
+          onClick={() => goToStep(step - 1)}
+          disabled={step <= 1}
+        >
+          <FontAwesomeIcon icon={faArrowLeft} aria-hidden />
+          <span>{t("reading.prev")}</span>
+        </button>
+        <button
+          type="button"
+          className="milestone-nav-btn milestone-nav-next"
+          onClick={handleNext}
+          disabled={isPassiveStep(step) && milestone.saving}
+        >
+          <span>{t("reading.next")}</span>
+          <FontAwesomeIcon icon={faArrowRight} aria-hidden />
+        </button>
+      </div>
 
       {pickerEngine && (
         <TrainTypePicker

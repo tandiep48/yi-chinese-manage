@@ -118,12 +118,12 @@ describe("MilestoneRunner — passive steps", () => {
     expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument();
   });
 
-  it("advances on Continue", async () => {
+  it("advances on Next", async () => {
     const user = userEvent.setup();
     renderRunner();
     await waitFor(() => expect(body()).toContain("word-summary"));
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: /Next/ }));
 
     await waitFor(() => expect(body()).toContain("flashcards"));
     expect(mockMark).toHaveBeenCalledWith(PASSAGE, 1);
@@ -144,14 +144,22 @@ describe("MilestoneRunner — passive steps", () => {
 });
 
 describe("MilestoneRunner — graded steps", () => {
-  it("shows no Continue button on a graded step", async () => {
+  it("Next re-reads the milestone instead of marking it on a graded step", async () => {
+    const user = userEvent.setup();
     mockResolve.mockResolvedValue([
       { word: "学习", cn: "学习", pinyin: "x", meaning_en: "s", meaning_vn: "h", audio_key: "a", level: "HSK1" },
     ]);
     renderRunner({ initialStep: 3 });
-
     await waitFor(() => expect(body()).toContain("vocab-trainer"));
-    expect(screen.queryByRole("button", { name: /Continue/ })).not.toBeInTheDocument();
+
+    // The server still reports step 3 incomplete, so Next is pass-gated: it
+    // re-reads the milestone and stays put rather than POSTing a completion.
+    await user.click(screen.getByRole("button", { name: /Next/ }));
+
+    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
+    expect(mockMark).not.toHaveBeenCalled();
+    expect(body()).toContain("vocab-trainer");
+    expect(screen.getByText(/Step 3 of 6/)).toBeInTheDocument();
   });
 
   it("does NOT advance when the run fell below the pass threshold", async () => {
@@ -200,7 +208,7 @@ describe("MilestoneRunner — train-type picker", () => {
     renderRunner({ initialStep: 2 });
     await waitFor(() => expect(body()).toContain("flashcards"));
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: /Next/ }));
 
     expect(screen.getByText("What do you want to train?")).toBeInTheDocument();
     // Still on the learner step; nothing was marked until a skill set is chosen.
@@ -216,7 +224,7 @@ describe("MilestoneRunner — train-type picker", () => {
     renderRunner({ initialStep: 2 });
     await waitFor(() => expect(body()).toContain("flashcards"));
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: /Next/ }));
     await user.click(screen.getByRole("checkbox", { name: "Listening" }));
     await user.click(screen.getByRole("checkbox", { name: "Reading" }));
     await user.click(screen.getByRole("button", { name: "Start" }));
@@ -231,7 +239,7 @@ describe("MilestoneRunner — train-type picker", () => {
     renderRunner({ initialStep: 5 });
     await waitFor(() => expect(body()).toContain("lesson-cards"));
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: /Next/ }));
     // Lesson engine offers a Reorder skill the vocab engine does not.
     expect(screen.getByRole("checkbox", { name: "Reorder" })).toBeInTheDocument();
     await user.click(screen.getByRole("checkbox", { name: "Typing" }));
@@ -247,7 +255,7 @@ describe("MilestoneRunner — train-type picker", () => {
     renderRunner({ initialStep: 2 });
     await waitFor(() => expect(body()).toContain("flashcards"));
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: /Next/ }));
     await user.click(screen.getByRole("button", { name: "Cancel" }));
 
     expect(screen.queryByText("What do you want to train?")).not.toBeInTheDocument();
@@ -263,7 +271,7 @@ describe("MilestoneRunner — host wiring", () => {
     renderRunner({ onStepChange });
     await waitFor(() => expect(onStepChange).toHaveBeenCalledWith(1));
 
-    await user.click(screen.getByRole("button", { name: /Continue/ }));
+    await user.click(screen.getByRole("button", { name: /Next/ }));
 
     await waitFor(() => expect(onStepChange).toHaveBeenCalledWith(2));
   });
@@ -392,5 +400,25 @@ describe("MilestoneRunner — soft gating", () => {
     await user.click(screen.getByRole("button", { name: /Step 1 of 6/ }));
 
     await waitFor(() => expect(body()).toContain("word-summary"));
+  });
+});
+
+describe("MilestoneRunner — bottom nav bar", () => {
+  it("disables Previous on the first step", async () => {
+    renderRunner();
+    await waitFor(() => expect(body()).toContain("word-summary"));
+    expect(screen.getByRole("button", { name: /Prev/ })).toBeDisabled();
+  });
+
+  it("Previous steps back without touching the server", async () => {
+    const user = userEvent.setup();
+    renderRunner({ initialStep: 5 });
+    await waitFor(() => expect(body()).toContain("lesson-cards"));
+
+    await user.click(screen.getByRole("button", { name: /Prev/ }));
+
+    await waitFor(() => expect(body()).toContain("lesson-summary"));
+    expect(screen.getByText(/Step 4 of 6/)).toBeInTheDocument();
+    expect(mockMark).not.toHaveBeenCalled();
   });
 });

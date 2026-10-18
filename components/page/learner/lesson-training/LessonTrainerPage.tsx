@@ -55,6 +55,7 @@ export function LessonTrainerPage({ contained, ...options }: LessonTrainerPagePr
             canRetry={trainer.canRetry}
             onRetry={trainer.retryMissed}
             onHome={trainer.goHome}
+            hideHome={contained}
           />
         }
       >

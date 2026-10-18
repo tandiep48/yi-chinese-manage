@@ -15,6 +15,8 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  /* Room for the sticky nav bar so it never hides the last of the step content. */
+  padding-bottom: 76px;
 }
 
 /* ── Progress bar ── */
@@ -122,41 +124,63 @@
   color: var(--learner-text-muted, #738a72);
 }
 
-/* ── Continue ──
-   Only rendered on the passive steps (1, 2, 4, 5); centred under the step. */
-.milestone-actions {
+/* ── Nav bar ──
+   The milestone's one navigation control: Previous / Next, pinned to the bottom of
+   the viewport while the step content scrolls above it. Replaces the per-step
+   Continue button — Next carries the same advance (pass-gated on trainer steps) and
+   the trainers' own recap "back" buttons are hidden inside the milestone. */
+.milestone-navbar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
   display: flex;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  padding: 12px 0;
+  background: var(--learner-bg, #f3f6f2);
+  border-top: 1px solid rgba(87, 104, 86, 0.15);
 }
 
-.milestone-continue {
+.milestone-nav-btn {
   display: inline-flex;
   align-items: center;
   gap: 10px;
   border: 0;
   border-radius: 12px;
-  background: var(--learner-primary, #576856);
-  color: #ffffff;
   font: inherit;
   font-weight: 600;
   padding: 14px 28px;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, opacity 0.15s ease;
 }
-.milestone-continue:hover:not(:disabled) {
-  background: var(--learner-primary-hover, #455544);
-}
-.milestone-continue:disabled {
-  opacity: 0.6;
+.milestone-nav-btn:disabled {
+  opacity: 0.45;
   cursor: default;
 }
 
+.milestone-nav-prev {
+  background: var(--learner-card, #ffffff);
+  color: var(--learner-text, #2f3a2e);
+  border: 1px solid rgba(87, 104, 86, 0.3);
+}
+.milestone-nav-prev:hover:not(:disabled) {
+  background: rgba(87, 104, 86, 0.08);
+}
+
+.milestone-nav-next {
+  background: var(--learner-primary, #576856);
+  color: #ffffff;
+}
+.milestone-nav-next:hover:not(:disabled) {
+  background: var(--learner-primary-hover, #455544);
+}
+
 @media (max-width: 640px) {
-  .milestone-actions {
-    justify-content: stretch;
-  }
-  .milestone-continue {
-    width: 100%;
+  .milestone-nav-btn {
+    flex: 1 1 0;
     justify-content: center;
+    padding: 14px 16px;
   }
 }

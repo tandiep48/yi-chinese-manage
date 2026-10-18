@@ -64,6 +64,7 @@ export function VocabTrainerPage({ contained, homeLabel, ...options }: VocabTrai
             onRetry={trainer.retryMissed}
             onHome={trainer.goHome}
             homeLabel={homeLabel}
+            hideHome={contained}
           />
         }
       >

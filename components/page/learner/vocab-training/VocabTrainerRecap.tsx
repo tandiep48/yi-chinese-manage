@@ -17,6 +17,7 @@ export function VocabTrainerRecap({
   onRetry,
   onHome,
   homeLabel,
+  hideHome = false,
 }: {
   missed: TrainerWord[];
   canRetry: boolean;
@@ -25,16 +26,21 @@ export function VocabTrainerRecap({
   // Overrides the exit button's label. The dashboard milestone's step-3 run advances
   // to the next step, so it reads "Next" there rather than "Back to vocabulary".
   homeLabel?: string;
+  // Hidden inside the milestone: its sticky Previous / Next bar owns navigation, so
+  // this "back to vocabulary" button would be a dead-end there.
+  hideHome?: boolean;
 }) {
   const { t, lang } = useT();
 
   return (
     <>
-      <div className="nav-buttons training-complete-actions training-complete-top-actions">
-        <button type="button" className="btn primary" onClick={onHome}>
-          {homeLabel ?? t("vocab_trainer.back_to_vocabulary")}
-        </button>
-      </div>
+      {!hideHome && (
+        <div className="nav-buttons training-complete-actions training-complete-top-actions">
+          <button type="button" className="btn primary" onClick={onHome}>
+            {homeLabel ?? t("vocab_trainer.back_to_vocabulary")}
+          </button>
+        </div>
+      )}
 
       {missed.length > 0 ? (
         <>
