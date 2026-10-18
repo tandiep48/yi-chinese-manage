@@ -11,6 +11,8 @@ import { getPassages } from "@/lib/api/learner/lessons";
 import {
   getVocabTable,
   getLearnedVocab,
+  getSavedBooks,
+  getBookPassages,
   searchVocab,
 } from "@/lib/api/learner/vocab";
 import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
@@ -27,6 +29,8 @@ vi.mock("@/lib/api/learner/lessons", () => ({ getPassages: vi.fn() }));
 vi.mock("@/lib/api/learner/vocab", () => ({
   getVocabTable: vi.fn(),
   getLearnedVocab: vi.fn(),
+  getSavedBooks: vi.fn(),
+  getBookPassages: vi.fn(),
   searchVocab: vi.fn(),
 }));
 
@@ -34,6 +38,8 @@ const mockPassages = getPassages as unknown as ReturnType<typeof vi.fn>;
 const mockTable = getVocabTable as unknown as ReturnType<typeof vi.fn>;
 const mockLearned = getLearnedVocab as unknown as ReturnType<typeof vi.fn>;
 const mockSearch = searchVocab as unknown as ReturnType<typeof vi.fn>;
+const mockSavedBooks = getSavedBooks as unknown as ReturnType<typeof vi.fn>;
+const mockBookPassages = getBookPassages as unknown as ReturnType<typeof vi.fn>;
 
 function row(word: string, over: Partial<VocabRow> = {}): VocabRow {
   return {
@@ -65,6 +71,8 @@ beforeEach(() => {
   mockLearned.mockResolvedValue(tableResponse([]));
   mockSearch.mockResolvedValue(tableResponse([]));
   mockPassages.mockResolvedValue([]);
+  mockSavedBooks.mockResolvedValue([]);
+  mockBookPassages.mockResolvedValue([]);
 });
 
 afterEach(() => {
@@ -182,6 +190,37 @@ describe("useVocabSelect — standard cascade", () => {
     expect(result.current.lessonOptions).toEqual([]);
     expect(result.current.selectedLessons).toEqual([]);
     expect(result.current.selectedParts).toEqual([]);
+  });
+});
+
+describe("useVocabSelect — book cascade", () => {
+  it("drills book -> lesson -> part and loads the table filtered by passage_ids", async () => {
+    mockSavedBooks.mockResolvedValue([{ book_code: "AML", name: "AML" }]);
+    mockBookPassages.mockResolvedValue([
+      { passage_id: "AML_1_1", hsk_level: "" },
+      { passage_id: "AML_1_2", hsk_level: "" },
+    ]);
+    mockTable.mockResolvedValue(tableResponse([row("书"), row("本")]));
+    const { result } = renderHook(() => useVocabSelect());
+
+    act(() => result.current.setMode("book"));
+    await waitFor(() => expect(result.current.bookOptions).toHaveLength(1));
+    // Picking just a book does not load the table — it waits for a lesson/part.
+    expect(mockTable).not.toHaveBeenCalled();
+
+    act(() => result.current.setBook("AML"));
+    await waitFor(() => expect(result.current.lessonOptions).toHaveLength(1));
+    expect(mockBookPassages).toHaveBeenCalledWith("AML");
+
+    act(() => result.current.changeLessons(["1"]));
+    await waitFor(() => expect(result.current.partOptions).toHaveLength(2));
+    expect(result.current.partOptions.map((o) => o.value)).toEqual(["AML_1_1", "AML_1_2"]);
+
+    act(() => result.current.changeParts(["AML_1_1"]));
+    await waitFor(() => expect(result.current.rows).toHaveLength(2));
+    expect(mockTable).toHaveBeenCalledWith(
+      expect.objectContaining({ mode: "book", bookCode: "AML", passages: ["AML_1_1"] })
+    );
   });
 });
 

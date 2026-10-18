@@ -21,6 +21,7 @@ import {
   getVocabTable,
   getLearnedVocab,
   getSavedBooks,
+  getBookPassages,
   searchVocab,
 } from "@/lib/api/learner/vocab";
 import {
@@ -90,12 +91,19 @@ export function useVocabSelect() {
   // ── Table loading (free / standard / book / unsure / unlearn / recent) ──────
   const loadTable = useCallback(
     async (targetPage: number) => {
+      // Standard and Book both drill HSK-style: the chosen parts are passage_ids.
       let selectedPassages: string[] = [];
-      if (mode === "standard") selectedPassages = selectedParts;
+      if (mode === "standard" || mode === "book") selectedPassages = selectedParts;
 
-      if (mode === "book" && !selectedBook) {
-        setPrompt(t("vocab.choose_book"));
-        return;
+      if (mode === "book") {
+        if (!selectedBook) {
+          setPrompt(t("vocab.choose_book"));
+          return;
+        }
+        if (selectedPassages.length === 0) {
+          setPrompt(t("vocab.choose_lesson_and_part"));
+          return;
+        }
       }
 
       if (
@@ -216,6 +224,37 @@ export function useVocabSelect() {
     [t, lessonLabel, beginRequest, setLoading, setPrompt, setRows, setTableState]
   );
 
+  // ── Book-mode passage loading (book -> lessons) ─────────────────────────────
+  // Mirrors loadStandardLessons: a book's saved passages drive the same
+  // Lesson -> Part cascade (a book passage_id encodes {CODE}_{lesson}_{part}).
+  const loadBookLessons = useCallback(
+    async (bookCode: string) => {
+      const isCurrent = beginRequest();
+      setLoading(t("picker.loading_lessons"));
+      try {
+        const passages = await getBookPassages(bookCode);
+        if (!isCurrent()) return;
+        const grouped = groupPassagesByLesson(passages);
+        setGroupedPassages(grouped);
+        setLessonOptions(buildLessonOptions(grouped, lessonLabel));
+        setPartOptions([]);
+        setSelectedLessons([]);
+        setSelectedParts([]);
+        setRows([]);
+        setTableState({
+          status: "prompt",
+          message: t(
+            passages.length ? "vocab.choose_lesson_and_part" : "vocab.no_lessons_found"
+          ),
+        });
+      } catch {
+        if (!isCurrent()) return;
+        setPrompt(t("picker.failed_load_lessons"));
+      }
+    },
+    [t, lessonLabel, beginRequest, setLoading, setPrompt, setRows, setTableState]
+  );
+
   // ── Public handlers ─────────────────────────────────────────────────────────
   const setMode = useCallback(
     (next: VocabMode) => {
@@ -244,11 +283,20 @@ export function useVocabSelect() {
   const setBook = useCallback(
     (bookCode: string) => {
       setSelectedBook(bookCode);
+      setSelectedLessons([]);
+      setSelectedParts([]);
+      setPartOptions([]);
       setPage(1);
-      // The load-effect reacts to selectedBook; an empty choice just re-prompts.
-      if (!bookCode) setPrompt(t("vocab.choose_book"));
+      if (!bookCode) {
+        setLessonOptions([]);
+        setGroupedPassages({});
+        setPrompt(t("vocab.choose_book"));
+        return;
+      }
+      // Picking a book loads its Lesson -> Part options; the table waits for a part.
+      loadBookLessons(bookCode);
     },
-    [t, setPage, setPrompt]
+    [t, loadBookLessons, setPage, setPrompt]
   );
 
   const setHskLevel = useCallback(
@@ -332,15 +380,12 @@ export function useVocabSelect() {
       loadTable(1);
       return;
     }
-    if (mode === "book" && selectedBook) {
-      loadTable(1);
-      return;
-    }
     if (mode === "free" && hskLevel) {
       loadTable(1);
       return;
     }
-    if (mode === "standard" && selectedParts.length) {
+    // Standard and Book both wait for a selected part before loading the table.
+    if ((mode === "standard" || mode === "book") && selectedParts.length) {
       loadTable(1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -53,7 +53,8 @@ export function VocabFilterBar({
   onPageSizeChange,
 }: VocabFilterBarProps) {
   const { t } = useT();
-  const isStandard = mode === "standard";
+  // Book mode drills Lesson -> Part the same way standard HSK does.
+  const showLessonParts = mode === "standard" || isBookMode;
 
   return (
     <div className="vocab-filter-bar">
@@ -91,7 +92,7 @@ export function VocabFilterBar({
         </div>
       )}
 
-      {isStandard && (
+      {showLessonParts && (
         <>
           <div className="form-group">
             <label>{t("picker.lesson_prefix")}</label>
