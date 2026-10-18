@@ -207,6 +207,19 @@ describe("MatchActivity in competition mode", () => {
     expect(screen.getByText("lesson.continue")).toBeInTheDocument();
   });
 
+  it("numbers the listening source cards and enables 1-5 even in solo mode", () => {
+    // Audio cards are identical speaker icons, so the listening board always labels
+    // them 1..n (and wires the shortcut), unlike the reading board above.
+    render(<MatchActivity activity={activity("listen")} onRecord={vi.fn()} onAdvance={vi.fn()} />);
+
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "2" });
+    const left = document.querySelectorAll(".bt-match-col")[0];
+    expect(left.querySelectorAll(".bt-match-item")[1].classList.contains("selected")).toBe(true);
+  });
+
   it("auto-advances in solo mode once the board is fully matched", () => {
     // Solo used to wait for a manual Continue click; it now auto-advances like
     // competition, so no correct answer needs a click.
