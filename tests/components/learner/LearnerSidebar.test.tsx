@@ -58,6 +58,9 @@ describe("LearnerSidebar", () => {
       "href",
       "/learner/learn-together"
     );
+    // Practice and Exam moved to the learning-page tabs, so they are gone from here.
+    expect(screen.queryByRole("link", { name: "Practice" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Exam" })).not.toBeInTheDocument();
   });
 
   it("marks the active route and not the home prefix", () => {

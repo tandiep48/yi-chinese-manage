@@ -6,7 +6,8 @@
 // component and showing the SuccessPopup + recap. Ported from
 // Learning/web_app/templates/lesson/lesson.html + static/lesson/lesson.js.
 
-import { TrainerShell } from "@/components/page/learner/trainer/TrainerShell";
+import { useEffect } from "react";
+import { TrainerShell, type TrainerScreen } from "@/components/page/learner/trainer/TrainerShell";
 import { SuccessPopup } from "@/components/page/learner/trainer/SuccessPopup";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLessonTrainer, type LessonTrainerOptions } from "@/hooks/lesson/useLessonTrainer";
@@ -20,12 +21,24 @@ import "./lesson-trainer.css";
 // /learner/lesson-training route, byte-for-byte as before.
 interface LessonTrainerPageProps extends LessonTrainerOptions {
   contained?: boolean;
+  // See VocabTrainerPage — host the action in an external bar (the milestone's).
+  bottomBarSlot?: HTMLElement | null;
+  onScreenChange?: (screen: TrainerScreen) => void;
 }
 
-export function LessonTrainerPage({ contained, ...options }: LessonTrainerPageProps = {}) {
+export function LessonTrainerPage({
+  contained,
+  bottomBarSlot,
+  onScreenChange,
+  ...options
+}: LessonTrainerPageProps = {}) {
   const { t } = useT();
   const trainer = useLessonTrainer(options);
   const task = trainer.task;
+
+  useEffect(() => {
+    onScreenChange?.(trainer.screen);
+  }, [trainer.screen, onScreenChange]);
 
   // Embedded only: the run can't start and there is nowhere to redirect to.
   if (trainer.blockedKey) {
@@ -49,12 +62,14 @@ export function LessonTrainerPage({ contained, ...options }: LessonTrainerPagePr
         onQuit={trainer.goHome}
         quitIcon
         contained={contained}
+        bottomBarSlot={bottomBarSlot}
         complete={
           <LessonTrainerRecap
             missed={trainer.missed}
             canRetry={trainer.canRetry}
             onRetry={trainer.retryMissed}
             onHome={trainer.goHome}
+            hideHome={contained}
           />
         }
       >

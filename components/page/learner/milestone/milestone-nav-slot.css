@@ -1,0 +1,46 @@
+/* components/page/learner/milestone/milestone-nav-slot.css
+   The trainer's Check / Continue button is portaled into the milestone nav bar's
+   right slot (MilestoneRunner), i.e. OUTSIDE the .trainer-shell scope that normally
+   styles it. Style it here to read like .milestone-nav-next.
+
+   This lives outside milestone.css on purpose: the container-invariant
+   (tests/css/containerInvariants.test.ts) forbids milestone.css from styling a
+   shared leaf like .btn, because .milestone .btn would tie with .trainer-shell .btn
+   at (0,2,0) and the winner would hinge on chunk load order. There is no such tie
+   here — once portaled into the nav bar the button no longer sits under
+   .trainer-shell, so .milestone-nav-slot .btn is the only rule that matches it. */
+.milestone-nav-slot {
+  display: flex;
+}
+.milestone-nav-slot .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  padding: 14px 28px;
+  cursor: pointer;
+  background: var(--learner-primary, #576856);
+  color: #ffffff;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.milestone-nav-slot .btn:hover:not(:disabled) {
+  background: var(--learner-primary-hover, #455544);
+}
+.milestone-nav-slot .btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+@media (max-width: 640px) {
+  .milestone-nav-slot {
+    flex: 1 1 0;
+  }
+  .milestone-nav-slot .btn {
+    flex: 1 1 0;
+    padding: 14px 16px;
+  }
+}

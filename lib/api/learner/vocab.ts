@@ -6,6 +6,7 @@
 // admin vocab CRUD in lib/api/vocab.ts.
 
 import type { SavedBook, VocabLookupMap, VocabMode, VocabTableResponse } from "@/lib/types/vocab";
+import type { PickerPassage } from "@/lib/types/lesson";
 import { legacyApiFetch } from "../client";
 import {
   vocabTableQuerySchema,
@@ -19,6 +20,20 @@ import {
 export function getSavedBooks(): Promise<SavedBook[]> {
   return legacyApiFetch<{ books: SavedBook[] }>(`/api/vocab/saved-books`)
     .then((r) => r.books ?? [])
+    .catch(() => []);
+}
+
+// Book passages the user has saved words in, driving the Book-mode Lesson/Part
+// picker (a book passage_id encodes {CODE}_{lesson}_{part}). Reuses the existing
+// endpoint the Learn Together book room was built on. Soft-fails to [] like the
+// other picker reads. The rows only carry a passage_id; `hsk_level` is filled in
+// empty so they satisfy PickerPassage for the shared grouping helpers.
+export function getBookPassages(bookCode: string): Promise<PickerPassage[]> {
+  if (!bookCode) return Promise.resolve([]);
+  return legacyApiFetch<{ passages: { passage_id: string }[] }>(
+    `/api/competition/book-passages?book_code=${encodeURIComponent(bookCode)}`
+  )
+    .then((r) => (r.passages ?? []).map((p) => ({ passage_id: p.passage_id, hsk_level: "" })))
     .catch(() => []);
 }
 

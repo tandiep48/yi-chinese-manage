@@ -128,8 +128,41 @@ describe("TypingActivity in competition mode", () => {
     expect(lastCall[2]).toBe("火"); // the typed answer, not stale ""
     expect(lastCall[3]).toBe(true);
 
+    // It now holds for the reveal audio instead of the fixed pause, so the short
+    // delay alone no longer advances; the safety cap still moves it on if the
+    // audio's "ended" never fires.
     act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+    expect(onAdvance).not.toHaveBeenCalled();
+    act(() => void vi.advanceTimersByTime(4000));
     expect(onAdvance).toHaveBeenCalledTimes(1);
+  });
+
+  it("auto-advances as soon as the last word's reveal audio finishes", () => {
+    const captured: HTMLAudioElement[] = [];
+    const RealAudio = window.Audio;
+    // Capture the Audio the activity creates so the test can end its playback.
+    window.Audio = function () {
+      const a = new RealAudio();
+      captured.push(a);
+      return a;
+    } as unknown as typeof Audio;
+    try {
+      const onAdvance = vi.fn();
+      render(<TypingActivity activity={activity("typing")} onRecord={vi.fn()} onAdvance={onAdvance} />);
+
+      typeInto(0, "水");
+      typeInto(1, "火");
+
+      // Still playing: the fixed pause does not advance on its own.
+      act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+      expect(onAdvance).not.toHaveBeenCalled();
+
+      // The audio finishing advances immediately, before the cap.
+      act(() => void captured[captured.length - 1].dispatchEvent(new Event("ended")));
+      expect(onAdvance).toHaveBeenCalledTimes(1);
+    } finally {
+      window.Audio = RealAudio;
+    }
   });
 });
 
@@ -205,6 +238,19 @@ describe("MatchActivity in competition mode", () => {
 
     expect(document.querySelector(".bt-key-hint")).toBeNull();
     expect(screen.getByText("lesson.continue")).toBeInTheDocument();
+  });
+
+  it("numbers the listening source cards and enables 1-5 even in solo mode", () => {
+    // Audio cards are identical speaker icons, so the listening board always labels
+    // them 1..n (and wires the shortcut), unlike the reading board above.
+    render(<MatchActivity activity={activity("listen")} onRecord={vi.fn()} onAdvance={vi.fn()} />);
+
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "2" });
+    const left = document.querySelectorAll(".bt-match-col")[0];
+    expect(left.querySelectorAll(".bt-match-item")[1].classList.contains("selected")).toBe(true);
   });
 
   it("auto-advances in solo mode once the board is fully matched", () => {

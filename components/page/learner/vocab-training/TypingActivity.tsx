@@ -26,6 +26,10 @@ import { AUTO_ADVANCE_DELAY_MS, type Activity, type TrainerWord } from "@/lib/le
 
 type RowStatus = "none" | "correct" | "incorrect";
 
+// Cap on how long the group waits for the last word's reveal audio to finish
+// before auto-advancing, so a missing/blocked "ended" event can't strand it.
+const AUDIO_ADVANCE_MAX_MS = 4000;
+
 export function TypingActivity({
   activity,
   onRecord,
@@ -59,6 +63,34 @@ export function TypingActivity({
   const completedAtRef = useRef<(number | null)[]>(words.map(() => null));
   const inputRefs = useRef<(HTMLTextAreaElement | null)[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  // Pending auto-advance timer (solo all-correct), cleared on unmount.
+  const advanceTimerRef = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (advanceTimerRef.current) window.clearTimeout(advanceTimerRef.current);
+    },
+    []
+  );
+
+  // Solo mode: once the whole group is correct, wait for the last word's reveal
+  // audio to finish before moving on — the fixed pause used to cut it off and
+  // advance mid-playback. Falls back to that pause when there is no audio, and a
+  // hard cap covers an "ended" event that never fires (e.g. autoplay blocked).
+  function advanceWhenAudioDone(hasAudio: boolean) {
+    const audio = audioRef.current;
+    if (!hasAudio || !audio) {
+      advanceTimerRef.current = window.setTimeout(onAdvance, AUTO_ADVANCE_DELAY_MS);
+      return;
+    }
+    const done = () => {
+      audio.removeEventListener("ended", done);
+      if (advanceTimerRef.current) window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+      onAdvance();
+    };
+    audio.addEventListener("ended", done);
+    advanceTimerRef.current = window.setTimeout(done, AUDIO_ADVANCE_MAX_MS);
+  }
 
   // Grow a field to fit its content so an unusually long answer wraps onto new
   // lines instead of scrolling out of a one-line box — the whole typed text stays
@@ -152,7 +184,7 @@ export function TypingActivity({
       const allCorrect = words.every((w, i) => finals[i] === w.word);
       if (allCorrect) {
         scoreGroup(finals);
-        window.setTimeout(onAdvance, AUTO_ADVANCE_DELAY_MS);
+        advanceWhenAudioDone(Boolean(row.audio_key));
       }
     } else {
       completedAtRef.current[idx] = null;

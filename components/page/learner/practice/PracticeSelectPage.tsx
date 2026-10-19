@@ -6,7 +6,9 @@
 
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
+import { LearningTabs } from "@/components/page/learner/picker/LearningTabs";
 import type { PracticeCategory } from "@/lib/types/practice";
+import "@/components/page/learner/picker/learning-tabs.css";
 import "./practice-select.css";
 
 export function PracticeSelectPage({ category }: { category: PracticeCategory }) {
@@ -17,9 +19,7 @@ export function PracticeSelectPage({ category }: { category: PracticeCategory })
   return (
     <div className="practice-select">
       <div className="practice-select-container">
-        <Link href="/learner" className="page-back">
-          ← {t("picker.back_to_dashboard")}
-        </Link>
+        <LearningTabs />
         <h1 className="page-title">{categoryLabel}</h1>
         <p className="page-subtitle">
           {t("practice_select.choose_hsk_subtitle", { category: categoryLabel.toLowerCase() })}

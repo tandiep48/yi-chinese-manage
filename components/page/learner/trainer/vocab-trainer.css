@@ -130,6 +130,28 @@
   font-size: 1.4rem;
   color: var(--primary);
 }
+/* The 1-5 badge on the listening board's audio cards: a small green keycap sitting
+   to the LEFT of the speaker (order:-1), white number. Learn Together re-skins it to
+   a teal pill in competition-trainer.css (loaded after this file in SectionScreen). */
+.vocab-trainer .bt-match-item.bt-has-key {
+  gap: 8px;
+}
+.vocab-trainer .bt-key-hint {
+  order: -1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--primary, #007a61);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
 .vocab-trainer .bt-match-item.selected {
   border-color: var(--primary);
   background: color-mix(in srgb, var(--primary) 12%, var(--card-bg));

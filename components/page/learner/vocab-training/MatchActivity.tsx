@@ -61,6 +61,11 @@ export function MatchActivity({
   const matchCfg = MATCH_CONFIG[activity.type as "listen" | "reading"];
   const words = activity.words;
 
+  // The listening board's source cards are identical speaker icons, so they always
+  // carry a 1-5 number badge (and the matching keyboard shortcut) to tell them apart
+  // — not just in Learn Together, where `keyboardShortcuts` badges both boards.
+  const showKeys = keyboardShortcuts || matchCfg.leftKind === "audio";
+
   // Right column order is fixed for the life of the board.
   const rightWords = useMemo(() => shuffle(words), [words]);
 
@@ -155,7 +160,7 @@ export function MatchActivity({
 
   // 1-5 pick a source card by its position, unless a text field has focus.
   useEffect(() => {
-    if (!keyboardShortcuts) return;
+    if (!showKeys) return;
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
@@ -224,7 +229,7 @@ export function MatchActivity({
         <div className="bt-match-board bt-match-board-rows">
           <div className="bt-match-col">
             {words.map((row, idx) => {
-              const keyChar = keyboardShortcuts ? LEFT_KEYS[idx] : null;
+              const keyChar = showKeys ? LEFT_KEYS[idx] : null;
               return (
                 <button
                   key={`left-${row.word}`}

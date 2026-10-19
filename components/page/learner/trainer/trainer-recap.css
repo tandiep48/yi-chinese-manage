@@ -54,3 +54,28 @@
   margin: 0 0 22px;
   justify-content: space-between;
 }
+
+/* ── Phone layout ──
+   The 30px recap cells and the spread-out action rows overflow a phone. Shrink the
+   table so it fits without a sideways scroll, and stack the actions full width. */
+@media (max-width: 600px) {
+  .trainer-shell .training-complete-table th,
+  .trainer-shell .training-complete-table td {
+    padding: 10px 12px;
+  }
+  .trainer-shell .training-complete-table td {
+    font-size: 1.15rem;
+  }
+  .trainer-shell .training-complete-table th {
+    font-size: 0.9rem;
+  }
+  .trainer-shell .training-complete-actions,
+  .trainer-shell .training-complete-top-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .trainer-shell .training-complete-actions .btn,
+  .trainer-shell .training-complete-top-actions .btn {
+    width: 100%;
+  }
+}

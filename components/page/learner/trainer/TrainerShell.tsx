@@ -61,6 +61,11 @@ interface TrainerShellProps {
   // Embedded in a panel rather than owning the viewport: the bottom bar goes
   // sticky-within-the-panel instead of fixed to the window.
   contained?: boolean;
+  // When provided, the activity's primary action is hosted in this external
+  // element instead of the trainer's own bottom bar, which is then not rendered.
+  // The milestone passes its nav-bar slot here so one bar carries Quit (the host's)
+  // + the trainer's Check/Next. Passing it (even as null) suppresses the own bar.
+  bottomBarSlot?: HTMLElement | null;
 }
 
 export function TrainerShell({
@@ -75,10 +80,16 @@ export function TrainerShell({
   scopeClass = "vocab-trainer",
   quitIcon = false,
   contained = false,
+  bottomBarSlot,
 }: TrainerShellProps) {
   const { t } = useT();
-  const [slot, setSlot] = useState<HTMLElement | null>(null);
+  const [internalSlot, setInternalSlot] = useState<HTMLElement | null>(null);
   const [quitOpen, setQuitOpen] = useState(false);
+
+  // An external host (the milestone) can take over the action bar; passing the prop
+  // at all — even null — means this shell does not render its own bottom bar.
+  const externalBar = bottomBarSlot !== undefined;
+  const slot = externalBar ? bottomBarSlot ?? null : internalSlot;
 
   return (
     <ActionSlotContext.Provider value={slot}>
@@ -104,17 +115,19 @@ export function TrainerShell({
 
             <div className="task-card">{screen === "training" ? children : null}</div>
 
-            <div className="trainer-bottom-bar">
-              <button
-                type="button"
-                className="btn secondary trainer-quit-btn"
-                onClick={() => setQuitOpen(true)}
-              >
-                <FontAwesomeIcon icon={faRightFromBracket} aria-hidden />
-                <span>{t("trainer.quit_session_btn")}</span>
-              </button>
-              <div className="trainer-action-slot" ref={setSlot} />
-            </div>
+            {!externalBar && (
+              <div className="trainer-bottom-bar">
+                <button
+                  type="button"
+                  className="btn secondary trainer-quit-btn"
+                  onClick={() => setQuitOpen(true)}
+                >
+                  <FontAwesomeIcon icon={faRightFromBracket} aria-hidden />
+                  <span>{t("trainer.quit_session_btn")}</span>
+                </button>
+                <div className="trainer-action-slot" ref={setInternalSlot} />
+              </div>
+            )}
           </div>
 
           <div className={`screen trainer-complete-screen${screen === "complete" ? " active" : ""}`}>

@@ -7,7 +7,7 @@
 // vocab_training_batch.html + static/vocab/vocab_training_batch.js.
 
 import { useEffect } from "react";
-import { TrainerShell } from "@/components/page/learner/trainer/TrainerShell";
+import { TrainerShell, type TrainerScreen } from "@/components/page/learner/trainer/TrainerShell";
 import { SuccessPopup } from "@/components/page/learner/trainer/SuccessPopup";
 import { useVocabTrainer, type VocabTrainerOptions } from "@/hooks/vocab/useVocabTrainer";
 import { TypingActivity } from "./TypingActivity";
@@ -22,10 +22,26 @@ interface VocabTrainerPageProps extends VocabTrainerOptions {
   // Label for the recap's exit button (defaults to "Back to vocabulary"); the
   // milestone passes "Next" because its exit advances to the next step.
   homeLabel?: string;
+  // Host the Check/Next action in an external bar (the milestone's nav bar) instead
+  // of the trainer's own bottom bar; see TrainerShell.bottomBarSlot.
+  bottomBarSlot?: HTMLElement | null;
+  // Reports the trainer's screen (loading/training/complete) so a host can swap its
+  // own controls — the milestone shows Quit + the action slot only while training.
+  onScreenChange?: (screen: TrainerScreen) => void;
 }
 
-export function VocabTrainerPage({ contained, homeLabel, ...options }: VocabTrainerPageProps = {}) {
+export function VocabTrainerPage({
+  contained,
+  homeLabel,
+  bottomBarSlot,
+  onScreenChange,
+  ...options
+}: VocabTrainerPageProps = {}) {
   const trainer = useVocabTrainer(options);
+
+  useEffect(() => {
+    onScreenChange?.(trainer.screen);
+  }, [trainer.screen, onScreenChange]);
 
   // Enter advances via the current activity's primary action (Check / Continue),
   // unless a text field is focused (typing inputs manage their own Enter).
@@ -57,6 +73,7 @@ export function VocabTrainerPage({ contained, homeLabel, ...options }: VocabTrai
         counterText={trainer.counterText}
         onQuit={trainer.goHome}
         contained={contained}
+        bottomBarSlot={bottomBarSlot}
         complete={
           <VocabTrainerRecap
             missed={trainer.missed}
@@ -64,6 +81,7 @@ export function VocabTrainerPage({ contained, homeLabel, ...options }: VocabTrai
             onRetry={trainer.retryMissed}
             onHome={trainer.goHome}
             homeLabel={homeLabel}
+            hideHome={contained}
           />
         }
       >
