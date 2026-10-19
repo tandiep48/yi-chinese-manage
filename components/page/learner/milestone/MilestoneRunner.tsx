@@ -31,7 +31,12 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowRight, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowRight,
+  faArrowLeft,
+  faRightFromBracket,
+  faTriangleExclamation,
+} from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLessonOverview } from "@/hooks/lesson/useLessonOverview";
 import {
@@ -46,6 +51,7 @@ import { LessonCardStudy } from "@/components/page/learner/lesson/LessonCardStud
 import { FlashcardStudy } from "@/components/page/learner/vocab-learning/FlashcardStudy";
 import { VocabTrainerPage } from "@/components/page/learner/vocab-training/VocabTrainerPage";
 import { LessonTrainerPage } from "@/components/page/learner/lesson-training/LessonTrainerPage";
+import type { TrainerScreen } from "@/components/page/learner/trainer/TrainerShell";
 import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
 import { resolveTrainerWords } from "@/lib/api/learner/vocabTrainer";
 import { invalidateCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
@@ -55,6 +61,7 @@ import type { TrainerWord, VocabActivityType } from "@/lib/lessons/vocabTrainer"
 import type { LessonTaskType } from "@/lib/types/lesson";
 import { MilestoneBar } from "./MilestoneBar";
 import "./milestone.css";
+import "./milestone-nav-slot.css";
 
 interface MilestoneRunnerProps {
   passageId: string;
@@ -167,6 +174,13 @@ function MilestonePart({
   const [vocabTypes, setVocabTypes] = useState<VocabActivityType[] | undefined>(undefined);
   const [lessonTypes, setLessonTypes] = useState<LessonTaskType[] | undefined>(undefined);
 
+  // The trainer steps (3, 6) hand their Check/Next action to the nav bar's right
+  // slot and report their screen, so the bar shows Quit + that action while
+  // training and Previous + Next on the recap. The trainer's own bottom bar is gone.
+  const [trainerSlot, setTrainerSlot] = useState<HTMLElement | null>(null);
+  const [trainerScreen, setTrainerScreen] = useState<TrainerScreen>("loading");
+  const [quitOpen, setQuitOpen] = useState(false);
+
   const handleContinue = useCallback(() => {
     if (step + 1 === VOCAB_TRAINER_STEP) {
       setPickerEngine("vocab");
@@ -258,6 +272,11 @@ function MilestonePart({
   // stylesheet source order. That is the §2 bug, through a side door.
   const studyScoped = isPassiveStep(step);
 
+  // While a trainer step is actively training, the nav bar carries the trainer's
+  // own Quit + Check/Next (the trainer's bottom bar is suppressed). On its recap,
+  // and on every passive step, it is the plain Previous / Next pair.
+  const trainerActive = onTrainerStep && trainerScreen === "training";
+
   return (
     <div className="milestone">
       <MilestoneBar
@@ -300,6 +319,8 @@ function MilestonePart({
               types={vocabTypes}
               contained
               onExit={onTrainerExit}
+              bottomBarSlot={trainerSlot}
+              onScreenChange={setTrainerScreen}
             />
           ))}
 
@@ -333,30 +354,90 @@ function MilestonePart({
             contained
             onExit={onTrainerExit}
             onComplete={onTrainerExit}
+            bottomBarSlot={trainerSlot}
+            onScreenChange={setTrainerScreen}
           />
         )}
       </div>
 
       <div className="milestone-navbar">
-        <button
-          type="button"
-          className="milestone-nav-btn milestone-nav-prev"
-          onClick={() => goToStep(step - 1)}
-          disabled={step <= 1}
-        >
-          <FontAwesomeIcon icon={faArrowLeft} aria-hidden />
-          <span>{t("reading.prev")}</span>
-        </button>
-        <button
-          type="button"
-          className="milestone-nav-btn milestone-nav-next"
-          onClick={handleNext}
-          disabled={isPassiveStep(step) && milestone.saving}
-        >
-          <span>{t("reading.next")}</span>
-          <FontAwesomeIcon icon={faArrowRight} aria-hidden />
-        </button>
+        {trainerActive ? (
+          <button
+            type="button"
+            className="milestone-nav-btn milestone-nav-quit"
+            onClick={() => setQuitOpen(true)}
+          >
+            <FontAwesomeIcon icon={faRightFromBracket} aria-hidden />
+            <span>{t("trainer.quit_session_btn")}</span>
+          </button>
+        ) : (
+          <button
+            type="button"
+            className="milestone-nav-btn milestone-nav-prev"
+            onClick={() => goToStep(step - 1)}
+            disabled={step <= 1}
+          >
+            <FontAwesomeIcon icon={faArrowLeft} aria-hidden />
+            <span>{t("reading.prev")}</span>
+          </button>
+        )}
+
+        {trainerActive ? (
+          // The trainer's Check/Next button portals in here (TrainerShell gets this
+          // element as its bottomBarSlot). The .trainer-action-slot class keeps the
+          // vocab trainer's Enter-key shortcut working.
+          <div className="trainer-action-slot milestone-nav-slot" ref={setTrainerSlot} />
+        ) : (
+          <button
+            type="button"
+            className="milestone-nav-btn milestone-nav-next"
+            onClick={handleNext}
+            disabled={isPassiveStep(step) && milestone.saving}
+          >
+            <span>{t("reading.next")}</span>
+            <FontAwesomeIcon icon={faArrowRight} aria-hidden />
+          </button>
+        )}
       </div>
+
+      {quitOpen && (
+        <div
+          className="milestone-quit-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setQuitOpen(false);
+          }}
+        >
+          <div className="milestone-quit-modal">
+            <div className="milestone-quit-icon" aria-hidden>
+              <FontAwesomeIcon icon={faTriangleExclamation} />
+            </div>
+            <h3 className="milestone-quit-title">{t("trainer.quit_modal_title")}</h3>
+            <p
+              className="milestone-quit-body"
+              dangerouslySetInnerHTML={{ __html: t("trainer.quit_modal_body") }}
+            />
+            <div className="milestone-quit-btns">
+              <button
+                type="button"
+                className="milestone-quit-cancel"
+                onClick={() => setQuitOpen(false)}
+              >
+                {t("trainer.cancel")}
+              </button>
+              <button
+                type="button"
+                className="milestone-quit-confirm"
+                onClick={() => {
+                  setQuitOpen(false);
+                  goToStep(step - 1);
+                }}
+              >
+                {t("trainer.yes_quit")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {pickerEngine && (
         <TrainTypePicker

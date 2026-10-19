@@ -29,9 +29,11 @@ vi.mock("@/lib/api/learner/vocabTrainer", () => ({
 vi.mock("@/hooks/lesson/useLessonOverview", () => ({ useLessonOverview: vi.fn() }));
 
 // Step bodies, reduced to markers. The two trainers expose their onExit so a
-// finished run can be simulated.
+// finished run can be simulated, and their onScreenChange so a test can drive the
+// trainer into its training / complete screens (which swaps the nav bar's buttons).
 let vocabTrainerExit: () => void = () => {};
 let lessonTrainerExit: () => void = () => {};
+let vocabTrainerScreen: (s: string) => void = () => {};
 vi.mock("@/components/page/learner/lesson/WordSummary", () => ({
   WordSummary: ({ hideActions }: { hideActions?: boolean }) => (
     <div data-testid="body">word-summary hideActions={String(!!hideActions)}</div>
@@ -51,15 +53,43 @@ vi.mock("@/components/page/learner/vocab-learning/FlashcardStudy", () => ({
   ),
 }));
 vi.mock("@/components/page/learner/vocab-training/VocabTrainerPage", () => ({
-  VocabTrainerPage: ({ onExit, types }: { onExit?: () => void; types?: string[] }) => {
+  VocabTrainerPage: ({
+    onExit,
+    types,
+    onScreenChange,
+    bottomBarSlot,
+  }: {
+    onExit?: () => void;
+    types?: string[];
+    onScreenChange?: (s: string) => void;
+    bottomBarSlot?: HTMLElement | null;
+  }) => {
     vocabTrainerExit = onExit ?? (() => {});
-    return <div data-testid="body">vocab-trainer types={JSON.stringify(types ?? null)}</div>;
+    vocabTrainerScreen = onScreenChange ?? (() => {});
+    return (
+      <div data-testid="body" data-hasslot={String(!!bottomBarSlot)}>
+        vocab-trainer types={JSON.stringify(types ?? null)}
+      </div>
+    );
   },
 }));
 vi.mock("@/components/page/learner/lesson-training/LessonTrainerPage", () => ({
-  LessonTrainerPage: ({ onExit, types }: { onExit?: () => void; types?: string[] }) => {
+  LessonTrainerPage: ({
+    onExit,
+    types,
+    bottomBarSlot,
+  }: {
+    onExit?: () => void;
+    types?: string[];
+    onScreenChange?: (s: string) => void;
+    bottomBarSlot?: HTMLElement | null;
+  }) => {
     lessonTrainerExit = onExit ?? (() => {});
-    return <div data-testid="body">lesson-trainer types={JSON.stringify(types ?? null)}</div>;
+    return (
+      <div data-testid="body" data-hasslot={String(!!bottomBarSlot)}>
+        lesson-trainer types={JSON.stringify(types ?? null)}
+      </div>
+    );
   },
 }));
 
@@ -322,6 +352,56 @@ describe("MilestoneRunner — host wiring", () => {
 
     await waitFor(() => expect(onRunningChange).toHaveBeenCalledWith(false));
     expect(onRunningChange).not.toHaveBeenCalledWith(true);
+  });
+});
+
+describe("MilestoneRunner — trainer step nav bar", () => {
+  const withVocab = () =>
+    mockResolve.mockResolvedValue([
+      { word: "学习", cn: "学习", pinyin: "x", meaning_en: "s", meaning_vn: "h", audio_key: "a", level: "HSK1" },
+    ]);
+
+  it("shows Quit + the trainer's action slot while training", async () => {
+    withVocab();
+    renderRunner({ initialStep: 3 });
+    await waitFor(() => expect(body()).toContain("vocab-trainer"));
+
+    act(() => vocabTrainerScreen("training"));
+
+    expect(screen.getByRole("button", { name: /Quit Session/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Next$/ })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Prev$/ })).not.toBeInTheDocument();
+    // The trainer is handed the nav-bar slot to portal its Check/Next button into.
+    await waitFor(() => expect(screen.getByTestId("body").dataset.hasslot).toBe("true"));
+  });
+
+  it("confirms Quit and steps back out of the trainer without posting", async () => {
+    const user = userEvent.setup();
+    withVocab();
+    renderRunner({ initialStep: 3 });
+    await waitFor(() => expect(body()).toContain("vocab-trainer"));
+    act(() => vocabTrainerScreen("training"));
+
+    await user.click(screen.getByRole("button", { name: /Quit Session/ }));
+    expect(screen.getByText("Quit Session?")).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Yes, Quit" }));
+
+    await waitFor(() => expect(body()).toContain("flashcards"));
+    expect(screen.getByText(/Step 2 of 6/)).toBeInTheDocument();
+    expect(mockMark).not.toHaveBeenCalled();
+  });
+
+  it("returns to Previous + Next on the trainer's recap screen", async () => {
+    withVocab();
+    renderRunner({ initialStep: 3 });
+    await waitFor(() => expect(body()).toContain("vocab-trainer"));
+    act(() => vocabTrainerScreen("training"));
+    expect(screen.getByRole("button", { name: /Quit Session/ })).toBeInTheDocument();
+
+    act(() => vocabTrainerScreen("complete"));
+
+    expect(screen.getByRole("button", { name: /Next/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Quit Session/ })).not.toBeInTheDocument();
   });
 });
 
