@@ -77,6 +77,10 @@ interface MilestoneRunnerProps {
   // True while a graded step's trainer is running, so a host with a mid-session
   // guard (the learner home's tab bar) can arm it.
   onRunningChange?: (running: boolean) => void;
+  // The lesson's final part's final step was finished and counted — there is no
+  // next part to advance to. The host rolls the flow on from here (Grammar →
+  // Translation → next lesson). Fires for a single-part run too.
+  onLessonComplete?: () => void;
 }
 
 export function MilestoneRunner({
@@ -85,6 +89,7 @@ export function MilestoneRunner({
   initialStep,
   onStepChange,
   onRunningChange,
+  onLessonComplete,
 }: MilestoneRunnerProps) {
   // The parts to run through. With no list this is the single given part, so the
   // standalone page behaves exactly as before.
@@ -109,9 +114,16 @@ export function MilestoneRunner({
 
   const activePassageId = parts[activeIndex] ?? passageId;
 
-  const advanceToNextPart = useCallback(() => {
-    setActiveIndex((i) => (i + 1 < parts.length ? i + 1 : i));
-  }, [parts.length]);
+  const onPartComplete = useCallback(() => {
+    if (activeIndex + 1 < parts.length) {
+      setActiveIndex(activeIndex + 1);
+    } else {
+      // No next part: the lesson's parts are all done. Hand off to the host, which
+      // continues the flow (Grammar → Translation → next lesson). A single-part run
+      // (the standalone page) lands here directly instead of dead-ending on step 6.
+      onLessonComplete?.();
+    }
+  }, [activeIndex, parts.length, onLessonComplete]);
 
   return (
     <MilestonePart
@@ -123,7 +135,7 @@ export function MilestoneRunner({
       initialStep={activeIndex === initialIndex ? initialStep : undefined}
       onStepChange={onStepChange}
       onRunningChange={onRunningChange}
-      onPartComplete={advanceToNextPart}
+      onPartComplete={onPartComplete}
     />
   );
 }

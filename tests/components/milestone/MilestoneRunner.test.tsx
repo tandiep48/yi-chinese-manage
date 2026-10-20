@@ -442,7 +442,7 @@ describe("MilestoneRunner — auto-advance across parts", () => {
     await waitFor(() => expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument());
   });
 
-  it("stays on the last part after its final step — nowhere to advance", async () => {
+  it("stays on the last part after its final step when no host takes over", async () => {
     mockGet.mockResolvedValue(mk(P2, [1, 2, 3, 4, 5, 6]));
     renderRunner({ passageId: P2, passageIds: [P1, P2], initialStep: 6 });
     await waitFor(() => expect(body()).toContain("lesson-trainer"));
@@ -453,6 +453,32 @@ describe("MilestoneRunner — auto-advance across parts", () => {
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
     expect(body()).toContain("lesson-trainer");
+  });
+
+  it("calls onLessonComplete when the final part's final step is counted", async () => {
+    const onLessonComplete = vi.fn();
+    mockGet.mockResolvedValue(mk(P2, [1, 2, 3, 4, 5, 6]));
+    renderRunner({ passageId: P2, passageIds: [P1, P2], initialStep: 6, onLessonComplete });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    await act(async () => {
+      lessonTrainerExit();
+    });
+
+    await waitFor(() => expect(onLessonComplete).toHaveBeenCalledTimes(1));
+  });
+
+  it("calls onLessonComplete for a single-part run's final step (no dead end)", async () => {
+    const onLessonComplete = vi.fn();
+    mockGet.mockResolvedValue(mk(P1, [1, 2, 3, 4, 5, 6]));
+    renderRunner({ passageId: P1, initialStep: 6, onLessonComplete });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    await act(async () => {
+      lessonTrainerExit();
+    });
+
+    await waitFor(() => expect(onLessonComplete).toHaveBeenCalledTimes(1));
   });
 
   it("does not cross a part boundary when the final step was not counted", async () => {
