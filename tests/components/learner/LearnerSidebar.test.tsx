@@ -53,7 +53,7 @@ describe("LearnerSidebar", () => {
     renderSidebar();
     expect(screen.getByRole("link", { name: "Dashboard" })).toHaveAttribute("href", "/learner");
     expect(screen.getByRole("link", { name: "Vocabulary" })).toHaveAttribute("href", "/learner/vocab");
-    expect(screen.getByRole("link", { name: "HSK" })).toHaveAttribute("href", "/learner/hsk");
+    expect(screen.getByRole("link", { name: "Library" })).toHaveAttribute("href", "/learner/hsk");
     expect(screen.getByRole("link", { name: "Learn Together" })).toHaveAttribute(
       "href",
       "/learner/learn-together"
