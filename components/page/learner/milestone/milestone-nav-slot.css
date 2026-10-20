@@ -25,6 +25,9 @@
   cursor: pointer;
   background: var(--learner-primary, #576856);
   color: #ffffff;
+  /* Match .milestone-nav-next: the label is a button, never selectable copy, so a
+     click cannot repaint it the ::selection accent colour (base-chrome.css). */
+  user-select: none;
   transition: background 0.15s ease, opacity 0.15s ease;
 }
 .milestone-nav-slot .btn:hover:not(:disabled) {

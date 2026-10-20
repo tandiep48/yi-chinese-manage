@@ -153,6 +153,10 @@
   font-weight: 600;
   padding: 14px 28px;
   cursor: pointer;
+  /* The label is a button, not selectable copy: a click (or the tiny drag that
+     rides with it) must never select the text and repaint it the selection
+     colour. Keeps the Next label readable white on every interaction. */
+  user-select: none;
   transition: background 0.15s ease, opacity 0.15s ease;
 }
 .milestone-nav-btn:disabled {
@@ -171,7 +175,12 @@
   background: rgba(87, 104, 86, 0.08);
 }
 
-.milestone-nav-next {
+.milestone-nav-next,
+.milestone-nav-next:hover,
+.milestone-nav-next:focus,
+.milestone-nav-next:focus-visible,
+.milestone-nav-next:active,
+.milestone-nav-next:visited {
   background: var(--learner-primary, #576856);
   color: #ffffff;
 }
