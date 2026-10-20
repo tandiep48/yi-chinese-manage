@@ -10,7 +10,7 @@
 // passes none (buttons stay disabled, no stroke), while the Flash Cards flow
 // wires them up. Learn/Train hand back the CURRENT (shuffled) item order.
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -22,10 +22,13 @@ import {
   faGraduationCap,
   faDumbbell,
   faPaintbrush,
+  faChevronRight,
+  faXmark,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { useAudioSequence } from "@/hooks/shared/useAudioSequence";
+import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import type { LessonVocabRow } from "@/lib/types/vocab";
 import "./word-summary.css";
 
@@ -61,6 +64,23 @@ export function WordSummary({
   const [hidden, setHidden] = useState<Set<Col>>(new Set());
   const { activeKey, sequenceActive, playSingle, toggleSequence } = useAudioSequence();
 
+  // On phones the cards become tap targets that open a detail sheet (hanzi, pinyin,
+  // both meanings, audio, stroke), matching the vocabulary page's mobile card view.
+  // Desktop keeps the full inline row. useMediaQuery is false on the server / first
+  // paint, so SSR and hydration agree before it resolves.
+  const useCards = useMediaQuery("(max-width: 767px)");
+  const [detail, setDetail] = useState<LessonVocabRow | null>(null);
+
+  // Close the detail sheet on Escape, mirroring VocabCardList.
+  useEffect(() => {
+    if (!detail) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setDetail(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [detail]);
+
   // Reset the working (shuffleable) list when a new part's vocab arrives —
   // the render-phase "adjust state on prop change" pattern, so no effect fires.
   const [prevVocab, setPrevVocab] = useState(vocab);
@@ -90,14 +110,18 @@ export function WordSummary({
     vn: t("dashboard.table_meaning_vn"),
   };
 
-  const cardsClass = [
-    "vl-vocab-cards",
+  const hideClass = [
     hidden.has("cn") ? "hide-cn" : "",
     hidden.has("py") ? "hide-py" : "",
     hidden.has("vn") ? "hide-vn" : "",
   ]
     .filter(Boolean)
     .join(" ");
+  const cardsClass = ["vl-vocab-cards", hideClass].filter(Boolean).join(" ");
+
+  // The meaning shown on a card: the UI language first, then either as a fallback.
+  const meaningOf = (v: LessonVocabRow) =>
+    (lang === "vi" ? v.meaning_vn : v.meaning_en) || v.meaning_en || v.meaning_vn || "";
 
   return (
     <div className="summary-content-card">
@@ -147,6 +171,39 @@ export function WordSummary({
         <div className="vocab-empty">{t("reading.failed_load_vocabulary")}</div>
       ) : items.length === 0 ? (
         <div className="vocab-empty">{t("reading.no_vocab_linked")}</div>
+      ) : useCards ? (
+        // Phone: a tappable card list that opens a detail sheet, like the
+        // vocabulary page's mobile view.
+        <ul className={["ws-cards", hideClass].filter(Boolean).join(" ")}>
+          {items.map((v, index) => (
+            <li
+              key={`${v.cn}-${index}`}
+              className={`ws-card${activeKey === v.cn ? " playing-highlight" : ""}`}
+            >
+              <button type="button" className="ws-card-main" onClick={() => setDetail(v)}>
+                <span className="ws-card-num">{index + 1}</span>
+                <span className="ws-card-hanzi" lang="zh-CN">
+                  {v.cn}
+                </span>
+                <span className="ws-card-text">
+                  <span className="ws-card-pinyin">{v.pinyin}</span>
+                  <span className="ws-card-meaning">{meaningOf(v)}</span>
+                </span>
+                <FontAwesomeIcon icon={faChevronRight} className="ws-card-chevron" aria-hidden />
+              </button>
+              {v.audio_key ? (
+                <button
+                  type="button"
+                  className="ws-card-audio"
+                  onClick={() => playSingle(v.cn, vocabAudioUrl(v.audio_key))}
+                  aria-label={t("reading.play_audio_for", { word: v.cn })}
+                >
+                  <FontAwesomeIcon icon={faVolumeHigh} />
+                </button>
+              ) : null}
+            </li>
+          ))}
+        </ul>
       ) : (
         <div className={cardsClass}>
           {items.map((v, index) => (
@@ -159,7 +216,7 @@ export function WordSummary({
               </div>
               <div className="vc-text">
                 <div className="vc-pinyin">{v.pinyin}</div>
-                <div className="vc-meaning">{(lang === "vi" ? v.meaning_vn : v.meaning_en) || v.meaning_en || v.meaning_vn}</div>
+                <div className="vc-meaning">{meaningOf(v)}</div>
               </div>
               <div className="vc-right">
                 {onOpenStroke && HANZI_RE.test(v.cn) ? (
@@ -214,6 +271,57 @@ export function WordSummary({
         </button>
       </div>
       )}
+
+      {detail ? (
+        <div className="ws-sheet-overlay" onClick={() => setDetail(null)}>
+          <div
+            className="ws-sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label={detail.cn}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="ws-sheet-close"
+              onClick={() => setDetail(null)}
+              aria-label={t("widgets.close")}
+            >
+              <FontAwesomeIcon icon={faXmark} />
+            </button>
+
+            <div className="ws-sheet-hanzi" lang="zh-CN">
+              {detail.cn}
+            </div>
+            <div className="ws-sheet-pinyin">{detail.pinyin}</div>
+            {detail.meaning_vn ? <div className="ws-sheet-meaning">{detail.meaning_vn}</div> : null}
+            {detail.meaning_en ? (
+              <div className="ws-sheet-meaning ws-sheet-meaning-en">{detail.meaning_en}</div>
+            ) : null}
+
+            <div className="ws-sheet-actions">
+              {detail.audio_key ? (
+                <button
+                  type="button"
+                  className="ws-sheet-btn"
+                  onClick={() => playSingle(detail.cn, vocabAudioUrl(detail.audio_key))}
+                >
+                  <FontAwesomeIcon icon={faVolumeHigh} /> <span>{t("widgets.listen")}</span>
+                </button>
+              ) : null}
+              {onOpenStroke && HANZI_RE.test(detail.cn) ? (
+                <button
+                  type="button"
+                  className="ws-sheet-btn"
+                  onClick={() => onOpenStroke(detail.cn, detail.pinyin || "")}
+                >
+                  <FontAwesomeIcon icon={faPaintbrush} /> <span>{t("widgets.stroke")}</span>
+                </button>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
