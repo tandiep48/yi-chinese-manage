@@ -704,6 +704,8 @@
     "step_lesson_learner": "Lesson Learner",
     "step_lesson_trainer": "Lesson Trainer",
     "continue": "Continue",
-    "no_vocab": "This part has no vocabulary to train."
+    "no_vocab": "This part has no vocabulary to train.",
+    "next_lesson": "Next lesson",
+    "lesson_complete": "Lesson complete"
   }
 }

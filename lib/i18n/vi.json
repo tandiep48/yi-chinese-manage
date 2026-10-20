@@ -704,6 +704,8 @@
     "step_lesson_learner": "Học bài",
     "step_lesson_trainer": "Luyện bài",
     "continue": "Tiếp tục",
-    "no_vocab": "Phần này chưa có từ vựng để luyện."
+    "no_vocab": "Phần này chưa có từ vựng để luyện.",
+    "next_lesson": "Bài tiếp theo",
+    "lesson_complete": "Hoàn thành bài học"
   }
 }
