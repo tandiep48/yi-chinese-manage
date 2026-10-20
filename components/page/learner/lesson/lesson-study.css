@@ -70,6 +70,37 @@
   }
 }
 
+/* ── Docked sidebar (item 7) ──
+   On the learner home the sidebar is portaled into the right rail inside this
+   wrapper, which re-establishes the .lesson-study scope (so the sidebar keeps its
+   --ls-* tokens and styles). These overrides turn the sticky side-column / mobile
+   off-canvas drawer into a plain card that fills the rail, and drop the drawer-only
+   chrome (backdrop, open/close toggles) since it is always open here. */
+.lesson-study.lesson-study-sidebar-dock {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+}
+.lesson-study-sidebar-dock .lesson-sidebar,
+.lesson-study-sidebar-dock .lesson-sidebar.collapsed {
+  position: static;
+  width: 100%;
+  max-width: 100%;
+  max-height: none;
+  margin: 0;
+  opacity: 1;
+  transform: none;
+  border-radius: 16px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  z-index: auto;
+  pointer-events: auto;
+}
+.lesson-study-sidebar-dock .lesson-sidebar-backdrop,
+.lesson-study-sidebar-dock .lesson-sidebar-toggle,
+.lesson-study-sidebar-dock .lesson-sidebar-close {
+  display: none;
+}
+
 
 /* ── Grammar / Translation study pages (ported from static/grammar/grammar.css
    + static/translation/translation.css), scoped under .lesson-study with the
