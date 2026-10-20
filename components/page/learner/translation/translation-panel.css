@@ -31,14 +31,17 @@
   border-radius: 999px;
   transition: width 0.25s ease;
 }
+/* Green card, matching the v1 vocab card (.vocab-card uses the same --ls-preview
+   mint fill with a green-tinted border and shadow). */
 .lesson-study .translation-card {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 32px 24px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 122, 97, 0.12);
   border-radius: 16px;
-  background: var(--ls-card);
+  background: var(--ls-preview);
+  box-shadow: 0 2px 8px rgba(0, 122, 97, 0.04);
   min-height: 220px;
   justify-content: center;
   text-align: center;
