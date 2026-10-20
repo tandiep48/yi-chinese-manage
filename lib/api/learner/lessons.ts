@@ -1,11 +1,27 @@
 import type { LessonGrammarRule, LessonPassageDetail, LessonSessionResponse, PickerPassage, PickerProgressSummary } from "@/lib/types/lesson";
 import type { LessonVocabRow } from "@/lib/types/vocab";
+import {
+  hskLevelFromPassageId,
+  isBookPassageId,
+  nextLessonFirstPassageId,
+} from "@/lib/lessons/lessons";
 import { legacyApiFetch } from "../client";
 
 export function getPassages(hskLevel: string): Promise<PickerPassage[]> {
   return legacyApiFetch<{ passages: PickerPassage[] }>(
     `/api/lesson/passages?hsk_level=${encodeURIComponent(hskLevel)}`
   ).then((r) => r.passages);
+}
+
+// The first part of the next lesson for the lesson flow's "roll on to the next
+// lesson" step. Resolved client-side from the level's passage list (no next-lesson
+// endpoint exists yet); soft-fails to null so the flow just ends on a fetch error
+// or at the last lesson of the level.
+export function resolveNextLessonFirstPart(currentPassageId: string): Promise<string | null> {
+  if (!currentPassageId || isBookPassageId(currentPassageId)) return Promise.resolve(null);
+  return getPassages(hskLevelFromPassageId(currentPassageId))
+    .then((passages) => nextLessonFirstPassageId(currentPassageId, passages))
+    .catch(() => null);
 }
 
 // Requires a session — resolves null (rather than throwing) when signed out
