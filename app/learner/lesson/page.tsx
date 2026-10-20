@@ -77,6 +77,21 @@ function LessonPageContent() {
     );
   }
 
+  // HSK parts show the milestone once loaded; they must never fall back to the old
+  // tabbed Word/Lesson Summary layout — not even during load, before isBookPart is
+  // known (passage is still null, so showMilestone is false). Without this guard the
+  // legacy summary tabs + Learn/Train footer flash in while the overview loads. The
+  // tabbed layout below is kept only for book parts, which have no vocab milestone.
+  if (passageId && !isBookPart && (loading || error)) {
+    return (
+      <LessonStudyShell passageId={passageId} domain="lesson">
+        <div className="lesson-learner-empty">
+          {error ? t("reading.failed_load_passage") : t("reading.loading_passage")}
+        </div>
+      </LessonStudyShell>
+    );
+  }
+
   // Launch a trainer for this part: stash the chosen skills and open the route.
   function launchTraining(engine: TrainerEngine, types: string[]) {
     setTrainEngine(null);
