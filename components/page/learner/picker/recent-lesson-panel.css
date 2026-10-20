@@ -28,10 +28,28 @@
   text-align: left;
   color: #333333;
 }
+/* The continue action is a plain .btn link with no base button styles in this app,
+   so give it a filled, clearly-bordered look — a bare text link was hard to read on
+   the mint panel. The darker border defines its edge against the fill + panel. */
 .lesson-picker .learning-continue-btn {
   width: auto;
   min-width: 150px;
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border: 2px solid var(--primary-hover);
+  border-radius: 8px;
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 800;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+}
+.lesson-picker .learning-continue-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
 }
 
 @media (max-width: 700px) {
