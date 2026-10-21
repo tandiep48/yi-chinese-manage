@@ -180,6 +180,17 @@ export function WordSummary({
               key={`${v.cn}-${index}`}
               className={`ws-card${activeKey === v.cn ? " playing-highlight" : ""}`}
             >
+              {/* Audio leads on the far left, ahead of the tap target. */}
+              {v.audio_key ? (
+                <button
+                  type="button"
+                  className="ws-card-audio"
+                  onClick={() => playSingle(v.cn, vocabAudioUrl(v.audio_key))}
+                  aria-label={t("reading.play_audio_for", { word: v.cn })}
+                >
+                  <FontAwesomeIcon icon={faVolumeHigh} />
+                </button>
+              ) : null}
               <button type="button" className="ws-card-main" onClick={() => setDetail(v)}>
                 <span className="ws-card-num">{index + 1}</span>
                 <span className="ws-card-hanzi" lang="zh-CN">
@@ -191,16 +202,6 @@ export function WordSummary({
                 </span>
                 <FontAwesomeIcon icon={faChevronRight} className="ws-card-chevron" aria-hidden />
               </button>
-              {v.audio_key ? (
-                <button
-                  type="button"
-                  className="ws-card-audio"
-                  onClick={() => playSingle(v.cn, vocabAudioUrl(v.audio_key))}
-                  aria-label={t("reading.play_audio_for", { word: v.cn })}
-                >
-                  <FontAwesomeIcon icon={faVolumeHigh} />
-                </button>
-              ) : null}
             </li>
           ))}
         </ul>

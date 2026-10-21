@@ -107,11 +107,26 @@ export function VocabCardList({
         {rows.map((row, index) => {
           const word = wordOf(row);
           const meaning = row.meaning_vn || row.meaning_en || "";
+          const audioButton = row.audio_key ? (
+            <button
+              type="button"
+              className="vcl-card-audio"
+              onClick={() => play(row)}
+              aria-label={t("lesson.play_audio")}
+            >
+              <FontAwesomeIcon icon={faVolumeHigh} />
+            </button>
+          ) : null;
           return (
             <li
               key={`${word}-${index}`}
               className={`vcl-card${selectable && isSelected?.(row) ? " is-selected" : ""}`}
             >
+              {/* No selection on the vocabulary page: the audio button leads on the
+                  far left. With selection (the review page) it stays on the right,
+                  after the checkbox and the tap target. */}
+              {!selectable && audioButton}
+
               {selectable && (
                 <input
                   type="checkbox"
@@ -133,16 +148,7 @@ export function VocabCardList({
                 <FontAwesomeIcon icon={faChevronRight} className="vcl-card-chevron" aria-hidden />
               </button>
 
-              {row.audio_key ? (
-                <button
-                  type="button"
-                  className="vcl-card-audio"
-                  onClick={() => play(row)}
-                  aria-label={t("lesson.play_audio")}
-                >
-                  <FontAwesomeIcon icon={faVolumeHigh} />
-                </button>
-              ) : null}
+              {selectable && audioButton}
             </li>
           );
         })}
