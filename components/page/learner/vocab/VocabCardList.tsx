@@ -29,10 +29,13 @@ const HANZI_RE = /[一-鿿]/;
 
 interface VocabCardListProps {
   rows: VocabRow[];
-  isSelected: (row: VocabRow) => boolean;
-  allOnPageSelected: boolean;
-  onToggleWord: (row: VocabRow, checked: boolean) => void;
-  onTogglePage: (rows: VocabRow[], checked: boolean) => void;
+  // The per-card / select-all picking UI. On by default (the review page); the
+  // vocab selection page passes false and so omits the selection handlers.
+  selectable?: boolean;
+  isSelected?: (row: VocabRow) => boolean;
+  allOnPageSelected?: boolean;
+  onToggleWord?: (row: VocabRow, checked: boolean) => void;
+  onTogglePage?: (rows: VocabRow[], checked: boolean) => void;
   // Opens the page's stroke-order modal (reused from the table flow).
   onOpenStroke?: (word: string, pinyin: string) => void;
 }
@@ -43,8 +46,9 @@ function wordOf(row: VocabRow): string {
 
 export function VocabCardList({
   rows,
+  selectable = true,
   isSelected,
-  allOnPageSelected,
+  allOnPageSelected = false,
   onToggleWord,
   onTogglePage,
   onOpenStroke,
@@ -87,15 +91,17 @@ export function VocabCardList({
 
   return (
     <div className="vocab-card-list">
-      <label className="vcl-selectall">
-        <input
-          type="checkbox"
-          checked={allOnPageSelected}
-          onChange={(e) => onTogglePage(rows, e.target.checked)}
-          aria-label={t("vocab.select_visible_rows_aria")}
-        />
-        <span>{t("vocab.select_all")}</span>
-      </label>
+      {selectable && (
+        <label className="vcl-selectall">
+          <input
+            type="checkbox"
+            checked={allOnPageSelected}
+            onChange={(e) => onTogglePage?.(rows, e.target.checked)}
+            aria-label={t("vocab.select_visible_rows_aria")}
+          />
+          <span>{t("vocab.select_all")}</span>
+        </label>
+      )}
 
       <ul className="vcl-cards">
         {rows.map((row, index) => {
@@ -104,15 +110,17 @@ export function VocabCardList({
           return (
             <li
               key={`${word}-${index}`}
-              className={`vcl-card${isSelected(row) ? " is-selected" : ""}`}
+              className={`vcl-card${selectable && isSelected?.(row) ? " is-selected" : ""}`}
             >
-              <input
-                type="checkbox"
-                className="vcl-card-check"
-                checked={isSelected(row)}
-                onChange={(e) => onToggleWord(row, e.target.checked)}
-                aria-label={word}
-              />
+              {selectable && (
+                <input
+                  type="checkbox"
+                  className="vcl-card-check"
+                  checked={isSelected?.(row) ?? false}
+                  onChange={(e) => onToggleWord?.(row, e.target.checked)}
+                  aria-label={word}
+                />
+              )}
 
               <button type="button" className="vcl-card-main" onClick={() => setDetail(row)}>
                 <span className="vcl-card-hanzi" lang="zh-CN">

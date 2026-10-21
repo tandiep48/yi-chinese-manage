@@ -2,7 +2,7 @@
 // Covers the reset cascades and derived state the vocab selection page relies
 // on: mode -> filters resets, the HSK -> lesson -> part grouping (numeric sort
 // with "Other" last, grouped part options across multiple lessons), history
-// modes loading immediately, the cross-page selection set, and debounced search.
+// modes loading immediately, and debounced search.
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { act, renderHook, waitFor } from "@testing-library/react";
@@ -236,28 +236,6 @@ describe("useVocabSelect — free mode", () => {
     expect(mockTable).toHaveBeenCalledWith(
       expect.objectContaining({ mode: "free", hskLevel: "HSK2" })
     );
-  });
-});
-
-describe("useVocabSelect — selection", () => {
-  it("tracks selected words across toggles and reports all-on-page", async () => {
-    mockLearned.mockResolvedValue(tableResponse([row("A"), row("B")]));
-    const { result } = renderHook(() => useVocabSelect());
-    act(() => result.current.setMode("recent"));
-    await waitFor(() => expect(result.current.rows).toHaveLength(2));
-
-    const [a, b] = result.current.rows;
-    act(() => result.current.toggleWord(a, true));
-    expect(result.current.selectedCount).toBe(1);
-    expect(result.current.isSelected(a)).toBe(true);
-    expect(result.current.allOnPageSelected).toBe(false);
-
-    act(() => result.current.togglePage([a, b], true));
-    expect(result.current.selectedCount).toBe(2);
-    expect(result.current.allOnPageSelected).toBe(true);
-
-    act(() => result.current.clearSelection());
-    expect(result.current.selectedCount).toBe(0);
   });
 });
 

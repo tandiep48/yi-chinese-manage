@@ -6,10 +6,11 @@
 // Composes the mode picker, search, filter bar, study table, pagination and the
 // stroke-order modal on top of the useVocabSelect state machine.
 //
-// Flash Cards stashes the current selection in sessionStorage and opens
-// /vocab-learning. Start Training opens the train-type picker, stashes the
-// selection + chosen skills, and opens the batch trainer (/vocab-training-batch),
-// mirroring vocab_select.js.
+// Flash Cards stashes the current page's words in sessionStorage and opens
+// /vocab-learning. Start Training opens the train-type picker, stashes those
+// words + chosen skills, and opens the batch trainer (/vocab-training-batch).
+// There is no per-word selection: both actions operate on whatever page of the
+// current filter is showing.
 
 import { useState } from "react";
 import Link from "next/link";
@@ -53,7 +54,7 @@ export function VocabSelectPage() {
     try {
       sessionStorage.setItem(
         TRAINER_WORDS_KEY,
-        JSON.stringify(vocab.selectedWordList.map((row) => row.word))
+        JSON.stringify(vocab.rows.map((row) => row.word))
       );
       sessionStorage.setItem(TRAINER_TYPES_KEY, JSON.stringify(types));
     } catch {
@@ -64,11 +65,11 @@ export function VocabSelectPage() {
   }
 
   function openFlashcards() {
-    if (vocab.selectedCount === 0) return;
+    if (vocab.rows.length === 0) return;
     try {
       sessionStorage.setItem(
         FLASHCARD_SELECTION_KEY,
-        JSON.stringify(vocab.selectedWordList)
+        JSON.stringify(vocab.rows)
       );
     } catch {
       // sessionStorage unavailable (private mode); the target page shows an
@@ -117,24 +118,11 @@ export function VocabSelectPage() {
               </select>
             </div>
             <div className="vocab-action-buttons">
-              {vocab.selectedCount > 0 && (
-                <span className="selection-count">
-                  {t("vocab.n_selected", { n: vocab.selectedCount })}
-                </span>
-              )}
-              <button
-                type="button"
-                className="btn action-outline"
-                onClick={vocab.clearSelection}
-                disabled={vocab.selectedCount === 0}
-              >
-                {t("vocab.clear_selection")}
-              </button>
               <button
                 type="button"
                 className="btn action-secondary"
                 onClick={openFlashcards}
-                disabled={vocab.selectedCount === 0}
+                disabled={!showTable}
               >
                 {t("reading.flash_cards")}
               </button>
@@ -142,7 +130,7 @@ export function VocabSelectPage() {
                 type="button"
                 className="btn action-primary"
                 onClick={() => setTrainPickerOpen(true)}
-                disabled={vocab.selectedCount === 0}
+                disabled={!showTable}
               >
                 {t("vocab.start_training")}
               </button>
@@ -203,19 +191,13 @@ export function VocabSelectPage() {
             useCards ? (
               <VocabCardList
                 rows={vocab.rows}
-                isSelected={vocab.isSelected}
-                allOnPageSelected={vocab.allOnPageSelected}
-                onToggleWord={vocab.toggleWord}
-                onTogglePage={vocab.togglePage}
+                selectable={false}
                 onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
               />
             ) : (
               <VocabTable
                 rows={vocab.rows}
-                isSelected={vocab.isSelected}
-                allOnPageSelected={vocab.allOnPageSelected}
-                onToggleWord={vocab.toggleWord}
-                onTogglePage={vocab.togglePage}
+                selectable={false}
                 onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
                 onStrokeAll={openStrokeAll}
               />

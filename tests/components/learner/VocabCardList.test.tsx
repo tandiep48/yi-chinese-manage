@@ -89,6 +89,17 @@ describe("VocabCardList", () => {
     expect(screen.getByText("学习-en")).toBeInTheDocument();
   });
 
+  it("renders no checkboxes when selectable is false", () => {
+    render(
+      <I18nProvider>
+        <VocabCardList rows={[row("学习"), row("你好")]} selectable={false} />
+      </I18nProvider>
+    );
+    expect(screen.queryAllByRole("checkbox")).toHaveLength(0);
+    // The cards themselves still render.
+    expect(screen.getByText("学习")).toBeInTheDocument();
+  });
+
   it("the detail sheet's stroke button defers to onOpenStroke", async () => {
     const user = userEvent.setup();
     const { onOpenStroke } = renderList();
