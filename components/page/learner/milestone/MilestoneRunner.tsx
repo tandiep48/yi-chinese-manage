@@ -46,6 +46,10 @@ import {
   LESSON_TRAINER_STEP,
 } from "@/hooks/lesson/useLessonMilestone";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
+import {
+  VocabStrokeModal,
+  type StrokeModalState,
+} from "@/components/page/learner/vocab/VocabStrokeModal";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { LessonCardStudy } from "@/components/page/learner/lesson/LessonCardStudy";
 import { FlashcardStudy } from "@/components/page/learner/vocab-learning/FlashcardStudy";
@@ -192,6 +196,9 @@ function MilestonePart({
   const [trainerSlot, setTrainerSlot] = useState<HTMLElement | null>(null);
   const [trainerScreen, setTrainerScreen] = useState<TrainerScreen>("loading");
   const [quitOpen, setQuitOpen] = useState(false);
+  // Step 1's word cards open the shared stroke-order modal on a hanzi tap (the
+  // desktop card's paintbrush and the phone detail sheet's stroke button).
+  const [stroke, setStroke] = useState<StrokeModalState>(null);
 
   const handleContinue = useCallback(() => {
     if (step + 1 === VOCAB_TRAINER_STEP) {
@@ -305,6 +312,7 @@ function MilestonePart({
             loading={overview.loading}
             error={overview.vocabError}
             hideActions
+            onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
           />
         )}
 
@@ -458,6 +466,8 @@ function MilestonePart({
           onCancel={() => setPickerEngine(null)}
         />
       )}
+
+      <VocabStrokeModal state={stroke} onClose={() => setStroke(null)} />
     </div>
   );
 }
