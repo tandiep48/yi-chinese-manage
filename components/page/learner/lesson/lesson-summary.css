@@ -129,6 +129,9 @@
     flex-wrap: nowrap;
   }
   .lesson-study .sum-toggle { min-width: 0; }
+  /* The left column holds only Auto play; grow it to fill the column, so its
+     height matches the two stacked toggles in the right column. */
+  .lesson-study .lesson-summary-toolbar .toolbar-left .btn { flex: 1 1 auto; }
 }
 @media (max-width: 600px) {
   .lesson-study .lesson-summary-actions { flex-direction: column; }
