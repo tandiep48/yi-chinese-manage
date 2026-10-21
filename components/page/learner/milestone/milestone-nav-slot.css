@@ -6,13 +6,21 @@
    This lives outside milestone.css on purpose: the container-invariant
    (tests/css/containerInvariants.test.ts) forbids milestone.css from styling a
    shared leaf like .btn, because .milestone .btn would tie with .trainer-shell .btn
-   at (0,2,0) and the winner would hinge on chunk load order. There is no such tie
-   here — once portaled into the nav bar the button no longer sits under
-   .trainer-shell, so .milestone-nav-slot .btn is the only rule that matches it. */
+   at (0,2,0) and the winner would hinge on chunk load order.
+
+   The portaled button leaves .trainer-shell, but on /learner/lesson it still sits
+   inside LessonStudyShell's .lesson-study, so `.lesson-study .btn` (lesson-study.css,
+   base muted + green on :hover) also matches it. A bare `.milestone-nav-slot .btn`
+   (0,2,0) only ties that base and LOSES to `.lesson-study .btn:hover` (0,3,0), so the
+   colour hinged on chunk load order — green on hover, muted otherwise. The slot div
+   carries two classes, so targeting the `.trainer-action-slot.milestone-nav-slot`
+   compound (0,3,0 base, 0,5,0 hover) wins both states deterministically. The colour
+   is restated on :hover too, since the base alone would only tie lesson-study's
+   (0,3,0) hover. Guarded by tests/css/milestoneNavSlotBtn.test.ts. */
 .milestone-nav-slot {
   display: flex;
 }
-.milestone-nav-slot .btn {
+.trainer-action-slot.milestone-nav-slot .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -30,10 +38,12 @@
   user-select: none;
   transition: background 0.15s ease, opacity 0.15s ease;
 }
-.milestone-nav-slot .btn:hover:not(:disabled) {
+.trainer-action-slot.milestone-nav-slot .btn:hover:not(:disabled) {
   background: var(--learner-primary-hover, #455544);
+  border-color: transparent;
+  color: #ffffff;
 }
-.milestone-nav-slot .btn:disabled {
+.trainer-action-slot.milestone-nav-slot .btn:disabled {
   opacity: 0.45;
   cursor: default;
 }
@@ -42,7 +52,7 @@
   .milestone-nav-slot {
     flex: 1 1 0;
   }
-  .milestone-nav-slot .btn {
+  .trainer-action-slot.milestone-nav-slot .btn {
     flex: 1 1 0;
     padding: 14px 16px;
   }
