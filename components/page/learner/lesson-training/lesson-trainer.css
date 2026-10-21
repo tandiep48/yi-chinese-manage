@@ -202,6 +202,11 @@
 .lesson-trainer .lt-reorder {
   width: 100%;
   max-width: 640px;
+  /* The reorder element carries both `.lt-task` and `.lt-reorder`, so its own
+     max-width shrinks it below the task card's width. A block with max-width is
+     not centered by the card's `text-align: center` (that only centers inline
+     content), so without this it hugs the left edge. */
+  margin-inline: auto;
 }
 .lesson-trainer .lt-reorder-label-row {
   color: var(--text-muted);
