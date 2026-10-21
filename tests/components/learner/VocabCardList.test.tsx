@@ -5,7 +5,7 @@
 // button defers to the page's stroke modal.
 
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { VocabCardList } from "@/components/page/learner/vocab/VocabCardList";
@@ -79,14 +79,19 @@ describe("VocabCardList", () => {
     );
   });
 
-  it("tapping a card opens the full-detail sheet with the EN meaning", async () => {
+  it("tapping a card opens the detail sheet showing only the UI-language meaning", async () => {
     const user = userEvent.setup();
     renderList();
 
     // The EN meaning lives only in the detail sheet, not on the card.
     expect(screen.queryByText("学习-en")).toBeNull();
     await user.click(screen.getByRole("button", { name: /学习/ }));
-    expect(screen.getByText("学习-en")).toBeInTheDocument();
+
+    // Tests pin the UI language to English: the sheet shows the EN meaning and
+    // not the VN one (no cross-language fallback inside the sheet).
+    const sheet = screen.getByRole("dialog");
+    expect(within(sheet).getByText("学习-en")).toBeInTheDocument();
+    expect(within(sheet).queryByText("学习-vn")).toBeNull();
   });
 
   it("renders no checkboxes when selectable is false", () => {

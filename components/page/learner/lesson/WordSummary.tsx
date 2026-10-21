@@ -295,9 +295,11 @@ export function WordSummary({
               {detail.cn}
             </div>
             <div className="ws-sheet-pinyin">{detail.pinyin}</div>
-            {detail.meaning_vn ? <div className="ws-sheet-meaning">{detail.meaning_vn}</div> : null}
-            {detail.meaning_en ? (
-              <div className="ws-sheet-meaning ws-sheet-meaning-en">{detail.meaning_en}</div>
+            {/* Only the UI-language meaning; blank when that language has none. */}
+            {(lang === "vi" ? detail.meaning_vn : detail.meaning_en) ? (
+              <div className="ws-sheet-meaning">
+                {lang === "vi" ? detail.meaning_vn : detail.meaning_en}
+              </div>
             ) : null}
 
             <div className="ws-sheet-actions">

@@ -53,7 +53,7 @@ export function VocabCardList({
   onTogglePage,
   onOpenStroke,
 }: VocabCardListProps) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [detail, setDetail] = useState<VocabRow | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -86,8 +86,8 @@ export function VocabCardList({
   );
 
   const detailWord = detail ? wordOf(detail) : "";
-  const detailMeaningVn = detail?.meaning_vn || "";
-  const detailMeaningEn = detail?.meaning_en || "";
+  // Only the UI-language meaning; blank when that language has none (no fallback).
+  const detailMeaning = detail ? (lang === "vi" ? detail.meaning_vn : detail.meaning_en) || "" : "";
 
   return (
     <div className="vocab-card-list">
@@ -176,10 +176,7 @@ export function VocabCardList({
               {detailWord}
             </div>
             <div className="vcl-sheet-pinyin">{detail.pinyin}</div>
-            {detailMeaningVn ? <div className="vcl-sheet-meaning">{detailMeaningVn}</div> : null}
-            {detailMeaningEn ? (
-              <div className="vcl-sheet-meaning vcl-sheet-meaning-en">{detailMeaningEn}</div>
-            ) : null}
+            {detailMeaning ? <div className="vcl-sheet-meaning">{detailMeaning}</div> : null}
 
             <div className="vcl-sheet-actions">
               {detail.audio_key ? (

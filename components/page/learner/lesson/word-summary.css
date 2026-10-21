@@ -261,10 +261,6 @@
   line-height: 1.45;
   margin-top: 10px;
 }
-.lesson-study .ws-sheet-meaning-en {
-  color: var(--ls-muted);
-  margin-top: 4px;
-}
 .lesson-study .ws-sheet-actions {
   display: flex;
   justify-content: center;
