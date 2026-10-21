@@ -88,8 +88,18 @@
    of the desktop row. Only the toolbar and footer need phone tweaks here; the card +
    sheet styles below only render on phone, so they need no media query. */
 @media (max-width: 767px) {
-  .lesson-study .vl-cards-toolbar { justify-content: stretch; }
-  .lesson-study .vl-col-toggle { min-width: 0; flex: 1; }
+  /* Two columns side by side at every phone width: the left group (Play all /
+     Shuffle) and the right group (the Pinyin / Meaning toggles) each stack
+     vertically instead of the groups wrapping onto separate rows. */
+  .lesson-study .vl-cards-toolbar { flex-wrap: nowrap; align-items: stretch; gap: 0.5rem; }
+  .lesson-study .vl-cards-toolbar .toolbar-left,
+  .lesson-study .vl-cards-toolbar .toolbar-right {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .lesson-study .vl-col-toggle { min-width: 0; }
   .lesson-study .vl-summary-footer { flex-direction: column; }
 }
 
