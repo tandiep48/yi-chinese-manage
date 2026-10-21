@@ -117,8 +117,21 @@
 .lesson-study .vl-learn-btn:disabled:hover { background: transparent; }
 
 @media (max-width: 700px) {
-  .lesson-study .lesson-summary-toolbar { justify-content: stretch; }
-  .lesson-study .sum-toggle { min-width: 0; flex: 1; }
+  /* Two columns side by side at every phone width: the left group (Auto play)
+     and the right group (the Pinyin / Meaning toggles) each stack vertically
+     instead of the groups wrapping onto separate rows. */
+  .lesson-study .lesson-summary-toolbar { flex-wrap: nowrap; align-items: stretch; gap: 0.5rem; }
+  .lesson-study .lesson-summary-toolbar .toolbar-left,
+  .lesson-study .lesson-summary-toolbar .toolbar-right {
+    flex: 1 1 0;
+    min-width: 0;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+  .lesson-study .sum-toggle { min-width: 0; }
+  /* The left column holds only Auto play; grow it to fill the column, so its
+     height matches the two stacked toggles in the right column. */
+  .lesson-study .lesson-summary-toolbar .toolbar-left .btn { flex: 1 1 auto; }
 }
 @media (max-width: 600px) {
   .lesson-study .lesson-summary-actions { flex-direction: column; }

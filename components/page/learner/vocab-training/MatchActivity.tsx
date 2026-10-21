@@ -61,10 +61,12 @@ export function MatchActivity({
   const matchCfg = MATCH_CONFIG[activity.type as "listen" | "reading"];
   const words = activity.words;
 
-  // The listening board's source cards are identical speaker icons, so they always
-  // carry a 1-5 number badge (and the matching keyboard shortcut) to tell them apart
-  // — not just in Learn Together, where `keyboardShortcuts` badges both boards.
-  const showKeys = keyboardShortcuts || matchCfg.leftKind === "audio";
+  // The anchor (left) column always carries a 1-5 number badge + keyboard shortcut.
+  // Listening needs it because the source cards are identical speaker icons; the
+  // reading board ("type meaning") gets the same 1-5 picking in solo too — not only
+  // in Learn Together, which forces it on via keyboardShortcuts.
+  const showKeys =
+    keyboardShortcuts || matchCfg.leftKind === "audio" || matchCfg.leftKind === "word";
 
   // Right column order is fixed for the life of the board.
   const rightWords = useMemo(() => shuffle(words), [words]);

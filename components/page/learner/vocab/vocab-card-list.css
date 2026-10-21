@@ -201,10 +201,6 @@
   line-height: 1.45;
   margin-top: 10px;
 }
-.vocab-select .vcl-sheet-meaning-en {
-  color: var(--vs-text-muted);
-  margin-top: 4px;
-}
 .vocab-select .vcl-sheet-actions {
   display: flex;
   justify-content: center;

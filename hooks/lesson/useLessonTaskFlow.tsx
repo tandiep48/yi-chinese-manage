@@ -56,17 +56,36 @@ export function useLessonTaskFlow({
 
   const startRef = useRef(now());
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const advanceTimerRef = useRef<number | null>(null);
+  const advancedRef = useRef(false);
   const audioSrc = useMemo(() => lessonTaskAudioUrl(task), [task]);
 
   useEffect(() => {
-    // One audio element per task; tear it down on unmount.
+    // One audio element + pending auto-advance per task; tear them down on unmount.
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
+      if (advanceTimerRef.current != null) {
+        window.clearTimeout(advanceTimerRef.current);
+        advanceTimerRef.current = null;
+      }
     };
   }, []);
+
+  // A correct answer both auto-advances (after the MC delay / reveal audio) and now
+  // shows a Next button so the learner can move on at once. Whichever fires first
+  // wins; the other is a no-op, so a task never advances twice.
+  function advanceOnce() {
+    if (advancedRef.current) return;
+    advancedRef.current = true;
+    if (advanceTimerRef.current != null) {
+      window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+    onAdvance();
+  }
 
   function ensureAudio(): HTMLAudioElement | null {
     if (!audioSrc) return null;
@@ -117,9 +136,9 @@ export function useLessonTaskFlow({
     onResolved(task, userAnswer, isCorrect, skipped, now() - startRef.current);
     if (isCorrect) {
       if (task.type === "typing" || task.type === "reorder") {
-        void playAudioToEnd().then(onAdvance);
+        void playAudioToEnd().then(advanceOnce);
       } else {
-        window.setTimeout(onAdvance, mcDelayMs);
+        advanceTimerRef.current = window.setTimeout(advanceOnce, mcDelayMs);
       }
     }
     // wrong / skipped: the Next button (below) advances when the learner is ready.
@@ -128,8 +147,9 @@ export function useLessonTaskFlow({
   const commit = (userAnswer: string, isCorrect: boolean) => resolve(userAnswer, isCorrect, false);
   const skip = () => resolve("", false, true);
 
-  // Skip before answering; Next after a wrong/skipped answer; nothing after a correct
-  // one (it auto-advances). Portaled into the shared bottom bar.
+  // Skip before answering; once answered, Next is always shown — a wrong/skipped
+  // answer waits for it, and a correct one offers it to skip the auto-advance wait.
+  // Portaled into the shared bottom bar.
   let button: React.ReactNode = null;
   if (!answered) {
     button = (
@@ -137,9 +157,9 @@ export function useLessonTaskFlow({
         {t("trainer.skip")}
       </button>
     );
-  } else if (outcome !== "correct") {
+  } else {
     button = (
-      <button type="button" className="btn secondary bt-primary-action skip-bottom-btn" onClick={onAdvance}>
+      <button type="button" className="btn secondary bt-primary-action skip-bottom-btn" onClick={advanceOnce}>
         {t("lesson.next")}
       </button>
     );

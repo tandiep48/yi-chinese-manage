@@ -29,10 +29,13 @@ const HANZI_RE = /[一-鿿]/;
 
 interface VocabCardListProps {
   rows: VocabRow[];
-  isSelected: (row: VocabRow) => boolean;
-  allOnPageSelected: boolean;
-  onToggleWord: (row: VocabRow, checked: boolean) => void;
-  onTogglePage: (rows: VocabRow[], checked: boolean) => void;
+  // The per-card / select-all picking UI. On by default (the review page); the
+  // vocab selection page passes false and so omits the selection handlers.
+  selectable?: boolean;
+  isSelected?: (row: VocabRow) => boolean;
+  allOnPageSelected?: boolean;
+  onToggleWord?: (row: VocabRow, checked: boolean) => void;
+  onTogglePage?: (rows: VocabRow[], checked: boolean) => void;
   // Opens the page's stroke-order modal (reused from the table flow).
   onOpenStroke?: (word: string, pinyin: string) => void;
 }
@@ -43,13 +46,14 @@ function wordOf(row: VocabRow): string {
 
 export function VocabCardList({
   rows,
+  selectable = true,
   isSelected,
-  allOnPageSelected,
+  allOnPageSelected = false,
   onToggleWord,
   onTogglePage,
   onOpenStroke,
 }: VocabCardListProps) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [detail, setDetail] = useState<VocabRow | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -82,37 +86,56 @@ export function VocabCardList({
   );
 
   const detailWord = detail ? wordOf(detail) : "";
-  const detailMeaningVn = detail?.meaning_vn || "";
-  const detailMeaningEn = detail?.meaning_en || "";
+  // Only the UI-language meaning; blank when that language has none (no fallback).
+  const detailMeaning = detail ? (lang === "vi" ? detail.meaning_vn : detail.meaning_en) || "" : "";
 
   return (
     <div className="vocab-card-list">
-      <label className="vcl-selectall">
-        <input
-          type="checkbox"
-          checked={allOnPageSelected}
-          onChange={(e) => onTogglePage(rows, e.target.checked)}
-          aria-label={t("vocab.select_visible_rows_aria")}
-        />
-        <span>{t("vocab.select_all")}</span>
-      </label>
+      {selectable && (
+        <label className="vcl-selectall">
+          <input
+            type="checkbox"
+            checked={allOnPageSelected}
+            onChange={(e) => onTogglePage?.(rows, e.target.checked)}
+            aria-label={t("vocab.select_visible_rows_aria")}
+          />
+          <span>{t("vocab.select_all")}</span>
+        </label>
+      )}
 
       <ul className="vcl-cards">
         {rows.map((row, index) => {
           const word = wordOf(row);
           const meaning = row.meaning_vn || row.meaning_en || "";
+          const audioButton = row.audio_key ? (
+            <button
+              type="button"
+              className="vcl-card-audio"
+              onClick={() => play(row)}
+              aria-label={t("lesson.play_audio")}
+            >
+              <FontAwesomeIcon icon={faVolumeHigh} />
+            </button>
+          ) : null;
           return (
             <li
               key={`${word}-${index}`}
-              className={`vcl-card${isSelected(row) ? " is-selected" : ""}`}
+              className={`vcl-card${selectable && isSelected?.(row) ? " is-selected" : ""}`}
             >
-              <input
-                type="checkbox"
-                className="vcl-card-check"
-                checked={isSelected(row)}
-                onChange={(e) => onToggleWord(row, e.target.checked)}
-                aria-label={word}
-              />
+              {/* No selection on the vocabulary page: the audio button leads on the
+                  far left. With selection (the review page) it stays on the right,
+                  after the checkbox and the tap target. */}
+              {!selectable && audioButton}
+
+              {selectable && (
+                <input
+                  type="checkbox"
+                  className="vcl-card-check"
+                  checked={isSelected?.(row) ?? false}
+                  onChange={(e) => onToggleWord?.(row, e.target.checked)}
+                  aria-label={word}
+                />
+              )}
 
               <button type="button" className="vcl-card-main" onClick={() => setDetail(row)}>
                 <span className="vcl-card-hanzi" lang="zh-CN">
@@ -125,16 +148,7 @@ export function VocabCardList({
                 <FontAwesomeIcon icon={faChevronRight} className="vcl-card-chevron" aria-hidden />
               </button>
 
-              {row.audio_key ? (
-                <button
-                  type="button"
-                  className="vcl-card-audio"
-                  onClick={() => play(row)}
-                  aria-label={t("lesson.play_audio")}
-                >
-                  <FontAwesomeIcon icon={faVolumeHigh} />
-                </button>
-              ) : null}
+              {selectable && audioButton}
             </li>
           );
         })}
@@ -162,10 +176,7 @@ export function VocabCardList({
               {detailWord}
             </div>
             <div className="vcl-sheet-pinyin">{detail.pinyin}</div>
-            {detailMeaningVn ? <div className="vcl-sheet-meaning">{detailMeaningVn}</div> : null}
-            {detailMeaningEn ? (
-              <div className="vcl-sheet-meaning vcl-sheet-meaning-en">{detailMeaningEn}</div>
-            ) : null}
+            {detailMeaning ? <div className="vcl-sheet-meaning">{detailMeaning}</div> : null}
 
             <div className="vcl-sheet-actions">
               {detail.audio_key ? (

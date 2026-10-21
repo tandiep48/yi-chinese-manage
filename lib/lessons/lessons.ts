@@ -124,6 +124,27 @@ export function lessonTitle(passages: PickerPassage[]): string | undefined {
   return passages.find((p) => p.title)?.title ?? undefined;
 }
 
+// The first part of the lesson that follows the one `currentPassageId` belongs to,
+// within the same HSK level — used by the lesson flow to roll on to the next lesson
+// after a part's Grammar/Translation are done. Lessons order by number (sortLessonNums)
+// and parts by part number (sortPartsByNumber, so the number part / part 1 comes
+// first). Returns null when it is the last lesson of the level, or for a book part
+// (books have no milestone flow).
+export function nextLessonFirstPassageId(
+  currentPassageId: string,
+  passages: PickerPassage[]
+): string | null {
+  if (!currentPassageId || isBookPassageId(currentPassageId)) return null;
+  const level = hskLevelFromPassageId(currentPassageId);
+  const grouped = groupPassagesByLesson(level, passages);
+  const lessonNums = sortLessonNums(Object.keys(grouped));
+  const currentLesson = currentPassageId.split("_")[1];
+  const idx = lessonNums.indexOf(currentLesson);
+  if (idx < 0 || idx + 1 >= lessonNums.length) return null;
+  const nextParts = sortPartsByNumber(grouped[lessonNums[idx + 1]] ?? []);
+  return nextParts[0]?.passage_id ?? null;
+}
+
 // Group a level's passages by lesson number, applying the same HSK1 lesson-1
 // (pinyin) and "Numbers" part fix-ups as the legacy picker.
 export function groupPassagesByLesson(

@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
@@ -34,6 +34,24 @@ describe("WordSummary", () => {
     expect(text).not.toBeNull();
     expect(text!.querySelector(".vc-pinyin")?.textContent).toBe("xiūxī");
     expect(text!.querySelector(".vc-meaning")?.textContent).toBe("to rest");
+  });
+
+  it("offers a stroke-order button on each hanzi card when onOpenStroke is wired", () => {
+    const onOpenStroke = vi.fn();
+    render(
+      <I18nProvider>
+        <WordSummary vocab={VOCAB} loading={false} error={null} hideActions onOpenStroke={onOpenStroke} />
+      </I18nProvider>
+    );
+    const strokeButtons = screen.getAllByRole("button", { name: "Show stroke order" });
+    expect(strokeButtons).toHaveLength(2);
+    fireEvent.click(strokeButtons[0]);
+    expect(onOpenStroke).toHaveBeenCalledWith("休息", "xiūxī");
+  });
+
+  it("omits the stroke-order button when onOpenStroke is not provided", () => {
+    renderWith(VOCAB);
+    expect(screen.queryByRole("button", { name: "Show stroke order" })).not.toBeInTheDocument();
   });
 
   it("renders an audio button only for words that have audio", () => {

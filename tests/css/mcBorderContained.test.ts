@@ -67,3 +67,45 @@ describe("contained lesson trainer keeps the MC answer-choice border", () => {
     expect(rules.every((r) => r.classCount > CLOBBER_CLASS_COUNT)).toBe(true);
   });
 });
+
+// The same clobber exists one specificity lower in the standalone trainer:
+// `.trainer-shell .btn` (0,2,0) sets `border:none`, so a bare `.lesson-trainer
+// .lt-mc-btn` (0,2,0) only ties it and loses by source order across lazy chunks.
+// The base MC rule must therefore carry `.trainer-shell` too (>= 2 classes before
+// the leaf) so it out-specifies the clobber everywhere, not just under .contained.
+const STANDALONE_CLOBBER_CLASS_COUNT = 2; // .trainer-shell .btn
+
+function standaloneBaseMcRules(cssText: string): McRule[] {
+  const out: McRule[] = [];
+  postcss.parse(cssText).walkRules((rule) => {
+    rule.selectors.forEach((selector) => {
+      if (selector.includes(".contained")) return;
+      const rightmost = selector.trim().split(/\s*[>+~]\s*|\s+/).pop() ?? "";
+      if (rightmost !== ".lt-mc-btn") return;
+      let border: string | undefined;
+      rule.walkDecls("border", (d) => {
+        border = d.value;
+      });
+      out.push({
+        selector,
+        classCount: (selector.match(/\.[-\w]+/g) ?? []).length,
+        border,
+      });
+    });
+  });
+  return out;
+}
+
+describe("standalone lesson trainer keeps the MC answer-choice border", () => {
+  const rules = standaloneBaseMcRules(css);
+
+  it("has a base .lt-mc-btn rule with a real border", () => {
+    expect(rules.length).toBeGreaterThan(0);
+    expect(rules.every((r) => r.border != null && r.border !== "none")).toBe(true);
+  });
+
+  it("wins the cascade against `.trainer-shell .btn`", () => {
+    // More classes than the (0,2,0) clobber so the border never hinges on order.
+    expect(rules.every((r) => r.classCount > STANDALONE_CLOBBER_CLASS_COUNT)).toBe(true);
+  });
+});

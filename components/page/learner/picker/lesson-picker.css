@@ -140,7 +140,8 @@
    sidebar rail eats width at md+, so fixed column counts overflow). */
 .lesson-picker .level-picker-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  /* Fixed three per row on desktop (collapses to 2, then 1, on smaller screens). */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 22px;
   margin: 28px auto 0;
   max-width: 1080px;
@@ -408,4 +409,9 @@
 @media (max-width: 700px) {
   .lesson-picker .picker-header-section { flex-direction: column; text-align: center; }
   .lesson-picker .picker-lesson-action-buttons { grid-template-columns: 1fr; }
+  .lesson-picker .level-picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+}
+
+@media (max-width: 440px) {
+  .lesson-picker .level-picker-grid { grid-template-columns: 1fr; }
 }

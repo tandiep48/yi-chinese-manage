@@ -44,18 +44,22 @@ function cellValue(row: VocabRow, col: ColKey): string {
 
 interface VocabTableProps {
   rows: VocabRow[];
-  isSelected: (row: VocabRow) => boolean;
-  allOnPageSelected: boolean;
-  onToggleWord: (row: VocabRow, checked: boolean) => void;
-  onTogglePage: (rows: VocabRow[], checked: boolean) => void;
+  // The per-row / select-all picking UI. On by default (the review page); the
+  // vocab selection page passes false and so omits the selection handlers.
+  selectable?: boolean;
+  isSelected?: (row: VocabRow) => boolean;
+  allOnPageSelected?: boolean;
+  onToggleWord?: (row: VocabRow, checked: boolean) => void;
+  onTogglePage?: (rows: VocabRow[], checked: boolean) => void;
   onOpenStroke: (word: string, pinyin: string) => void;
   onStrokeAll: (rows: VocabRow[]) => void;
 }
 
 export function VocabTable({
   rows,
+  selectable = true,
   isSelected,
-  allOnPageSelected,
+  allOnPageSelected = false,
   onToggleWord,
   onTogglePage,
   onOpenStroke,
@@ -247,15 +251,17 @@ export function VocabTable({
                 <FontAwesomeIcon icon={faShuffle} />
               </button>
             </th>
-            <th className="vocab-select-col">
-              <input
-                type="checkbox"
-                checked={allOnPageSelected}
-                onChange={(e) => onTogglePage(displayRows, e.target.checked)}
-                title={t("vocab.select_visible_rows_aria")}
-                aria-label={t("vocab.select_visible_rows_aria")}
-              />
-            </th>
+            {selectable && (
+              <th className="vocab-select-col">
+                <input
+                  type="checkbox"
+                  checked={allOnPageSelected}
+                  onChange={(e) => onTogglePage?.(displayRows, e.target.checked)}
+                  title={t("vocab.select_visible_rows_aria")}
+                  aria-label={t("vocab.select_visible_rows_aria")}
+                />
+              </th>
+            )}
             <th className="vocab-tools-col">
               <button
                 type="button"
@@ -309,14 +315,16 @@ export function VocabTable({
             return (
               <tr key={`${word}-${index}`} className={rowCls || undefined}>
                 <td className="vocab-no-cell">{index + 1}</td>
-                <td className="vocab-select-col">
-                  <input
-                    type="checkbox"
-                    className="vocab-row-checkbox"
-                    checked={isSelected(row)}
-                    onChange={(e) => onToggleWord(row, e.target.checked)}
-                  />
-                </td>
+                {selectable && (
+                  <td className="vocab-select-col">
+                    <input
+                      type="checkbox"
+                      className="vocab-row-checkbox"
+                      checked={isSelected?.(row) ?? false}
+                      onChange={(e) => onToggleWord?.(row, e.target.checked)}
+                    />
+                  </td>
+                )}
                 <td className="vocab-tools-cell">
                   {HANZI_RE.test(word) && (
                     <button

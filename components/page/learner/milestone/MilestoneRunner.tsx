@@ -46,6 +46,10 @@ import {
   LESSON_TRAINER_STEP,
 } from "@/hooks/lesson/useLessonMilestone";
 import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
+import {
+  VocabStrokeModal,
+  type StrokeModalState,
+} from "@/components/page/learner/vocab/VocabStrokeModal";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { LessonCardStudy } from "@/components/page/learner/lesson/LessonCardStudy";
 import { FlashcardStudy } from "@/components/page/learner/vocab-learning/FlashcardStudy";
@@ -77,6 +81,10 @@ interface MilestoneRunnerProps {
   // True while a graded step's trainer is running, so a host with a mid-session
   // guard (the learner home's tab bar) can arm it.
   onRunningChange?: (running: boolean) => void;
+  // The lesson's final part's final step was finished and counted — there is no
+  // next part to advance to. The host rolls the flow on from here (Grammar →
+  // Translation → next lesson). Fires for a single-part run too.
+  onLessonComplete?: () => void;
 }
 
 export function MilestoneRunner({
@@ -85,6 +93,7 @@ export function MilestoneRunner({
   initialStep,
   onStepChange,
   onRunningChange,
+  onLessonComplete,
 }: MilestoneRunnerProps) {
   // The parts to run through. With no list this is the single given part, so the
   // standalone page behaves exactly as before.
@@ -109,9 +118,16 @@ export function MilestoneRunner({
 
   const activePassageId = parts[activeIndex] ?? passageId;
 
-  const advanceToNextPart = useCallback(() => {
-    setActiveIndex((i) => (i + 1 < parts.length ? i + 1 : i));
-  }, [parts.length]);
+  const onPartComplete = useCallback(() => {
+    if (activeIndex + 1 < parts.length) {
+      setActiveIndex(activeIndex + 1);
+    } else {
+      // No next part: the lesson's parts are all done. Hand off to the host, which
+      // continues the flow (Grammar → Translation → next lesson). A single-part run
+      // (the standalone page) lands here directly instead of dead-ending on step 6.
+      onLessonComplete?.();
+    }
+  }, [activeIndex, parts.length, onLessonComplete]);
 
   return (
     <MilestonePart
@@ -123,7 +139,7 @@ export function MilestoneRunner({
       initialStep={activeIndex === initialIndex ? initialStep : undefined}
       onStepChange={onStepChange}
       onRunningChange={onRunningChange}
-      onPartComplete={advanceToNextPart}
+      onPartComplete={onPartComplete}
     />
   );
 }
@@ -180,6 +196,9 @@ function MilestonePart({
   const [trainerSlot, setTrainerSlot] = useState<HTMLElement | null>(null);
   const [trainerScreen, setTrainerScreen] = useState<TrainerScreen>("loading");
   const [quitOpen, setQuitOpen] = useState(false);
+  // Step 1's word cards open the shared stroke-order modal on a hanzi tap (the
+  // desktop card's paintbrush and the phone detail sheet's stroke button).
+  const [stroke, setStroke] = useState<StrokeModalState>(null);
 
   const handleContinue = useCallback(() => {
     if (step + 1 === VOCAB_TRAINER_STEP) {
@@ -293,6 +312,7 @@ function MilestonePart({
             loading={overview.loading}
             error={overview.vocabError}
             hideActions
+            onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
           />
         )}
 
@@ -446,6 +466,8 @@ function MilestonePart({
           onCancel={() => setPickerEngine(null)}
         />
       )}
+
+      <VocabStrokeModal state={stroke} onClose={() => setStroke(null)} />
     </div>
   );
 }

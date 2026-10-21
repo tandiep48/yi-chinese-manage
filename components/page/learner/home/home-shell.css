@@ -310,6 +310,12 @@
   padding: 0 16px 16px;
 }
 
+/* Slot the Lesson tab's study sidebar docks into; spaced below the current-lesson
+   card only when it actually holds the sidebar (empty on the other tabs). */
+.learner-home-aside-sidebar-dock:not(:empty) {
+  margin-top: 16px;
+}
+
 /* ── Current-lesson rail (the card inside the dock) ── */
 .learner-home-aside {
   display: grid;

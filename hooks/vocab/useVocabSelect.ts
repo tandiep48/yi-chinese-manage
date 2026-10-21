@@ -34,7 +34,6 @@ import {
   type PassageMeta,
 } from "@/lib/vocab/vocabSelect";
 import { useVocabTableState } from "./useVocabTableState";
-import { useWordSelection } from "./useWordSelection";
 import type { SavedBook, VocabMode } from "@/lib/types/vocab";
 
 export function useVocabSelect() {
@@ -77,8 +76,6 @@ export function useVocabSelect() {
   // This keeps the mode in lockstep with the input and avoids a setState-in-
   // effect just to flip it back when the query is cleared.
   const searchMode = searchQuery.trim().length > 0;
-
-  const selection = useWordSelection(rows);
 
   const lessonLabel = useCallback(
     (lesson: string) =>
@@ -421,7 +418,5 @@ export function useVocabSelect() {
     searchQuery,
     setSearchQuery,
     searchMode,
-    // selection
-    ...selection,
   };
 }

@@ -30,6 +30,7 @@ import { useLearnerHome } from "@/hooks/home/useLearnerHome";
 import { HomeTabs } from "./HomeTabs";
 import { HomePanelSkeleton } from "./HomePanelSkeleton";
 import { CurrentLessonPanel } from "./CurrentLessonPanel";
+import { LessonSidebarDockContext } from "@/components/page/learner/lesson/LessonSidebarDock";
 import "./home-shell.css";
 
 const loading = () => <HomePanelSkeleton />;
@@ -43,6 +44,9 @@ export function HomeShell() {
   const { user, loading: authLoading } = useAuth();
   const home = useLearnerHome();
   const [reviewCount, setReviewCount] = useState(0);
+  // The rail node the lesson-study sidebar docks into (item 7); set once the dock
+  // below mounts, then handed to LessonStudyShell through context.
+  const [sidebarDock, setSidebarDock] = useState<HTMLElement | null>(null);
 
   // The words-due badge is wanted before the tab is opened, so it can't wait for
   // the panel. /api/vocab/review/count exists for exactly this: the list route is
@@ -81,7 +85,7 @@ export function HomeShell() {
   }
 
   return (
-    <>
+    <LessonSidebarDockContext.Provider value={sidebarDock}>
       <div className={`learner-home${user ? " has-rail" : ""}`}>
         <HomeTabs tab={home.tab} counts={{ review: reviewCount }} onSelect={home.requestTab} />
 
@@ -137,8 +141,10 @@ export function HomeShell() {
       {user && (
         <div className="learner-home-aside-dock">
           <CurrentLessonPanel />
+          {/* The Lesson tab's study sidebar docks here (item 7); empty on other tabs. */}
+          <div ref={setSidebarDock} className="learner-home-aside-sidebar-dock" />
         </div>
       )}
-    </>
+    </LessonSidebarDockContext.Provider>
   );
 }

@@ -233,16 +233,24 @@ describe("MatchActivity in competition mode", () => {
     expect(selected?.textContent).toContain("火");
   });
 
-  it("has no shortcut badges and a Continue button in solo mode", () => {
+  it("numbers the reading source cards and enables 1-5 in solo mode too", () => {
+    // The reading ("type meaning") board now labels its source words 1..n and wires
+    // the 1-5 shortcut in solo as well, matching the listening board; only the
+    // Continue button stays, since solo match is not auto-advance.
     render(<MatchActivity activity={activity("reading")} onRecord={vi.fn()} onAdvance={vi.fn()} />);
 
-    expect(document.querySelector(".bt-key-hint")).toBeNull();
+    expect(screen.getByText("1")).toBeInTheDocument();
+    expect(screen.getByText("2")).toBeInTheDocument();
     expect(screen.getByText("lesson.continue")).toBeInTheDocument();
+
+    fireEvent.keyDown(document, { key: "2" });
+    const left = document.querySelectorAll(".bt-match-col")[0];
+    expect(left.querySelectorAll(".bt-match-item")[1].classList.contains("selected")).toBe(true);
   });
 
   it("numbers the listening source cards and enables 1-5 even in solo mode", () => {
     // Audio cards are identical speaker icons, so the listening board always labels
-    // them 1..n (and wires the shortcut), unlike the reading board above.
+    // them 1..n (and wires the shortcut), the same as the reading board now does.
     render(<MatchActivity activity={activity("listen")} onRecord={vi.fn()} onAdvance={vi.fn()} />);
 
     expect(screen.getByText("1")).toBeInTheDocument();

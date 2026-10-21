@@ -1,11 +1,40 @@
 import type { LessonGrammarRule, LessonPassageDetail, LessonSessionResponse, PickerPassage, PickerProgressSummary } from "@/lib/types/lesson";
 import type { LessonVocabRow } from "@/lib/types/vocab";
+import {
+  hskLevelFromPassageId,
+  isBookPassageId,
+  nextLessonFirstPassageId,
+} from "@/lib/lessons/lessons";
 import { legacyApiFetch } from "../client";
 
+// The level's passage catalog (lessons + parts) is static within a session, and
+// several callers want it at once — the study sidebar, the lesson flow (ordered part
+// ids for cross-part advance) and the next-lesson resolver. Memoize the in-flight /
+// resolved promise per level so they share one request instead of each refetching;
+// progress (getPickerProgress) is deliberately NOT cached, as it changes as the
+// learner works. A failed fetch is evicted so a later call can retry.
+const passagesCache = new Map<string, Promise<PickerPassage[]>>();
+
 export function getPassages(hskLevel: string): Promise<PickerPassage[]> {
-  return legacyApiFetch<{ passages: PickerPassage[] }>(
+  const cached = passagesCache.get(hskLevel);
+  if (cached) return cached;
+  const pending = legacyApiFetch<{ passages: PickerPassage[] }>(
     `/api/lesson/passages?hsk_level=${encodeURIComponent(hskLevel)}`
   ).then((r) => r.passages);
+  pending.catch(() => passagesCache.delete(hskLevel));
+  passagesCache.set(hskLevel, pending);
+  return pending;
+}
+
+// The first part of the next lesson for the lesson flow's "roll on to the next
+// lesson" step. Resolved client-side from the level's passage list (no next-lesson
+// endpoint exists yet); soft-fails to null so the flow just ends on a fetch error
+// or at the last lesson of the level.
+export function resolveNextLessonFirstPart(currentPassageId: string): Promise<string | null> {
+  if (!currentPassageId || isBookPassageId(currentPassageId)) return Promise.resolve(null);
+  return getPassages(hskLevelFromPassageId(currentPassageId))
+    .then((passages) => nextLessonFirstPassageId(currentPassageId, passages))
+    .catch(() => null);
 }
 
 // Requires a session — resolves null (rather than throwing) when signed out

@@ -7,8 +7,10 @@
 // wraps every study screen in.
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { LessonSidebar, type StudyDomain } from "./LessonSidebar";
+import { useLessonSidebarDock } from "./LessonSidebarDock";
 import "./lesson-study.css";
 
 export function LessonStudyShell({
@@ -35,6 +37,33 @@ export function LessonStudyShell({
   const isMobile = useMediaQuery("(max-width: 767px)");
   const [override, setOverride] = useState<boolean | null>(null);
   const sidebarOpen = override ?? !isMobile;
+
+  // The learner home can offer a rail to dock the sidebar into (item 7). When it
+  // does, the sidebar is portaled there — always open, no drawer/toggle — and the
+  // lesson content takes the full main width. Elsewhere the dock is absent and the
+  // sidebar stays beside the content as before.
+  const dockEl = useLessonSidebarDock();
+
+  if (dockEl && passageId) {
+    return (
+      <div className="lesson-study ui2-lesson">
+        <div className="lesson-study-main app-container">{children}</div>
+        {createPortal(
+          <div className="lesson-study lesson-study-sidebar-dock">
+            <LessonSidebar
+              passageId={passageId}
+              domain={domain}
+              open
+              onOpenChange={() => {}}
+              onSelectPart={onSelectPart}
+              onSelectDomain={onSelectDomain}
+            />
+          </div>,
+          dockEl
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="lesson-study ui2-lesson">

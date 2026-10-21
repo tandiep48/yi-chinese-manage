@@ -73,27 +73,35 @@
   max-width: 600px;
   margin: 0 auto;
 }
-.lesson-trainer .lt-mc-btn {
+/* The answer-choice buttons carry both `.btn` and `.lt-mc-btn`. The base button
+   `.trainer-shell .btn` (trainer-shell.css, 0,2,0) sets `border:none` and a filled
+   background, so a bare `.lesson-trainer .lt-mc-btn` (0,2,0) only TIES it — the
+   winner then hinges on stylesheet source order, which Next does not guarantee
+   across lazily-loaded chunks, and the MC border/transparent fill/primary text
+   drop out intermittently. Scoping the base one class higher
+   (`.trainer-shell.lesson-trainer`, 0,3,0) makes it win deterministically; the
+   answered states and the `.contained` block below stay a step above that. */
+.trainer-shell.lesson-trainer .lt-mc-btn {
   background: transparent;
   border: 1px solid var(--primary);
   color: var(--primary);
   text-align: center;
   justify-content: center;
 }
-.lesson-trainer .lt-mc-btn:hover:not(:disabled) {
+.trainer-shell.lesson-trainer .lt-mc-btn:hover:not(:disabled) {
   background: rgba(0, 122, 97, 0.08);
   border-color: var(--primary-hover);
   color: var(--primary-hover);
 }
-.lesson-trainer .lt-mc-btn:disabled {
+.trainer-shell.lesson-trainer .lt-mc-btn:disabled {
   cursor: default;
 }
-.lesson-trainer .lt-mc-btn.lt-correct {
+.trainer-shell.lesson-trainer .lt-mc-btn.lt-correct {
   background: var(--success);
   border-color: var(--success);
   color: #ffffff;
 }
-.lesson-trainer .lt-mc-btn.lt-wrong {
+.trainer-shell.lesson-trainer .lt-mc-btn.lt-wrong {
   background: var(--danger);
   border-color: var(--danger);
   color: #ffffff;
@@ -194,6 +202,11 @@
 .lesson-trainer .lt-reorder {
   width: 100%;
   max-width: 640px;
+  /* The reorder element carries both `.lt-task` and `.lt-reorder`, so its own
+     max-width shrinks it below the task card's width. A block with max-width is
+     not centered by the card's `text-align: center` (that only centers inline
+     content), so without this it hugs the left edge. */
+  margin-inline: auto;
 }
 .lesson-trainer .lt-reorder-label-row {
   color: var(--text-muted);
