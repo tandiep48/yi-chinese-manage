@@ -11,7 +11,7 @@
 
 import { io, type Socket } from "socket.io-client";
 import { API_CONSTANTS } from "@/lib/api/constants";
-import type { CompetitionChatMessage, CompetitionRoom, CompetitionRoomSettings, CompetitionScore, CompetitionSession } from "@/lib/types/competition";
+import type { CompetitionChatMessage, CompetitionRoom, CompetitionRoomSettings, CompetitionScore, CompetitionSession, OpenRoomSummary } from "@/lib/types/competition";
 
 // Server -> client. `joined_room` / `room_settings_saved` are sent to the caller
 // only; the rest are broadcast to everyone in the room.
@@ -27,6 +27,8 @@ export interface CompetitionServerEvents {
   session_finished: (payload: { session: CompetitionSession; scores?: CompetitionScore[] }) => void;
   ranking_update: (payload: { scores: CompetitionScore[] }) => void;
   return_to_lobby: () => void;
+  // The live list of joinable rooms, pushed to subscribers on the setup screen.
+  open_rooms: (payload: { rooms: OpenRoomSummary[] }) => void;
 }
 
 export interface VocabAnswerPayload {
@@ -59,6 +61,9 @@ export interface CompetitionClientEvents {
   lesson_answer: (payload: LessonAnswerPayload) => void;
   participant_finished: (payload: { room_code: string; session_id: number }) => void;
   return_to_lobby: (payload: { room_code: string }) => void;
+  // Subscribe / unsubscribe to the open-room list while on the setup screen.
+  browse_open_rooms: () => void;
+  stop_browse_open_rooms: () => void;
 }
 
 export type CompetitionSocket = Socket<CompetitionServerEvents, CompetitionClientEvents>;

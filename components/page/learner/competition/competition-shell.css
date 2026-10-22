@@ -246,3 +246,63 @@
   .competition-shell .chat-input-row,
   .competition-shell .ranking-row { grid-template-columns: 1fr; align-items: stretch; }
 }
+
+/* ── Open rooms (browse list below the setup form) ── */
+.competition-shell .competition-open-rooms { margin-top: 28px; }
+.competition-shell .competition-open-rooms-empty {
+  color: var(--text-muted);
+  background: #f0f4f1;
+  border: 1px dashed var(--border-soft);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 0;
+  text-align: center;
+}
+.competition-shell .open-room-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.competition-shell .open-room-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #cbe2d4;
+  border: 1px solid #afcfbd;
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+.competition-shell .open-room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.competition-shell .open-room-code {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+}
+.competition-shell .open-room-meta {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.competition-shell .open-room-count {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.competition-shell .open-room-join {
+  padding: 9px 18px;
+  flex-shrink: 0;
+}
+@media (max-width: 560px) {
+  .competition-shell .open-room-card { flex-wrap: wrap; }
+  .competition-shell .open-room-join { width: 100%; }
+}

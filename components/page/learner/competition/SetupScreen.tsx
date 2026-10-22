@@ -14,13 +14,14 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
 import { HSK_LEVELS } from "@/lib/competition/roomLogic";
 import { TIMEOUT_OPTIONS, type CompetitionSetup } from "@/hooks/competition/useCompetitionSetup";
-import type { CompetitionCategory } from "@/lib/types/competition";
+import type { CompetitionCategory, OpenRoomSummary } from "@/lib/types/competition";
 import "./competition-multiselect.css";
 
 export function SetupScreen({
   setup,
   editing,
   error,
+  openRooms,
   onSubmit,
   onCancelEdit,
   onJoin,
@@ -28,6 +29,7 @@ export function SetupScreen({
   setup: CompetitionSetup;
   editing: boolean;
   error: string;
+  openRooms: OpenRoomSummary[];
   onSubmit: () => void;
   onCancelEdit: () => void;
   onJoin: (code: string) => void;
@@ -191,6 +193,44 @@ export function SetupScreen({
           </section>
         )}
       </div>
+
+      {/* Browse and join open rooms without needing a code. Hidden while the host
+          is editing an existing room (the join flow is hidden then too). */}
+      {!editing && (
+        <section className="competition-open-rooms">
+          <h2>{t("competition.open_rooms_title")}</h2>
+          {openRooms.length === 0 ? (
+            <p className="competition-open-rooms-empty">{t("competition.no_open_rooms")}</p>
+          ) : (
+            <ul className="open-room-list">
+              {openRooms.map((r) => {
+                const full = r.member_count >= r.max_users;
+                return (
+                  <li key={r.room_code} className="open-room-card">
+                    <div className="open-room-info">
+                      <span className="open-room-code">{r.room_code}</span>
+                      <span className="open-room-meta">
+                        {t(`competition.mode_${r.category}`)} · HSK {r.level} · {r.owner_username}
+                      </span>
+                    </div>
+                    <span className="open-room-count">
+                      {t("competition.learners_count", { current: r.member_count, max: r.max_users })}
+                    </span>
+                    <button
+                      type="button"
+                      className="btn primary open-room-join"
+                      onClick={() => onJoin(r.room_code)}
+                      disabled={full}
+                    >
+                      {full ? t("competition.room_full") : t("competition.join_room")}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      )}
     </section>
   );
 }

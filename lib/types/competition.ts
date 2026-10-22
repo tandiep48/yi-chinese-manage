@@ -61,6 +61,18 @@ export interface CompetitionRoom {
   session: CompetitionRoomSession | null;
 }
 
+// One row of the open-room browse list (GET-free: pushed over the socket's
+// `open_rooms` event). Mirrors list_open_competition_rooms in service.py.
+export interface OpenRoomSummary {
+  room_code: string;
+  owner_username: string;
+  max_users: number;
+  category: CompetitionCategory;
+  level: number;
+  member_count: number;
+  created_at: string | null;
+}
+
 export interface CompetitionScore {
   user_id: number;
   username: string;

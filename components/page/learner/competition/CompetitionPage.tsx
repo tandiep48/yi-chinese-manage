@@ -58,6 +58,7 @@ export function CompetitionPage() {
           setup={setup}
           editing={room.editing}
           error={setupError}
+          openRooms={room.openRooms}
           onSubmit={submitRoom}
           onCancelEdit={room.cancelEdit}
           onJoin={room.joinRoom}
