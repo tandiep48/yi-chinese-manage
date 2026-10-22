@@ -10,7 +10,7 @@
 // passes none (buttons stay disabled, no stroke), while the Flash Cards flow
 // wires them up. Learn/Train hand back the CURRENT (shuffled) item order.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPlay,
@@ -70,6 +70,15 @@ export function WordSummary({
   // paint, so SSR and hydration agree before it resolves.
   const useCards = useMediaQuery("(max-width: 767px)");
   const [detail, setDetail] = useState<LessonVocabRow | null>(null);
+
+  // Follow the playing card: scroll whichever card is highlighted into view as the
+  // play-all sequence (or a single word) advances. Mirrors LessonSummary; the cards
+  // are keyed by `cn` because that is what useAudioSequence reports as activeKey.
+  const cardRefs = useRef<Record<string, HTMLElement | null>>({});
+  useEffect(() => {
+    if (activeKey == null) return;
+    cardRefs.current[activeKey]?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [activeKey]);
 
   // Close the detail sheet on Escape, mirroring VocabCardList.
   useEffect(() => {
@@ -178,6 +187,9 @@ export function WordSummary({
           {items.map((v, index) => (
             <li
               key={`${v.cn}-${index}`}
+              ref={(el) => {
+                cardRefs.current[v.cn] = el;
+              }}
               className={`ws-card${activeKey === v.cn ? " playing-highlight" : ""}`}
             >
               {/* Audio leads on the far left, ahead of the tap target. */}
@@ -208,7 +220,13 @@ export function WordSummary({
       ) : (
         <div className={cardsClass}>
           {items.map((v, index) => (
-            <div key={`${v.cn}-${index}`} className={`vocab-card${activeKey === v.cn ? " playing-highlight" : ""}`}>
+            <div
+              key={`${v.cn}-${index}`}
+              ref={(el) => {
+                cardRefs.current[v.cn] = el;
+              }}
+              className={`vocab-card${activeKey === v.cn ? " playing-highlight" : ""}`}
+            >
               <div className="vc-left">
                 <span className="vc-num">{index + 1}</span>
                 <div className="vc-char" lang="zh-CN">
