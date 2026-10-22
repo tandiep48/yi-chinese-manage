@@ -404,6 +404,9 @@
   "vocab": {
     "page_title": "Chọn Từ Vựng",
     "mode_label": "Chế Độ",
+    "filters_button": "Bộ Lọc",
+    "filters_title": "Bộ Lọc",
+    "filters_done": "Xong",
     "mode_free": "Tự Do",
     "mode_standard": "Tiêu Chuẩn",
     "mode_unsure": "Chưa Chắc Chắn",

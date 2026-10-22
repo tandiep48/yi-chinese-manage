@@ -404,6 +404,9 @@
   "vocab": {
     "page_title": "Vocabulary Selection",
     "mode_label": "Mode",
+    "filters_button": "Filters",
+    "filters_title": "Filters",
+    "filters_done": "Done",
     "mode_free": "Free",
     "mode_standard": "Standard",
     "mode_unsure": "Unsure",
