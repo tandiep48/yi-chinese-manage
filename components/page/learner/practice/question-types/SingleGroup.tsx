@@ -51,17 +51,19 @@ export function SingleGroup({ group, state, category, onSelectMC, onToggleChip }
                 {(() => {
                   const imgFile = q.image || (isImageFilename(q.question) ? q.question : null);
                   const hasAudio = Array.isArray(q.audio_key) && q.audio_key.length > 0;
-                  const showText = skill === "reading" || !hasAudio;
+                  // Listening keeps its spoken paragraph hidden, but the question
+                  // prompt is always shown (type-1 listening used to hide it too).
+                  const showContent = skill === "reading" || !hasAudio;
                   return (
                     <>
                       {imgFile ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img className="p-image" src={practiceImageUrl(q.level, String(imgFile), category)} alt="" />
                       ) : null}
-                      {showText && q.content && !isImageFilename(q.content) ? (
+                      {showContent && q.content && !isImageFilename(q.content) ? (
                         <div className="p-paragraph">{hanNodes(q.content, level)}</div>
                       ) : null}
-                      {showText && q.question && !isImageFilename(q.question) ? (
+                      {q.question && !isImageFilename(q.question) ? (
                         <div className="p-question-text p-centered">{hanNodes(q.question, level)}</div>
                       ) : null}
                     </>
@@ -82,7 +84,11 @@ export function SingleGroup({ group, state, category, onSelectMC, onToggleChip }
 
             {kind === "mc-reading" && (
               <>
-                {q.content ? <div className="p-paragraph">{hanNodes(q.content, level)}</div> : null}
+                {/* Listening type-3 hides the reading passage; only the audio,
+                    the question prompt and the options are shown. */}
+                {skill !== "listening" && q.content ? (
+                  <div className="p-paragraph">{hanNodes(q.content, level)}</div>
+                ) : null}
                 {q.question ? <div className="p-question-text p-centered">{hanNodes(q.question, level)}</div> : null}
                 <MCOptions q={q} blockId={blockId} state={state} onSelect={onSelectMC} level={level} />
               </>
