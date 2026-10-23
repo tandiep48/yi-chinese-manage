@@ -29,7 +29,11 @@
     "settings": "Settings",
     "open_menu": "Open menu",
     "collapse_menu": "Collapse menu",
-    "expand_menu": "Expand menu"
+    "expand_menu": "Expand menu",
+    "leave_session_title": "Session in progress",
+    "leave_session_body": "You have an activity running. Leaving this page will end it — your answers so far are saved.",
+    "leave_session_stay": "Stay here",
+    "leave_session_leave": "Leave anyway"
   },
   "settings": {
     "title": "Settings",

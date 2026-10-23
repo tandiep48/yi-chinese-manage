@@ -199,4 +199,18 @@ describe("useLearnerHome — a panel's cleanup must not undo a tab switch", () =
 
     expect(lastUrl()).toBe("/learner?tab=recommend");
   });
+
+  it("skips the write once the learner has navigated off the home", () => {
+    // Reported from use: clicking a sidebar link (e.g. Library) mid-activity bounced
+    // back to the dashboard, so it took two clicks. The router moves window.location to
+    // the destination first; the outgoing panel's unmount cleanup then calls
+    // setRun(null), which must not re-assert the home URL and drag the learner back.
+    setSearch("tab=lesson&run=lesson-trainer");
+    const { result } = renderHook(() => useLearnerHome());
+
+    window.history.replaceState({}, "", "/learner/hsk");
+    act(() => result.current.setRun(null));
+
+    expect(replace).not.toHaveBeenCalled();
+  });
 });

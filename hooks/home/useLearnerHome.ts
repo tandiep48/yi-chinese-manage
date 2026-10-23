@@ -11,7 +11,7 @@
 // learner who walked through all three should still get Back to the page before
 // the dashboard rather than three dead stops inside it.
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export const HOME_TABS = ["review", "lesson", "recommend"] as const;
@@ -58,8 +58,20 @@ export function useLearnerHome(): UseLearnerHome {
     return new URLSearchParams(searchParams.toString());
   }, [searchParams]);
 
+  // The path the home was mounted at, captured once. A panel can call setRun from its
+  // unmount cleanup after the router has already moved window.location to another page;
+  // writing the home URL then would bounce the learner straight back (the "click
+  // Library twice" bug). Comparing the live path to this detects that we have left.
+  const homePathRef = useRef<string | null>(null);
+  if (homePathRef.current === null) {
+    homePathRef.current = typeof window !== "undefined" ? window.location.pathname : pathname;
+  }
+
   const push = useCallback(
     (params: URLSearchParams) => {
+      // The router updates window.location synchronously, so once a sidebar link has
+      // navigated away, the live path no longer matches the home — skip the write.
+      if (typeof window !== "undefined" && window.location.pathname !== homePathRef.current) return;
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     },
     [pathname, router]
