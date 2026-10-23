@@ -167,70 +167,71 @@ export function SetupScreen({
           </div>
         </section>
 
-        {/* The join panel is hidden while the host edits an existing room. */}
+        {/* The join panel and the open-room browser share the grid's right column;
+            both are hidden while the host edits an existing room. The browser fills
+            the space the short join panel leaves below it. */}
         {!editing && (
-          <section className="competition-panel">
-            <h2>{t("competition.join_room")}</h2>
-            <div className="competition-form">
-              <label>
-                {t("competition.room_code")}
-                <input
-                  type="text"
-                  maxLength={12}
-                  placeholder="ABC123"
-                  autoComplete="off"
-                  value={joinCode}
-                  onChange={(e) => setJoinCode(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") onJoin(joinCode);
-                  }}
-                />
-              </label>
-              <button type="button" className="btn primary" onClick={() => onJoin(joinCode)}>
-                {t("competition.join_room")}
-              </button>
-            </div>
-          </section>
+          <div className="competition-join-column">
+            <section className="competition-panel">
+              <h2>{t("competition.join_room")}</h2>
+              <div className="competition-form">
+                <label>
+                  {t("competition.room_code")}
+                  <input
+                    type="text"
+                    maxLength={12}
+                    placeholder="ABC123"
+                    autoComplete="off"
+                    value={joinCode}
+                    onChange={(e) => setJoinCode(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") onJoin(joinCode);
+                    }}
+                  />
+                </label>
+                <button type="button" className="btn primary" onClick={() => onJoin(joinCode)}>
+                  {t("competition.join_room")}
+                </button>
+              </div>
+            </section>
+
+            {/* Browse and join open rooms without needing a code. */}
+            <section className="competition-panel competition-open-rooms">
+              <h2>{t("competition.open_rooms_title")}</h2>
+              {openRooms.length === 0 ? (
+                <p className="competition-open-rooms-empty">{t("competition.no_open_rooms")}</p>
+              ) : (
+                <ul className="open-room-list">
+                  {openRooms.map((r) => {
+                    const full = r.member_count >= r.max_users;
+                    return (
+                      <li key={r.room_code} className="open-room-card">
+                        <div className="open-room-info">
+                          <span className="open-room-code">{r.room_code}</span>
+                          <span className="open-room-meta">
+                            {t(`competition.mode_${r.category}`)} · HSK {r.level} · {r.owner_username}
+                          </span>
+                        </div>
+                        <span className="open-room-count">
+                          {t("competition.learners_count", { current: r.member_count, max: r.max_users })}
+                        </span>
+                        <button
+                          type="button"
+                          className="btn primary open-room-join"
+                          onClick={() => onJoin(r.room_code)}
+                          disabled={full}
+                        >
+                          {full ? t("competition.room_full") : t("competition.join_room")}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </section>
+          </div>
         )}
       </div>
-
-      {/* Browse and join open rooms without needing a code. Hidden while the host
-          is editing an existing room (the join flow is hidden then too). */}
-      {!editing && (
-        <section className="competition-open-rooms">
-          <h2>{t("competition.open_rooms_title")}</h2>
-          {openRooms.length === 0 ? (
-            <p className="competition-open-rooms-empty">{t("competition.no_open_rooms")}</p>
-          ) : (
-            <ul className="open-room-list">
-              {openRooms.map((r) => {
-                const full = r.member_count >= r.max_users;
-                return (
-                  <li key={r.room_code} className="open-room-card">
-                    <div className="open-room-info">
-                      <span className="open-room-code">{r.room_code}</span>
-                      <span className="open-room-meta">
-                        {t(`competition.mode_${r.category}`)} · HSK {r.level} · {r.owner_username}
-                      </span>
-                    </div>
-                    <span className="open-room-count">
-                      {t("competition.learners_count", { current: r.member_count, max: r.max_users })}
-                    </span>
-                    <button
-                      type="button"
-                      className="btn primary open-room-join"
-                      onClick={() => onJoin(r.room_code)}
-                      disabled={full}
-                    >
-                      {full ? t("competition.room_full") : t("competition.join_room")}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
-      )}
     </section>
   );
 }

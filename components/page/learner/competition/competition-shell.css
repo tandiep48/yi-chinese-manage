@@ -247,8 +247,13 @@
   .competition-shell .ranking-row { grid-template-columns: 1fr; align-items: stretch; }
 }
 
-/* ── Open rooms (browse list below the setup form) ── */
-.competition-shell .competition-open-rooms { margin-top: 28px; }
+/* ── Open rooms (browse list in the grid's right column, under the join panel) ── */
+.competition-shell .competition-join-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
 .competition-shell .competition-open-rooms-empty {
   color: var(--text-muted);
   background: #f0f4f1;
@@ -270,8 +275,8 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #cbe2d4;
-  border: 1px solid #afcfbd;
+  background: #fff;
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   padding: 14px 18px;
 }
