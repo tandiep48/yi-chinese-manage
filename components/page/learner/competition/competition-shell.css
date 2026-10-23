@@ -273,19 +273,25 @@
 }
 .competition-shell .open-room-card {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
   background: #fff;
   border: 1px solid var(--border-soft);
   border-radius: 8px;
-  padding: 14px 18px;
+  padding: 14px 16px;
 }
 .competition-shell .open-room-info {
   display: flex;
   flex-direction: column;
   gap: 3px;
   min-width: 0;
-  flex: 1;
+}
+.competition-shell .open-room-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 .competition-shell .open-room-code {
   font-weight: 800;
@@ -326,8 +332,4 @@
   color: var(--text-muted);
   font-weight: 700;
   font-size: 0.9rem;
-}
-@media (max-width: 560px) {
-  .competition-shell .open-room-card { flex-wrap: wrap; }
-  .competition-shell .open-room-join { width: 100%; }
 }

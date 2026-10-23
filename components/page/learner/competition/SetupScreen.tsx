@@ -226,17 +226,19 @@ export function SetupScreen({
                             {t(`competition.mode_${r.category}`)} · HSK {r.level} · {r.owner_username}
                           </span>
                         </div>
-                        <span className="open-room-count">
-                          {t("competition.learners_count", { current: r.member_count, max: r.max_users })}
-                        </span>
-                        <button
-                          type="button"
-                          className="btn primary open-room-join"
-                          onClick={() => onJoin(r.room_code)}
-                          disabled={full}
-                        >
-                          {full ? t("competition.room_full") : t("competition.join_room")}
-                        </button>
+                        <div className="open-room-actions">
+                          <span className="open-room-count">
+                            {t("competition.learners_count", { current: r.member_count, max: r.max_users })}
+                          </span>
+                          <button
+                            type="button"
+                            className="btn primary open-room-join"
+                            onClick={() => onJoin(r.room_code)}
+                            disabled={full}
+                          >
+                            {full ? t("competition.room_full") : t("competition.join_room")}
+                          </button>
+                        </div>
                       </li>
                     );
                   })}
