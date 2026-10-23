@@ -246,3 +246,90 @@
   .competition-shell .chat-input-row,
   .competition-shell .ranking-row { grid-template-columns: 1fr; align-items: stretch; }
 }
+
+/* ── Open rooms (browse list in the grid's right column, under the join panel) ── */
+.competition-shell .competition-join-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.competition-shell .competition-open-rooms-empty {
+  color: var(--text-muted);
+  background: #f0f4f1;
+  border: 1px dashed var(--border-soft);
+  border-radius: 8px;
+  padding: 18px;
+  margin: 0;
+  text-align: center;
+}
+.competition-shell .open-room-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.competition-shell .open-room-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.competition-shell .open-room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.competition-shell .open-room-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.competition-shell .open-room-code {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  color: var(--text-main);
+}
+.competition-shell .open-room-meta {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+.competition-shell .open-room-count {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.competition-shell .open-room-join {
+  padding: 9px 18px;
+  flex-shrink: 0;
+}
+.competition-shell .open-room-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+}
+.competition-shell .open-room-page-btn {
+  padding: 8px 16px;
+  background: var(--secondary);
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+}
+.competition-shell .open-room-page-btn:hover:not(:disabled) { background: var(--secondary-hover); }
+.competition-shell .open-room-page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.competition-shell .open-room-page-status {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.9rem;
+}

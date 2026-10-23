@@ -11,7 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { createCompetitionRoom } from "@/lib/api/learner/competition";
 import { createCompetitionSocket, type CompetitionSocket } from "@/lib/competition/socket";
-import type { CompetitionChatMessage, CompetitionRoom, CompetitionRoomSettings, CompetitionScore, CompetitionSession } from "@/lib/types/competition";
+import type { CompetitionChatMessage, CompetitionRoom, CompetitionRoomSettings, CompetitionScore, CompetitionSession, OpenRoomSummary } from "@/lib/types/competition";
 
 export type CompetitionScreen = "setup" | "lobby" | "section" | "waiting" | "ranking";
 
@@ -26,6 +26,8 @@ export function useCompetitionRoom() {
   const [waitingUsers, setWaitingUsers] = useState<string[]>([]);
   const [editing, setEditing] = useState(false);
   const [error, setError] = useState("");
+  // The live browse list shown on the setup screen (empty while in a room).
+  const [openRooms, setOpenRooms] = useState<OpenRoomSummary[]>([]);
 
   const socketRef = useRef<CompetitionSocket | null>(null);
   // The room code the emitters need, mirrored so the callbacks never close over a
@@ -41,8 +43,15 @@ export function useCompetitionRoom() {
     const socket = createCompetitionSocket();
     socketRef.current = socket;
 
-    socket.on("connect", () => setError(""));
+    socket.on("connect", () => {
+      setError("");
+      // Subscribe to the open-room list unless a reconnect lands us back inside a
+      // room (then the lobby's room_state drives the UI, not the browse list).
+      if (!roomCodeRef.current) socket.emit("browse_open_rooms");
+    });
     socket.on("connect_error", () => setError(tRef.current("competition.server_connect_failed")));
+
+    socket.on("open_rooms", ({ rooms }) => setOpenRooms(rooms || []));
     // The legacy page alert()ed these; they go to the page's error line instead.
     socket.on("competition_error", (payload) =>
       setError(payload?.error || tRef.current("competition.error_fallback"))
@@ -53,6 +62,9 @@ export function useCompetitionRoom() {
       roomCodeRef.current = joined.room_code;
       setChat(joined.chat || []);
       setScreen("lobby");
+      // In a room now: stop receiving the browse list until we return to setup.
+      socket.emit("stop_browse_open_rooms");
+      setOpenRooms([]);
     });
 
     socket.on("room_state", ({ room: state }) => {
@@ -128,6 +140,8 @@ export function useCompetitionRoom() {
     setChat([]);
     setEditing(false);
     setScreen("setup");
+    // Back on the setup screen: resume the live open-room list.
+    socketRef.current?.emit("browse_open_rooms");
   }, []);
 
   const sendChat = useCallback((message: string) => {
@@ -231,6 +245,7 @@ export function useCompetitionRoom() {
     editing,
     error,
     setError,
+    openRooms,
     createRoom,
     joinRoom,
     leaveRoom,

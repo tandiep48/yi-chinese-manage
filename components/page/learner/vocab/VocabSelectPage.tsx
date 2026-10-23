@@ -16,13 +16,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMagnifyingGlass, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faMagnifyingGlass, faXmark, faFilter } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
 import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
 import type { VocabMode, VocabRow } from "@/lib/types/vocab";
 import { VocabFilterBar } from "./VocabFilterBar";
+import { VocabFilterModal } from "./VocabFilterModal";
 import { VocabTable } from "./VocabTable";
 import { VocabCardList } from "./VocabCardList";
 import "./vocab-select.css";
@@ -45,6 +46,16 @@ export function VocabSelectPage() {
   const vocab = useVocabSelect();
   const [stroke, setStroke] = useState<StrokeModalState>(null);
   const [trainPickerOpen, setTrainPickerOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(false);
+
+  // Badge count on the Filter button: the narrowing filters currently applied
+  // (HSK level, book, lesson and part selections). Rows-per-page is a display
+  // control, not a filter, so it is left out.
+  const activeFilterCount =
+    (vocab.hskLevel ? 1 : 0) +
+    (vocab.isBookMode && vocab.selectedBook ? 1 : 0) +
+    (vocab.selectedLessons.length > 0 ? 1 : 0) +
+    (vocab.selectedParts.length > 0 ? 1 : 0);
   // Phones get the card view (no sideways scrolling); desktop keeps the table
   // with its column study tools.
   const useCards = useMediaQuery("(max-width: 767px)");
@@ -116,6 +127,19 @@ export function VocabSelectPage() {
                   </option>
                 ))}
               </select>
+              <button
+                type="button"
+                className="btn action-outline vocab-filter-btn"
+                onClick={() => setFilterOpen(true)}
+                disabled={vocab.searchMode}
+                aria-haspopup="dialog"
+                aria-expanded={filterOpen}
+              >
+                <FontAwesomeIcon icon={faFilter} /> {t("vocab.filters_button")}
+                {activeFilterCount > 0 && (
+                  <span className="vocab-filter-badge">{activeFilterCount}</span>
+                )}
+              </button>
             </div>
             <div className="vocab-action-buttons">
               <button
@@ -166,7 +190,10 @@ export function VocabSelectPage() {
             </div>
           </div>
 
-          {!vocab.searchMode && (
+          <VocabFilterModal
+            open={filterOpen && !vocab.searchMode}
+            onClose={() => setFilterOpen(false)}
+          >
             <VocabFilterBar
               mode={vocab.mode}
               isHistoryMode={vocab.isHistoryMode}
@@ -185,7 +212,7 @@ export function VocabSelectPage() {
               pageSize={vocab.pageSize}
               onPageSizeChange={vocab.setPageSize}
             />
-          )}
+          </VocabFilterModal>
 
           {showTable ? (
             useCards ? (
