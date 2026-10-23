@@ -64,7 +64,7 @@ describe("TypingActivity in competition mode", () => {
     expect(document.querySelectorAll<HTMLInputElement>(".bt-type-input")[0].disabled).toBe(true);
   });
 
-  it("advances on its own once every word is solved", () => {
+  it("advances on its own once every word is solved, after the reveal audio", () => {
     const onAdvance = vi.fn();
     render(
       <TypingActivity activity={activity("typing")} onRecord={vi.fn()} onAdvance={onAdvance} autoAdvance />
@@ -74,8 +74,43 @@ describe("TypingActivity in competition mode", () => {
     expect(onAdvance).not.toHaveBeenCalled();
     typeInto(1, "火");
 
+    // It now holds for the last word's reveal audio instead of the fixed pause, so the
+    // short delay alone no longer advances; the safety cap still moves it on if the
+    // audio's "ended" never fires.
     act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+    expect(onAdvance).not.toHaveBeenCalled();
+    act(() => void vi.advanceTimersByTime(4000));
     expect(onAdvance).toHaveBeenCalledTimes(1);
+  });
+
+  it("advances the moment the last word's reveal audio finishes", () => {
+    const captured: HTMLAudioElement[] = [];
+    const RealAudio = window.Audio;
+    // Capture the Audio the activity creates so the test can end its playback.
+    window.Audio = function () {
+      const a = new RealAudio();
+      captured.push(a);
+      return a;
+    } as unknown as typeof Audio;
+    try {
+      const onAdvance = vi.fn();
+      render(
+        <TypingActivity activity={activity("typing")} onRecord={vi.fn()} onAdvance={onAdvance} autoAdvance />
+      );
+
+      typeInto(0, "水");
+      typeInto(1, "火");
+
+      // Still playing: the fixed pause does not advance on its own.
+      act(() => void vi.advanceTimersByTime(AUTO_ADVANCE_DELAY_MS));
+      expect(onAdvance).not.toHaveBeenCalled();
+
+      // The audio finishing advances immediately, before the cap.
+      act(() => void captured[captured.length - 1].dispatchEvent(new Event("ended")));
+      expect(onAdvance).toHaveBeenCalledTimes(1);
+    } finally {
+      window.Audio = RealAudio;
+    }
   });
 
   it("skips by revealing the unsolved words as misses, then waits for Next", () => {
