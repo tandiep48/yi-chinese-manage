@@ -3,7 +3,7 @@
 // components/page/learner/lesson/LessonCardStudy.tsx
 // "Learn This Lesson" — the per-line lesson-card viewer for a passage, one line at a
 // time with a typing self-check. Keyboard-driven like the vocab FlashcardView (see
-// useCardControls): A/D move, S reveals pinyin+meaning, W reveals + plays audio.
+// useCardControls): A/D move, S shows/hides pinyin+meaning, W reveals + plays audio.
 // Shuffle and stroke order don't apply to sentences, so Space/Q are omitted. Pinyin +
 // meaning start hidden on each line. Ported from the #screen-lesson-card markup in
 // Learning/web_app/static/reading/reading.js; speaking practice deferred.
@@ -102,7 +102,7 @@ export function LessonCardStudy({
     }
   }
 
-  const { revealed, reveal } = useCardControls({
+  const { revealed, reveal, toggleReveal } = useCardControls({
     resetKey: index,
     onPrev: goPrev,
     onNext: goNext,
@@ -161,7 +161,7 @@ export function LessonCardStudy({
           reveal();
           playAudio();
         }}
-        onReveal={reveal}
+        onReveal={toggleReveal}
       />
     </div>
   );

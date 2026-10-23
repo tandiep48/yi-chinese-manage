@@ -27,7 +27,7 @@ export function CardShortcutLegend({
   onNext: () => void;
   // W — reveal pinyin + meaning and play the audio.
   onAudioReveal: () => void;
-  // S — reveal pinyin + meaning silently.
+  // S — show/hide pinyin + meaning silently (toggle).
   onReveal: () => void;
   onShuffle?: () => void;
   onStroke?: () => void;

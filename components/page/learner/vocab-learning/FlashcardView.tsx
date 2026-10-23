@@ -124,7 +124,7 @@ export function FlashcardView({
     if (hasHanzi) onOpenStroke(word.cn, word.pinyin || "");
   };
 
-  const { revealed, reveal } = useCardControls({
+  const { revealed, reveal, toggleReveal } = useCardControls({
     resetKey: word,
     onPrev: goPrev,
     onNext: goNext,
@@ -180,7 +180,7 @@ export function FlashcardView({
           reveal();
           playAudio();
         }}
-        onReveal={reveal}
+        onReveal={toggleReveal}
         onShuffle={shuffle}
         onStroke={hasHanzi ? openStroke : undefined}
       />
