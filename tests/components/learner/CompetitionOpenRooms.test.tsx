@@ -89,4 +89,38 @@ describe("Competition open-rooms list", () => {
     expect(button).toBeDisabled();
     expect(button).toHaveTextContent("Full");
   });
+
+  it("shows no pagination controls when there are 5 or fewer rooms", () => {
+    renderSetup(makeRooms(5));
+    expect(screen.queryByText(/Page \d+ \/ \d+/)).not.toBeInTheDocument();
+  });
+
+  it("paginates at 5 rooms per page and pages through the list", () => {
+    renderSetup(makeRooms(7));
+    // Page 1: first five rooms only.
+    expect(screen.getAllByText(/learners/)).toHaveLength(5);
+    expect(screen.getByText("Page 1 / 2")).toBeInTheDocument();
+    expect(screen.getByText("ROOM0")).toBeInTheDocument();
+    expect(screen.queryByText("ROOM5")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+
+    // Page 2: the remaining two.
+    expect(screen.getByText("Page 2 / 2")).toBeInTheDocument();
+    expect(screen.getByText("ROOM5")).toBeInTheDocument();
+    expect(screen.getByText("ROOM6")).toBeInTheDocument();
+    expect(screen.queryByText("ROOM0")).not.toBeInTheDocument();
+  });
 });
+
+function makeRooms(n: number): OpenRoomSummary[] {
+  return Array.from({ length: n }, (_, i) => ({
+    room_code: `ROOM${i}`,
+    owner_username: `user${i}`,
+    max_users: 8,
+    category: "vocab",
+    level: 1,
+    member_count: 1,
+    created_at: null,
+  }));
+}

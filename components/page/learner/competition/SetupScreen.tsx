@@ -9,13 +9,15 @@
 // The source picker is mode-dependent and mutually exclusive: book rooms pick from the
 // host's saved books, every other mode picks HSK levels.
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { MultiSelect } from "@/components/shared/customer_ui/MultiSelect/MultiSelect";
 import { HSK_LEVELS } from "@/lib/competition/roomLogic";
 import { TIMEOUT_OPTIONS, type CompetitionSetup } from "@/hooks/competition/useCompetitionSetup";
 import type { CompetitionCategory, OpenRoomSummary } from "@/lib/types/competition";
 import "./competition-multiselect.css";
+
+const OPEN_ROOMS_PER_PAGE = 5;
 
 export function SetupScreen({
   setup,
@@ -36,6 +38,18 @@ export function SetupScreen({
 }) {
   const { t } = useT();
   const [joinCode, setJoinCode] = useState("");
+
+  // Client-side pagination of the open-room list, 5 per page. The list updates
+  // live, so the shown page is derived (clamped to the current total) rather than
+  // written back in an effect — when rooms close and the list shrinks, this falls
+  // onto the last page without a re-render loop.
+  const [roomPage, setRoomPage] = useState(1);
+  const totalRoomPages = Math.max(1, Math.ceil(openRooms.length / OPEN_ROOMS_PER_PAGE));
+  const roomPageShown = Math.min(roomPage, totalRoomPages);
+  const pagedRooms = useMemo(
+    () => openRooms.slice((roomPageShown - 1) * OPEN_ROOMS_PER_PAGE, roomPageShown * OPEN_ROOMS_PER_PAGE),
+    [openRooms, roomPageShown]
+  );
 
   const levelOptions = HSK_LEVELS.map((n) => ({ value: String(n), label: `HSK ${n}` }));
   const countLabel = (n: number) => t("vocab.n_selected", { n });
@@ -202,7 +216,7 @@ export function SetupScreen({
                 <p className="competition-open-rooms-empty">{t("competition.no_open_rooms")}</p>
               ) : (
                 <ul className="open-room-list">
-                  {openRooms.map((r) => {
+                  {pagedRooms.map((r) => {
                     const full = r.member_count >= r.max_users;
                     return (
                       <li key={r.room_code} className="open-room-card">
@@ -227,6 +241,30 @@ export function SetupScreen({
                     );
                   })}
                 </ul>
+              )}
+
+              {totalRoomPages > 1 && (
+                <div className="open-room-pagination">
+                  <button
+                    type="button"
+                    className="btn open-room-page-btn"
+                    onClick={() => setRoomPage(Math.max(1, roomPageShown - 1))}
+                    disabled={roomPageShown <= 1}
+                  >
+                    {t("reading.prev")}
+                  </button>
+                  <span className="open-room-page-status">
+                    {t("competition.page_status", { current: roomPageShown, total: totalRoomPages })}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn open-room-page-btn"
+                    onClick={() => setRoomPage(Math.min(totalRoomPages, roomPageShown + 1))}
+                    disabled={roomPageShown >= totalRoomPages}
+                  >
+                    {t("reading.next")}
+                  </button>
+                </div>
               )}
             </section>
           </div>

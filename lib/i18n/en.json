@@ -560,6 +560,7 @@
     "no_open_rooms": "No open rooms right now.",
     "learners_count": "{current}/{max} learners",
     "room_full": "Full",
+    "page_status": "Page {current} / {total}",
     "select_lesson": "Select Lesson",
     "max_users": "Max Users",
     "section_timer": "Section Timer",

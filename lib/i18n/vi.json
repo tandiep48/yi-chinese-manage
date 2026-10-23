@@ -560,6 +560,7 @@
     "no_open_rooms": "Hiện chưa có phòng nào đang mở.",
     "learners_count": "{current}/{max} người học",
     "room_full": "Đã đầy",
+    "page_status": "Trang {current} / {total}",
     "select_lesson": "Chọn Bài Học",
     "max_users": "Số Người Tối Đa",
     "section_timer": "Bộ Đếm Giờ",
