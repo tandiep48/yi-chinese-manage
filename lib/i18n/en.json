@@ -285,6 +285,7 @@
     "listen": "Listen",
     "stroke": "Stroke",
     "close": "Close",
+    "scroll_to_top": "Scroll to top",
     "add_to_list": "Add to list",
     "added": "Added",
     "loading": "Loading...",
