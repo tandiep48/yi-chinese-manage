@@ -4,7 +4,7 @@
     "prev": "Previous",
     "next": "Next",
     "audio_reveal": "Audio + reveal",
-    "reveal": "Reveal",
+    "reveal": "Show/hide",
     "shuffle": "Shuffle",
     "stroke": "Stroke order",
     "space": "Space"
@@ -29,7 +29,11 @@
     "settings": "Settings",
     "open_menu": "Open menu",
     "collapse_menu": "Collapse menu",
-    "expand_menu": "Expand menu"
+    "expand_menu": "Expand menu",
+    "leave_session_title": "Session in progress",
+    "leave_session_body": "You have an activity running. Leaving this page will end it — your answers so far are saved.",
+    "leave_session_stay": "Stay here",
+    "leave_session_leave": "Leave anyway"
   },
   "settings": {
     "title": "Settings",
@@ -281,6 +285,7 @@
     "listen": "Listen",
     "stroke": "Stroke",
     "close": "Close",
+    "scroll_to_top": "Scroll to top",
     "add_to_list": "Add to list",
     "added": "Added",
     "loading": "Loading...",

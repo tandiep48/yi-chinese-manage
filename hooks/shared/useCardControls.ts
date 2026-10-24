@@ -4,16 +4,21 @@
 // Keyboard-driven controls shared by the vocab FlashcardView and the lesson
 // LessonCardStudy. Pinyin + meaning start hidden and reset to hidden on each new
 // card; the learner drives everything from the keyboard:
-//   A prev · D next · S reveal pinyin+meaning · W reveal + play audio
+//   A prev · D next · S show/hide pinyin+meaning · W reveal + play audio
 //   Space shuffle (when onShuffle is given) · Q stroke order (when onStroke is given)
-// Keys are ignored while a text field is focused (the typing self-check) and when a
-// modifier is held, so browser shortcuts still work.
+// S toggles so the text can be hidden again (a listening/recall self-check); W always
+// reveals, since it also plays the audio. Keys are ignored while a text field is
+// focused (the typing self-check) and when a modifier is held, so browser shortcuts
+// still work.
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export interface CardControls {
   revealed: boolean;
+  // Force the text shown (the W / audio-reveal button, which also plays audio).
   reveal: () => void;
+  // Show or hide the text (the S button): lets the learner hide it again.
+  toggleReveal: () => void;
 }
 
 export function useCardControls({
@@ -35,6 +40,7 @@ export function useCardControls({
 }): CardControls {
   const [revealed, setRevealed] = useState(false);
   const reveal = useCallback(() => setRevealed(true), []);
+  const toggleReveal = useCallback(() => setRevealed((r) => !r), []);
 
   // Reset reveal when the card changes (render-phase, matching the sibling typing
   // resets in FlashcardView / LessonCardStudy).
@@ -68,7 +74,7 @@ export function useCardControls({
           h.onPlayAudio();
           break;
         case "s":
-          setRevealed(true);
+          setRevealed((r) => !r);
           break;
         case " ":
           if (h.onShuffle) {
@@ -87,5 +93,5 @@ export function useCardControls({
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
-  return { revealed, reveal };
+  return { revealed, reveal, toggleReveal };
 }

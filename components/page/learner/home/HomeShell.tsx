@@ -27,6 +27,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getVocabReviewCount } from "@/lib/api/learner/vocab";
 import { useLearnerHome } from "@/hooks/home/useLearnerHome";
+import { useLearnerSession } from "@/components/layout/LearnerSessionContext";
 import { HomeTabs } from "./HomeTabs";
 import { HomePanelSkeleton } from "./HomePanelSkeleton";
 import { CurrentLessonPanel } from "./CurrentLessonPanel";
@@ -43,7 +44,16 @@ export function HomeShell() {
   const { t } = useT();
   const { user, loading: authLoading } = useAuth();
   const home = useLearnerHome();
+  const { setActive } = useLearnerSession();
   const [reviewCount, setReviewCount] = useState(0);
+
+  // Mirror the running activity up to the layout so the sidebar can confirm before a
+  // nav click abandons it. Cleared on unmount so leaving the home never leaves the
+  // flag stuck on.
+  useEffect(() => {
+    setActive(home.sessionActive);
+    return () => setActive(false);
+  }, [home.sessionActive, setActive]);
   // The rail node the lesson-study sidebar docks into (item 7); set once the dock
   // below mounts, then handed to LessonStudyShell through context.
   const [sidebarDock, setSidebarDock] = useState<HTMLElement | null>(null);

@@ -11,7 +11,15 @@ import { I18nProvider } from "@/components/i18n/I18nProvider";
 import { usePathname } from "next/navigation";
 import { LearnerSidebar } from "@/components/layout/LearnerSidebar";
 
-vi.mock("next/navigation", () => ({ usePathname: vi.fn() }));
+const push = vi.fn();
+vi.mock("next/navigation", () => ({ usePathname: vi.fn(), useRouter: () => ({ push }) }));
+
+// A controllable "activity running in the home" flag for the leave-session guard.
+// Defaults off so the rendering/nav tests above are unguarded.
+const session = vi.hoisted(() => ({ active: false }));
+vi.mock("@/components/layout/LearnerSessionContext", () => ({
+  useLearnerSession: () => ({ active: session.active, setActive: () => {} }),
+}));
 
 let mockAuth: {
   user: { username: string; avatar_url?: string | null } | null;
@@ -47,6 +55,8 @@ describe("LearnerSidebar", () => {
     // EN (the app default is now VI) so these assertions read the shipped EN strings.
     localStorage.clear();
     localStorage.setItem("ui_language", "en");
+    push.mockClear();
+    session.active = false;
   });
 
   it("renders every primary nav item linked to its route", () => {
@@ -146,5 +156,45 @@ describe("LearnerSidebar", () => {
 
     await user.click(backdrop as Element);
     expect(container.querySelector(".learner-drawer-backdrop")).toBeNull();
+  });
+
+  // The leave-session guard: while a home activity is running, a nav click is held and
+  // confirmed first (so a stray click can't abandon the session and bounce back to the
+  // dashboard), then navigates straight to the target.
+  it("confirms before leaving mid-activity, then navigates to the target once", async () => {
+    const user = userEvent.setup();
+    session.active = true;
+    renderSidebar();
+
+    await user.click(screen.getByRole("link", { name: "Library" }));
+
+    expect(screen.getByRole("alertdialog", { name: "Session in progress" })).toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
+
+    await user.click(screen.getByRole("button", { name: "Leave anyway" }));
+
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledWith("/learner/hsk");
+  });
+
+  it("stays put and dismisses the confirm on Stay", async () => {
+    const user = userEvent.setup();
+    session.active = true;
+    renderSidebar();
+
+    await user.click(screen.getByRole("link", { name: "Library" }));
+    await user.click(screen.getByRole("button", { name: "Stay here" }));
+
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("leaves navigation unguarded when no activity is running", async () => {
+    const user = userEvent.setup();
+    renderSidebar();
+
+    await user.click(screen.getByRole("link", { name: "Library" }));
+
+    expect(screen.queryByRole("alertdialog")).not.toBeInTheDocument();
   });
 });

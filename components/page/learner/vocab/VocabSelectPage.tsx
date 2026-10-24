@@ -21,6 +21,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useVocabSelect } from "@/hooks/vocab/useVocabSelect";
 import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { TrainTypePicker } from "@/components/page/learner/trainer/TrainTypePicker";
+import { ScrollToTopButton } from "@/components/page/learner/shared/ScrollToTopButton";
 import type { VocabMode, VocabRow } from "@/lib/types/vocab";
 import { VocabFilterBar } from "./VocabFilterBar";
 import { VocabFilterModal } from "./VocabFilterModal";
@@ -264,6 +265,8 @@ export function VocabSelectPage() {
       </div>
 
       <VocabStrokeModal state={stroke} onClose={() => setStroke(null)} />
+
+      <ScrollToTopButton />
 
       {trainPickerOpen && (
         <TrainTypePicker

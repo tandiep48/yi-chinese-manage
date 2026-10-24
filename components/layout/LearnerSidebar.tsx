@@ -13,7 +13,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import "./learner-nav.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -33,6 +33,7 @@ import {
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useLearnerSession } from "./LearnerSessionContext";
 import { LearnerSettingsModal } from "./LearnerSettingsModal";
 
 interface NavItem {
@@ -62,12 +63,16 @@ function isActive(pathname: string, href: string): boolean {
 
 export function LearnerSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useT();
   const { user, loading, logout } = useAuth();
+  const { active: sessionActive } = useLearnerSession();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  // The nav target a leave-confirm is waiting on, while a home activity is running.
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
 
   // Restore the collapsed choice after mount. It can't be read during render —
   // localStorage is client-only and would diverge from the server-rendered
@@ -94,6 +99,26 @@ export function LearnerSidebar() {
     });
 
   const closeDrawer = () => setDrawerOpen(false);
+
+  // Primary-nav clicks while a home activity is running: hold the navigation and ask
+  // first, so a stray click doesn't abandon the session (and so the home panel's
+  // unmount cleanup can't bounce the learner back — see useLearnerHome). Confirming
+  // navigates straight to the target in one step.
+  const handleNavClick = (e: React.MouseEvent, href: string) => {
+    if (sessionActive) {
+      e.preventDefault();
+      closeDrawer();
+      setPendingHref(href);
+      return;
+    }
+    closeDrawer();
+  };
+
+  const confirmLeave = () => {
+    const href = pendingHref;
+    setPendingHref(null);
+    if (href) router.push(href);
+  };
 
   // Collapse only ever hides labels / centers icons at md and up; the mobile
   // drawer is always full width, so its labels stay visible regardless.
@@ -173,7 +198,7 @@ export function LearnerSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              onClick={closeDrawer}
+              onClick={(e) => handleNavClick(e, item.href)}
               title={collapsed ? t(item.labelKey) : undefined}
               className={rowCls(isActive(pathname, item.href))}
             >
@@ -257,6 +282,39 @@ export function LearnerSidebar() {
       </aside>
 
       <LearnerSettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+
+      {pendingHref && (
+        <div
+          className="learner-nav-guard"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPendingHref(null);
+          }}
+        >
+          <div
+            className="learner-nav-guard-box"
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="learner-nav-guard-title"
+          >
+            <h2 id="learner-nav-guard-title" className="learner-nav-guard-title">
+              {t("nav.leave_session_title")}
+            </h2>
+            <p className="learner-nav-guard-body">{t("nav.leave_session_body")}</p>
+            <div className="learner-nav-guard-actions">
+              <button
+                type="button"
+                className="learner-nav-guard-stay"
+                onClick={() => setPendingHref(null)}
+              >
+                {t("nav.leave_session_stay")}
+              </button>
+              <button type="button" className="learner-nav-guard-leave" onClick={confirmLeave}>
+                {t("nav.leave_session_leave")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

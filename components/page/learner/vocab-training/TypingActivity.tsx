@@ -72,10 +72,10 @@ export function TypingActivity({
     []
   );
 
-  // Solo mode: once the whole group is correct, wait for the last word's reveal
-  // audio to finish before moving on — the fixed pause used to cut it off and
-  // advance mid-playback. Falls back to that pause when there is no audio, and a
-  // hard cap covers an "ended" event that never fires (e.g. autoplay blocked).
+  // Once the group finishes — solo all-correct, or Learn Together all-locked — wait
+  // for the last word's reveal audio to end before moving on; the fixed pause used to
+  // cut it off and advance mid-playback. Falls back to that pause when there is no
+  // audio, and a hard cap covers an "ended" event that never fires (autoplay blocked).
   function advanceWhenAudioDone(hasAudio: boolean) {
     const audio = audioRef.current;
     if (!hasAudio || !audio) {
@@ -105,15 +105,6 @@ export function TypingActivity({
   useEffect(() => {
     inputRefs.current[0]?.focus();
   }, []);
-
-  // Auto-advance mode: once every word has been typed correctly, the group moves on by
-  // itself (there is no Continue button to click). A skipped group does not — it waits
-  // for the learner to read the revealed answers and press Next.
-  useEffect(() => {
-    if (!autoAdvance || revealed || !locked.length || !locked.every(Boolean)) return;
-    const id = window.setTimeout(onAdvance, AUTO_ADVANCE_DELAY_MS);
-    return () => window.clearTimeout(id);
-  }, [autoAdvance, revealed, locked, onAdvance]);
 
   function playWordAudio(audioKey: string) {
     if (!audioKey) return;
@@ -174,7 +165,13 @@ export function TypingActivity({
         return next;
       });
       if (autoAdvance) {
+        // This word's reveal audio was just started above. If locking it finishes the
+        // group, wait for that audio to end before advancing — the group used to move
+        // on after a fixed pause and cut the last word's audio off. A skipped group
+        // reveals through revealUnsolved() instead, so it never reaches here.
+        const willFinish = words.every((_, i) => i === idx || locked[i]);
         lockWord(idx, value.trim(), true);
+        if (willFinish) advanceWhenAudioDone(Boolean(row.audio_key));
         return;
       }
       // Auto-finish the group once every word is correct. Build the final values with
