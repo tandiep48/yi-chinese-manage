@@ -1,8 +1,8 @@
 // tests/hooks/lesson/useLessonMilestone.test.tsx
 // The six-step milestone's client state (docs/plans/dashboard-tabs.md §10):
 // resuming at the server's current_step, advancing a passive step through POST,
-// and — the rule that keeps the milestone honest — a graded step advancing only
-// when the server says it was passed.
+// and — soft gating — a graded step advancing on finish whether or not the run
+// passed (the refresh only updates the progress markers).
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
@@ -131,18 +131,30 @@ describe("useLessonMilestone — graded steps", () => {
     expect(mockMark).not.toHaveBeenCalled();
   });
 
-  it("stays put when the run did not reach the pass threshold", async () => {
+  it("advances even when the run fell below the pass threshold (soft gating)", async () => {
     mockGet.mockResolvedValue(milestone([1, 2]));
     const { result } = renderHook(() => useLessonMilestone(PASSAGE, 3));
     await waitFor(() => expect(result.current.loading).toBe(false));
 
+    // The server still reports step 3 incomplete, but Next no longer gates on it.
     await act(() => result.current.refreshAfterRun());
 
-    expect(result.current.step).toBe(3);
+    expect(result.current.step).toBe(4);
     expect(result.current.isCompleted(3)).toBe(false);
   });
 
-  it("leaves the step alone when the refresh itself fails", async () => {
+  it("advances a non-final graded step even when the refresh itself fails", async () => {
+    const { result } = renderHook(() => useLessonMilestone(PASSAGE, 3));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    mockGet.mockRejectedValue(new Error("offline"));
+    await act(() => result.current.refreshAfterRun());
+
+    // The view advances first, so a lost refresh can't strand the learner on the step.
+    expect(result.current.step).toBe(4);
+  });
+
+  it("does not advance past the last step even when the refresh fails", async () => {
     const { result } = renderHook(() => useLessonMilestone(PASSAGE, 6));
     await waitFor(() => expect(result.current.loading).toBe(false));
 

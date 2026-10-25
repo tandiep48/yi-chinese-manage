@@ -1,8 +1,8 @@
 // tests/components/milestone/MilestoneRunner.test.tsx
 // The six-step runner (docs/plans/dashboard-tabs.md §10.6): a passive step
-// advances on Continue, a graded step does NOT advance below the pass threshold,
-// the step is mirrored to the host, and the summaries' Learn/Train footers are
-// gone rather than merely disabled.
+// advances on Continue, a graded step advances on finish under soft gating (pass or
+// fail), the step is mirrored to the host, and the summaries' Learn/Train footers
+// are gone rather than merely disabled.
 //
 // The step bodies are heavy (two trainers, a flash-card viewer), so each is
 // mocked to a marker — this file is about the machine, not its contents.
@@ -174,7 +174,7 @@ describe("MilestoneRunner — passive steps", () => {
 });
 
 describe("MilestoneRunner — graded steps", () => {
-  it("Next re-reads the milestone instead of marking it on a graded step", async () => {
+  it("Next re-reads the milestone instead of marking it, then advances", async () => {
     const user = userEvent.setup();
     mockResolve.mockResolvedValue([
       { word: "学习", cn: "学习", pinyin: "x", meaning_en: "s", meaning_vn: "h", audio_key: "a", level: "HSK1" },
@@ -182,29 +182,29 @@ describe("MilestoneRunner — graded steps", () => {
     renderRunner({ initialStep: 3 });
     await waitFor(() => expect(body()).toContain("vocab-trainer"));
 
-    // The server still reports step 3 incomplete, so Next is pass-gated: it
-    // re-reads the milestone and stays put rather than POSTing a completion.
+    // A graded step re-reads the milestone rather than POSTing a completion, then
+    // advances (soft gating) whether or not the server counted the run.
     await user.click(screen.getByRole("button", { name: /Next/ }));
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
     expect(mockMark).not.toHaveBeenCalled();
-    expect(body()).toContain("vocab-trainer");
-    expect(screen.getByText(/Step 3 of 6/)).toBeInTheDocument();
+    await waitFor(() => expect(body()).toContain("lesson-summary"));
+    expect(screen.getByText(/Step 4 of 6/)).toBeInTheDocument();
   });
 
-  it("does NOT advance when the run fell below the pass threshold", async () => {
+  it("advances on finish even when the run fell below the pass threshold", async () => {
     mockResolve.mockResolvedValue([
       { word: "学习", cn: "学习", pinyin: "x", meaning_en: "s", meaning_vn: "h", audio_key: "a", level: "HSK1" },
     ]);
     renderRunner({ initialStep: 3 });
     await waitFor(() => expect(body()).toContain("vocab-trainer"));
 
-    // The server still reports step 3 incomplete.
+    // The server still reports step 3 incomplete; soft gating moves on anyway.
     vocabTrainerExit();
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
-    expect(body()).toContain("vocab-trainer");
-    expect(screen.getByText(/Step 3 of 6/)).toBeInTheDocument();
+    await waitFor(() => expect(body()).toContain("lesson-summary"));
+    expect(screen.getByText(/Step 4 of 6/)).toBeInTheDocument();
     expect(mockMark).not.toHaveBeenCalled();
   });
 
@@ -481,7 +481,9 @@ describe("MilestoneRunner — auto-advance across parts", () => {
     await waitFor(() => expect(onLessonComplete).toHaveBeenCalledTimes(1));
   });
 
-  it("does not cross a part boundary when the final step was not counted", async () => {
+  it("crosses a part boundary even when the final step was not counted", async () => {
+    // Soft gating: finishing the final step moves on to the next part whether or not
+    // the server counted the run.
     mockGet.mockImplementation((pid: string) => Promise.resolve(mk(pid, [1, 2, 3, 4, 5])));
     renderRunner({ passageId: P1, passageIds: [P1, P2], initialStep: 6 });
     await waitFor(() => expect(body()).toContain("lesson-trainer"));
@@ -490,8 +492,9 @@ describe("MilestoneRunner — auto-advance across parts", () => {
       lessonTrainerExit();
     });
 
-    await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
-    expect(mockGet).not.toHaveBeenCalledWith(P2);
+    await waitFor(() => expect(mockGet).toHaveBeenCalledWith(P2));
+    // Part 2 opens on its own resume step (6, its first incomplete step here).
+    await waitFor(() => expect(screen.getByText(/Step 6 of 6/)).toBeInTheDocument());
     expect(body()).toContain("lesson-trainer");
   });
 });

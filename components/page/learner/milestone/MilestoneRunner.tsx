@@ -16,13 +16,13 @@
 //
 // Passive steps (1, 2, 4, 5) complete on Continue. Graded steps (3, 6) are never
 // posted — their trainers already record them — so finishing one re-reads the
-// milestone and advances only if the server counted it. That is also why a
-// trainer quit below the pass threshold leaves the learner on the step.
+// milestone (for the progress markers) and advances. Gating is soft: Next moves the
+// learner on whether or not the run passed; only an explicit Quit steps back.
 //
 // Auto-advance across parts: when the runner is given the lesson's ordered parts
-// (the Lesson tab passes `passageIds`), finishing the *final* step of a part and
-// having the server count it moves on to the next part on its own, opened at its
-// own resume step. The standalone /learner/lesson page passes a single part and
+// (the Lesson tab passes `passageIds`), finishing the *final* step of a part moves
+// on to the next part on its own, opened at its own resume step. The standalone
+// /learner/lesson page passes a single part and
 // so never advances — its URL owns which part is shown. This only crosses a part
 // boundary; within a part the per-step gating below is unchanged.
 //
@@ -242,20 +242,20 @@ function MilestonePart({
   }, [running]);
 
   // A trainer's exit (quit, its recap's action, or — for the lesson trainer —
-  // finishing a round) hands the step back to us. The server decides whether it
-  // counted; when the counted step is this part's last, move on to the next part.
+  // finishing a round) hands the step back to us. Gating is soft: finishing moves
+  // the learner on whether or not the run passed, and finishing this part's last
+  // step moves on to the next part.
   const onTrainerExit = useCallback(async () => {
     // Finishing a part can move the learner on and changes which words are due,
     // so the two cached mount reads that would otherwise show yesterday's answer
     // are dropped here.
     invalidateCurrentLesson();
     invalidateVocabReview();
-    const next = await refreshAfterRun();
-    // Only the final step crosses a part boundary; a passed step 3 advances to
-    // step 4 inside refreshAfterRun and must not skip ahead a part here.
-    const finalPassed = next?.steps.find((s) => s.step === next.total_steps)?.completed;
-    if (next && step === next.total_steps && finalPassed) onPartComplete?.();
-  }, [refreshAfterRun, step, onPartComplete]);
+    await refreshAfterRun();
+    // Only the final step crosses a part boundary; an earlier step (e.g. 3) advances
+    // to the next step inside refreshAfterRun and must not skip ahead a part here.
+    if (step === milestone.totalSteps) onPartComplete?.();
+  }, [refreshAfterRun, step, milestone.totalSteps, onPartComplete]);
 
   // The fixed bottom bar is the milestone's one navigation control. Previous
   // always steps back (soft gating: any earlier step is replayable). Next

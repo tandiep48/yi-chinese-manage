@@ -213,4 +213,24 @@ describe("useLearnerHome — a panel's cleanup must not undo a tab switch", () =
 
     expect(replace).not.toHaveBeenCalled();
   });
+
+  it("keeps switching tabs after returning to the dashboard (no stale-path lock)", () => {
+    // Reported from use: Library -> back to dashboard -> the Lesson tab did nothing.
+    // The old guard captured window.location.pathname once at mount; if that first
+    // render happened while the URL was momentarily still the library path, the
+    // captured value was poisoned and every later write was silently dropped. The
+    // guard now compares the live path to the mounted route, so a click on the
+    // settled dashboard always writes.
+    setSearch("tab=review");
+    // The hook's first render happens under the library path (the mid-navigation
+    // capture that used to poison the once-captured ref).
+    window.history.replaceState({}, "", "/learner/hsk?tab=review");
+    const { result } = renderHook(() => useLearnerHome());
+
+    // The URL settles back on the dashboard; a tab click must still switch.
+    window.history.replaceState({}, "", "/learner?tab=review");
+    act(() => result.current.requestTab("lesson"));
+
+    expect(lastUrl()).toBe("/learner?tab=lesson");
+  });
 });
