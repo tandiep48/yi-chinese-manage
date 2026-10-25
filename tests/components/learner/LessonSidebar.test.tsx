@@ -69,6 +69,21 @@ describe("LessonSidebar part navigation", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
+  it("toggles the open accordion section closed and back open on header clicks", () => {
+    render(<LessonSidebar passageId="H1_1_1" domain="lesson" open onOpenChange={() => {}} />);
+    // Parts is expanded by default on the lesson domain, so its parts are visible.
+    expect(screen.getByText("picker.part_prefix 1")).toBeInTheDocument();
+
+    // Clicking the already-open section's header now collapses it (it used to be a
+    // no-op, so the section could never be closed by clicking its own header).
+    fireEvent.click(screen.getByText("sidebar.lesson_parts"));
+    expect(screen.queryByText("picker.part_prefix 1")).not.toBeInTheDocument();
+
+    // Clicking it again re-opens it.
+    fireEvent.click(screen.getByText("sidebar.lesson_parts"));
+    expect(screen.getByText("picker.part_prefix 1")).toBeInTheDocument();
+  });
+
   it("switches to Grammar in place via onSelectDomain instead of navigating", () => {
     const onSelectDomain = vi.fn();
     render(

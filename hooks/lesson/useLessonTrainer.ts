@@ -58,8 +58,8 @@ export interface LessonTrainerOptions {
   // Replaces the goHome navigation — an embedded run has nowhere to push to.
   onExit?: () => void;
   // Fires once when a round finishes and its score has been saved (the learner
-  // dismisses the results popup). A milestone host uses it to auto-advance to the
-  // next part; standalone runs pass none and just show the recap.
+  // dismisses the results popup). A host may use it to auto-advance, but the milestone
+  // deliberately does not — it shows the recap and waits for the learner's Next.
   onComplete?: () => void;
 }
 
