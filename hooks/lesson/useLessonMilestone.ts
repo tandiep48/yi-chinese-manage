@@ -11,8 +11,9 @@
 //
 // Advancing a passive step (1, 2, 4, 5) POSTs and takes the server's recomputed
 // milestone as the answer. Graded steps (3, 6) are never posted — their trainers
-// record them — so finishing one is a `refresh()`, and the step only counts if
-// the server agrees it was passed.
+// record them — so finishing one is a `refresh()`. Gating is soft: finishing a
+// graded step moves the learner on whether or not the run passed; the refresh only
+// updates the progress markers, it does not decide whether Next may advance.
 
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -41,9 +42,10 @@ export interface UseLessonMilestone {
   isCompleted: (step: number) => boolean;
   // Continue from a passive step: record it, then move on.
   completeAndAdvance: () => Promise<void>;
-  // A graded step's trainer finished: re-read, and advance only if it counted.
-  // Resolves with the refreshed milestone (or null on failure) so a caller can
-  // tell whether the final step just passed and move on to the next part.
+  // A graded step's trainer finished: advance (soft gating — pass or fail), then
+  // re-read for the progress markers. Resolves with the refreshed milestone (or null
+  // on failure) so a caller can refresh its own view; the final step hands off to the
+  // next part through the runner, not through this result.
   refreshAfterRun: () => Promise<Milestone | null>;
   saving: boolean;
 }
@@ -125,15 +127,15 @@ export function useLessonMilestone(
 
   const refreshAfterRun = useCallback(async (): Promise<Milestone | null> => {
     const current = step;
+    // Gating is soft: finishing a graded step advances whether or not every item was
+    // right, so moving on is the learner's call and never blocked (the server still
+    // records the trainer's result for the progress markers). Advance the view first
+    // so a failed refresh can't strand the learner on the step either.
+    if (current < totalSteps) setStep(current + 1);
     const next = await getMilestone(passageId).catch(() => null);
-    if (!next) return null;
-    setMilestone(next);
-    // Advance only if the server counted the run — a trainer quit below the pass
-    // threshold leaves the learner on the step to try again.
-    const passed = next.steps.find((s) => s.step === current)?.completed;
-    if (passed && current < next.total_steps) setStep(current + 1);
+    if (next) setMilestone(next);
     return next;
-  }, [passageId, step]);
+  }, [passageId, step, totalSteps]);
 
   return {
     // With no part there is nothing in flight, so don't report a permanent load.
