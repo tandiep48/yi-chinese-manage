@@ -62,7 +62,11 @@ export function LessonSidebar({
   const { t } = useT();
   const router = useRouter();
   const { loading, error, parts, header } = useLessonParts(passageId);
-  const [openSection, setOpenSection] = useState<Section>(DOMAIN_SECTION[domain]);
+  // Which accordion section is expanded, or null when all are collapsed. Clicking the
+  // open section's header closes it (a real toggle); clicking another switches to it.
+  const [openSection, setOpenSection] = useState<Section | null>(DOMAIN_SECTION[domain]);
+  const toggleSection = (section: Section) =>
+    setOpenSection((current) => (current === section ? null : section));
 
   const goBackToPartPicker = () => router.push(partPickerHref(passageId));
 
@@ -131,7 +135,7 @@ export function LessonSidebar({
             icon={faBookOpen}
             label={t("sidebar.lesson_parts")}
             expanded={openSection === "parts"}
-            onToggle={() => setOpenSection("parts")}
+            onToggle={() => toggleSection("parts")}
           >
             <nav className="sidebar-nav">
               {loading ? (
@@ -158,7 +162,7 @@ export function LessonSidebar({
             icon={faFont}
             label={t("grammar.page_title")}
             expanded={openSection === "grammar"}
-            onToggle={() => setOpenSection("grammar")}
+            onToggle={() => toggleSection("grammar")}
           >
             <nav className="sidebar-nav">
               <DomainStep
@@ -175,7 +179,7 @@ export function LessonSidebar({
             icon={faLanguage}
             label={t("translation.page_title")}
             expanded={openSection === "translation"}
-            onToggle={() => setOpenSection("translation")}
+            onToggle={() => toggleSection("translation")}
           >
             <nav className="sidebar-nav">
               <DomainStep
