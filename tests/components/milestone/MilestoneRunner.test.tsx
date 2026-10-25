@@ -34,6 +34,9 @@ vi.mock("@/hooks/lesson/useLessonOverview", () => ({ useLessonOverview: vi.fn() 
 let vocabTrainerExit: () => void = () => {};
 let lessonTrainerExit: () => void = () => {};
 let vocabTrainerScreen: (s: string) => void = () => {};
+// Captures whatever onComplete the runner passes the lesson trainer, so a test can
+// assert it is NOT wired (finishing a round must wait for Next, not auto-advance).
+let lessonTrainerComplete: (() => void) | undefined;
 vi.mock("@/components/page/learner/lesson/WordSummary", () => ({
   WordSummary: ({ hideActions }: { hideActions?: boolean }) => (
     <div data-testid="body">word-summary hideActions={String(!!hideActions)}</div>
@@ -76,15 +79,18 @@ vi.mock("@/components/page/learner/vocab-training/VocabTrainerPage", () => ({
 vi.mock("@/components/page/learner/lesson-training/LessonTrainerPage", () => ({
   LessonTrainerPage: ({
     onExit,
+    onComplete,
     types,
     bottomBarSlot,
   }: {
     onExit?: () => void;
+    onComplete?: () => void;
     types?: string[];
     onScreenChange?: (s: string) => void;
     bottomBarSlot?: HTMLElement | null;
   }) => {
     lessonTrainerExit = onExit ?? (() => {});
+    lessonTrainerComplete = onComplete;
     return (
       <div data-testid="body" data-hasslot={String(!!bottomBarSlot)}>
         lesson-trainer types={JSON.stringify(types ?? null)}
@@ -127,6 +133,9 @@ const body = () => screen.getByTestId("body").textContent;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // Sentinel so the onComplete-not-wired test proves the runner cleared it, not that
+  // it was simply never set this run.
+  lessonTrainerComplete = () => {};
   mockGet.mockResolvedValue(milestone([]));
   mockMark.mockResolvedValue(milestone([1]));
   mockResolve.mockResolvedValue([]);
@@ -440,6 +449,31 @@ describe("MilestoneRunner — auto-advance across parts", () => {
     await waitFor(() => expect(mockGet).toHaveBeenCalledWith(P2));
     // The next part opens at its own resume step, not the carried step 6.
     await waitFor(() => expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument());
+  });
+
+  it("reports the auto-advanced part through onPartChange", async () => {
+    const onPartChange = vi.fn();
+    mockGet.mockImplementation((pid: string) =>
+      Promise.resolve(pid === P2 ? mk(P2, []) : mk(P1, [1, 2, 3, 4, 5, 6]))
+    );
+    renderRunner({ passageId: P1, passageIds: [P1, P2], initialStep: 6, onPartChange });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    await act(async () => {
+      lessonTrainerExit();
+    });
+
+    // So the host (LessonFlow) can move its sidebar highlight to the new part.
+    await waitFor(() => expect(onPartChange).toHaveBeenCalledWith(P2));
+  });
+
+  it("does not wire the lesson trainer's onComplete, so a finished round waits for Next", async () => {
+    renderRunner({ passageId: P1, passageIds: [P1, P2], initialStep: 6 });
+    await waitFor(() => expect(body()).toContain("lesson-trainer"));
+
+    // onComplete would advance the part the moment the results popup is dismissed;
+    // leaving it unwired keeps the learner on the recap until they press Next.
+    expect(lessonTrainerComplete).toBeUndefined();
   });
 
   it("stays on the last part after its final step when no host takes over", async () => {

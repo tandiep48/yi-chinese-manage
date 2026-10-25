@@ -138,6 +138,9 @@ export function LessonFlow({
           initialStep={selectedPart ? undefined : initialStep}
           onStepChange={onStepChange}
           onRunningChange={onRunningChange}
+          // Follow the milestone's cross-part advance so the sidebar highlights the
+          // part now showing (the same state a sidebar part click drives).
+          onPartChange={onSelectPart}
           // Lesson finished → straight into Grammar, continuing the chain.
           onLessonComplete={() => setDomain("grammar")}
         />

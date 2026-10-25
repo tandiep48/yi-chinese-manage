@@ -17,14 +17,16 @@
 // Passive steps (1, 2, 4, 5) complete on Continue. Graded steps (3, 6) are never
 // posted — their trainers already record them — so finishing one re-reads the
 // milestone (for the progress markers) and advances. Gating is soft: Next moves the
-// learner on whether or not the run passed; only an explicit Quit steps back.
+// learner on whether or not the run passed; only an explicit Quit steps back. A
+// trainer finishing its round never advances on its own — it shows its recap and
+// waits for Next — so the final step stops on the recap instead of jumping ahead.
 //
-// Auto-advance across parts: when the runner is given the lesson's ordered parts
-// (the Lesson tab passes `passageIds`), finishing the *final* step of a part moves
-// on to the next part on its own, opened at its own resume step. The standalone
-// /learner/lesson page passes a single part and
-// so never advances — its URL owns which part is shown. This only crosses a part
-// boundary; within a part the per-step gating below is unchanged.
+// Advance across parts: when the runner is given the lesson's ordered parts (the Lesson
+// tab passes `passageIds`), Next on the *final* step of a part moves on to the next
+// part, opened at its own resume step, and reports it through `onPartChange` so the
+// host's part UI (the lesson sidebar) follows. The standalone /learner/lesson page
+// passes a single part and so never advances — its URL owns which part is shown. This
+// only crosses a part boundary; within a part the per-step gating below is unchanged.
 //
 // Gating is soft: the bar's segments jump anywhere, and the lesson sidebar still
 // reaches other parts. The milestone guides; it does not lock.
@@ -85,6 +87,10 @@ interface MilestoneRunnerProps {
   // next part to advance to. The host rolls the flow on from here (Grammar →
   // Translation → next lesson). Fires for a single-part run too.
   onLessonComplete?: () => void;
+  // The runner has crossed to a new part (via Next on a part's final step). The host
+  // renders its own part UI (the lesson sidebar) off the opened part, so it needs this
+  // to follow the advance — otherwise its highlight stays on the part last opened.
+  onPartChange?: (passageId: string) => void;
 }
 
 export function MilestoneRunner({
@@ -94,6 +100,7 @@ export function MilestoneRunner({
   onStepChange,
   onRunningChange,
   onLessonComplete,
+  onPartChange,
 }: MilestoneRunnerProps) {
   // The parts to run through. With no list this is the single given part, so the
   // standalone page behaves exactly as before.
@@ -120,14 +127,17 @@ export function MilestoneRunner({
 
   const onPartComplete = useCallback(() => {
     if (activeIndex + 1 < parts.length) {
-      setActiveIndex(activeIndex + 1);
+      const nextIndex = activeIndex + 1;
+      setActiveIndex(nextIndex);
+      // Report the new part up so the host's sidebar highlight follows the advance.
+      onPartChange?.(parts[nextIndex]);
     } else {
       // No next part: the lesson's parts are all done. Hand off to the host, which
       // continues the flow (Grammar → Translation → next lesson). A single-part run
       // (the standalone page) lands here directly instead of dead-ending on step 6.
       onLessonComplete?.();
     }
-  }, [activeIndex, parts.length, onLessonComplete]);
+  }, [activeIndex, parts, onLessonComplete, onPartChange]);
 
   return (
     <MilestonePart
@@ -373,7 +383,9 @@ function MilestonePart({
             types={lessonTypes}
             contained
             onExit={onTrainerExit}
-            onComplete={onTrainerExit}
+            // Deliberately no onComplete: finishing the round shows the trainer's recap
+            // and the nav's Next drives the advance, so the final step stops here rather
+            // than jumping into the next part the moment the results popup is dismissed.
             bottomBarSlot={trainerSlot}
             onScreenChange={setTrainerScreen}
           />
