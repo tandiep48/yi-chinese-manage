@@ -22,8 +22,6 @@ import {
   faLanguage,
   faCaretUp,
   faCaretDown,
-  faLightbulb,
-  faPenToSquare,
 } from "@fortawesome/free-solid-svg-icons";
 import { useLessonParts, type SidebarPart } from "@/hooks/lesson/useLessonParts";
 import { partPickerHref } from "@/lib/lessons/lessons";
@@ -31,13 +29,8 @@ import { useT } from "@/components/i18n/I18nProvider";
 import "./lesson-sidebar.css";
 
 export type StudyDomain = "lesson" | "grammar" | "translation";
-type Section = "parts" | "grammar" | "translation";
-
-const DOMAIN_SECTION: Record<StudyDomain, Section> = {
-  lesson: "parts",
-  grammar: "grammar",
-  translation: "translation",
-};
+// Only Lesson Parts is an accordion now; Grammar and Translation are direct buttons.
+type Section = "parts";
 
 export function LessonSidebar({
   passageId,
@@ -62,9 +55,11 @@ export function LessonSidebar({
   const { t } = useT();
   const router = useRouter();
   const { loading, error, parts, header } = useLessonParts(passageId);
-  // Which accordion section is expanded, or null when all are collapsed. Clicking the
-  // open section's header closes it (a real toggle); clicking another switches to it.
-  const [openSection, setOpenSection] = useState<Section | null>(DOMAIN_SECTION[domain]);
+  // Lesson Parts is the one accordion: open on the lesson view, collapsed while a
+  // Grammar/Translation study page is showing. Clicking its header toggles it.
+  const [openSection, setOpenSection] = useState<Section | null>(
+    domain === "lesson" ? "parts" : null
+  );
   const toggleSection = (section: Section) =>
     setOpenSection((current) => (current === section ? null : section));
 
@@ -157,39 +152,19 @@ export function LessonSidebar({
             </nav>
           </AccordionItem>
 
-          {/* Grammar */}
-          <AccordionItem
+          {/* Grammar / Translation: lesson-wide study pages, opened in one click. */}
+          <DomainButton
             icon={faFont}
             label={t("grammar.page_title")}
-            expanded={openSection === "grammar"}
-            onToggle={() => toggleSection("grammar")}
-          >
-            <nav className="sidebar-nav">
-              <DomainStep
-                icon={faLightbulb}
-                label={t("grammar.page_title")}
-                active={domain === "grammar"}
-                onSelect={() => navigateToDomain("grammar")}
-              />
-            </nav>
-          </AccordionItem>
-
-          {/* Translation */}
-          <AccordionItem
+            active={domain === "grammar"}
+            onSelect={() => navigateToDomain("grammar")}
+          />
+          <DomainButton
             icon={faLanguage}
             label={t("translation.page_title")}
-            expanded={openSection === "translation"}
-            onToggle={() => toggleSection("translation")}
-          >
-            <nav className="sidebar-nav">
-              <DomainStep
-                icon={faPenToSquare}
-                label={t("translation.page_title")}
-                active={domain === "translation"}
-                onSelect={() => navigateToDomain("translation")}
-              />
-            </nav>
-          </AccordionItem>
+            active={domain === "translation"}
+            onSelect={() => navigateToDomain("translation")}
+          />
         </div>
       </aside>
 
@@ -234,7 +209,9 @@ function AccordionItem({
   );
 }
 
-function DomainStep({
+// A top-level sidebar entry that navigates straight to its study page (Grammar or
+// Translation) in a single click — the accordion shell without a collapsible body.
+function DomainButton({
   icon,
   label,
   active,
@@ -246,14 +223,19 @@ function DomainStep({
   onSelect: () => void;
 }) {
   return (
-    <button type="button" className={`sidebar-step${active ? " active" : ""}`} onClick={onSelect}>
-      <span className="step-icon">
-        <FontAwesomeIcon icon={icon} />
-      </span>
-      <span className="step-info">
-        <span className="step-label">{label}</span>
-      </span>
-    </button>
+    <div className={`acc-item${active ? " active" : ""}`}>
+      <button
+        type="button"
+        className="acc-header acc-header-link"
+        onClick={onSelect}
+        aria-current={active ? "page" : undefined}
+      >
+        <span className="acc-icon">
+          <FontAwesomeIcon icon={icon} />
+        </span>
+        <span className="acc-title">{label}</span>
+      </button>
+    </div>
   );
 }
 
