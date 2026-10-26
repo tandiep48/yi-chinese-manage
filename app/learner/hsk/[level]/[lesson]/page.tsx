@@ -3,7 +3,8 @@
 // app/learner/hsk/[level]/[lesson]/page.tsx
 // Step 3 of the lesson flow — pick a part, or Grammar / Translation.
 // The Vocab/Lesson trainer buttons run the whole lesson (all its parts) through
-// the train-type picker; the Grammar/Translation items are not wired yet.
+// the train-type picker; the Grammar/Translation items open the lesson-wide
+// grammar/translation study pages for the lesson's first part.
 
 import { use, useState } from "react";
 import Link from "next/link";
@@ -163,12 +164,24 @@ export default function PartPickerPage({
                   </Link>
                 );
               })}
-              <div className="part-list-item part-list-item-grammar">
-                <div className="part-list-title">{t("picker.grammar_btn")}</div>
-              </div>
-              <div className="part-list-item part-list-item-translation">
-                <div className="part-list-title">{t("picker.translation_btn")}</div>
-              </div>
+              {current.parts[0] && (
+                <>
+                  {/* Grammar / Translation are lesson-wide, so any part of this lesson
+                      resolves them — open the first part's lesson. */}
+                  <Link
+                    href={`/learner/grammar?passage_id=${encodeURIComponent(current.parts[0].passage_id)}`}
+                    className="part-list-item part-list-item-grammar"
+                  >
+                    <div className="part-list-title">{t("picker.grammar_btn")}</div>
+                  </Link>
+                  <Link
+                    href={`/learner/translation?passage_id=${encodeURIComponent(current.parts[0].passage_id)}`}
+                    className="part-list-item part-list-item-translation"
+                  >
+                    <div className="part-list-title">{t("picker.translation_btn")}</div>
+                  </Link>
+                </>
+              )}
             </div>
           )}
         </div>
