@@ -15,6 +15,12 @@ import { legacyApiFetch } from "../client";
 // learner works. A failed fetch is evicted so a later call can retry.
 const passagesCache = new Map<string, Promise<PickerPassage[]>>();
 
+// Dropped when the UI language changes: passage titles are server-built in the
+// account's language, so a stale list would keep showing the old language.
+export function clearPassagesCache(): void {
+  passagesCache.clear();
+}
+
 export function getPassages(hskLevel: string): Promise<PickerPassage[]> {
   const cached = passagesCache.get(hskLevel);
   if (cached) return cached;
