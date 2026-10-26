@@ -24,6 +24,8 @@ import { useLessonParts } from "@/hooks/lesson/useLessonParts";
 import { useGrammar } from "@/hooks/shared/useGrammar";
 import { useTranslation } from "@/hooks/shared/useTranslation";
 import { resolveNextLessonFirstPart } from "@/lib/api/learner/lessons";
+import { saveRecentLearning } from "@/lib/api/learner/recent";
+import { invalidateCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { hskLevelFromPassageId } from "@/lib/lessons/lessons";
 import { MilestoneRunner } from "@/components/page/learner/milestone/MilestoneRunner";
 import { GrammarPanel } from "@/components/page/learner/grammar/GrammarPanel";
@@ -96,6 +98,12 @@ export function LessonFlow({
     if (next) {
       setSelectedPart(next);
       setDomain("lesson");
+      // Rolling on to the next lesson makes it the learner's current lesson, so the
+      // dashboard's current-lesson card and the "Continue" panel follow it on their
+      // next load. There is no lesson-completion gate — moving forward is enough.
+      // Best-effort persist; the in-flow advance above already happened.
+      void saveRecentLearning(next);
+      invalidateCurrentLesson();
     } else {
       // Last lesson of the level: there is nowhere further to go.
       setAtLastLesson(true);
