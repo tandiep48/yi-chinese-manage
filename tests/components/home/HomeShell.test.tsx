@@ -26,7 +26,13 @@ vi.mock("next/navigation", () => ({
 // object each render would re-fire the shell's count effect.
 let AUTH: { user: { id: number } | null; loading: boolean } = { user: { id: 1 }, loading: false };
 vi.mock("@/components/auth/AuthProvider", () => ({ useAuth: () => AUTH }));
-vi.mock("@/lib/api/learner/vocab", () => ({ getVocabReviewCount: vi.fn() }));
+// getLearnedVocab / getReviewRecent are pulled in transitively via useVocabReview
+// (HomeShell imports REVIEW_WORD_CAP from it); stub them so the mock is complete.
+vi.mock("@/lib/api/learner/vocab", () => ({
+  getVocabReviewCount: vi.fn(),
+  getLearnedVocab: vi.fn(),
+  getReviewRecent: vi.fn(),
+}));
 vi.mock("@/components/page/learner/home/ReviewTab", () => ({
   ReviewTab: () => <div data-testid="panel">review panel</div>,
 }));
@@ -149,10 +155,17 @@ describe("HomeShell — tabs", () => {
 
 describe("HomeShell — words-due badge", () => {
   it("fetches the count up front, not the review list", async () => {
+    mockCount.mockResolvedValue(42);
+    renderShell();
+    expect(await screen.findByText("42")).toBeInTheDocument();
+    expect(mockCount).toHaveBeenCalledTimes(1);
+  });
+
+  it("caps the badge at 100, matching the Review tab's word cap", async () => {
     mockCount.mockResolvedValue(253);
     renderShell();
-    expect(await screen.findByText("253")).toBeInTheDocument();
-    expect(mockCount).toHaveBeenCalledTimes(1);
+    expect(await screen.findByText("100")).toBeInTheDocument();
+    expect(screen.queryByText("253")).not.toBeInTheDocument();
   });
 
   it("shows no badge at zero", async () => {
@@ -170,7 +183,7 @@ describe("HomeShell — words-due badge", () => {
   });
 
   it("re-counts once the run ends, since training is what changes the number", async () => {
-    mockCount.mockResolvedValue(253);
+    mockCount.mockResolvedValue(42);
     search = "tab=review&run=vocab-trainer";
     const { rerender } = renderShell();
     expect(mockCount).not.toHaveBeenCalled();
@@ -182,7 +195,7 @@ describe("HomeShell — words-due badge", () => {
       </I18nProvider>
     );
 
-    expect(await screen.findByText("253")).toBeInTheDocument();
+    expect(await screen.findByText("42")).toBeInTheDocument();
     expect(mockCount).toHaveBeenCalledTimes(1);
   });
 
