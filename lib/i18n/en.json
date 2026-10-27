@@ -719,6 +719,18 @@
     "continue": "Continue",
     "no_vocab": "This part has no vocabulary to train.",
     "next_lesson": "Next lesson",
-    "lesson_complete": "Lesson complete"
+    "lesson_complete": "Lesson complete",
+    "confirm_start_btn": "Start",
+    "confirm_skip_btn": "Skip",
+    "confirm_cancel_btn": "Not yet",
+    "confirm_continue_btn": "Continue",
+    "next_lesson_confirm_title": "Go to the next lesson?",
+    "next_lesson_confirm_body": "You've finished this lesson. Move on to the first part of the next lesson?",
+    "master_vocab_confirm_title": "Review all the lesson's vocabulary?",
+    "master_vocab_confirm_body": "Practise every word from this lesson in one session before moving on.",
+    "master_lesson_confirm_title": "Review the whole lesson?",
+    "master_lesson_confirm_body": "Practise all of this lesson's sentences in one session before moving on.",
+    "master_vocab_title": "Master Vocab Trainer",
+    "master_lesson_title": "Master Lesson Trainer"
   }
 }

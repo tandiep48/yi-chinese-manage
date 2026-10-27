@@ -719,6 +719,18 @@
     "continue": "Tiếp tục",
     "no_vocab": "Phần này chưa có từ vựng để luyện.",
     "next_lesson": "Bài tiếp theo",
-    "lesson_complete": "Hoàn thành bài học"
+    "lesson_complete": "Hoàn thành bài học",
+    "confirm_start_btn": "Bắt đầu",
+    "confirm_skip_btn": "Bỏ qua",
+    "confirm_cancel_btn": "Chưa",
+    "confirm_continue_btn": "Tiếp tục",
+    "next_lesson_confirm_title": "Chuyển sang bài tiếp theo?",
+    "next_lesson_confirm_body": "Bạn đã hoàn thành bài học này. Chuyển sang phần đầu tiên của bài tiếp theo?",
+    "master_vocab_confirm_title": "Ôn lại toàn bộ từ vựng của bài?",
+    "master_vocab_confirm_body": "Luyện tất cả từ vựng của bài học trong một lượt trước khi tiếp tục.",
+    "master_lesson_confirm_title": "Ôn lại toàn bộ bài học?",
+    "master_lesson_confirm_body": "Luyện tất cả các câu của bài học trong một lượt trước khi tiếp tục.",
+    "master_vocab_title": "Luyện từ vựng tổng hợp",
+    "master_lesson_title": "Luyện bài tổng hợp"
   }
 }

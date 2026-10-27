@@ -1,0 +1,89 @@
+/* components/page/learner/lesson/lesson-confirm.css
+   The lesson flow's positive confirm dialog (LessonConfirmDialog): primary green
+   Confirm + outline Cancel, mirroring the .lesson-flow-nav colours. Separate class
+   names from .milestone-quit-* so it never inherits the red "lose progress" look. */
+.lesson-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(20, 28, 20, 0.45);
+}
+
+.lesson-confirm-modal {
+  width: 100%;
+  max-width: 420px;
+  background: var(--learner-card, #ffffff);
+  color: var(--learner-text, #2f3a2e);
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 18px 48px rgba(20, 28, 20, 0.28);
+}
+
+.lesson-confirm-icon {
+  font-size: 28px;
+  color: var(--learner-primary, #576856);
+  margin-bottom: 12px;
+}
+
+.lesson-confirm-title {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.lesson-confirm-body {
+  margin: 0 0 22px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--learner-text-muted, #5a6758);
+}
+
+.lesson-confirm-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.lesson-confirm-cancel,
+.lesson-confirm-confirm {
+  border: 0;
+  border-radius: 12px;
+  font: inherit;
+  font-weight: 600;
+  padding: 12px 24px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+
+.lesson-confirm-cancel {
+  background: var(--learner-card, #ffffff);
+  color: var(--learner-text, #2f3a2e);
+  border: 1px solid rgba(87, 104, 86, 0.3);
+}
+.lesson-confirm-cancel:hover {
+  background: rgba(87, 104, 86, 0.08);
+}
+
+.lesson-confirm-confirm {
+  background: var(--learner-primary, #576856);
+  color: #ffffff;
+}
+.lesson-confirm-confirm:hover {
+  background: var(--learner-primary-hover, #455544);
+}
+
+@media (max-width: 640px) {
+  .lesson-confirm-btns {
+    flex-direction: column-reverse;
+  }
+  .lesson-confirm-cancel,
+  .lesson-confirm-confirm {
+    width: 100%;
+  }
+}

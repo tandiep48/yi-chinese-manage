@@ -1,0 +1,18 @@
+/* components/page/learner/lesson/master-trainer.css
+   The end-of-lesson master trainer stage header. The stage reuses .milestone and
+   its nav bar; this only adds the title row above the trainer and the empty-left
+   spacer that keeps the Continue button right-aligned on the recap. */
+.master-trainer-head {
+  margin-bottom: 12px;
+}
+
+.master-trainer-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--learner-text, #2f3a2e);
+}
+
+.master-trainer-nav-spacer {
+  display: block;
+}
