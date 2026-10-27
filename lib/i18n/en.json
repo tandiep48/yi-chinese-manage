@@ -239,16 +239,19 @@
     "skip": "Skip"
   },
   "vocab_review": {
-    "page_title": "Review Words",
-    "heading": "Review Words",
-    "subtitle": "Select words you want to practice, then start the trainer.",
-    "start_training": "Start training ({count})",
+    "page_title": "Your Words",
+    "heading": "Your Words",
+    "tab_recent": "Recent learn word",
+    "tab_review": "Review word",
+    "subtitle_recent": "The words you've mastered most recently.",
+    "subtitle_review": "Words to revisit — not yet mastered, or answered slowly.",
     "loading": "Loading your words...",
     "load_failed": "Could not load your words. Please try again.",
     "prev_page": "Previous page",
     "next_page": "Next page",
     "page_range": "{start}-{end} of {total}",
-    "empty": "Nothing to review right now."
+    "empty_recent": "You haven't mastered any words yet.",
+    "empty_review": "Nothing to review right now."
   },
   "grammar": {
     "page_title": "Grammar",

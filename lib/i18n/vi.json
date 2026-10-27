@@ -239,16 +239,19 @@
     "skip": "Bỏ qua"
   },
   "vocab_review": {
-    "page_title": "Ôn Tập Từ Vựng",
-    "heading": "Ôn Tập Từ Vựng",
-    "subtitle": "Chọn những từ bạn muốn luyện tập, sau đó bắt đầu.",
-    "start_training": "Bắt đầu ({count})",
+    "page_title": "Từ Của Bạn",
+    "heading": "Từ Của Bạn",
+    "tab_recent": "Từ học gần đây",
+    "tab_review": "Từ cần ôn",
+    "subtitle_recent": "Những từ bạn vừa thành thạo gần đây nhất.",
+    "subtitle_review": "Những từ cần xem lại — chưa thành thạo hoặc trả lời chậm.",
     "loading": "Đang tải từ vựng của bạn...",
     "load_failed": "Không thể tải từ vựng. Vui lòng thử lại.",
     "prev_page": "Trang trước",
     "next_page": "Trang sau",
     "page_range": "{start}-{end} trong {total}",
-    "empty": "Hiện không có từ nào để ôn tập."
+    "empty_recent": "Bạn chưa thành thạo từ nào.",
+    "empty_review": "Hiện không có từ nào cần ôn."
   },
   "grammar": {
     "page_title": "Ngữ Pháp",

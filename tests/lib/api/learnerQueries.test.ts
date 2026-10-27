@@ -5,7 +5,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { legacyApiFetch } from "@/lib/api/client";
-import { getVocabTable, getVocabReview, searchVocab, getLearnedVocab } from "@/lib/api/learner/vocab";
+import { getVocabTable, getVocabReview, getReviewRecent, searchVocab, getLearnedVocab } from "@/lib/api/learner/vocab";
 import { getPracticeHistory } from "@/lib/api/learner/practice";
 
 vi.mock("@/lib/api/client", () => ({ legacyApiFetch: vi.fn().mockResolvedValue({ rows: [] }) }));
@@ -54,6 +54,15 @@ describe("learner reads POST validated bodies to /query", () => {
       path: "/api/vocab/review/query",
       method: "POST",
       body: { page: 2, page_size: 100 },
+    });
+  });
+
+  it("getReviewRecent -> /api/vocab/review-recent/query", async () => {
+    await getReviewRecent(1, 50);
+    expect(call()).toEqual({
+      path: "/api/vocab/review-recent/query",
+      method: "POST",
+      body: { page: 1, page_size: 50 },
     });
   });
 

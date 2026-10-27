@@ -126,6 +126,21 @@ export function getVocabReview(
   });
 }
 
+// POST /api/vocab/review-recent/query — the "Review word" tab: unlearned ∪ unsure
+// words ordered by most recent practice attempt, capped at 100 server-side. Same
+// normalized rows and pagination envelope as /review/query. Mirrors
+// get_recent_review_list_query() in Learning/web_app/routes/vocab/vocab_routes.py.
+export function getReviewRecent(
+  page: number,
+  pageSize: number
+): Promise<VocabTableResponse> {
+  const body = vocabReviewQuerySchema.parse({ page, page_size: pageSize });
+  return legacyApiFetch<VocabTableResponse>("/api/vocab/review-recent/query", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
 // GET /api/vocab/review/count — how many words are waiting in the review list.
 // Use this for a count, NEVER getVocabReview with a small page_size: /review
 // paginates in Python after loading the whole vocabulary table (uncached), so a

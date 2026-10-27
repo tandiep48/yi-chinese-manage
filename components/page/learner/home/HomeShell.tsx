@@ -109,9 +109,9 @@ export function HomeShell() {
             aria-labelledby={`learner-home-tab-${home.tab}`}
           >
             {/* Switched rather than mapped, so each panel takes exactly the props it
-                needs — the two that don't run anything yet declare none. */}
+                needs — Review is watch-only and runs nothing, so it declares none. */}
             {home.tab === "review" ? (
-              <ReviewTab run={home.run} setRun={home.setRun} />
+              <ReviewTab />
             ) : home.tab === "lesson" ? (
               <LessonTab run={home.run} setRun={home.setRun} />
             ) : (

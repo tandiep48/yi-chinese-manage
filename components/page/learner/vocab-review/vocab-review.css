@@ -47,15 +47,43 @@
   font-size: 0.9rem;
 }
 
-.vocab-review .review-actions {
-  display: flex;
+/* ── Source tabs (Recent learn word / Review word) ──
+   Own leaf classes (vocab-select.css / vocab-table.css define none), so no rule
+   can tie with them at equal specificity (§2). --vs-* tokens are declared on
+   .vocab-select, this same element. */
+.vocab-review .review-tabs {
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 4px;
   margin-left: auto;
+  padding: 4px;
+  border-radius: 12px;
+  background: rgba(87, 104, 86, 0.08);
 }
 
-.vocab-review .review-start-btn {
+.vocab-review .review-tab {
+  border: 0;
+  border-radius: 9px;
+  padding: 8px 14px;
+  background: transparent;
+  color: var(--vs-text-muted, #6b7a68);
+  font: inherit;
+  font-weight: 600;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.vocab-review .review-tab:hover:not(.is-active) {
+  color: var(--vs-text, #2f3a2e);
+}
+.vocab-review .review-tab:focus-visible {
+  outline: 2px solid var(--vs-primary, #007a61);
+  outline-offset: 2px;
+}
+.vocab-review .review-tab.is-active {
+  background: var(--vs-card, #ffffff);
+  color: var(--vs-primary, #007a61);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
 /* ── Numbered pager ──
@@ -125,12 +153,13 @@
   .vocab-review .review-heading {
     font-size: 1.15rem;
   }
-  /* .vocab-table-header stacks here, so the action row spans the card. */
-  .vocab-review .review-actions {
+  /* .vocab-table-header stacks here, so the tab row spans the card. */
+  .vocab-review .review-tabs {
     margin-left: 0;
     width: 100%;
   }
-  .vocab-review .review-start-btn {
-    width: 100%;
+  .vocab-review .review-tab {
+    flex: 1;
+    text-align: center;
   }
 }
