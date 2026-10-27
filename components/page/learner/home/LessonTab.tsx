@@ -12,7 +12,7 @@
 
 import { useCallback } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { LessonFlow } from "@/components/page/learner/lesson/LessonFlow";
@@ -22,27 +22,30 @@ export const LESSON_RUN = "lesson-trainer";
 
 export function LessonTab({ setRun }: HomePanelProps) {
   const { t } = useT();
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { loading, lesson } = useCurrentLesson();
 
   const stepParam = Number(searchParams.get("step"));
   const initialStep = stepParam >= 1 && stepParam <= 6 ? stepParam : undefined;
 
-  // Merged onto the live query string, not the one captured on the last render:
-  // this fires from an effect inside the milestone, which can run after the tab bar
-  // has already written a new `?tab=`. Rebuilding from a stale capture would put the
-  // old tab back — the same race useLearnerHome's setRun had.
+  // Written with history.replaceState, NOT router.replace, and merged onto the live
+  // query string. Entering or leaving a trainer step (3, 6) fires this *and* setRun
+  // (?run=) in the same tick: both rebuild the URL from window.location.search, but
+  // router.replace does not update window.location synchronously, so whichever landed
+  // second used a stale snapshot and dropped the other's param — the bug where the
+  // ?step stuck at the pre-trainer step and a refresh snapped the milestone back a
+  // step. replaceState updates the URL synchronously, so this (which runs first) is
+  // seen by setRun's router.replace and the two compose. ?step is read only on mount
+  // (initialStep) for refresh-resume, so it needs no re-render of its own.
   const onStepChange = useCallback(
     (step: number) => {
-      const params = new URLSearchParams(
-        typeof window !== "undefined" ? window.location.search : searchParams.toString()
-      );
+      if (typeof window === "undefined") return;
+      const params = new URLSearchParams(window.location.search);
       if (String(step) === params.get("step")) return;
       params.set("step", String(step));
-      router.replace(`?${params.toString()}`, { scroll: false });
+      window.history.replaceState(null, "", `?${params.toString()}`);
     },
-    [router, searchParams]
+    []
   );
 
   const onRunningChange = useCallback(
