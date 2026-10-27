@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getVocabReviewCount } from "@/lib/api/learner/vocab";
+import { REVIEW_WORD_CAP } from "@/hooks/vocab/useVocabReview";
 import { useLearnerHome } from "@/hooks/home/useLearnerHome";
 import { useLearnerSession } from "@/components/layout/LearnerSessionContext";
 import { HomeTabs } from "./HomeTabs";
@@ -62,6 +63,9 @@ export function HomeShell() {
   // the panel. /api/vocab/review/count exists for exactly this: the list route is
   // a full-table vocabulary load and costs ~11x as much (§4).
   //
+  // Clamped to REVIEW_WORD_CAP so the badge never promises more than the Review tab
+  // actually shows (the "Review word" list caps at 100).
+  //
   // Depending on `run` re-counts once a run ends — training words is what changes
   // the number — while the early return keeps it from firing when one starts.
   // Switching tabs doesn't touch `run`, so it costs nothing.
@@ -69,7 +73,7 @@ export function HomeShell() {
     if (authLoading || !user || home.run) return;
     let cancelled = false;
     getVocabReviewCount()
-      .then((n) => !cancelled && setReviewCount(n))
+      .then((n) => !cancelled && setReviewCount(Math.min(n, REVIEW_WORD_CAP)))
       .catch(() => {
         // Soft-fail: a missing badge is better than a broken dashboard.
       });
@@ -109,9 +113,9 @@ export function HomeShell() {
             aria-labelledby={`learner-home-tab-${home.tab}`}
           >
             {/* Switched rather than mapped, so each panel takes exactly the props it
-                needs — the two that don't run anything yet declare none. */}
+                needs — Review is watch-only and runs nothing, so it declares none. */}
             {home.tab === "review" ? (
-              <ReviewTab run={home.run} setRun={home.setRun} />
+              <ReviewTab />
             ) : home.tab === "lesson" ? (
               <LessonTab run={home.run} setRun={home.setRun} />
             ) : (

@@ -133,6 +133,13 @@
 .lesson-study .acc-item.active .acc-header {
   background: #f1f5f9;
 }
+/* Grammar / Translation open in one click, so their header reads as a button. */
+.lesson-study .acc-header-link {
+  cursor: pointer;
+}
+.lesson-study .acc-header-link:hover {
+  background: #f8fafc;
+}
 .lesson-study .acc-item.disabled .acc-header {
   opacity: 0.5;
   cursor: not-allowed;

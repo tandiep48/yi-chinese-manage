@@ -24,13 +24,28 @@ import { useLessonParts } from "@/hooks/lesson/useLessonParts";
 import { useGrammar } from "@/hooks/shared/useGrammar";
 import { useTranslation } from "@/hooks/shared/useTranslation";
 import { resolveNextLessonFirstPart } from "@/lib/api/learner/lessons";
+import { saveRecentLearning } from "@/lib/api/learner/recent";
+import { invalidateCurrentLesson } from "@/hooks/lesson/useCurrentLesson";
 import { hskLevelFromPassageId } from "@/lib/lessons/lessons";
 import { MilestoneRunner } from "@/components/page/learner/milestone/MilestoneRunner";
 import { GrammarPanel } from "@/components/page/learner/grammar/GrammarPanel";
 import { TranslationPanel } from "@/components/page/learner/translation/TranslationPanel";
 import { LessonStudyShell } from "./LessonStudyShell";
+import { LessonConfirmDialog } from "./LessonConfirmDialog";
+import { MasterTrainerStage } from "./MasterTrainerStage";
 import type { StudyDomain } from "./LessonSidebar";
 import "./lesson-flow-nav.css";
+
+// Pinyin-guide and Numbers placeholders aren't graded parts, mirroring the
+// part-picker: the master vocab trainer keeps Numbers (it has vocab), the master
+// lesson trainer drops it (not a graded passage).
+const PINYIN_IDS = new Set(["H1_1_1", "H1_1_2"]);
+const NUMBER_ID = "H1_5_99";
+
+// The end-of-lesson master-trainer sequence, inserted between the last part and
+// Grammar: confirm → run Master Vocab, confirm → run Master Lesson, then Grammar.
+// Each trainer is independently skippable; declining one still offers the next.
+type MasterPhase = "vocab-confirm" | "vocab" | "lesson-confirm" | "lesson" | null;
 
 interface LessonFlowProps {
   // The part to open on. Changing it (a host swapping the current lesson) re-seeds
@@ -62,6 +77,11 @@ export function LessonFlow({
   // Set once the flow runs out of lessons, so Translation's Next reads as done.
   const [atLastLesson, setAtLastLesson] = useState(false);
   const [nextPending, setNextPending] = useState(false);
+  // The end-of-lesson master-trainer sequence (null = not in it). Entered when the
+  // last part's milestone completes, in place of jumping straight to Grammar.
+  const [masterPhase, setMasterPhase] = useState<MasterPhase>(null);
+  // Translation's Next asks before rolling on to the next lesson.
+  const [confirmNextLesson, setConfirmNextLesson] = useState(false);
 
   // Re-seed when the host swaps the opened part (e.g. the dashboard's current lesson
   // changes). An in-flow roll to the next lesson moves selectedPart, not passageId,
@@ -73,6 +93,8 @@ export function LessonFlow({
     setSelectedPart(null);
     setDomain(initialDomain ?? "lesson");
     setAtLastLesson(false);
+    setMasterPhase(null);
+    setConfirmNextLesson(false);
   }, [passageId, initialDomain]);
 
   const activePart = selectedPart ?? passageId;
@@ -83,10 +105,31 @@ export function LessonFlow({
   const { parts } = useLessonParts(activePart);
   const passageIds = useMemo(() => parts.map((p) => p.passageId), [parts]);
 
+  // The lesson-wide selections the two master trainers drill (same filtering the
+  // part-picker's whole-lesson trainers use).
+  const vocabMasterIds = useMemo(
+    () => passageIds.filter((id) => !PINYIN_IDS.has(id)),
+    [passageIds]
+  );
+  const lessonMasterIds = useMemo(
+    () => vocabMasterIds.filter((id) => id !== NUMBER_ID),
+    [vocabMasterIds]
+  );
+
   const onSelectPart = useCallback((id: string) => {
     setSelectedPart(id);
     setDomain("lesson");
     setAtLastLesson(false);
+    // Jumping to a part abandons any end-of-lesson sequence in progress.
+    setMasterPhase(null);
+    setConfirmNextLesson(false);
+  }, []);
+
+  // The master sequence finished (or was skipped through): on to Grammar, where the
+  // flow continued before the master trainers were inserted.
+  const finishMasters = useCallback(() => {
+    setMasterPhase(null);
+    setDomain("grammar");
   }, []);
 
   const goToNextLesson = useCallback(async () => {
@@ -96,11 +139,19 @@ export function LessonFlow({
     if (next) {
       setSelectedPart(next);
       setDomain("lesson");
+      // Rolling on to the next lesson makes it the learner's current lesson, so the
+      // dashboard's current-lesson card and the "Continue" panel follow it on their
+      // next load. There is no lesson-completion gate — moving forward is enough.
+      // Best-effort persist; the in-flow advance above already happened.
+      void saveRecentLearning(next);
+      invalidateCurrentLesson();
     } else {
       // Last lesson of the level: there is nowhere further to go.
       setAtLastLesson(true);
     }
   }, [activePart]);
+
+  const inMasterTrainer = masterPhase === "vocab" || masterPhase === "lesson";
 
   return (
     <LessonStudyShell
@@ -109,7 +160,15 @@ export function LessonFlow({
       onSelectPart={onSelectPart}
       onSelectDomain={setDomain}
     >
-      {domain === "grammar" ? (
+      {inMasterTrainer ? (
+        <MasterTrainerStage
+          engine={masterPhase === "vocab" ? "vocab" : "lesson"}
+          passageIds={masterPhase === "vocab" ? vocabMasterIds : lessonMasterIds}
+          // Master Vocab hands on to the Master Lesson confirm; Master Lesson ends
+          // the sequence into Grammar.
+          onDone={masterPhase === "vocab" ? () => setMasterPhase("lesson-confirm") : finishMasters}
+        />
+      ) : domain === "grammar" ? (
         <GrammarView
           passageId={activePart}
           flow={{
@@ -124,7 +183,8 @@ export function LessonFlow({
           passageId={activePart}
           flow={{
             onPrev: () => setDomain("grammar"),
-            onNext: goToNextLesson,
+            // Confirm before rolling on to the next lesson.
+            onNext: () => setConfirmNextLesson(true),
             prevLabel: t("reading.prev"),
             nextLabel: atLastLesson ? t("milestone.lesson_complete") : t("milestone.next_lesson"),
             nextDisabled: atLastLesson || nextPending,
@@ -141,8 +201,43 @@ export function LessonFlow({
           // Follow the milestone's cross-part advance so the sidebar highlights the
           // part now showing (the same state a sidebar part click drives).
           onPartChange={onSelectPart}
-          // Lesson finished → straight into Grammar, continuing the chain.
-          onLessonComplete={() => setDomain("grammar")}
+          // Lesson finished → offer the two master trainers, then Grammar.
+          onLessonComplete={() => setMasterPhase("vocab-confirm")}
+        />
+      )}
+
+      {masterPhase === "vocab-confirm" && (
+        <LessonConfirmDialog
+          title={t("milestone.master_vocab_confirm_title")}
+          body={t("milestone.master_vocab_confirm_body")}
+          confirmLabel={t("milestone.confirm_start_btn")}
+          cancelLabel={t("milestone.confirm_skip_btn")}
+          onConfirm={() => setMasterPhase("vocab")}
+          // Skip this one, still offer the Master Lesson trainer.
+          onCancel={() => setMasterPhase("lesson-confirm")}
+        />
+      )}
+      {masterPhase === "lesson-confirm" && (
+        <LessonConfirmDialog
+          title={t("milestone.master_lesson_confirm_title")}
+          body={t("milestone.master_lesson_confirm_body")}
+          confirmLabel={t("milestone.confirm_start_btn")}
+          cancelLabel={t("milestone.confirm_skip_btn")}
+          onConfirm={() => setMasterPhase("lesson")}
+          onCancel={finishMasters}
+        />
+      )}
+      {confirmNextLesson && (
+        <LessonConfirmDialog
+          title={t("milestone.next_lesson_confirm_title")}
+          body={t("milestone.next_lesson_confirm_body")}
+          confirmLabel={t("milestone.next_lesson")}
+          cancelLabel={t("milestone.confirm_cancel_btn")}
+          onConfirm={() => {
+            setConfirmNextLesson(false);
+            void goToNextLesson();
+          }}
+          onCancel={() => setConfirmNextLesson(false)}
         />
       )}
     </LessonStudyShell>

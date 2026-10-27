@@ -1,7 +1,7 @@
 import { Roboto } from "next/font/google";
 import { LearnerSidebar } from "@/components/layout/LearnerSidebar";
 import { LearnerSessionProvider } from "@/components/layout/LearnerSessionContext";
-import { I18nProvider } from "@/components/i18n/I18nProvider";
+import { I18nProvider, I18nRemount } from "@/components/i18n/I18nProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { HanziSettingsProvider } from "@/components/han/HanziSettingsProvider";
 
@@ -25,7 +25,7 @@ export default function LearnerLayout({
             <LearnerSessionProvider>
               <LearnerSidebar />
               <main className="learner-main flex min-w-0 flex-1 flex-col overflow-auto">
-                {children}
+                <I18nRemount>{children}</I18nRemount>
               </main>
             </LearnerSessionProvider>
           </HanziSettingsProvider>

@@ -9,6 +9,7 @@
 
 import {
   createContext,
+  Fragment,
   useContext,
   useState,
   useEffect,
@@ -23,6 +24,8 @@ import {
   type TVars,
 } from "@/lib/i18n";
 import { loadUiLanguage, saveUiLanguage } from "@/lib/api/learner/userSettings";
+import { clearReadCache } from "@/lib/api/readCache";
+import { clearPassagesCache } from "@/lib/api/learner/lessons";
 
 const STORAGE_KEY = "ui_language";
 
@@ -30,16 +33,21 @@ interface I18nContextValue {
   lang: Lang;
   setLang: (l: Lang) => void;
   t: (key: string, vars?: TVars) => string;
+  // Bumped after a language change has been saved to the account and the server-built
+  // caches dropped; I18nRemount keys off it to refetch mounted views in the new language.
+  contentKey: number;
 }
 
 const I18nCtx = createContext<I18nContextValue>({
   lang: DEFAULT_LANG,
   setLang: () => {},
   t: (key) => key,
+  contentKey: 0,
 });
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
+  const [contentKey, setContentKey] = useState(0);
 
   // Apply a language to React state, <html lang>, and the local cache.
   const applyLang = useCallback((l: Lang) => {
@@ -81,12 +89,24 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     };
   }, [applyLang]);
 
-  // Changing the language persists to the account so the backend builds its content
-  // (e.g. lesson-trainer options) in the same language; best-effort for guests.
+  // Changing the language flips the UI strings at once, then persists to the account
+  // so the backend builds its content (lesson titles, trainer options, …) in the same
+  // language. Once that save lands, the caches holding the old-language server content
+  // are dropped and contentKey is bumped so mounted views refetch. A guest (or a failed
+  // save) keeps the instant front-end switch and leaves server content untouched.
   const setLang = useCallback(
     (l: Lang) => {
       applyLang(l);
-      void saveUiLanguage(l).catch(() => {});
+      void (async () => {
+        try {
+          await saveUiLanguage(l);
+          clearReadCache();
+          clearPassagesCache();
+          setContentKey((k) => k + 1);
+        } catch {
+          // Not signed in, or the save failed: front-end-only switch, as before.
+        }
+      })();
     },
     [applyLang]
   );
@@ -96,9 +116,19 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     [lang]
   );
 
-  return <I18nCtx.Provider value={{ lang, setLang, t }}>{children}</I18nCtx.Provider>;
+  return (
+    <I18nCtx.Provider value={{ lang, setLang, t, contentKey }}>{children}</I18nCtx.Provider>
+  );
 }
 
 export function useT(): I18nContextValue {
   return useContext(I18nCtx);
+}
+
+// Remounts its subtree whenever the account language changes (after the switch is
+// saved and the server-content caches are cleared), so views built from server data
+// refetch in the new language instead of showing the stale copy until navigation.
+export function I18nRemount({ children }: { children: ReactNode }) {
+  const { contentKey } = useT();
+  return <Fragment key={contentKey}>{children}</Fragment>;
 }

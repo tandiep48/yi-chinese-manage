@@ -46,7 +46,7 @@ describe("LessonSidebar", () => {
     });
   });
 
-  it("renders the header badge, lesson title and the three accordion sections", () => {
+  it("renders the header badge, lesson title, the Parts accordion and the two domain buttons", () => {
     renderSidebar();
     expect(screen.getByText("HSK2")).toBeInTheDocument();
     expect(screen.getByText("Lesson 2")).toBeInTheDocument();
@@ -55,22 +55,19 @@ describe("LessonSidebar", () => {
     expect(screen.getByText("Translation")).toBeInTheDocument();
   });
 
-  it("opens the section for the current domain and navigates on the domain step", () => {
+  it("marks the active domain and opens the other in a single click", () => {
     renderSidebar(true, "H2_2_2", "grammar");
-    // The Grammar section is expanded (its step is rendered) on the grammar domain.
-    const grammarStep = screen.getAllByText("Grammar").at(-1)!.closest("button");
-    expect(grammarStep).toHaveClass("active");
+    // Grammar is the active domain; its entry carries the active class, no expand step.
+    expect(screen.getByText("Grammar").closest(".acc-item")).toHaveClass("active");
 
+    // Translation is a direct button now — one click navigates.
     fireEvent.click(screen.getByText("Translation"));
-    fireEvent.click(screen.getAllByText("Translation").at(-1)!);
     expect(push).toHaveBeenCalledWith("/learner/translation?passage_id=H2_2_2");
   });
 
-  it("navigates to the grammar page from the lesson domain", () => {
+  it("navigates to the grammar page in one click from the lesson domain", () => {
     renderSidebar(true, "H2_2_2", "lesson");
-    // Expand Grammar, then click its step.
     fireEvent.click(screen.getByText("Grammar"));
-    fireEvent.click(screen.getAllByText("Grammar").at(-1)!);
     expect(push).toHaveBeenCalledWith("/learner/grammar?passage_id=H2_2_2");
   });
 

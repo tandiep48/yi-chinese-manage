@@ -84,7 +84,7 @@ describe("LessonSidebar part navigation", () => {
     expect(screen.getByText("picker.part_prefix 1")).toBeInTheDocument();
   });
 
-  it("switches to Grammar in place via onSelectDomain instead of navigating", () => {
+  it("switches to Grammar in place via onSelectDomain in a single click", () => {
     const onSelectDomain = vi.fn();
     render(
       <LessonSidebar
@@ -95,10 +95,8 @@ describe("LessonSidebar part navigation", () => {
         onSelectDomain={onSelectDomain}
       />
     );
-    // Expand the Grammar accordion (collapsed on the lesson domain), then click its
-    // step — the only .sidebar-step inside the single open accordion body.
+    // Grammar is a direct button now — one click selects it, no accordion to expand.
     fireEvent.click(screen.getByText("grammar.page_title"));
-    fireEvent.click(document.querySelector(".acc-body .sidebar-step")!);
     expect(onSelectDomain).toHaveBeenCalledWith("grammar");
     expect(push).not.toHaveBeenCalled();
   });
