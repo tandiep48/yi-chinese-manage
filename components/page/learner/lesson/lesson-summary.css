@@ -61,9 +61,13 @@
   box-shadow: 0 4px 20px rgba(0, 122, 97, 0.08);
   transform: translateY(-2px);
 }
+/* The line whose audio is sounding during Auto Play (or a single play): a clear
+   primary ring + tinted background so it stands out. The ring is a box-shadow, not
+   a wider border, so it adds no layout shift. */
 .lesson-study .lesson-preview-line.playing-highlight {
+  background: var(--ls-primary-light);
   border-color: var(--ls-primary);
-  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+  box-shadow: 0 0 0 2px var(--ls-primary), 0 6px 18px rgba(0, 122, 97, 0.18);
 }
 .lesson-study .lesson-preview-text { flex: 1; min-width: 0; }
 .lesson-study .lesson-preview-text .hanzi-text { color: #111; font-size: 1.5rem; line-height: 1.5; }
