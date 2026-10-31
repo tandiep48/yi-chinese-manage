@@ -424,7 +424,6 @@ function MilestonePart({
             type="button"
             className="milestone-nav-btn milestone-nav-next"
             onClick={handleNext}
-            disabled={isPassiveStep(step) && milestone.saving}
           >
             <span>{t("reading.next")}</span>
             <FontAwesomeIcon icon={faArrowRight} aria-hidden />
