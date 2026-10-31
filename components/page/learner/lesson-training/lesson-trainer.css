@@ -155,8 +155,10 @@
 
 /* ── Typing ── */
 .lesson-trainer .lt-typing-target {
-  font-size: 40px;
-  line-height: 1.4;
+  /* Responsive so a long sentence stays in view instead of running off the card
+     (phones especially); still clearly larger than the body text. */
+  font-size: clamp(24px, 4vw, 36px);
+  line-height: 1.3;
   text-align: center;
   word-break: break-word;
 }
@@ -306,7 +308,10 @@
   max-width: 900px;
 }
 .lesson-study .lesson-line-learning .lesson-line-hanzi {
-  font-size: clamp(32px, 5vw, 54px);
-  line-height: 1.35;
+  /* Smaller, more responsive than the single-word card: a whole sentence has to
+     stay in view on a phone and a desktop both, rather than filling the screen and
+     pushing the pinyin, meaning and typing field out of sight. */
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.3;
   letter-spacing: 0;
 }
