@@ -47,6 +47,10 @@
   justify-content: center;
   min-width: 0;
 }
+/* Per-character typing feedback (shared with the lesson trainer): the prompt glows
+   green where the typed character matches and red where it does not. */
+.vocab-trainer .bt-hanzi .typing-char.char-correct { color: var(--success); }
+.vocab-trainer .bt-hanzi .typing-char.char-wrong { color: var(--danger); }
 .vocab-trainer .bt-type-input {
   width: 100%;
   padding: 10px 12px;

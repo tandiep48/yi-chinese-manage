@@ -7,11 +7,12 @@
 // start hidden on each card. Ported from the #screen-learning markup in
 // Learning/web_app/static/vocab_learning/vocab_learning.js; speaking practice deferred.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
+import { typingCharClasses } from "@/lib/lessons/typingGlow";
 import { useCardControls } from "@/hooks/shared/useCardControls";
 import { CardShortcutLegend } from "@/components/page/learner/shared/CardShortcutLegend";
 import type { LessonVocabRow } from "@/lib/types/vocab";
@@ -64,6 +65,11 @@ export function FlashcardView({
   const word = order[index];
   const meaning = (lang === "vi" ? word?.meaning_vn : word?.meaning_en) || word?.meaning_en || word?.meaning_vn || "";
   const hasHanzi = !!word && HANZI_RE.test(word.cn);
+
+  // Colour the word per character as the learner types, so a wrong character shows
+  // up the moment it is typed — the same feedback the lesson trainer gives.
+  const target = useMemo(() => [...(word?.cn ?? "")], [word]);
+  const charClasses = useMemo(() => typingCharClasses(target, typing), [target, typing]);
 
   // Play the current card's audio when it changes.
   useEffect(() => {
@@ -155,7 +161,13 @@ export function FlashcardView({
 
       <div className="vl-card">
         <div className="vl-hanzi" lang="zh-CN">
-          {word.cn}
+          {typing
+            ? target.map((ch, i) => (
+                <span key={i} className={`typing-char ${charClasses[i]}`}>
+                  {ch}
+                </span>
+              ))
+            : word.cn}
         </div>
         <div className="vl-pinyin">{revealed ? word.pinyin || "" : ""}</div>
         <div className="vl-meaning">{revealed ? meaning : ""}</div>

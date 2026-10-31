@@ -110,6 +110,28 @@ describe("FlashcardView", () => {
     expect(input).toHaveClass("success-highlight");
   });
 
+  it("glows the word per character as it is typed (red mismatch, green match)", () => {
+    const { container } = setup();
+    const input = screen.getByPlaceholderText("vocab_learning.typing_placeholder");
+
+    // Card 1 is 水. A wrong character glows red.
+    fireEvent.change(input, { target: { value: "火" } });
+    const wrong = container.querySelectorAll(".vl-hanzi .typing-char");
+    expect(wrong).toHaveLength(1);
+    expect(wrong[0]).toHaveClass("char-wrong");
+
+    // The right character glows green.
+    fireEvent.change(input, { target: { value: "水" } });
+    expect(container.querySelector(".vl-hanzi .typing-char")).toHaveClass("char-correct");
+  });
+
+  it("shows the word as plain text before anything is typed", () => {
+    const { container } = setup();
+    // No per-character spans until the learner starts typing.
+    expect(container.querySelector(".vl-hanzi .typing-char")).toBeNull();
+    expect(container.querySelector(".vl-hanzi")?.textContent).toBe("水");
+  });
+
   it("clears the typing box when the card changes", () => {
     setup();
     const input = screen.getByPlaceholderText("vocab_learning.typing_placeholder") as HTMLInputElement;

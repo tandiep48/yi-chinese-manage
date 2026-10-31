@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTableList } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonAudioUrl } from "@/lib/audio";
+import { typingCharClasses } from "@/lib/lessons/typingGlow";
 import { useCardControls } from "@/hooks/shared/useCardControls";
 import { CardShortcutLegend } from "@/components/page/learner/shared/CardShortcutLegend";
 import type { LessonPassageLine } from "@/lib/types/lesson";
@@ -42,6 +43,7 @@ export function LessonCardStudy({
   const [typing, setTyping] = useState("");
   const [success, setSuccess] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Clear the typing box whenever the card changes (render-phase reset).
   const [prevIndex, setPrevIndex] = useState(index);
@@ -54,6 +56,10 @@ export function LessonCardStudy({
   const total = lines.length;
   const line = lines[index];
   const content = line?.content ?? "";
+  // Colour the sentence per character as the learner types, so a wrong character
+  // shows up at once — the same feedback the lesson trainer's typing task gives.
+  const target = useMemo(() => [...content], [content]);
+  const charClasses = useMemo(() => typingCharClasses(target, typing), [target, typing]);
   const meaning = useMemo(() => {
     if (!line) return "";
     const tr = line.translations;
@@ -102,6 +108,19 @@ export function LessonCardStudy({
     }
   }
 
+  // Grow the field to fit its content so a long sentence wraps onto new lines
+  // instead of scrolling out of a one-line box — the whole typed answer stays
+  // readable, which matters most on a narrow phone.
+  function autoGrow(el: HTMLTextAreaElement | null) {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }
+
+  useEffect(() => {
+    autoGrow(inputRef.current);
+  }, [typing]);
+
   const { revealed, reveal, toggleReveal } = useCardControls({
     resetKey: index,
     onPrev: goPrev,
@@ -136,19 +155,32 @@ export function LessonCardStudy({
 
       <div className="vl-card lesson-line-card">
         <div className="vl-hanzi lesson-line-hanzi" lang="zh-CN">
-          {content}
+          {typing
+            ? target.map((ch, i) => (
+                <span key={i} className={`typing-char ${charClasses[i]}`}>
+                  {ch}
+                </span>
+              ))
+            : content}
         </div>
         <div className="vl-pinyin">{revealed ? line.pinyin || "" : ""}</div>
         <div className="vl-meaning">{revealed ? meaning : ""}</div>
 
         <div className="vl-typing-container">
-          <input
-            type="text"
+          <textarea
+            ref={inputRef}
             lang="zh-CN"
             className={`vl-input${success ? " success-highlight" : ""}`}
+            rows={1}
             placeholder={t("lesson.typing_placeholder")}
             value={typing}
             onChange={(e) => onTypingChange(e.target.value)}
+            onKeyDown={(e) => {
+              // Enter never inserts a newline — the sentence match is exact, so a
+              // stray newline would only ever break it. Matches the one-line box
+              // this textarea replaced.
+              if (e.key === "Enter") e.preventDefault();
+            }}
             autoComplete="off"
           />
         </div>
