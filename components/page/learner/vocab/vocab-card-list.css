@@ -9,6 +9,47 @@
   gap: 12px;
 }
 
+/* Study-control bar (review tab): Show/Hide Pinyin, Show/Hide Meaning, Shuffle —
+   the phone counterpart of the desktop table's column toggles + shuffle header. */
+.vocab-select .vcl-study-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 2px 0 4px;
+}
+.vocab-select .vcl-study-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 1px solid var(--vs-primary);
+  border-radius: 999px;
+  background: var(--vs-primary);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.vocab-select .vcl-study-btn:hover {
+  background: var(--vs-primary-hover);
+  border-color: var(--vs-primary-hover);
+}
+/* Toggled off (column hidden): an outlined, muted pill so the state is clear
+   without relying on colour alone. */
+.vocab-select .vcl-study-btn.is-off {
+  background: transparent;
+  border-color: var(--vs-border-cell);
+  color: var(--vs-text-muted);
+}
+.vocab-select .vcl-study-btn.is-off:hover {
+  background: var(--vs-row-hover);
+  border-color: var(--vs-primary);
+  color: var(--vs-text);
+}
+
 /* Select-all-on-page row */
 .vocab-select .vcl-selectall {
   display: flex;

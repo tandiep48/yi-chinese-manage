@@ -19,6 +19,9 @@ import {
   faChevronRight,
   faXmark,
   faPenNib,
+  faEye,
+  faEyeSlash,
+  faShuffle,
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
@@ -38,6 +41,10 @@ interface VocabCardListProps {
   onTogglePage?: (rows: VocabRow[], checked: boolean) => void;
   // Opens the page's stroke-order modal (reused from the table flow).
   onOpenStroke?: (word: string, pinyin: string) => void;
+  // Shows the study-control bar (Show/Hide Pinyin, Show/Hide Meaning, Shuffle) — the
+  // phone counterpart of the desktop table's column toggles + shuffle. On for the
+  // Vocab Review tab; off for the selection page (desktop already has these controls).
+  studyControls?: boolean;
 }
 
 function wordOf(row: VocabRow): string {
@@ -52,10 +59,35 @@ export function VocabCardList({
   onToggleWord,
   onTogglePage,
   onOpenStroke,
+  studyControls = false,
 }: VocabCardListProps) {
   const { t, lang } = useT();
   const [detail, setDetail] = useState<VocabRow | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Study controls (review tab only): hide pinyin/meaning for recall, shuffle the
+  // visible order. Shuffle mutates a local display order that resets when a new page
+  // loads — the same approach VocabTable uses on desktop.
+  const [hidePinyin, setHidePinyin] = useState(false);
+  const [hideMeaning, setHideMeaning] = useState(false);
+  const [displayRows, setDisplayRows] = useState<VocabRow[]>(rows);
+  const [prevRows, setPrevRows] = useState(rows);
+  if (rows !== prevRows) {
+    setPrevRows(rows);
+    setDisplayRows(rows);
+  }
+  const listRows = studyControls ? displayRows : rows;
+
+  function shuffle() {
+    setDisplayRows((prev) => {
+      const next = [...prev];
+      for (let i = next.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [next[i], next[j]] = [next[j], next[i]];
+      }
+      return next;
+    });
+  }
 
   function play(row: VocabRow) {
     if (!row.audio_key) return;
@@ -91,6 +123,38 @@ export function VocabCardList({
 
   return (
     <div className="vocab-card-list">
+      {studyControls && (
+        <div className="vcl-study-controls" role="group" aria-label={t("vocab_review.heading")}>
+          <button
+            type="button"
+            className={`vcl-study-btn${hidePinyin ? " is-off" : ""}`}
+            aria-pressed={!hidePinyin}
+            onClick={() => setHidePinyin((v) => !v)}
+          >
+            <FontAwesomeIcon icon={hidePinyin ? faEyeSlash : faEye} aria-hidden />
+            <span>{t("dashboard.table_pinyin")}</span>
+          </button>
+          <button
+            type="button"
+            className={`vcl-study-btn${hideMeaning ? " is-off" : ""}`}
+            aria-pressed={!hideMeaning}
+            onClick={() => setHideMeaning((v) => !v)}
+          >
+            <FontAwesomeIcon icon={hideMeaning ? faEyeSlash : faEye} aria-hidden />
+            <span>{t("dashboard.table_meaning_vn")}</span>
+          </button>
+          <button
+            type="button"
+            className="vcl-study-btn"
+            onClick={shuffle}
+            aria-label={t("vocab.shuffle_visible_aria")}
+          >
+            <FontAwesomeIcon icon={faShuffle} aria-hidden />
+            <span>{t("card_shortcuts.shuffle")}</span>
+          </button>
+        </div>
+      )}
+
       {selectable && (
         <label className="vcl-selectall">
           <input
@@ -104,7 +168,7 @@ export function VocabCardList({
       )}
 
       <ul className="vcl-cards">
-        {rows.map((row, index) => {
+        {listRows.map((row, index) => {
           const word = wordOf(row);
           const meaning = row.meaning_vn || row.meaning_en || "";
           const audioButton = row.audio_key ? (
@@ -142,8 +206,8 @@ export function VocabCardList({
                   {word}
                 </span>
                 <span className="vcl-card-text">
-                  <span className="vcl-card-pinyin">{row.pinyin}</span>
-                  <span className="vcl-card-meaning">{meaning}</span>
+                  <span className="vcl-card-pinyin">{hidePinyin ? "" : row.pinyin}</span>
+                  <span className="vcl-card-meaning">{hideMeaning ? "" : meaning}</span>
                 </span>
                 <FontAwesomeIcon icon={faChevronRight} className="vcl-card-chevron" aria-hidden />
               </button>
