@@ -103,6 +103,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
           clearReadCache();
           clearPassagesCache();
           setContentKey((k) => k + 1);
+          // Full reload once the new language is saved, so EVERY server-built view
+          // re-queries in it — not only the I18nRemount subtree. The lesson selector
+          // builds its titles from the account language, so without this it keeps
+          // querying under the old one until the next navigation.
+          if (typeof window !== "undefined") window.location.reload();
         } catch {
           // Not signed in, or the save failed: front-end-only switch, as before.
         }

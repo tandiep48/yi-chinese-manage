@@ -4,7 +4,7 @@
 // reads the account language for server-built content like lesson-trainer options)
 // never drifts out of sync with the UI switcher.
 
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, beforeAll } from "vitest";
 import { useEffect } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -44,6 +44,18 @@ function MountCounter() {
   }, []);
   return null;
 }
+
+// A saved language change reloads the page (so every server-built view re-queries in
+// the new language). jsdom's window.location.reload is not configurable, so swap in a
+// stub location that carries a mock reload we can assert on.
+const reloadMock = vi.fn();
+beforeAll(() => {
+  const { href, origin, pathname } = window.location;
+  Object.defineProperty(window, "location", {
+    configurable: true,
+    value: { href, origin, pathname, reload: reloadMock },
+  });
+});
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -113,12 +125,13 @@ describe("I18nProvider ↔ account language", () => {
 
     await user.click(screen.getByText("to-vi"));
 
-    // The switch is instant; the save then triggers the cache drop + remount.
+    // The switch is instant; the save then drops the caches and reloads the page so
+    // every server-built view (the lesson selector among them) re-queries.
     expect(screen.getByTestId("lang").textContent).toBe("vi");
     await waitFor(() => {
       expect(mockClearRead).toHaveBeenCalled();
       expect(mockClearPassages).toHaveBeenCalled();
-      expect(mounts).toBe(2); // remounted so server-built views refetch
+      expect(reloadMock).toHaveBeenCalled();
     });
   });
 
@@ -142,6 +155,7 @@ describe("I18nProvider ↔ account language", () => {
     await waitFor(() => expect(mockSave).toHaveBeenCalledWith("vi"));
     expect(mockClearRead).not.toHaveBeenCalled();
     expect(mockClearPassages).not.toHaveBeenCalled();
+    expect(reloadMock).not.toHaveBeenCalled();
     expect(mounts).toBe(1);
   });
 });
