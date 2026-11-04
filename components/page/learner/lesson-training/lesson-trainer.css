@@ -160,7 +160,9 @@
   font-size: clamp(24px, 4vw, 36px);
   line-height: 1.3;
   text-align: center;
+  max-width: 100%;
   word-break: break-word;
+  overflow-wrap: anywhere;
 }
 .lesson-trainer .lt-typing-target .typing-char.char-correct {
   color: var(--success);
@@ -186,7 +188,9 @@
   padding: 8px 12px;
   resize: none;
   overflow: hidden;
-  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 .lesson-trainer .lt-typing-input:focus {
   outline: none;
