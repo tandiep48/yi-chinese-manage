@@ -181,22 +181,9 @@ export function LessonSidebar({
             </nav>
           </AccordionItem>
 
-          {/* Grammar / Translation: lesson-wide study pages, opened in one click. */}
-          <DomainButton
-            icon={faFont}
-            label={t("grammar.page_title")}
-            active={domain === "grammar"}
-            onSelect={() => navigateToDomain("grammar")}
-          />
-          <DomainButton
-            icon={faLanguage}
-            label={t("translation.page_title")}
-            active={domain === "translation"}
-            onSelect={() => navigateToDomain("translation")}
-          />
-
-          {/* Master trainers run the whole lesson's vocab / sentences. Books have
-              no curated vocab, so they are offered on HSK lessons only. */}
+          {/* Master trainers run the whole lesson's vocab / sentences, sitting
+              between the parts and the lesson-wide study pages. Books have no
+              curated vocab, so they are offered on HSK lessons only. */}
           {!header?.isBook && (
             <>
               <DomainButton
@@ -213,6 +200,20 @@ export function LessonSidebar({
               />
             </>
           )}
+
+          {/* Grammar / Translation: lesson-wide study pages, opened in one click. */}
+          <DomainButton
+            icon={faFont}
+            label={t("grammar.page_title")}
+            active={domain === "grammar"}
+            onSelect={() => navigateToDomain("grammar")}
+          />
+          <DomainButton
+            icon={faLanguage}
+            label={t("translation.page_title")}
+            active={domain === "translation"}
+            onSelect={() => navigateToDomain("translation")}
+          />
         </div>
       </aside>
 
