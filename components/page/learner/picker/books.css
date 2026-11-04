@@ -75,9 +75,8 @@
   margin-left: 8px;
 }
 
+/* Phones: one book per row (full-width cards) so long titles and the
+   image-beside-body layout stay readable instead of being squeezed two-up. */
 @media (max-width: 640px) {
-  .lesson-picker .books-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-}
-@media (max-width: 400px) {
-  .lesson-picker .books-grid { grid-template-columns: 1fr; }
+  .lesson-picker .books-grid { grid-template-columns: 1fr; gap: 14px; }
 }
