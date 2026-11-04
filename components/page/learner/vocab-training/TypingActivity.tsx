@@ -21,6 +21,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { now } from "@/lib/clock";
 import { pickMeaning } from "@/lib/lessons/meaning";
+import { typingCharClasses } from "@/lib/lessons/typingGlow";
 import { useTrainerActionSlot } from "@/components/page/learner/trainer/TrainerShell";
 import { AUTO_ADVANCE_DELAY_MS, type Activity, type TrainerWord } from "@/lib/lessons/vocabTrainer";
 
@@ -246,11 +247,23 @@ export function TypingActivity({
       <div className="bt-typing">
         <div className="instruction">{t("vocab_trainer.instruction_type_recall")}</div>
         <div className="bt-type-list">
-          {words.map((row, idx) => (
+          {words.map((row, idx) => {
+            // Glow the prompt per character as it is typed, so a wrong character
+            // shows up at once — matching the lesson trainer. Only once typing has
+            // started, so an untyped prompt reads plainly.
+            const promptChars = [...row.word];
+            const glow = values[idx] ? typingCharClasses(promptChars, values[idx]) : null;
+            return (
             <div key={`${row.word}-${idx}`} className={`bt-type-row ${status[idx]}`}>
               <div className="bt-type-prompt">
                 <span className="bt-hanzi" style={{ fontSize: "30px" }}>
-                  {row.word}
+                  {glow
+                    ? promptChars.map((ch, ci) => (
+                        <span key={ci} className={`typing-char ${glow[ci]}`}>
+                          {ch}
+                        </span>
+                      ))
+                    : row.word}
                 </span>
               </div>
               <textarea
@@ -283,7 +296,8 @@ export function TypingActivity({
                 )}
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
       {slot && createPortal(actionButton, slot)}

@@ -19,6 +19,7 @@ export function LessonStudyShell({
   children,
   onSelectPart,
   onSelectDomain,
+  onStartMaster,
 }: {
   passageId: string;
   domain: StudyDomain;
@@ -29,6 +30,9 @@ export function LessonStudyShell({
   // Forwarded to the sidebar: when set, Grammar / Translation render in place
   // instead of navigating to their pages (used by the dashboard).
   onSelectDomain?: (target: StudyDomain) => void;
+  // Forwarded to the sidebar: when set, the Master Vocab / Master Lesson entries
+  // start that trainer sequence in place (the lesson flow owns it).
+  onStartMaster?: (engine: "vocab" | "lesson") => void;
 }) {
   // On phones the sidebar starts collapsed (a sticky toggle opens it as an
   // overlay drawer) so it doesn't eat the vertical space above the lesson; on
@@ -57,9 +61,10 @@ export function LessonStudyShell({
               onOpenChange={() => {}}
               onSelectPart={onSelectPart}
               onSelectDomain={onSelectDomain}
+              onStartMaster={onStartMaster}
             />
           </div>,
-          dockEl
+          dockEl,
         )}
       </div>
     );
@@ -67,7 +72,9 @@ export function LessonStudyShell({
 
   return (
     <div className="lesson-study ui2-lesson">
-      <div className={`lesson-study-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}>
+      <div
+        className={`lesson-study-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}
+      >
         {passageId && (
           <LessonSidebar
             passageId={passageId}
@@ -76,6 +83,7 @@ export function LessonStudyShell({
             onOpenChange={setOverride}
             onSelectPart={onSelectPart}
             onSelectDomain={onSelectDomain}
+            onStartMaster={onStartMaster}
           />
         )}
         <div className="lesson-study-main app-container">{children}</div>

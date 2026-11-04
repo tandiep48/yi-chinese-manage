@@ -105,6 +105,46 @@ describe("VocabCardList", () => {
     expect(screen.getByText("学习")).toBeInTheDocument();
   });
 
+  it("shows no study controls unless enabled", () => {
+    renderList();
+    expect(screen.queryByRole("button", { name: /^Pinyin$/ })).toBeNull();
+    expect(screen.queryByRole("button", { name: /^Meaning$/ })).toBeNull();
+  });
+
+  it("hides pinyin and meaning through the study controls", async () => {
+    const user = userEvent.setup();
+    render(
+      <I18nProvider>
+        <VocabCardList rows={[row("学习"), row("你好")]} selectable={false} studyControls />
+      </I18nProvider>
+    );
+
+    expect(screen.getByText("学习-py")).toBeInTheDocument();
+    expect(screen.getByText("学习-vn")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^Pinyin$/ }));
+    expect(screen.queryByText("学习-py")).toBeNull();
+    // Meaning is untouched until its own toggle.
+    expect(screen.getByText("学习-vn")).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^Meaning$/ }));
+    expect(screen.queryByText("学习-vn")).toBeNull();
+  });
+
+  it("keeps every word after a shuffle", async () => {
+    const user = userEvent.setup();
+    render(
+      <I18nProvider>
+        <VocabCardList rows={[row("学习"), row("你好")]} selectable={false} studyControls />
+      </I18nProvider>
+    );
+
+    await user.click(screen.getByRole("button", { name: /Shuffle visible/i }));
+
+    expect(screen.getByText("学习")).toBeInTheDocument();
+    expect(screen.getByText("你好")).toBeInTheDocument();
+  });
+
   it("the detail sheet's stroke button defers to onOpenStroke", async () => {
     const user = userEvent.setup();
     const { onOpenStroke } = renderList();

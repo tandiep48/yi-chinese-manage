@@ -93,6 +93,30 @@ describe("useLessonMilestone — passive steps", () => {
     expect(result.current.isCompleted(1)).toBe(true);
   });
 
+  it("advances the view at once without waiting for the save", async () => {
+    const { result } = renderHook(() => useLessonMilestone(PASSAGE));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    // A save still in flight must not hold the learner on the step (a disabled Next).
+    let release: (m: Milestone) => void = () => {};
+    mockMark.mockReturnValue(
+      new Promise<Milestone>((res) => {
+        release = res;
+      })
+    );
+
+    act(() => {
+      void result.current.completeAndAdvance();
+    });
+
+    // Advanced immediately, before the POST resolves.
+    expect(result.current.step).toBe(2);
+
+    await act(async () => {
+      release(milestone([1]));
+    });
+    expect(result.current.isCompleted(1)).toBe(true);
+  });
+
   it("still advances when the write fails", async () => {
     const { result } = renderHook(() => useLessonMilestone(PASSAGE));
     await waitFor(() => expect(result.current.loading).toBe(false));

@@ -51,9 +51,13 @@
   box-shadow: 0 4px 20px rgba(0, 122, 97, 0.08);
   transform: translateY(-2px);
 }
+/* The card whose audio is sounding during Play All (or a single play): a clear
+   highlight background + matching ring so it stands out against its siblings. The
+   ring is a box-shadow, not a wider border, so it adds no layout shift. */
 .lesson-study .vocab-card.playing-highlight {
-  border-color: var(--ls-primary);
-  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+  background: var(--ls-highlight);
+  border-color: var(--ls-highlight-border);
+  box-shadow: 0 0 0 2px var(--ls-highlight-border), 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 .lesson-study .vocab-card .vc-left { display: flex; align-items: center; gap: 1.25rem; width: 28%; min-width: 0; }
 .lesson-study .vocab-card .vc-num { font-size: 0.95rem; font-weight: 700; color: #111; width: 24px; flex-shrink: 0; }
@@ -122,8 +126,9 @@
   padding: 12px 14px;
 }
 .lesson-study .ws-card.playing-highlight {
-  border-color: var(--ls-primary);
-  box-shadow: 0 4px 20px rgba(0, 122, 97, 0.12);
+  background: var(--ls-highlight);
+  border-color: var(--ls-highlight-border);
+  box-shadow: 0 0 0 2px var(--ls-highlight-border), 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 .lesson-study .ws-card-main {
   flex: 1;

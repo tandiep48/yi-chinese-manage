@@ -3,15 +3,28 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { LessonSidebar } from "@/components/page/learner/lesson/LessonSidebar";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import * as partsHook from "@/hooks/lesson/useLessonParts";
-import type { SidebarPart, LessonPartsHeader } from "@/hooks/lesson/useLessonParts";
+import type {
+  SidebarPart,
+  LessonPartsHeader,
+} from "@/hooks/lesson/useLessonParts";
 
 const push = vi.fn();
 vi.mock("next/navigation", () => ({ useRouter: () => ({ push }) }));
 vi.mock("@/hooks/lesson/useLessonParts");
 
-const HEADER: LessonPartsHeader = { badge: "HSK2", lessonNum: "2", isBook: false };
+const HEADER: LessonPartsHeader = {
+  badge: "HSK2",
+  lessonNum: "2",
+  isBook: false,
+};
 const PARTS: SidebarPart[] = [
-  { passageId: "H2_2_1", partNum: "1", isNumber: false, title: "Lili likes to run.", progress: null },
+  {
+    passageId: "H2_2_1",
+    partNum: "1",
+    isNumber: false,
+    title: "Lili likes to run.",
+    progress: null,
+  },
   {
     passageId: "H2_2_2",
     partNum: "2",
@@ -24,13 +37,18 @@ const PARTS: SidebarPart[] = [
 function renderSidebar(
   open = true,
   passageId = "H2_2_2",
-  domain: "lesson" | "grammar" | "translation" = "lesson"
+  domain: "lesson" | "grammar" | "translation" = "lesson",
 ) {
   const onOpenChange = vi.fn();
   const utils = render(
     <I18nProvider>
-      <LessonSidebar passageId={passageId} domain={domain} open={open} onOpenChange={onOpenChange} />
-    </I18nProvider>
+      <LessonSidebar
+        passageId={passageId}
+        domain={domain}
+        open={open}
+        onOpenChange={onOpenChange}
+      />
+    </I18nProvider>,
   );
   return { ...utils, onOpenChange };
 }
@@ -58,7 +76,9 @@ describe("LessonSidebar", () => {
   it("marks the active domain and opens the other in a single click", () => {
     renderSidebar(true, "H2_2_2", "grammar");
     // Grammar is the active domain; its entry carries the active class, no expand step.
-    expect(screen.getByText("Grammar").closest(".acc-item")).toHaveClass("active");
+    expect(screen.getByText("Grammar").closest(".acc-item")).toHaveClass(
+      "active",
+    );
 
     // Translation is a direct button now — one click navigates.
     fireEvent.click(screen.getByText("Translation"));
@@ -69,6 +89,52 @@ describe("LessonSidebar", () => {
     renderSidebar(true, "H2_2_2", "lesson");
     fireEvent.click(screen.getByText("Grammar"));
     expect(push).toHaveBeenCalledWith("/learner/grammar?passage_id=H2_2_2");
+  });
+
+  it("renders the Master Vocab and Master Lesson trainer entries", () => {
+    renderSidebar();
+    expect(screen.getByText("Master Vocab Trainer")).toBeInTheDocument();
+    expect(screen.getByText("Master Lesson Trainer")).toBeInTheDocument();
+  });
+
+  it("starts the master trainers in place via onStartMaster when provided", () => {
+    const onStartMaster = vi.fn();
+    render(
+      <I18nProvider>
+        <LessonSidebar
+          passageId="H2_2_2"
+          domain="lesson"
+          open
+          onOpenChange={vi.fn()}
+          onStartMaster={onStartMaster}
+        />
+      </I18nProvider>,
+    );
+    fireEvent.click(screen.getByText("Master Vocab Trainer"));
+    expect(onStartMaster).toHaveBeenCalledWith("vocab");
+    fireEvent.click(screen.getByText("Master Lesson Trainer"));
+    expect(onStartMaster).toHaveBeenCalledWith("lesson");
+    expect(push).not.toHaveBeenCalled();
+  });
+
+  it("navigates to the lesson flow with ?master= when no in-place handler is given", () => {
+    renderSidebar(true, "H2_2_2", "grammar");
+    fireEvent.click(screen.getByText("Master Vocab Trainer"));
+    expect(push).toHaveBeenCalledWith(
+      "/learner/lesson?passage_id=H2_2_2&master=vocab",
+    );
+  });
+
+  it("hides the master trainers for a book lesson", () => {
+    vi.mocked(partsHook.useLessonParts).mockReturnValue({
+      loading: false,
+      error: null,
+      parts: PARTS,
+      header: { badge: "AML", lessonNum: "1", isBook: true },
+    });
+    renderSidebar(true, "AML_1_1");
+    expect(screen.queryByText("Master Vocab Trainer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Master Lesson Trainer")).not.toBeInTheDocument();
   });
 
   it("lists the parts and marks the current one active", () => {
@@ -113,10 +179,16 @@ describe("LessonSidebar", () => {
 
     rerender(
       <I18nProvider>
-        <LessonSidebar passageId="H2_2_2" open={false} onOpenChange={onOpenChange} />
-      </I18nProvider>
+        <LessonSidebar
+          passageId="H2_2_2"
+          open={false}
+          onOpenChange={onOpenChange}
+        />
+      </I18nProvider>,
     );
-    expect(screen.getByRole("button", { name: "Open Sidebar" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Open Sidebar" }),
+    ).toBeInTheDocument();
   });
 
   it("shows the empty state when the lesson has no parts", () => {

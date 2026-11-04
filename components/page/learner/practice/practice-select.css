@@ -14,8 +14,16 @@
 .practice-select .page-back:hover { color: var(--primary); }
 .practice-select .page-title { font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
 .practice-select .page-subtitle { color: var(--text-muted); margin-bottom: 36px; font-size: 1rem; }
+/* Three level cards per row on tablet and up; stacks to two then one on narrower
+   screens (mobile-first). */
 .practice-select .practice-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 18px;
+  display: grid; grid-template-columns: 1fr; gap: 18px;
+}
+@media (min-width: 480px) {
+  .practice-select .practice-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 768px) {
+  .practice-select .practice-grid { grid-template-columns: repeat(3, 1fr); }
 }
 .practice-select .practice-card {
   background: #cbe2d4; border: 1px solid #afcfbd; border-radius: 16px; padding: 28px 20px;

@@ -74,16 +74,9 @@ export function ProgressLines({
   centered?: boolean;
 }) {
   return (
-    <div className={`picker-progress-lines${centered ? " picker-progress-lines-centered" : ""}`}>
-      <Bars progress={progress} />
-    </div>
-  );
-}
-
-// Used inside the part-picker trainer action card.
-export function LessonProgress({ progress }: { progress: Progress }) {
-  return (
-    <div className="picker-lesson-progress">
+    <div
+      className={`picker-progress-lines${centered ? " picker-progress-lines-centered" : ""}`}
+    >
       <Bars progress={progress} />
     </div>
   );

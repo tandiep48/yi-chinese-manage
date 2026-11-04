@@ -129,6 +129,7 @@ export function VocabReviewPage({ embedded = false }: VocabReviewPageProps = {})
               <VocabCardList
                 rows={review.rows}
                 selectable={false}
+                studyControls
                 onOpenStroke={(word, pinyin) => setStroke({ mode: "word", word, pinyin })}
               />
             ) : (

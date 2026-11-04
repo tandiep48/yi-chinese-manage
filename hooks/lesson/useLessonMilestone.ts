@@ -9,11 +9,13 @@
 // so viewing step 2 again must not rewind progress. `current_step` only seeds the
 // initial view and is where "resume" returns to.
 //
-// Advancing a passive step (1, 2, 4, 5) POSTs and takes the server's recomputed
-// milestone as the answer. Graded steps (3, 6) are never posted — their trainers
-// record them — so finishing one is a `refresh()`. Gating is soft: finishing a
-// graded step moves the learner on whether or not the run passed; the refresh only
-// updates the progress markers, it does not decide whether Next may advance.
+// Advancing a passive step (1, 2, 4, 5) moves the view on at once and POSTs in the
+// background, taking the server's recomputed milestone when it lands. The advance is
+// never held on that write: a slow or failed save must not strand the learner on the
+// step with a disabled Next. Graded steps (3, 6) are never posted — their trainers
+// record them — so finishing one is a `refresh()`. Gating is soft: finishing a graded
+// step moves the learner on whether or not the run passed; the refresh only updates
+// the progress markers, it does not decide whether Next may advance.
 
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -111,8 +113,12 @@ export function useLessonMilestone(
   );
 
   const completeAndAdvance = useCallback(async () => {
-    if (saving) return;
     const current = step;
+    // Advance the view first (soft gating, mirroring refreshAfterRun): the write is
+    // best-effort, so a slow or failed save must never hold the learner on the step
+    // with a disabled Next. The functional update makes a double-tap idempotent — the
+    // second call sees the already-advanced step and does nothing.
+    if (current < totalSteps) setStep((s) => (s === current ? s + 1 : s));
     setSaving(true);
     try {
       // Soft-fail on the write: a lost row is re-derived or re-posted next time,
@@ -122,8 +128,7 @@ export function useLessonMilestone(
     } finally {
       setSaving(false);
     }
-    setStep((s) => (s === current && s < totalSteps ? s + 1 : s));
-  }, [passageId, step, totalSteps, saving]);
+  }, [passageId, step, totalSteps]);
 
   const refreshAfterRun = useCallback(async (): Promise<Milestone | null> => {
     const current = step;

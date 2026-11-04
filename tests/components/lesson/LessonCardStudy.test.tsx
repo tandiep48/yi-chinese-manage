@@ -90,6 +90,24 @@ describe("LessonCardStudy", () => {
     expect(onShowSummary).toHaveBeenCalledTimes(1);
   });
 
+  it("glows the sentence per character as it is typed", () => {
+    const { container } = setup();
+    const field = container.querySelector(".vl-input") as HTMLTextAreaElement;
+
+    // Line 1 is 你好. First char right, second wrong.
+    fireEvent.change(field, { target: { value: "你是" } });
+    const chars = container.querySelectorAll(".lesson-line-hanzi .typing-char");
+    expect(chars).toHaveLength(2);
+    expect(chars[0]).toHaveClass("char-correct");
+    expect(chars[1]).toHaveClass("char-wrong");
+  });
+
+  it("renders the typing field as a textarea so a long sentence wraps", () => {
+    const { container } = setup();
+    expect(container.querySelector("textarea.vl-input")).not.toBeNull();
+    expect(container.querySelector("input.vl-input")).toBeNull();
+  });
+
   // ── Milestone chrome (step 5) ──
   it("removes both Summary controls when hidden", () => {
     setup({ hideSummaryButton: true, hideBackSummary: true });

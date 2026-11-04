@@ -12,10 +12,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faKeyboard } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { answersMatch } from "@/lib/lessons/lessonTrainer";
+import { typingCharClasses } from "@/lib/lessons/typingGlow";
 import { useLessonTaskFlow } from "@/hooks/lesson/useLessonTaskFlow";
 import type { LessonTask } from "@/lib/types/lesson";
-
-const HANZI_RE = /[一-鿿]/;
 
 export function TypingTask({
   task,
@@ -50,27 +49,9 @@ export function TypingTask({
     autoGrow(inputRef.current);
   }, [value]);
 
-  // Colour each target character by the character typed at the same position. '、'
-  // positions consume no input; only a Chinese character is judged (so IME/pinyin
-  // composition in the field does not glow red).
-  const charClasses = useMemo(() => {
-    const typed = [...value];
-    const classes: string[] = [];
-    let ti = 0;
-    for (let i = 0; i < target.length; i++) {
-      if (target[i] === "、") {
-        classes.push("");
-        continue;
-      }
-      let cls = "";
-      if (ti < typed.length && HANZI_RE.test(typed[ti])) {
-        cls = typed[ti] === target[i] ? "char-correct" : "char-wrong";
-      }
-      classes.push(cls);
-      ti++;
-    }
-    return classes;
-  }, [value, target]);
+  // Colour each target character by the character typed at the same position
+  // (shared with the other typed milestone steps; see typingGlow).
+  const charClasses = useMemo(() => typingCharClasses(target, value), [value, target]);
 
   function handleChange(next: string) {
     if (answered) return;

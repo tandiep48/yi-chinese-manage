@@ -66,6 +66,11 @@
   line-height: 1.2;
   margin-bottom: 10px;
 }
+/* Per-character typing feedback (shared with the lesson trainer): the word glows
+   green where the typed character matches and red where it does not. Untyped
+   characters keep the card's own colour. */
+.lesson-study .vl-hanzi .typing-char.char-correct { color: var(--ls-primary); }
+.lesson-study .vl-hanzi .typing-char.char-wrong { color: #ef4444; }
 .lesson-study .vl-pinyin {
   font-size: 1.3rem;
   color: var(--ls-primary);
@@ -85,12 +90,20 @@
   width: 100%;
   padding: 12px;
   font-size: 1.2rem;
+  line-height: 1.4;
+  font-family: inherit;
   text-align: center;
   border-radius: 8px;
   border: 2px solid rgba(0, 122, 97, 0.15);
   background: #ffffff;
   color: var(--ls-text);
-  transition: all 0.3s ease;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  /* The lesson-card field is a textarea so a long sentence wraps onto new lines
+     rather than scrolling out of a one-line box; JS grows the height to fit. */
+  box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: break-word;
 }
 .lesson-study .vl-input:focus { outline: none; border-color: var(--ls-primary); }
 .lesson-study .vl-input.success-highlight {
