@@ -267,54 +267,6 @@
   font-weight: 600;
 }
 
-/* Trainer action card — the whole-lesson Vocab/Lesson trainer buttons (+ progress). */
-.lesson-picker .picker-lesson-action-card {
-  margin-top: 20px;
-  padding: 20px;
-  background: #ffffff;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-}
-.lesson-picker .picker-lesson-action-header {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.lesson-picker .picker-lesson-progress {
-  display: grid;
-  gap: 8px;
-  width: 100%;
-}
-.lesson-picker .picker-lesson-action-buttons {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-.lesson-picker .picker-action-btn {
-  border: 1px solid var(--primary);
-  border-radius: 8px;
-  background: var(--primary);
-  color: #ffffff;
-  cursor: pointer;
-  font: inherit;
-  font-weight: 800;
-  padding: 10px 14px;
-  transition:
-    background 0.18s,
-    transform 0.18s;
-}
-.lesson-picker .picker-action-btn:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-}
-/* Footer placement: the trainer card now sits below the part list, centered
-   under it, instead of in the header's right column. */
-.lesson-picker .picker-lesson-action-card-footer {
-  margin: 20px auto 0;
-}
-
 /* Part list */
 .lesson-picker .part-list {
   display: flex;
@@ -356,6 +308,24 @@
   border-color: #afcfbd;
   box-shadow: 0 8px 22px rgba(87, 104, 86, 0.1);
   transform: translateX(3px);
+}
+/* The whole-lesson trainer entries are <button>s rendered as part-list rows,
+   so strip the native button chrome to match the <a> rows. */
+.lesson-picker button.part-list-item {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  appearance: none;
+}
+.lesson-picker .part-list-item:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.lesson-picker .part-list-item:disabled:hover {
+  background: #ffffff;
+  border-color: #d9ded9;
+  box-shadow: 0 4px 14px rgba(87, 104, 86, 0.06);
+  transform: none;
 }
 .lesson-picker .part-list-title {
   color: #111111;
@@ -438,9 +408,6 @@
   .lesson-picker .picker-header-section {
     flex-direction: column;
     text-align: center;
-  }
-  .lesson-picker .picker-lesson-action-buttons {
-    grid-template-columns: 1fr;
   }
   .lesson-picker .level-picker-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

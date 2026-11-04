@@ -19,10 +19,7 @@ import {
 } from "@/lib/lessons/lessons";
 import { lessonImageUrl } from "@/lib/gcs";
 import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
-import {
-  LessonProgress,
-  ProgressLines,
-} from "@/components/page/learner/picker/PickerProgress";
+import { ProgressLines } from "@/components/page/learner/picker/PickerProgress";
 import {
   TrainTypePicker,
   type TrainerEngine,
@@ -69,7 +66,6 @@ export default function PartPickerPage({
     lesson === "Other"
       ? t("picker.other_passages")
       : `${t("picker.lesson_prefix")} ${lesson}`;
-  const emptyProgress = { learnedWords: 0, totalWords: 0, progressPct: 0 };
   const headerColor = lessonColor(hsk.key, lesson);
   const canTrain = !!current?.parts.length;
 
@@ -170,79 +166,73 @@ export default function PartPickerPage({
               {t("picker.no_lessons_found")}
             </p>
           ) : (
-            <>
-              <div className="part-list">
-                {current.parts.map((p) => {
-                  const progress = partsProgress[p.passage_id];
-                  return (
-                    <Link
-                      key={p.passage_id}
-                      href={`/learner/lesson?passage_id=${encodeURIComponent(p.passage_id)}`}
-                      className="part-list-item"
-                      // Record this as the most-recent lesson so the learning
-                      // page's "Continue" panel can offer it (best-effort POST).
-                      onClick={() => saveRecentLearning(p.passage_id)}
-                    >
-                      <div className="part-list-title">{partLabel(p, t)}</div>
-                      {progress ? (
-                        <ProgressLines progress={progress} centered />
-                      ) : null}
-                    </Link>
-                  );
-                })}
-                {current.parts[0] && (
-                  <>
-                    {/* Grammar / Translation are lesson-wide, so any part of this lesson
-                      resolves them — open the first part's lesson. */}
-                    <Link
-                      href={`/learner/grammar?passage_id=${encodeURIComponent(current.parts[0].passage_id)}`}
-                      className="part-list-item part-list-item-grammar"
-                    >
-                      <div className="part-list-title">
-                        {t("picker.grammar_btn")}
-                      </div>
-                    </Link>
-                    <Link
-                      href={`/learner/translation?passage_id=${encodeURIComponent(current.parts[0].passage_id)}`}
-                      className="part-list-item part-list-item-translation"
-                    >
-                      <div className="part-list-title">
-                        {t("picker.translation_btn")}
-                      </div>
-                    </Link>
-                  </>
-                )}
-              </div>
+            <div className="part-list">
+              {current.parts.map((p) => {
+                const progress = partsProgress[p.passage_id];
+                return (
+                  <Link
+                    key={p.passage_id}
+                    href={`/learner/lesson?passage_id=${encodeURIComponent(p.passage_id)}`}
+                    className="part-list-item"
+                    // Record this as the most-recent lesson so the learning
+                    // page's "Continue" panel can offer it (best-effort POST).
+                    onClick={() => saveRecentLearning(p.passage_id)}
+                  >
+                    <div className="part-list-title">{partLabel(p, t)}</div>
+                    {progress ? (
+                      <ProgressLines progress={progress} centered />
+                    ) : null}
+                  </Link>
+                );
+              })}
 
-              {/* Whole-lesson trainers — moved out of the header to below the part
-                  list so they sit directly under the last part. Each opens the
+              {/* Whole-lesson trainers — rows between the parts and Grammar /
+                  Translation, styled like the other options. Each opens the
                   skill-type picker and trains every part of the lesson. */}
-              <div className="picker-lesson-action-card picker-lesson-action-card-footer">
-                <div className="picker-lesson-action-header">
-                  <LessonProgress
-                    progress={current.progress ?? emptyProgress}
-                  />
-                  <div className="picker-lesson-action-buttons">
-                    <button
-                      type="button"
-                      className="picker-action-btn"
-                      disabled={!canTrain}
-                      onClick={() => setTrainEngine("vocab")}
-                    >
-                      {t("picker.vocab_trainer_btn")}
-                    </button>
-                    <button
-                      type="button"
-                      className="picker-action-btn"
-                      disabled={!canTrain}
-                      onClick={() => setTrainEngine("lesson")}
-                    >
-                      {t("picker.lesson_trainer_btn")}
-                    </button>
-                  </div>
+              <button
+                type="button"
+                className="part-list-item part-list-item-action"
+                disabled={!canTrain}
+                onClick={() => setTrainEngine("vocab")}
+              >
+                <div className="part-list-title">
+                  {t("picker.vocab_trainer_btn")}
                 </div>
-              </div>
-            </>
+              </button>
+              <button
+                type="button"
+                className="part-list-item part-list-item-action"
+                disabled={!canTrain}
+                onClick={() => setTrainEngine("lesson")}
+              >
+                <div className="part-list-title">
+                  {t("picker.lesson_trainer_btn")}
+                </div>
+              </button>
+
+              {current.parts[0] && (
+                <>
+                  {/* Grammar / Translation are lesson-wide, so any part of this lesson
+                      resolves them — open the first part's lesson. */}
+                  <Link
+                    href={`/learner/grammar?passage_id=${encodeURIComponent(current.parts[0].passage_id)}`}
+                    className="part-list-item part-list-item-grammar"
+                  >
+                    <div className="part-list-title">
+                      {t("picker.grammar_btn")}
+                    </div>
+                  </Link>
+                  <Link
+                    href={`/learner/translation?passage_id=${encodeURIComponent(current.parts[0].passage_id)}`}
+                    className="part-list-item part-list-item-translation"
+                  >
+                    <div className="part-list-title">
+                      {t("picker.translation_btn")}
+                    </div>
+                  </Link>
+                </>
+              )}
+            </div>
           )}
         </div>
       </div>
