@@ -185,8 +185,10 @@
   align-items: start;
 }
 .competition-shell .competition-trainer {
-  background: #cbe2d4;
-  border: 1px solid #afcfbd;
+  /* Match the milestone trainer (steps 3 & 6): its board sits on the plain white
+     .lesson-study card, not a mint panel. White here stands out from the mint page
+     background the same way, so the in-room trainer reads like the solo one. */
+  background: #ffffff;
   border-radius: 8px;
   padding: clamp(18px, 4vw, 30px);
   min-height: 360px;
@@ -207,6 +209,15 @@
   min-height: 52px;
 }
 .competition-shell .competition-action-bar .btn { min-width: 220px; }
+/* The in-room action button matches the milestone trainer's Next/Check button
+   (.trainer-action-slot.milestone-nav-slot .btn): rounder corners and the same
+   padding/weight. Scoped to the play screen's action bar, so the lobby / setup /
+   ranking buttons keep their own look. */
+.competition-shell .competition-action-bar .btn.primary {
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-weight: 600;
+}
 
 .competition-shell .competition-empty {
   text-align: center;
