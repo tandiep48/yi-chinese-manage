@@ -533,7 +533,9 @@
     "open_sidebar_aria": "Mở Thanh Bên",
     "pinyin_title": "Phiên Âm",
     "no_parts_found": "Không tìm thấy phần nào.",
-    "failed_load_parts": "Không thể tải các phần."
+    "failed_load_parts": "Không thể tải các phần.",
+    "master_vocab_trainer": "Luyện từ vựng tổng hợp",
+    "master_lesson_trainer": "Luyện bài tổng hợp"
   },
   "pinyin": {
     "basic_page_title": "Phiên Âm Cơ Bản",

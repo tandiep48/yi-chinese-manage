@@ -45,7 +45,8 @@ const NUMBER_ID = "H1_5_99";
 // The end-of-lesson master-trainer sequence, inserted between the last part and
 // Grammar: confirm → run Master Vocab, confirm → run Master Lesson, then Grammar.
 // Each trainer is independently skippable; declining one still offers the next.
-type MasterPhase = "vocab-confirm" | "vocab" | "lesson-confirm" | "lesson" | null;
+type MasterPhase =
+  "vocab-confirm" | "vocab" | "lesson-confirm" | "lesson" | null;
 
 interface LessonFlowProps {
   // The part to open on. Changing it (a host swapping the current lesson) re-seeds
@@ -55,6 +56,9 @@ interface LessonFlowProps {
   initialStep?: number;
   // Open on Grammar / Translation instead of the milestone (standalone ?view=).
   initialDomain?: StudyDomain;
+  // Open straight on a master-trainer confirm (standalone ?master=vocab|lesson),
+  // used when the sidebar's Master entry is clicked from a page without the flow.
+  initialMaster?: "vocab" | "lesson";
   // Mirrors the milestone step back to the host (URL ?step= on the standalone page).
   onStepChange?: (step: number) => void;
   // True while a graded trainer step runs, for a host with a mid-session guard.
@@ -65,6 +69,7 @@ export function LessonFlow({
   passageId,
   initialStep,
   initialDomain,
+  initialMaster,
   onStepChange,
   onRunningChange,
 }: LessonFlowProps) {
@@ -78,8 +83,15 @@ export function LessonFlow({
   const [atLastLesson, setAtLastLesson] = useState(false);
   const [nextPending, setNextPending] = useState(false);
   // The end-of-lesson master-trainer sequence (null = not in it). Entered when the
-  // last part's milestone completes, in place of jumping straight to Grammar.
-  const [masterPhase, setMasterPhase] = useState<MasterPhase>(null);
+  // last part's milestone completes, in place of jumping straight to Grammar — or
+  // opened straight on its confirm when the sidebar launches it (initialMaster).
+  const [masterPhase, setMasterPhase] = useState<MasterPhase>(() =>
+    initialMaster === "vocab"
+      ? "vocab-confirm"
+      : initialMaster === "lesson"
+        ? "lesson-confirm"
+        : null,
+  );
   // Translation's Next asks before rolling on to the next lesson.
   const [confirmNextLesson, setConfirmNextLesson] = useState(false);
 
@@ -109,11 +121,11 @@ export function LessonFlow({
   // part-picker's whole-lesson trainers use).
   const vocabMasterIds = useMemo(
     () => passageIds.filter((id) => !PINYIN_IDS.has(id)),
-    [passageIds]
+    [passageIds],
   );
   const lessonMasterIds = useMemo(
     () => vocabMasterIds.filter((id) => id !== NUMBER_ID),
-    [vocabMasterIds]
+    [vocabMasterIds],
   );
 
   const onSelectPart = useCallback((id: string) => {
@@ -123,6 +135,16 @@ export function LessonFlow({
     // Jumping to a part abandons any end-of-lesson sequence in progress.
     setMasterPhase(null);
     setConfirmNextLesson(false);
+  }, []);
+
+  // The sidebar's Master Vocab / Master Lesson entry: open that master trainer's
+  // confirm now. It then chains exactly like the end-of-milestone sequence — skip
+  // or finish Master Vocab offers Master Lesson, and that ends into Grammar.
+  const startMaster = useCallback((engine: "vocab" | "lesson") => {
+    setDomain("lesson");
+    setConfirmNextLesson(false);
+    setAtLastLesson(false);
+    setMasterPhase(engine === "vocab" ? "vocab-confirm" : "lesson-confirm");
   }, []);
 
   // The master sequence finished (or was skipped through): on to Grammar, where the
@@ -159,14 +181,21 @@ export function LessonFlow({
       domain={domain}
       onSelectPart={onSelectPart}
       onSelectDomain={setDomain}
+      onStartMaster={startMaster}
     >
       {inMasterTrainer ? (
         <MasterTrainerStage
           engine={masterPhase === "vocab" ? "vocab" : "lesson"}
-          passageIds={masterPhase === "vocab" ? vocabMasterIds : lessonMasterIds}
+          passageIds={
+            masterPhase === "vocab" ? vocabMasterIds : lessonMasterIds
+          }
           // Master Vocab hands on to the Master Lesson confirm; Master Lesson ends
           // the sequence into Grammar.
-          onDone={masterPhase === "vocab" ? () => setMasterPhase("lesson-confirm") : finishMasters}
+          onDone={
+            masterPhase === "vocab"
+              ? () => setMasterPhase("lesson-confirm")
+              : finishMasters
+          }
         />
       ) : domain === "grammar" ? (
         <GrammarView
@@ -186,7 +215,9 @@ export function LessonFlow({
             // Confirm before rolling on to the next lesson.
             onNext: () => setConfirmNextLesson(true),
             prevLabel: t("reading.prev"),
-            nextLabel: atLastLesson ? t("milestone.lesson_complete") : t("milestone.next_lesson"),
+            nextLabel: atLastLesson
+              ? t("milestone.lesson_complete")
+              : t("milestone.next_lesson"),
             nextDisabled: atLastLesson || nextPending,
           }}
         />
@@ -252,10 +283,20 @@ interface FlowNav {
   nextDisabled?: boolean;
 }
 
-function LessonFlowNav({ onPrev, onNext, prevLabel, nextLabel, nextDisabled }: FlowNav) {
+function LessonFlowNav({
+  onPrev,
+  onNext,
+  prevLabel,
+  nextLabel,
+  nextDisabled,
+}: FlowNav) {
   return (
     <div className="lesson-flow-nav">
-      <button type="button" className="lesson-flow-nav-btn lesson-flow-nav-prev" onClick={onPrev}>
+      <button
+        type="button"
+        className="lesson-flow-nav-btn lesson-flow-nav-prev"
+        onClick={onPrev}
+      >
         <FontAwesomeIcon icon={faArrowLeft} aria-hidden />
         <span>{prevLabel}</span>
       </button>
@@ -277,10 +318,18 @@ function LessonFlowNav({ onPrev, onNext, prevLabel, nextLabel, nextDisabled }: F
 // breadcrumb + panel of /learner/grammar and /learner/translation.
 function lessonBreadcrumb(passageId: string, lessonPrefix: string): string {
   const seg = passageId.split("_");
-  return seg.length >= 2 ? `${hskLevelFromPassageId(passageId)} · ${lessonPrefix} ${seg[1]}` : "";
+  return seg.length >= 2
+    ? `${hskLevelFromPassageId(passageId)} · ${lessonPrefix} ${seg[1]}`
+    : "";
 }
 
-export function GrammarView({ passageId, flow }: { passageId: string; flow?: FlowNav }) {
+export function GrammarView({
+  passageId,
+  flow,
+}: {
+  passageId: string;
+  flow?: FlowNav;
+}) {
   const { t } = useT();
   const { loading, error, sections } = useGrammar(passageId);
   return (
@@ -296,7 +345,13 @@ export function GrammarView({ passageId, flow }: { passageId: string; flow?: Flo
   );
 }
 
-export function TranslationView({ passageId, flow }: { passageId: string; flow?: FlowNav }) {
+export function TranslationView({
+  passageId,
+  flow,
+}: {
+  passageId: string;
+  flow?: FlowNav;
+}) {
   const { t } = useT();
   const { loading, error, rows } = useTranslation(passageId);
   return (

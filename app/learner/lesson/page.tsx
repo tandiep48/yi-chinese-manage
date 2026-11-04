@@ -17,7 +17,10 @@ import { WordSummary } from "@/components/page/learner/lesson/WordSummary";
 import { LessonSummary } from "@/components/page/learner/lesson/LessonSummary";
 import { LessonStudyShell } from "@/components/page/learner/lesson/LessonStudyShell";
 import { LessonFlow } from "@/components/page/learner/lesson/LessonFlow";
-import { TrainTypePicker, type TrainerEngine } from "@/components/page/learner/trainer/TrainTypePicker";
+import {
+  TrainTypePicker,
+  type TrainerEngine,
+} from "@/components/page/learner/trainer/TrainTypePicker";
 import { useT } from "@/components/i18n/I18nProvider";
 
 type Domain = "vocab" | "lesson";
@@ -38,10 +41,12 @@ function LessonPageContent() {
 
   // HSK parts open on the vocab (Word Summary) domain in the legacy flow; book
   // parts pass ?view=lesson to land on Lesson Summary, matching learning.js.
-  const initialDomain: Domain = searchParams.get("view") === "lesson" ? "lesson" : "vocab";
+  const initialDomain: Domain =
+    searchParams.get("view") === "lesson" ? "lesson" : "vocab";
   const [domain, setDomain] = useState<Domain>(initialDomain);
   const [trainEngine, setTrainEngine] = useState<TrainerEngine | null>(null);
-  const { loading, error, passage, vocab, vocabError } = useLessonOverview(passageId);
+  const { loading, error, passage, vocab, vocabError } =
+    useLessonOverview(passageId);
 
   // HSK parts run the six-step milestone (docs/plans/dashboard-tabs.md §10); book
   // parts keep this tabbed page, because books have no curated vocab and so have
@@ -53,6 +58,15 @@ function LessonPageContent() {
   const stepParam = Number(searchParams.get("step"));
   const initialStep = stepParam >= 1 && stepParam <= 6 ? stepParam : undefined;
 
+  // ?master=vocab|lesson opens the flow straight on that master-trainer confirm —
+  // set when the lesson sidebar's Master entry is clicked from a page (Grammar /
+  // Translation) that has no flow of its own to run it in place.
+  const masterParam = searchParams.get("master");
+  const initialMaster =
+    masterParam === "vocab" || masterParam === "lesson"
+      ? masterParam
+      : undefined;
+
   // Mirror the milestone's step into the URL so a refresh lands back on it.
   // Shallow (replace, not push), matching the learner home's ?tab= handling.
   const onStepChange = useCallback(
@@ -62,7 +76,7 @@ function LessonPageContent() {
       params.set("step", String(step));
       router.replace(`/learner/lesson?${params.toString()}`, { scroll: false });
     },
-    [router, searchParams]
+    [router, searchParams],
   );
 
   if (showMilestone) {
@@ -70,7 +84,12 @@ function LessonPageContent() {
     // Translation and on to the next lesson — the same component the dashboard
     // Lesson tab mounts.
     return (
-      <LessonFlow passageId={passageId} initialStep={initialStep} onStepChange={onStepChange} />
+      <LessonFlow
+        passageId={passageId}
+        initialStep={initialStep}
+        initialMaster={initialMaster}
+        onStepChange={onStepChange}
+      />
     );
   }
 
@@ -83,7 +102,9 @@ function LessonPageContent() {
     return (
       <LessonStudyShell passageId={passageId} domain="lesson">
         <div className="lesson-learner-empty">
-          {error ? t("reading.failed_load_passage") : t("reading.loading_passage")}
+          {error
+            ? t("reading.failed_load_passage")
+            : t("reading.loading_passage")}
         </div>
       </LessonStudyShell>
     );
@@ -95,11 +116,21 @@ function LessonPageContent() {
     if (!passageId) return;
     try {
       if (engine === "vocab") {
-        sessionStorage.setItem("vocabTrainerActivityTypes", JSON.stringify(types));
-        router.push(`/learner/vocab-training-batch?mode=6&passage_id=${encodeURIComponent(passageId)}`);
+        sessionStorage.setItem(
+          "vocabTrainerActivityTypes",
+          JSON.stringify(types),
+        );
+        router.push(
+          `/learner/vocab-training-batch?mode=6&passage_id=${encodeURIComponent(passageId)}`,
+        );
       } else {
-        sessionStorage.setItem("lessonTrainerActivityTypes", JSON.stringify(types));
-        router.push(`/learner/lesson-training?passage_id=${encodeURIComponent(passageId)}`);
+        sessionStorage.setItem(
+          "lessonTrainerActivityTypes",
+          JSON.stringify(types),
+        );
+        router.push(
+          `/learner/lesson-training?passage_id=${encodeURIComponent(passageId)}`,
+        );
       }
     } catch {
       // sessionStorage unavailable (private mode); the trainer still starts, just
@@ -107,7 +138,7 @@ function LessonPageContent() {
       router.push(
         engine === "vocab"
           ? `/learner/vocab-training-batch?mode=6&passage_id=${encodeURIComponent(passageId)}`
-          : `/learner/lesson-training?passage_id=${encodeURIComponent(passageId)}`
+          : `/learner/lesson-training?passage_id=${encodeURIComponent(passageId)}`,
       );
     }
   }
@@ -131,18 +162,25 @@ function LessonPageContent() {
           className={`tab${domain === "lesson" ? " active" : ""}`}
           onClick={() => setDomain("lesson")}
         >
-          <FontAwesomeIcon icon={faBookOpen} /> {t("vocab_trainer.lesson_summary")}
+          <FontAwesomeIcon icon={faBookOpen} />{" "}
+          {t("vocab_trainer.lesson_summary")}
         </button>
       </nav>
 
       {!passageId ? (
-        <div className="lesson-learner-empty">{t("reading.failed_load_passage")}</div>
+        <div className="lesson-learner-empty">
+          {t("reading.failed_load_passage")}
+        </div>
       ) : domain === "vocab" ? (
         <WordSummary
           vocab={vocab}
           loading={loading}
           error={vocabError}
-          onLearn={() => router.push(`/learner/vocab-learning?passage_id=${encodeURIComponent(passageId)}&flow=lesson-part`)}
+          onLearn={() =>
+            router.push(
+              `/learner/vocab-learning?passage_id=${encodeURIComponent(passageId)}&flow=lesson-part`,
+            )
+          }
           onTrain={() => setTrainEngine("vocab")}
         />
       ) : (
@@ -150,7 +188,11 @@ function LessonPageContent() {
           passage={passage}
           loading={loading}
           error={error}
-          onLearn={() => router.push(`/learner/lesson-learning?passage_id=${encodeURIComponent(passageId)}`)}
+          onLearn={() =>
+            router.push(
+              `/learner/lesson-learning?passage_id=${encodeURIComponent(passageId)}`,
+            )
+          }
           onTrain={() => setTrainEngine("lesson")}
         />
       )}

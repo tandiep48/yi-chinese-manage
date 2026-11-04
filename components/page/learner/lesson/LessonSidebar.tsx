@@ -22,8 +22,13 @@ import {
   faLanguage,
   faCaretUp,
   faCaretDown,
+  faDumbbell,
+  faGraduationCap,
 } from "@fortawesome/free-solid-svg-icons";
-import { useLessonParts, type SidebarPart } from "@/hooks/lesson/useLessonParts";
+import {
+  useLessonParts,
+  type SidebarPart,
+} from "@/hooks/lesson/useLessonParts";
 import { partPickerHref } from "@/lib/lessons/lessons";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./lesson-sidebar.css";
@@ -39,6 +44,7 @@ export function LessonSidebar({
   onOpenChange,
   onSelectPart,
   onSelectDomain,
+  onStartMaster,
 }: {
   passageId: string;
   domain?: StudyDomain;
@@ -51,6 +57,10 @@ export function LessonSidebar({
   // When given, Grammar / Translation render in place via this callback instead of
   // navigating to their pages — the dashboard switches its embedded view this way.
   onSelectDomain?: (target: StudyDomain) => void;
+  // When given, the Master Vocab / Master Lesson entries start that end-of-lesson
+  // trainer sequence in place (the lesson flow owns it). Without it — the standalone
+  // Grammar / Translation pages — they navigate to the lesson flow with ?master=.
+  onStartMaster?: (engine: "vocab" | "lesson") => void;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -58,7 +68,7 @@ export function LessonSidebar({
   // Lesson Parts is the one accordion: open on the lesson view, collapsed while a
   // Grammar/Translation study page is showing. Clicking its header toggles it.
   const [openSection, setOpenSection] = useState<Section | null>(
-    domain === "lesson" ? "parts" : null
+    domain === "lesson" ? "parts" : null,
   );
   const toggleSection = (section: Section) =>
     setOpenSection((current) => (current === section ? null : section));
@@ -83,8 +93,23 @@ export function LessonSidebar({
       onSelectDomain(target);
       return;
     }
-    const route = target === "grammar" ? "/learner/grammar" : "/learner/translation";
+    const route =
+      target === "grammar" ? "/learner/grammar" : "/learner/translation";
     router.push(`${route}?passage_id=${encodeURIComponent(passageId)}`);
+  };
+
+  // Master Vocab / Master Lesson: the whole-lesson trainer sequence. In the lesson
+  // flow this runs in place (confirm → run → the next master → Grammar); from the
+  // standalone Grammar / Translation pages there is no flow mounted, so hand off to
+  // the lesson flow with ?master= and let it open on that confirm.
+  const startMaster = (engine: "vocab" | "lesson") => {
+    if (onStartMaster) {
+      onStartMaster(engine);
+      return;
+    }
+    router.push(
+      `/learner/lesson?passage_id=${encodeURIComponent(passageId)}&master=${engine}`,
+    );
   };
 
   const title = header?.lessonNum
@@ -136,9 +161,13 @@ export function LessonSidebar({
               {loading ? (
                 <div className="sidebar-loader">{t("widgets.loading")}</div>
               ) : error ? (
-                <div className="sidebar-loader">{t("sidebar.failed_load_parts")}</div>
+                <div className="sidebar-loader">
+                  {t("sidebar.failed_load_parts")}
+                </div>
               ) : parts.length === 0 ? (
-                <div className="sidebar-loader">{t("sidebar.no_parts_found")}</div>
+                <div className="sidebar-loader">
+                  {t("sidebar.no_parts_found")}
+                </div>
               ) : (
                 parts.map((p) => (
                   <PartStep
@@ -165,6 +194,25 @@ export function LessonSidebar({
             active={domain === "translation"}
             onSelect={() => navigateToDomain("translation")}
           />
+
+          {/* Master trainers run the whole lesson's vocab / sentences. Books have
+              no curated vocab, so they are offered on HSK lessons only. */}
+          {!header?.isBook && (
+            <>
+              <DomainButton
+                icon={faDumbbell}
+                label={t("sidebar.master_vocab_trainer")}
+                active={false}
+                onSelect={() => startMaster("vocab")}
+              />
+              <DomainButton
+                icon={faGraduationCap}
+                label={t("sidebar.master_lesson_trainer")}
+                active={false}
+                onSelect={() => startMaster("lesson")}
+              />
+            </>
+          )}
         </div>
       </aside>
 
@@ -197,12 +245,20 @@ function AccordionItem({
 }) {
   return (
     <div className={`acc-item${expanded ? " active" : ""}`}>
-      <button type="button" className="acc-header" onClick={onToggle} aria-expanded={expanded}>
+      <button
+        type="button"
+        className="acc-header"
+        onClick={onToggle}
+        aria-expanded={expanded}
+      >
         <span className="acc-icon">
           <FontAwesomeIcon icon={icon} />
         </span>
         <span className="acc-title">{label}</span>
-        <FontAwesomeIcon icon={expanded ? faCaretUp : faCaretDown} className="acc-arrow" />
+        <FontAwesomeIcon
+          icon={expanded ? faCaretUp : faCaretDown}
+          className="acc-arrow"
+        />
       </button>
       {expanded && <div className="acc-body">{children}</div>}
     </div>
@@ -250,7 +306,10 @@ function PartStep({
 }) {
   const { t } = useT();
   const label =
-    part.title || (part.isNumber ? t("picker.number_part") : `${t("picker.part_prefix")} ${part.partNum}`);
+    part.title ||
+    (part.isNumber
+      ? t("picker.number_part")
+      : `${t("picker.part_prefix")} ${part.partNum}`);
   const iconContent = part.isNumber ? "#" : part.partNum;
 
   return (
@@ -268,10 +327,17 @@ function PartStep({
   );
 }
 
-function MiniStats({ progress }: { progress: NonNullable<SidebarPart["progress"]> }) {
+function MiniStats({
+  progress,
+}: {
+  progress: NonNullable<SidebarPart["progress"]>;
+}) {
   const { t } = useT();
   const wordsPct = pct(progress.learnedWords, progress.totalWords);
-  const lessonPct = Math.max(0, Math.min(100, Math.round(progress.progressPct || 0)));
+  const lessonPct = Math.max(
+    0,
+    Math.min(100, Math.round(progress.progressPct || 0)),
+  );
   const wordsFull = progress.totalWords > 0 && wordsPct >= 100;
   const lessonFull = lessonPct >= 100;
 
@@ -280,7 +346,10 @@ function MiniStats({ progress }: { progress: NonNullable<SidebarPart["progress"]
       <span className="mini-stat">
         <span className="label">{t("picker.words_label")}</span>
         <span className="mini-progress-bg">
-          <span className={`mini-progress-fill${wordsFull ? " success" : ""}`} style={{ width: `${wordsPct}%` }} />
+          <span
+            className={`mini-progress-fill${wordsFull ? " success" : ""}`}
+            style={{ width: `${wordsPct}%` }}
+          />
         </span>
         <span className={`value${wordsFull ? " success-text" : ""}`}>
           {progress.learnedWords}/{progress.totalWords}
@@ -289,9 +358,14 @@ function MiniStats({ progress }: { progress: NonNullable<SidebarPart["progress"]
       <span className="mini-stat">
         <span className="label">{t("picker.lesson_progress_label")}</span>
         <span className="mini-progress-bg">
-          <span className={`mini-progress-fill${lessonFull ? " success" : ""}`} style={{ width: `${lessonPct}%` }} />
+          <span
+            className={`mini-progress-fill${lessonFull ? " success" : ""}`}
+            style={{ width: `${lessonPct}%` }}
+          />
         </span>
-        <span className={`value${lessonFull ? " success-text" : ""}`}>{lessonPct}%</span>
+        <span className={`value${lessonFull ? " success-text" : ""}`}>
+          {lessonPct}%
+        </span>
       </span>
     </span>
   );
