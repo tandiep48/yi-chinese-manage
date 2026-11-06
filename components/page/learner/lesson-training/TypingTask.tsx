@@ -26,7 +26,10 @@ export function TypingTask({
   onAdvance: () => void;
 }) {
   const { t } = useT();
-  const { answered, commit, buttonPortal } = useLessonTaskFlow({ task, onResolved, onAdvance });
+  const { answered, outcome, commit, buttonPortal } = useLessonTaskFlow({ task, onResolved, onAdvance });
+  // On skip / a wrong submit, reveal the whole target sentence in green so the correct
+  // answer is clearly shown (a correct answer already glows green from what was typed).
+  const reveal = answered && outcome !== "correct";
   const [value, setValue] = useState("");
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
 
@@ -78,7 +81,7 @@ export function TypingTask({
 
       <div className="lt-typing-target">
         {target.map((ch, i) => (
-          <span key={i} className={`typing-char ${charClasses[i]}`}>
+          <span key={i} className={`typing-char ${reveal ? "char-correct" : charClasses[i]}`}>
             {ch}
           </span>
         ))}
