@@ -23,6 +23,23 @@ describe("typingCharClasses", () => {
     expect(typingCharClasses([..."好"], "hao")).toEqual([""]);
   });
 
+  it("judges digits the same as characters", () => {
+    // Numbers land in the field directly (no composition), so a typed digit is judged
+    // at once — a matching digit glows correct, a mismatched one wrong.
+    expect(typingCharClasses([..."第2课"], "第3课")).toEqual([
+      "char-correct",
+      "char-wrong",
+      "char-correct",
+    ]);
+    // Full-width digits are judged too.
+    expect(typingCharClasses([..."２０２４"], "２０２４")).toEqual([
+      "char-correct",
+      "char-correct",
+      "char-correct",
+      "char-correct",
+    ]);
+  });
+
   it("skips 、 separators without consuming typed input", () => {
     // The separator is never judged; the character after it lines up with the next
     // typed character, not one shifted by the separator.
