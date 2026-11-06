@@ -41,8 +41,16 @@
   background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 600;
   padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em;
 }
+/* Three lesson cards per row on tablet and up; stacks to two then one on narrower
+   screens (mobile-first), matching the level grid above. */
 .practice-select .lesson-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px;
+  display: grid; grid-template-columns: 1fr; gap: 16px;
+}
+@media (min-width: 480px) {
+  .practice-select .lesson-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 768px) {
+  .practice-select .lesson-grid { grid-template-columns: repeat(3, 1fr); }
 }
 .practice-select .lesson-card {
   background: #cbe2d4; border: 1px solid #afcfbd; border-radius: 12px; padding: 24px 16px;
