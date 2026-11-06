@@ -190,8 +190,13 @@
     "lesson_progress_label": "Bài Học",
     "vocab_trainer_btn": "Luyện Từ Vựng",
     "lesson_trainer_btn": "Luyện Bài Học",
+    "exam_btn": "Kiểm Tra",
     "translation_btn": "Dịch",
     "grammar_btn": "Ngữ Pháp"
+  },
+  "exam_chooser": {
+    "title": "Kiểm Tra",
+    "subtitle": "Chọn phần luyện tập"
   },
   "translation": {
     "page_title": "Dịch",
@@ -308,6 +313,7 @@
     "lesson_overview": "Tổng Quan Bài Học",
     "vocab_overview": "Tổng Quan Từ Vựng",
     "play_audio": "Phát Âm Thanh",
+    "stop_audio": "Dừng Âm Thanh",
     "auto_play": "Tự Động Phát",
     "stop_auto_play": "Dừng",
     "speaking_status": "Nhấn Nói và đọc câu thật rõ.",
@@ -534,8 +540,7 @@
     "pinyin_title": "Phiên Âm",
     "no_parts_found": "Không tìm thấy phần nào.",
     "failed_load_parts": "Không thể tải các phần.",
-    "master_vocab_trainer": "Luyện từ vựng tổng hợp",
-    "master_lesson_trainer": "Luyện bài tổng hợp"
+    "exam": "Kiểm Tra"
   },
   "pinyin": {
     "basic_page_title": "Phiên Âm Cơ Bản",

@@ -83,6 +83,17 @@ describe("ChoiceTask correct-answer flow", () => {
     expect(onAdvance).toHaveBeenCalledTimes(1);
   });
 
+  it("highlights the correct option when the task is skipped", () => {
+    render(<ChoiceTask task={TASK} onResolved={vi.fn()} onAdvance={vi.fn()} />);
+
+    fireEvent.click(screen.getByText("trainer.skip"));
+
+    const correct = [...document.querySelectorAll<HTMLButtonElement>(".lt-mc-btn")].find((b) =>
+      b.textContent?.includes("I drink water")
+    );
+    expect(correct?.className).toContain("lt-correct");
+  });
+
   it("shows Next after a wrong answer and advances when clicked", () => {
     const onAdvance = vi.fn();
     render(<ChoiceTask task={TASK} onResolved={vi.fn()} onAdvance={onAdvance} />);

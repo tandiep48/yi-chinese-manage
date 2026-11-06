@@ -4,12 +4,17 @@
 // trainer's typing task (milestone 6) does.
 //
 // Given the target characters and what the learner has typed so far, it returns one
-// class per target character: "char-correct" / "char-wrong" for a judged Chinese
-// character, or "" for one that is not judged yet (nothing typed there, or the typed
-// slot is still an IME/pinyin composition rather than a Chinese character). '、'
-// separators in the target consume no input, matching the lesson trainer.
+// class per target character: "char-correct" / "char-wrong" for a judged character, or
+// "" for one that is not judged yet (nothing typed there, or the typed slot is still an
+// IME/pinyin composition rather than a settled character). '、' separators in the target
+// consume no input, matching the lesson trainer.
+//
+// A "judged" typed slot is a committed Chinese character or a digit (ASCII 0-9 or the
+// full-width ０-９ forms): both land in the field directly, so there is no composing
+// stage to wait through. Latin letters stay unjudged — they are usually mid-composition
+// pinyin that has not yet resolved to a character.
 
-const HANZI_RE = /[一-鿿]/;
+const JUDGE_RE = /[一-鿿0-9０-９]/;
 
 export function typingCharClasses(target: string[], value: string): string[] {
   const typed = [...value];
@@ -21,7 +26,7 @@ export function typingCharClasses(target: string[], value: string): string[] {
       continue;
     }
     let cls = "";
-    if (ti < typed.length && HANZI_RE.test(typed[ti])) {
+    if (ti < typed.length && JUDGE_RE.test(typed[ti])) {
       cls = typed[ti] === target[i] ? "char-correct" : "char-wrong";
     }
     classes.push(cls);

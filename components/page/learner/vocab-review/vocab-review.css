@@ -149,6 +149,24 @@
   font-weight: 600;
 }
 
+/* ── Meaning wraps in full on the Review page ──
+   Review is for reading, so the meaning shows every line here — unlike the /vocab
+   selection page, where the card preview stays clamped. Three-class selectors beat
+   the two-class base rules in vocab-table.css / vocab-card-list.css outright, so the
+   override never depends on chunk load order (§2). */
+.vocab-review .vcl-cards .vcl-card-meaning {
+  display: block;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.vocab-review .vocab-table .vocab-meaning-vn {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
 @media (max-width: 760px) {
   .vocab-review .review-heading {
     font-size: 1.15rem;

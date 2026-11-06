@@ -24,7 +24,10 @@ export interface LessonTaskFlow {
   answered: boolean;
   outcome: TaskOutcome;
   audioSrc: string | null;
+  // True while the task audio is playing, so the play button can show a stop icon.
+  isPlaying: boolean;
   playAudio: () => void;
+  stopAudio: () => void;
   commit: (userAnswer: string, isCorrect: boolean) => void;
   buttonPortal: React.ReactNode;
 }
@@ -53,6 +56,7 @@ export function useLessonTaskFlow({
   const slot = useTrainerActionSlot();
   const [answered, setAnswered] = useState(false);
   const [outcome, setOutcome] = useState<TaskOutcome>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const startRef = useRef(now());
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -89,7 +93,15 @@ export function useLessonTaskFlow({
 
   function ensureAudio(): HTMLAudioElement | null {
     if (!audioSrc) return null;
-    if (!audioRef.current) audioRef.current = new Audio();
+    if (!audioRef.current) {
+      audioRef.current = new Audio();
+      // Keep the play/stop button's icon in sync with playback. These listeners are
+      // separate from the `onended` that playAudioToEnd sets, so they never clobber it.
+      audioRef.current.addEventListener("play", () => setIsPlaying(true));
+      audioRef.current.addEventListener("ended", () => setIsPlaying(false));
+      audioRef.current.addEventListener("pause", () => setIsPlaying(false));
+      audioRef.current.addEventListener("error", () => setIsPlaying(false));
+    }
     if (audioRef.current.src !== audioSrc) audioRef.current.src = audioSrc;
     return audioRef.current;
   }
@@ -99,10 +111,22 @@ export function useLessonTaskFlow({
     if (!el) return;
     try {
       el.currentTime = 0;
-      void el.play().catch(() => {});
+      void el.play().catch(() => setIsPlaying(false));
     } catch {
       /* ignore playback errors */
     }
+  }
+
+  function stopAudio() {
+    const el = audioRef.current;
+    if (!el) return;
+    try {
+      el.pause();
+      el.currentTime = 0;
+    } catch {
+      /* ignore */
+    }
+    setIsPlaying(false);
   }
 
   // Play the task audio and resolve when it ends (bounded), so typing/reorder answers
@@ -166,5 +190,5 @@ export function useLessonTaskFlow({
   }
   const buttonPortal = slot && button ? createPortal(button, slot) : null;
 
-  return { answered, outcome, audioSrc, playAudio, commit, buttonPortal };
+  return { answered, outcome, audioSrc, isPlaying, playAudio, stopAudio, commit, buttonPortal };
 }

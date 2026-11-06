@@ -24,6 +24,7 @@ import {
   TrainTypePicker,
   type TrainerEngine,
 } from "@/components/page/learner/trainer/TrainTypePicker";
+import { ExamEngineChooser } from "@/components/page/learner/trainer/ExamEngineChooser";
 import { useT } from "@/components/i18n/I18nProvider";
 import { saveRecentLearning } from "@/lib/api/learner/recent";
 import type { PickerPassage } from "@/lib/types/lesson";
@@ -55,6 +56,9 @@ export default function PartPickerPage({
     hsk?.key ?? level,
   );
   const [trainEngine, setTrainEngine] = useState<TrainerEngine | null>(null);
+  // The single Exam entry opens a vocab/lesson chooser; the pick then opens that
+  // engine's skill picker (TrainTypePicker) exactly as the two buttons used to.
+  const [examOpen, setExamOpen] = useState(false);
   if (!hsk || !lesson) notFound();
   // HSK1 Lesson 1 is the pinyin guide, not a passage-backed lesson — its only
   // "part" is a placeholder, so send direct visits to the guide instead.
@@ -186,28 +190,19 @@ export default function PartPickerPage({
                 );
               })}
 
-              {/* Whole-lesson trainers — rows between the parts and Grammar /
-                  Translation, styled like the other options. Each opens the
-                  skill-type picker and trains every part of the lesson. */}
+              {/* Exam — a single whole-lesson entry between the parts and Grammar /
+                  Translation. It opens a chooser (vocab or lesson trainer); the pick
+                  then opens that engine's skill-type picker and trains every part. */}
               <button
                 type="button"
                 className="part-list-item part-list-item-action"
                 disabled={!canTrain}
-                onClick={() => setTrainEngine("vocab")}
+                onClick={() => setExamOpen(true)}
               >
-                <div className="part-list-title">
-                  {t("picker.vocab_trainer_btn")}
-                </div>
-              </button>
-              <button
-                type="button"
-                className="part-list-item part-list-item-action"
-                disabled={!canTrain}
-                onClick={() => setTrainEngine("lesson")}
-              >
-                <div className="part-list-title">
-                  {t("picker.lesson_trainer_btn")}
-                </div>
+                <div className="part-list-title">{t("picker.exam_btn")}</div>
+                {current.progress ? (
+                  <ProgressLines progress={current.progress} centered />
+                ) : null}
               </button>
 
               {current.parts[0] && (
@@ -236,6 +231,16 @@ export default function PartPickerPage({
           )}
         </div>
       </div>
+
+      {examOpen && (
+        <ExamEngineChooser
+          onSelect={(engine) => {
+            setExamOpen(false);
+            setTrainEngine(engine);
+          }}
+          onCancel={() => setExamOpen(false)}
+        />
+      )}
 
       {trainEngine && (
         <TrainTypePicker

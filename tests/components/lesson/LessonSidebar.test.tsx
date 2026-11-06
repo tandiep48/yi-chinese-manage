@@ -17,6 +17,7 @@ const HEADER: LessonPartsHeader = {
   lessonNum: "2",
   isBook: false,
 };
+const LESSON_PROGRESS = { learnedWords: 4, totalWords: 12, progressPct: 50 };
 const PARTS: SidebarPart[] = [
   {
     passageId: "H2_2_1",
@@ -60,6 +61,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: PARTS,
+      lessonProgress: LESSON_PROGRESS,
       header: HEADER,
     });
   });
@@ -91,13 +93,21 @@ describe("LessonSidebar", () => {
     expect(push).toHaveBeenCalledWith("/learner/grammar?passage_id=H2_2_2");
   });
 
-  it("renders the Master Vocab and Master Lesson trainer entries", () => {
+  it("renders a single Exam entry", () => {
     renderSidebar();
-    expect(screen.getByText("Master Vocab Trainer")).toBeInTheDocument();
-    expect(screen.getByText("Master Lesson Trainer")).toBeInTheDocument();
+    expect(screen.getByText("Exam")).toBeInTheDocument();
+    // The two separate master-trainer entries are gone.
+    expect(screen.queryByText("Master Vocab Trainer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Master Lesson Trainer")).not.toBeInTheDocument();
   });
 
-  it("starts the master trainers in place via onStartMaster when provided", () => {
+  it("shows the lesson's total vocab and lesson progress on the Exam entry", () => {
+    renderSidebar();
+    // The aggregate words count (4/12) is unique to the Exam entry's mini-stats.
+    expect(screen.getByText("4/12")).toBeInTheDocument();
+  });
+
+  it("opens the Exam chooser and starts the picked master in place via onStartMaster", () => {
     const onStartMaster = vi.fn();
     render(
       <I18nProvider>
@@ -110,31 +120,36 @@ describe("LessonSidebar", () => {
         />
       </I18nProvider>,
     );
-    fireEvent.click(screen.getByText("Master Vocab Trainer"));
+    fireEvent.click(screen.getByText("Exam"));
+    fireEvent.click(screen.getByText("Vocab Trainer"));
     expect(onStartMaster).toHaveBeenCalledWith("vocab");
-    fireEvent.click(screen.getByText("Master Lesson Trainer"));
+
+    // Re-open and pick the lesson trainer this time.
+    fireEvent.click(screen.getByText("Exam"));
+    fireEvent.click(screen.getByText("Lesson Trainer"));
     expect(onStartMaster).toHaveBeenCalledWith("lesson");
     expect(push).not.toHaveBeenCalled();
   });
 
   it("navigates to the lesson flow with ?master= when no in-place handler is given", () => {
     renderSidebar(true, "H2_2_2", "grammar");
-    fireEvent.click(screen.getByText("Master Vocab Trainer"));
+    fireEvent.click(screen.getByText("Exam"));
+    fireEvent.click(screen.getByText("Vocab Trainer"));
     expect(push).toHaveBeenCalledWith(
       "/learner/lesson?passage_id=H2_2_2&master=vocab",
     );
   });
 
-  it("hides the master trainers for a book lesson", () => {
+  it("hides the Exam entry for a book lesson", () => {
     vi.mocked(partsHook.useLessonParts).mockReturnValue({
       loading: false,
       error: null,
       parts: PARTS,
+      lessonProgress: null,
       header: { badge: "AML", lessonNum: "1", isBook: true },
     });
     renderSidebar(true, "AML_1_1");
-    expect(screen.queryByText("Master Vocab Trainer")).not.toBeInTheDocument();
-    expect(screen.queryByText("Master Lesson Trainer")).not.toBeInTheDocument();
+    expect(screen.queryByText("Exam")).not.toBeInTheDocument();
   });
 
   it("lists the parts and marks the current one active", () => {
@@ -165,6 +180,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: PARTS,
+      lessonProgress: null,
       header: { badge: "AML", lessonNum: "1", isBook: true },
     });
     renderSidebar(true, "AML_1_1");
@@ -196,6 +212,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: [],
+      lessonProgress: null,
       header: HEADER,
     });
     renderSidebar();

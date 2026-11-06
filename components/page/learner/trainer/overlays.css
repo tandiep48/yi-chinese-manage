@@ -85,6 +85,17 @@
 .ttp-overlay .ttp-option:hover {
   border-color: rgba(87, 104, 86, 0.4);
 }
+/* The Exam chooser renders each option as a <button>; reset it to the label row. */
+.ttp-overlay button.ttp-option {
+  width: 100%;
+  font: inherit;
+  font-weight: 700;
+  text-align: left;
+}
+.ttp-overlay button.ttp-option svg {
+  color: #007a61;
+  width: 20px;
+}
 .ttp-overlay .ttp-option input {
   width: 18px;
   height: 18px;

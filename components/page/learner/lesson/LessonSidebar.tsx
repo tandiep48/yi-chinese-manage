@@ -22,7 +22,6 @@ import {
   faLanguage,
   faCaretUp,
   faCaretDown,
-  faDumbbell,
   faGraduationCap,
 } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -30,6 +29,7 @@ import {
   type SidebarPart,
 } from "@/hooks/lesson/useLessonParts";
 import { partPickerHref } from "@/lib/lessons/lessons";
+import { ExamEngineChooser } from "@/components/page/learner/trainer/ExamEngineChooser";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./lesson-sidebar.css";
 
@@ -64,12 +64,14 @@ export function LessonSidebar({
 }) {
   const { t } = useT();
   const router = useRouter();
-  const { loading, error, parts, header } = useLessonParts(passageId);
+  const { loading, error, parts, lessonProgress, header } = useLessonParts(passageId);
   // Lesson Parts is the one accordion: open on the lesson view, collapsed while a
   // Grammar/Translation study page is showing. Clicking its header toggles it.
   const [openSection, setOpenSection] = useState<Section | null>(
     domain === "lesson" ? "parts" : null,
   );
+  // The single Exam entry opens a vocab/lesson chooser before starting that master.
+  const [examOpen, setExamOpen] = useState(false);
   const toggleSection = (section: Section) =>
     setOpenSection((current) => (current === section ? null : section));
 
@@ -181,24 +183,28 @@ export function LessonSidebar({
             </nav>
           </AccordionItem>
 
-          {/* Master trainers run the whole lesson's vocab / sentences, sitting
-              between the parts and the lesson-wide study pages. Books have no
-              curated vocab, so they are offered on HSK lessons only. */}
+          {/* Exam — one entry between the parts and the lesson-wide study pages that
+              runs the whole lesson's vocab or sentences. It opens a chooser to pick
+              which master trainer, and shows the lesson's total vocab + lesson progress
+              like the parts do. Books have no curated vocab, so it is HSK-only. */}
           {!header?.isBook && (
-            <>
-              <DomainButton
-                icon={faDumbbell}
-                label={t("sidebar.master_vocab_trainer")}
-                active={false}
-                onSelect={() => startMaster("vocab")}
-              />
-              <DomainButton
-                icon={faGraduationCap}
-                label={t("sidebar.master_lesson_trainer")}
-                active={false}
-                onSelect={() => startMaster("lesson")}
-              />
-            </>
+            <div className="acc-item">
+              <button
+                type="button"
+                className="acc-header acc-header-link"
+                onClick={() => setExamOpen(true)}
+              >
+                <span className="acc-icon">
+                  <FontAwesomeIcon icon={faGraduationCap} />
+                </span>
+                <span className="acc-title">{t("sidebar.exam")}</span>
+              </button>
+              {lessonProgress && (
+                <div className="acc-exam-stats">
+                  <MiniStats progress={lessonProgress} />
+                </div>
+              )}
+            </div>
           )}
 
           {/* Grammar / Translation: lesson-wide study pages, opened in one click. */}
@@ -226,6 +232,16 @@ export function LessonSidebar({
         >
           <FontAwesomeIcon icon={faBars} />
         </button>
+      )}
+
+      {examOpen && (
+        <ExamEngineChooser
+          onSelect={(engine) => {
+            setExamOpen(false);
+            startMaster(engine);
+          }}
+          onCancel={() => setExamOpen(false)}
+        />
       )}
     </>
   );
