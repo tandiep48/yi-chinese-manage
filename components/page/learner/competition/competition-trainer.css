@@ -44,16 +44,34 @@
   box-shadow: 0 4px 14px rgba(87, 104, 86, 0.3);
 }
 .competition-shell .lesson-trainer .lt-mc-area { max-width: 620px; }
-/* competition.css only adjusts the choice button's alignment and size — its fill comes
-   from the scoped .btn above (the legacy page inherits styles.css .btn the same way),
-   NOT from the solo trainer's teal outline. */
+/* The answer-choice buttons: competition.css adjusts alignment/size, and here they get
+   the same soft-sage fill the other in-room cards use (they'd otherwise take the grey
+   `.competition-shell .btn` fill). The answered-state highlight MUST be restated under
+   `.competition-shell` too: the solo rules are scoped to `.trainer-shell.lesson-trainer`,
+   a class pair the room board does not carry, so without these the correct/wrong answer
+   never highlights — on Skip or on a real pick. Clean green/red on white, matching the
+   vocab boards. */
 .competition-shell .lesson-trainer .lt-mc-btn {
   justify-content: flex-start;
   text-align: left;
   font-size: 1.05rem;
+  background: #cbe2d4;
+  border-color: #afcfbd;
+  color: var(--text-main);
 }
 .competition-shell .lesson-trainer .lt-mc-btn:hover:not(:disabled) {
-  background: rgba(87, 104, 86, 0.08);
+  background: #bddbc9;
+  border-color: #93bda7;
+}
+.competition-shell .lesson-trainer .lt-mc-btn.lt-correct {
+  background: var(--success);
+  border-color: var(--success);
+  color: #ffffff;
+}
+.competition-shell .lesson-trainer .lt-mc-btn.lt-wrong {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #ffffff;
 }
 .competition-shell .lesson-trainer .lt-typing-input:focus {
   box-shadow: 0 0 0 4px rgba(87, 104, 86, 0.12);
