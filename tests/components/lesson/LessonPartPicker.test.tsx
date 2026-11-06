@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { Suspense } from "react";
-import { render, screen, act } from "@testing-library/react";
+import { render, screen, act, fireEvent } from "@testing-library/react";
 import PartPickerPage from "@/app/learner/hsk/[level]/[lesson]/page";
 import * as pickerHook from "@/hooks/lesson/useLessonPicker";
 import type { PickerLessonSummary } from "@/hooks/lesson/useLessonPicker";
@@ -72,6 +72,21 @@ describe("PartPickerPage Grammar / Translation links", () => {
       "href",
       "/learner/translation?passage_id=H2_2_1"
     );
+  });
+
+  it("opens the Exam chooser, then the skill picker for the chosen engine", async () => {
+    await renderPicker();
+
+    // A single Exam entry replaces the two trainer buttons.
+    fireEvent.click(await screen.findByText("picker.exam_btn"));
+
+    // The chooser offers vocab or lesson.
+    expect(screen.getByText("picker.vocab_trainer_btn")).toBeInTheDocument();
+    expect(screen.getByText("picker.lesson_trainer_btn")).toBeInTheDocument();
+
+    // Picking one opens that engine's skill-type picker.
+    fireEvent.click(screen.getByText("picker.vocab_trainer_btn"));
+    expect(screen.getByText("train_picker.title")).toBeInTheDocument();
   });
 
   it("omits the Grammar / Translation links when the lesson has no parts", async () => {

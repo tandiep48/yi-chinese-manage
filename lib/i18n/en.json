@@ -190,8 +190,13 @@
     "lesson_progress_label": "Lesson",
     "vocab_trainer_btn": "Vocab Trainer",
     "lesson_trainer_btn": "Lesson Trainer",
+    "exam_btn": "Exam",
     "translation_btn": "Translation",
     "grammar_btn": "Grammar"
+  },
+  "exam_chooser": {
+    "title": "Exam",
+    "subtitle": "Choose what to practise"
   },
   "translation": {
     "page_title": "Translation",
@@ -535,8 +540,7 @@
     "pinyin_title": "Pinyin",
     "no_parts_found": "No parts found.",
     "failed_load_parts": "Failed to load parts.",
-    "master_vocab_trainer": "Master Vocab Trainer",
-    "master_lesson_trainer": "Master Lesson Trainer"
+    "exam": "Exam"
   },
   "pinyin": {
     "basic_page_title": "Basic Pinyin",
