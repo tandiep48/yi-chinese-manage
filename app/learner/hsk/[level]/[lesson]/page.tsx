@@ -200,6 +200,9 @@ export default function PartPickerPage({
                 onClick={() => setExamOpen(true)}
               >
                 <div className="part-list-title">{t("picker.exam_btn")}</div>
+                {current.progress ? (
+                  <ProgressLines progress={current.progress} centered />
+                ) : null}
               </button>
 
               {current.parts[0] && (

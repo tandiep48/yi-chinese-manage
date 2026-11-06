@@ -20,6 +20,7 @@ vi.mock("@/hooks/lesson/useLessonParts", () => ({
     loading: false,
     error: null,
     header: { badge: "HSK1", lessonNum: "1", isBook: false },
+    lessonProgress: null,
     parts: [
       { passageId: "H1_1_1", partNum: "1", isNumber: false, title: null, progress: null },
       { passageId: "H1_1_2", partNum: "2", isNumber: false, title: null, progress: null },

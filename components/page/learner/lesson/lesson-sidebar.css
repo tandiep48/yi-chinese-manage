@@ -233,6 +233,14 @@
   color: var(--ls-primary);
 }
 
+/* The Exam entry's total vocab / lesson progress, under its header row. */
+.lesson-study .acc-exam-stats {
+  padding: 0 1.25rem 0.9rem;
+}
+.lesson-study .acc-exam-stats .sidebar-part-stats {
+  margin-top: 0;
+}
+
 /* Mini progress bars */
 .lesson-study .sidebar-part-stats {
   display: flex;

@@ -31,7 +31,7 @@ const LESSON: PickerLessonSummary = {
     { passage_id: "H2_2_2", hsk_level: "HSK2", title: "Part two" },
   ],
   partCount: 2,
-  progress: { learnedWords: 0, totalWords: 0, progressPct: 0 },
+  progress: { learnedWords: 3, totalWords: 9, progressPct: 40 },
   isPinyinLesson: false,
 };
 
@@ -77,8 +77,13 @@ describe("PartPickerPage Grammar / Translation links", () => {
   it("opens the Exam chooser, then the skill picker for the chosen engine", async () => {
     await renderPicker();
 
+    // The Exam entry shows the lesson's total vocab + lesson progress like the parts.
+    const exam = await screen.findByText("picker.exam_btn");
+    expect(exam.closest("button")).toHaveTextContent("3 / 9");
+    expect(exam.closest("button")).toHaveTextContent("40%");
+
     // A single Exam entry replaces the two trainer buttons.
-    fireEvent.click(await screen.findByText("picker.exam_btn"));
+    fireEvent.click(exam);
 
     // The chooser offers vocab or lesson.
     expect(screen.getByText("picker.vocab_trainer_btn")).toBeInTheDocument();

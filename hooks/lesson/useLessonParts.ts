@@ -38,7 +38,15 @@ interface UseLessonPartsReturn {
   loading: boolean;
   error: string | null;
   parts: SidebarPart[];
+  // The whole lesson's aggregate progress (total vocab + lesson %), for the Exam
+  // entry. null for book lessons (no curated progress).
+  lessonProgress: Progress | null;
   header: LessonPartsHeader | null;
+}
+
+interface LoadedParts {
+  parts: SidebarPart[];
+  lessonProgress: Progress | null;
 }
 
 function partNumberOf(passageId: string): string {
@@ -50,6 +58,7 @@ export function useLessonParts(passageId: string): UseLessonPartsReturn {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [parts, setParts] = useState<SidebarPart[]>([]);
+  const [lessonProgress, setLessonProgress] = useState<Progress | null>(null);
   const [header, setHeader] = useState<LessonPartsHeader | null>(null);
 
   useEffect(() => {
@@ -76,7 +85,11 @@ export function useLessonParts(passageId: string): UseLessonPartsReturn {
 
     const run = book ? loadBookParts(prefix, lessonNum) : loadHskParts(passageId, lessonNum);
     run
-      .then((list) => !cancelled && setParts(list))
+      .then((res) => {
+        if (cancelled) return;
+        setParts(res.parts);
+        setLessonProgress(res.lessonProgress);
+      })
       .catch((e) => {
         if (cancelled) return;
         setError(e instanceof Error ? e.message : "failed");
@@ -88,10 +101,10 @@ export function useLessonParts(passageId: string): UseLessonPartsReturn {
     };
   }, [passageId]);
 
-  return { loading, error, parts, header };
+  return { loading, error, parts, lessonProgress, header };
 }
 
-async function loadHskParts(passageId: string, lessonNum: string): Promise<SidebarPart[]> {
+async function loadHskParts(passageId: string, lessonNum: string): Promise<LoadedParts> {
   const hskLevel = hskLevelFromPassageId(passageId);
   const [passages, progress] = await Promise.all([
     getPassages(hskLevel),
@@ -101,28 +114,36 @@ async function loadHskParts(passageId: string, lessonNum: string): Promise<Sideb
   const grouped = groupPassagesByLesson(hskLevel, passages);
   const lessonParts = sortPartsByNumber(grouped[lessonNum] ?? []);
   const partsProgress = progress?.parts ?? {};
+  // Same lesson-level aggregate the part picker shows (progress.lessons[lessonNum]).
+  const lessonEntry = progress?.lessons?.[lessonNum];
 
-  return lessonParts.map((p) => ({
-    passageId: p.passage_id,
-    partNum: isNumberPart(p.passage_id) ? "" : partNumberOf(p.passage_id),
-    isNumber: isNumberPart(p.passage_id),
-    title: p.title,
-    progress: partsProgress[p.passage_id] ? toProgress(partsProgress[p.passage_id]) : null,
-  }));
+  return {
+    parts: lessonParts.map((p) => ({
+      passageId: p.passage_id,
+      partNum: isNumberPart(p.passage_id) ? "" : partNumberOf(p.passage_id),
+      isNumber: isNumberPart(p.passage_id),
+      title: p.title,
+      progress: partsProgress[p.passage_id] ? toProgress(partsProgress[p.passage_id]) : null,
+    })),
+    lessonProgress: lessonEntry ? toProgress(lessonEntry) : null,
+  };
 }
 
-async function loadBookParts(bookCode: string, lessonNum: string): Promise<SidebarPart[]> {
+async function loadBookParts(bookCode: string, lessonNum: string): Promise<LoadedParts> {
   const data = await getLearnerBook(bookCode);
   const lesson = (data.lessons ?? []).find((l) => String(l.lesson) === String(lessonNum));
   const parts = [...(lesson?.parts ?? [])].sort(
     (a, b) => (parseInt(String(a.part), 10) || 0) - (parseInt(String(b.part), 10) || 0)
   );
 
-  return parts.map((p) => ({
-    passageId: p.passage_id,
-    partNum: String(p.part),
-    isNumber: false,
-    title: null,
-    progress: null,
-  }));
+  return {
+    parts: parts.map((p) => ({
+      passageId: p.passage_id,
+      partNum: String(p.part),
+      isNumber: false,
+      title: null,
+      progress: null,
+    })),
+    lessonProgress: null,
+  };
 }

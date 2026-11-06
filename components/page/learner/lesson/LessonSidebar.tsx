@@ -64,7 +64,7 @@ export function LessonSidebar({
 }) {
   const { t } = useT();
   const router = useRouter();
-  const { loading, error, parts, header } = useLessonParts(passageId);
+  const { loading, error, parts, lessonProgress, header } = useLessonParts(passageId);
   // Lesson Parts is the one accordion: open on the lesson view, collapsed while a
   // Grammar/Translation study page is showing. Clicking its header toggles it.
   const [openSection, setOpenSection] = useState<Section | null>(
@@ -185,14 +185,26 @@ export function LessonSidebar({
 
           {/* Exam — one entry between the parts and the lesson-wide study pages that
               runs the whole lesson's vocab or sentences. It opens a chooser to pick
-              which master trainer. Books have no curated vocab, so it is HSK-only. */}
+              which master trainer, and shows the lesson's total vocab + lesson progress
+              like the parts do. Books have no curated vocab, so it is HSK-only. */}
           {!header?.isBook && (
-            <DomainButton
-              icon={faGraduationCap}
-              label={t("sidebar.exam")}
-              active={false}
-              onSelect={() => setExamOpen(true)}
-            />
+            <div className="acc-item">
+              <button
+                type="button"
+                className="acc-header acc-header-link"
+                onClick={() => setExamOpen(true)}
+              >
+                <span className="acc-icon">
+                  <FontAwesomeIcon icon={faGraduationCap} />
+                </span>
+                <span className="acc-title">{t("sidebar.exam")}</span>
+              </button>
+              {lessonProgress && (
+                <div className="acc-exam-stats">
+                  <MiniStats progress={lessonProgress} />
+                </div>
+              )}
+            </div>
           )}
 
           {/* Grammar / Translation: lesson-wide study pages, opened in one click. */}

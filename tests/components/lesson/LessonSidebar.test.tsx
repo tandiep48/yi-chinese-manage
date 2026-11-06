@@ -17,6 +17,7 @@ const HEADER: LessonPartsHeader = {
   lessonNum: "2",
   isBook: false,
 };
+const LESSON_PROGRESS = { learnedWords: 4, totalWords: 12, progressPct: 50 };
 const PARTS: SidebarPart[] = [
   {
     passageId: "H2_2_1",
@@ -60,6 +61,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: PARTS,
+      lessonProgress: LESSON_PROGRESS,
       header: HEADER,
     });
   });
@@ -97,6 +99,12 @@ describe("LessonSidebar", () => {
     // The two separate master-trainer entries are gone.
     expect(screen.queryByText("Master Vocab Trainer")).not.toBeInTheDocument();
     expect(screen.queryByText("Master Lesson Trainer")).not.toBeInTheDocument();
+  });
+
+  it("shows the lesson's total vocab and lesson progress on the Exam entry", () => {
+    renderSidebar();
+    // The aggregate words count (4/12) is unique to the Exam entry's mini-stats.
+    expect(screen.getByText("4/12")).toBeInTheDocument();
   });
 
   it("opens the Exam chooser and starts the picked master in place via onStartMaster", () => {
@@ -137,6 +145,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: PARTS,
+      lessonProgress: null,
       header: { badge: "AML", lessonNum: "1", isBook: true },
     });
     renderSidebar(true, "AML_1_1");
@@ -171,6 +180,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: PARTS,
+      lessonProgress: null,
       header: { badge: "AML", lessonNum: "1", isBook: true },
     });
     renderSidebar(true, "AML_1_1");
@@ -202,6 +212,7 @@ describe("LessonSidebar", () => {
       loading: false,
       error: null,
       parts: [],
+      lessonProgress: null,
       header: HEADER,
     });
     renderSidebar();
