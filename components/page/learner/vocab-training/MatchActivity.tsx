@@ -18,7 +18,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVolumeHigh } from "@fortawesome/free-solid-svg-icons";
+import { faVolumeHigh, faStop } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { now } from "@/lib/clock";
@@ -73,6 +73,8 @@ export function MatchActivity({
 
   const [selectedLeft, setSelectedLeft] = useState<string | null>(null);
   const [selectedRight, setSelectedRight] = useState<string | null>(null);
+  // Which left (audio) card is currently playing, so its speaker shows a stop icon.
+  const [playingWord, setPlayingWord] = useState<string | null>(null);
   const [solved, setSolved] = useState<Set<string>>(() => new Set());
   const [wrong, setWrong] = useState<Set<string>>(() => new Set());
   // Auto-advance mode: the board was skipped, so its answers are on screen and the
@@ -87,16 +89,35 @@ export function MatchActivity({
   const total = words.length;
   const allSolved = solved.size === total;
 
-  function playWordAudio(audioKey: string) {
+  function playWordAudio(audioKey: string, word: string) {
     if (!audioKey) return;
     try {
       if (!audioRef.current) audioRef.current = new Audio();
-      audioRef.current.src = vocabAudioUrl(audioKey);
-      audioRef.current.currentTime = 0;
-      void audioRef.current.play().catch(() => {});
+      const a = audioRef.current;
+      // Clear the playing marker when this clip ends or is interrupted, so the card
+      // flips back from the stop icon to the speaker.
+      a.onended = () => setPlayingWord(null);
+      a.onerror = () => setPlayingWord(null);
+      a.src = vocabAudioUrl(audioKey);
+      a.currentTime = 0;
+      setPlayingWord(word);
+      void a.play().catch(() => setPlayingWord(null));
     } catch {
-      /* ignore playback errors */
+      setPlayingWord(null);
     }
+  }
+
+  function stopWordAudio() {
+    const a = audioRef.current;
+    if (a) {
+      try {
+        a.pause();
+        a.currentTime = 0;
+      } catch {
+        /* ignore */
+      }
+    }
+    setPlayingWord(null);
   }
 
   function evaluate(leftWord: string, rightWord: string) {
@@ -128,7 +149,10 @@ export function MatchActivity({
     if (solved.has(word)) return;
     if (matchCfg.leftKind === "audio") {
       const row = words.find((w) => w.word === word);
-      if (row) playWordAudio(row.audio_key);
+      if (row) {
+        if (playingWord === word) stopWordAudio();
+        else playWordAudio(row.audio_key, word);
+      }
     }
     if (!firstSelectedAt.current[word]) firstSelectedAt.current[word] = now();
     if (selectedLeft === word) {
@@ -248,7 +272,7 @@ export function MatchActivity({
                   aria-label={matchCfg.leftKind === "audio" ? t("lesson.play_audio") : undefined}
                 >
                   {matchCfg.leftKind === "audio" ? (
-                    <FontAwesomeIcon icon={faVolumeHigh} aria-hidden />
+                    <FontAwesomeIcon icon={playingWord === row.word ? faStop : faVolumeHigh} aria-hidden />
                   ) : (
                     row.word
                   )}

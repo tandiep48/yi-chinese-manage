@@ -9,7 +9,7 @@
 
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faHeadphonesSimple, faBookOpen, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faHeadphonesSimple, faBookOpen, faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { answersMatch } from "@/lib/lessons/lessonTrainer";
 import { useLessonTaskFlow } from "@/hooks/lesson/useLessonTaskFlow";
@@ -28,7 +28,7 @@ export function ChoiceTask({
   mcDelayMs?: number;
 }) {
   const { t } = useT();
-  const { answered, playAudio, commit, buttonPortal } = useLessonTaskFlow({
+  const { answered, isPlaying, playAudio, stopAudio, commit, buttonPortal } = useLessonTaskFlow({
     task,
     onResolved,
     onAdvance,
@@ -82,8 +82,13 @@ export function ChoiceTask({
       </div>
 
       {isListening ? (
-        <button type="button" className="lt-audio-btn" onClick={playAudio} aria-label={t("lesson.play_audio")}>
-          <FontAwesomeIcon icon={faPlay} aria-hidden />
+        <button
+          type="button"
+          className="lt-audio-btn"
+          onClick={isPlaying ? stopAudio : playAudio}
+          aria-label={t(isPlaying ? "lesson.stop_audio" : "lesson.play_audio")}
+        >
+          <FontAwesomeIcon icon={isPlaying ? faStop : faPlay} aria-hidden />
         </button>
       ) : (
         <div className="lt-word">{task.content}</div>

@@ -308,6 +308,7 @@
     "lesson_overview": "Lesson Overview",
     "vocab_overview": "Vocab Overview",
     "play_audio": "Play Audio",
+    "stop_audio": "Stop Audio",
     "auto_play": "Auto Play",
     "stop_auto_play": "Stop",
     "speaking_status": "Press Speak and say the sentence clearly.",
