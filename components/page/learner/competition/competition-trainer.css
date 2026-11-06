@@ -58,6 +58,23 @@
 .competition-shell .lesson-trainer .lt-typing-input:focus {
   box-shadow: 0 0 0 4px rgba(87, 104, 86, 0.12);
 }
+/* The recall typing cards read white in the solo trainer; in the Learn-Together room
+   they sit on the sage board, so give each card the same soft-sage fill the other
+   in-room cards use (competition-shell.css #cbe2d4 / #afcfbd). The answered-state tints
+   are re-asserted at higher specificity so a correct/wrong card still reads green/red
+   over the sage base, independent of chunk load order. */
+.competition-shell .vocab-trainer .bt-type-row {
+  background: #cbe2d4;
+  border-color: #afcfbd;
+}
+.competition-shell .vocab-trainer .bt-type-row.correct {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 14%, #cbe2d4);
+}
+.competition-shell .vocab-trainer .bt-type-row.incorrect {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 14%, #cbe2d4);
+}
 /* The lesson tasks portal a "btn secondary" Skip/Next into the competition action bar,
    which only styles .btn.primary; give it the same grey the trainer bottom bar uses. */
 .competition-shell .skip-bottom-btn.btn.secondary {
