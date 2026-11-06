@@ -58,22 +58,43 @@
 .competition-shell .lesson-trainer .lt-typing-input:focus {
   box-shadow: 0 0 0 4px rgba(87, 104, 86, 0.12);
 }
-/* The recall typing cards read white in the solo trainer; in the Learn-Together room
-   they sit on the sage board, so give each card the same soft-sage fill the other
-   in-room cards use (competition-shell.css #cbe2d4 / #afcfbd). The answered-state tints
-   are re-asserted at higher specificity so a correct/wrong card still reads green/red
-   over the sage base, independent of chunk load order. */
+/* The typing and matching cards read white in the solo trainer; in the Learn-Together
+   room they sit on the sage board, so each resting card gets the same soft-sage fill the
+   other in-room cards use (competition-shell.css #cbe2d4 / #afcfbd). Once a card is
+   answered or picked, the correct/wrong/selected tint is mixed onto WHITE, not onto the
+   sage base — red mixed into sage turns a muddy brown that clashes with the board — so
+   the state reads as a clean green/red/teal. All re-asserted at higher specificity than
+   the solo rules, so they win independent of chunk load order. */
 .competition-shell .vocab-trainer .bt-type-row {
   background: #cbe2d4;
   border-color: #afcfbd;
 }
 .competition-shell .vocab-trainer .bt-type-row.correct {
   border-color: var(--success);
-  background: color-mix(in srgb, var(--success) 14%, #cbe2d4);
+  background: color-mix(in srgb, var(--success) 12%, #ffffff);
 }
 .competition-shell .vocab-trainer .bt-type-row.incorrect {
   border-color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 14%, #cbe2d4);
+  background: color-mix(in srgb, var(--danger) 12%, #ffffff);
+}
+/* Matching boards (audio-match + word-match) — same treatment: sage at rest, a clean
+   tint on white while selected / solved / wrong. */
+.competition-shell .vocab-trainer .bt-match-item {
+  background: #cbe2d4;
+  border-color: #afcfbd;
+}
+.competition-shell .vocab-trainer .bt-match-item.selected {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 14%, #ffffff);
+}
+.competition-shell .vocab-trainer .bt-match-item.solved {
+  border-color: var(--success);
+  background: color-mix(in srgb, var(--success) 12%, #ffffff);
+  color: var(--success);
+}
+.competition-shell .vocab-trainer .bt-match-item.wrong {
+  border-color: var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, #ffffff);
 }
 /* The lesson tasks portal a "btn secondary" Skip/Next into the competition action bar,
    which only styles .btn.primary; give it the same grey the trainer bottom bar uses. */
