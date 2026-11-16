@@ -21,7 +21,7 @@ import {
   type StrokeModalState,
   type StrokeAllItem,
 } from "@/components/page/learner/vocab/VocabStrokeModal";
-import { FlashcardView } from "./FlashcardView";
+import { FlashcardView, type FlashcardVariant } from "./FlashcardView";
 import type { LessonVocabRow } from "@/lib/types/vocab";
 import "./flashcards.css";
 
@@ -35,6 +35,7 @@ export function FlashcardStudy({
   shell = true,
   hideSummaryButton = false,
   lockAtEnd = false,
+  variant = "default",
 }: {
   words: LessonVocabRow[];
   loading: boolean;
@@ -49,6 +50,8 @@ export function FlashcardStudy({
   // Summary shortcut and lock the last card instead of showing Finish.
   hideSummaryButton?: boolean;
   lockAtEnd?: boolean;
+  // The card layout, forwarded to FlashcardView ("milestone" inside the lesson flow).
+  variant?: FlashcardVariant;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -129,6 +132,7 @@ export function FlashcardStudy({
           onShowSummary={() => setScreen("summary")}
           hideSummaryButton={hideSummaryButton}
           lockAtEnd={lockAtEnd}
+          variant={variant}
         />
       )}
 

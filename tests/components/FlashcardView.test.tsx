@@ -163,3 +163,56 @@ describe("FlashcardView", () => {
     expect(screen.getByText("2 / 2")).toBeInTheDocument();
   });
 });
+
+// variant="milestone": the lesson flow's layout of the same card.
+describe("FlashcardView — milestone layout", () => {
+  const pinyin = (c: HTMLElement) => c.querySelector(".vl-pinyin")?.textContent;
+  const meaning = (c: HTMLElement) => c.querySelector(".vl-meaning")?.textContent;
+
+  it("shows the word pill and a labelled progress bar instead of the bare counter", () => {
+    const { container } = setup({ variant: "milestone" });
+    expect(container.querySelector(".vl-milestone")).not.toBeNull();
+    expect(screen.getByText("milestone.word_counter")).toBeInTheDocument();
+    expect(screen.getByText("1/2 (50%)")).toBeInTheDocument();
+    expect(screen.queryByText("1 / 2")).toBeNull();
+  });
+
+  it("toggles pinyin and meaning independently", () => {
+    const { container } = setup({ variant: "milestone" });
+    const pinyinBtn = screen.getByRole("button", { name: "dashboard.table_pinyin" });
+    const meaningBtn = screen.getByRole("button", { name: "dashboard.table_meaning_vn" });
+    expect(pinyinBtn).toHaveAttribute("aria-pressed", "false");
+
+    fireEvent.click(pinyinBtn);
+    expect(pinyin(container)).toBe("shuǐ");
+    expect(meaning(container)).toBe("");
+    expect(pinyinBtn).toHaveAttribute("aria-pressed", "true");
+
+    fireEvent.click(meaningBtn);
+    expect(meaning(container)).toBe("water");
+  });
+
+  it("hides one line again after the keyboard has revealed both", () => {
+    const { container } = setup({ variant: "milestone" });
+    press("s");
+    expect(pinyin(container)).toBe("shuǐ");
+    expect(meaning(container)).toBe("water");
+
+    fireEvent.click(screen.getByRole("button", { name: "dashboard.table_pinyin" }));
+    expect(pinyin(container)).toBe("");
+    expect(meaning(container)).toBe("water");
+  });
+
+  it("hides both lines again on the next card", () => {
+    const { container } = setup({ variant: "milestone" });
+    fireEvent.click(screen.getByRole("button", { name: "dashboard.table_pinyin" }));
+    press("d");
+    expect(screen.getByText("火")).toBeInTheDocument();
+    expect(pinyin(container)).toBe("");
+  });
+
+  it("leaves the default layout without the toggles", () => {
+    setup();
+    expect(screen.queryByRole("button", { name: "dashboard.table_pinyin" })).toBeNull();
+  });
+});

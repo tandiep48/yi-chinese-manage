@@ -6,10 +6,14 @@
 // W reveals + plays audio, Space shuffles, Q opens stroke order. Pinyin + meaning
 // start hidden on each card. Ported from the #screen-learning markup in
 // Learning/web_app/static/vocab_learning/vocab_learning.js; speaking practice deferred.
+//
+// variant="milestone" is the lesson flow's layout of the same card: a word-count
+// pill, separate Pinyin / Meaning eye toggles, a labelled progress bar and a larger
+// white card (flashcards.css, `.vl-milestone`). The keys behave the same in both.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTableList } from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faTableList } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { typingCharClasses } from "@/lib/lessons/typingGlow";
@@ -19,12 +23,15 @@ import type { LessonVocabRow } from "@/lib/types/vocab";
 
 const HANZI_RE = /[一-鿿]/;
 
+export type FlashcardVariant = "default" | "milestone";
+
 export function FlashcardView({
   words,
   onOpenStroke,
   onShowSummary,
   hideSummaryButton = false,
   lockAtEnd = false,
+  variant = "default",
 }: {
   words: LessonVocabRow[];
   onOpenStroke: (word: string, pinyin: string) => void;
@@ -34,8 +41,10 @@ export function FlashcardView({
   // instead of turning Next into a Finish that jumps back to the summary.
   hideSummaryButton?: boolean;
   lockAtEnd?: boolean;
+  variant?: FlashcardVariant;
 }) {
   const { t, lang } = useT();
+  const milestone = variant === "milestone";
 
   const [order, setOrder] = useState<LessonVocabRow[]>(words);
   const [index, setIndex] = useState(0);
@@ -139,14 +148,64 @@ export function FlashcardView({
     onStroke: openStroke,
   });
 
+  // The milestone layout's eye toggles show or hide one line each, on top of the
+  // keyboard's show-both state. A flip lasts until that state or the card changes.
+  const [flipped, setFlipped] = useState({ pinyin: false, meaning: false });
+  const flipKey = `${index}:${revealed}`;
+  const [prevFlipKey, setPrevFlipKey] = useState(flipKey);
+  if (flipKey !== prevFlipKey) {
+    setPrevFlipKey(flipKey);
+    setFlipped({ pinyin: false, meaning: false });
+  }
+  const showPinyin = revealed !== flipped.pinyin;
+  const showMeaning = revealed !== flipped.meaning;
+
   if (!word) return null;
 
+  const progressPct = Math.round(((index + 1) / total) * 100);
+  const progressFill = (
+    <div className="vl-progress-bar vl-card-progress">
+      <div className="vl-progress-fill" style={{ width: `${((index + 1) / total) * 100}%` }} />
+    </div>
+  );
+
   return (
-    <div id="screen-learning">
+    <div id="screen-learning" className={milestone ? "vl-milestone" : undefined}>
       <div className="vl-learning-topbar">
-        <span className="vl-counter">
-          {index + 1} / {total}
-        </span>
+        {milestone ? (
+          <>
+            <span className="vl-counter-pill">
+              {t("milestone.word_counter", {
+                n: String(index + 1).padStart(2, "0"),
+                total: String(total).padStart(2, "0"),
+              })}
+            </span>
+            <div className="vl-toggle-group">
+              <button
+                type="button"
+                className={`vl-toggle${showPinyin ? "" : " is-off"}`}
+                aria-pressed={showPinyin}
+                onClick={() => setFlipped((f) => ({ ...f, pinyin: !f.pinyin }))}
+              >
+                <FontAwesomeIcon icon={showPinyin ? faEye : faEyeSlash} aria-hidden />
+                <span>{t("dashboard.table_pinyin")}</span>
+              </button>
+              <button
+                type="button"
+                className={`vl-toggle${showMeaning ? "" : " is-off"}`}
+                aria-pressed={showMeaning}
+                onClick={() => setFlipped((f) => ({ ...f, meaning: !f.meaning }))}
+              >
+                <FontAwesomeIcon icon={showMeaning ? faEye : faEyeSlash} aria-hidden />
+                <span>{t("dashboard.table_meaning_vn")}</span>
+              </button>
+            </div>
+          </>
+        ) : (
+          <span className="vl-counter">
+            {index + 1} / {total}
+          </span>
+        )}
         {!hideSummaryButton && (
           <button type="button" className="vl-train-btn" onClick={onShowSummary}>
             <FontAwesomeIcon icon={faTableList} />
@@ -155,9 +214,17 @@ export function FlashcardView({
         )}
       </div>
 
-      <div className="vl-progress-bar vl-card-progress">
-        <div className="vl-progress-fill" style={{ width: `${((index + 1) / total) * 100}%` }} />
-      </div>
+      {milestone ? (
+        <div className="vl-progress-row">
+          <span className="vl-progress-label">{t("milestone.word_progress")}</span>
+          {progressFill}
+          <span className="vl-progress-value">
+            {index + 1}/{total} ({progressPct}%)
+          </span>
+        </div>
+      ) : (
+        progressFill
+      )}
 
       <div className="vl-card">
         <div className="vl-hanzi" lang="zh-CN">
@@ -169,8 +236,8 @@ export function FlashcardView({
               ))
             : word.cn}
         </div>
-        <div className="vl-pinyin">{revealed ? word.pinyin || "" : ""}</div>
-        <div className="vl-meaning">{revealed ? meaning : ""}</div>
+        <div className="vl-pinyin">{showPinyin ? word.pinyin || "" : ""}</div>
+        <div className="vl-meaning">{showMeaning ? meaning : ""}</div>
 
         <div className="vl-typing-container">
           <input
