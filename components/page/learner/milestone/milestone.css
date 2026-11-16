@@ -113,6 +113,12 @@
   padding: 0;
   list-style: none;
 }
+/* Beside the outline all six fit the main column without scrolling. */
+@media (min-width: 1024px) {
+  .milestone-segments {
+    grid-auto-columns: minmax(120px, 1fr);
+  }
+}
 
 .milestone-segment-item {
   min-width: 0;
