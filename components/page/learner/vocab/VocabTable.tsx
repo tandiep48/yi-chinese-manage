@@ -25,6 +25,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
+import { pickMeaning } from "@/lib/lessons/meaning";
+import type { Lang } from "@/lib/i18n";
 import type { VocabRow } from "@/lib/types/vocab";
 import "./vocab-table.css";
 
@@ -36,10 +38,11 @@ function wordOf(row: VocabRow): string {
   return row.word || row.cn || "";
 }
 
-function cellValue(row: VocabRow, col: ColKey): string {
+// The meaning cell follows the UI language, falling back to the other one.
+function cellValue(row: VocabRow, col: ColKey, lang: Lang): string {
   if (col === "cn") return wordOf(row);
   if (col === "py") return row.pinyin || "";
-  return row.meaning_vn || row.meaning_en || "";
+  return pickMeaning(row, lang);
 }
 
 interface VocabTableProps {
@@ -65,7 +68,7 @@ export function VocabTable({
   onOpenStroke,
   onStrokeAll,
 }: VocabTableProps) {
-  const { t } = useT();
+  const { t, lang } = useT();
 
   // Local display order — shuffle mutates this; resets when a new page loads.
   const [displayRows, setDisplayRows] = useState<VocabRow[]>(rows);
@@ -368,7 +371,7 @@ export function VocabTable({
                       onClick={() => toggleCell(word, col.key)}
                       lang={col.key === "cn" ? "zh-CN" : undefined}
                     >
-                      {cellValue(row, col.key)}
+                      {cellValue(row, col.key, lang)}
                     </td>
                   );
                 })}

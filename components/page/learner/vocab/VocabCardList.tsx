@@ -5,7 +5,7 @@
 // the horizontally-scrolling VocabTable. Each word is a full-width card: a select
 // checkbox (picks the word for training, same hook state as the table), the
 // hanzi / pinyin / meaning, and an audio button. Tapping the card body opens a
-// bottom-sheet with the word's full detail (hanzi, pinyin, VN + EN meaning,
+// bottom-sheet with the word's full detail (hanzi, pinyin, UI-language meaning,
 // audio, and a stroke-order button that reuses the page's VocabStrokeModal). A
 // "select all on page" row sits on top.
 //
@@ -25,6 +25,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
+import { pickMeaning } from "@/lib/lessons/meaning";
 import type { VocabRow } from "@/lib/types/vocab";
 import "./vocab-card-list.css";
 
@@ -118,8 +119,8 @@ export function VocabCardList({
   );
 
   const detailWord = detail ? wordOf(detail) : "";
-  // Only the UI-language meaning; blank when that language has none (no fallback).
-  const detailMeaning = detail ? (lang === "vi" ? detail.meaning_vn : detail.meaning_en) || "" : "";
+  // One meaning, in the UI language (falling back to the other when it has none).
+  const detailMeaning = detail ? pickMeaning(detail, lang) : "";
 
   return (
     <div className="vocab-card-list">
@@ -170,7 +171,7 @@ export function VocabCardList({
       <ul className="vcl-cards">
         {listRows.map((row, index) => {
           const word = wordOf(row);
-          const meaning = row.meaning_vn || row.meaning_en || "";
+          const meaning = pickMeaning(row, lang);
           const audioButton = row.audio_key ? (
             <button
               type="button"

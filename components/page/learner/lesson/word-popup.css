@@ -65,10 +65,6 @@
   color: var(--ls-text);
   margin-bottom: 4px;
 }
-.lesson-study .word-popup-meaning-en {
-  color: var(--ls-muted);
-  font-size: 0.88rem;
-}
 .lesson-study .word-popup-not-found {
   color: var(--ls-muted);
   font-size: 0.9rem;
