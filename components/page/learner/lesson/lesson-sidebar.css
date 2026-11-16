@@ -1,6 +1,6 @@
 
 /* ─────────────────────────────────────────────
-   LESSON STUDY SIDEBAR — the accordion of parts/steps down the left of the
+   LESSON STUDY SIDEBAR — the outline of parts/steps down the right of the
    study pages (LessonSidebar). Scoped under .lesson-study, which declares the
    teal --ls-* tokens; see ./lesson-study.css.
    ───────────────────────────────────────────── */
@@ -231,6 +231,135 @@
 }
 .lesson-study .sidebar-step.active .step-label {
   color: var(--ls-primary);
+}
+
+/* ── Outline: progress block + the active part's milestone steps ── */
+.lesson-study .outline-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin: 1rem 1rem 0.25rem;
+  padding: 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+.lesson-study .outline-progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lesson-study .outline-progress-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.lesson-study .outline-progress-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ls-muted);
+}
+.lesson-study .outline-progress-value {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--ls-primary);
+}
+.lesson-study .outline-progress-track {
+  height: 8px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  overflow: hidden;
+}
+.lesson-study .outline-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ls-primary);
+  transition: width 0.3s ease;
+}
+.lesson-study .outline-progress-row.is-current .outline-progress-track {
+  background: var(--ls-secondary);
+}
+.lesson-study .outline-progress-row.is-current .outline-progress-fill {
+  background: var(--ls-primary-hover);
+}
+.lesson-study .outline-progress-row.is-current .outline-progress-value {
+  color: var(--ls-primary-hover);
+}
+
+/* The active part and its steps read as one mint card. */
+.lesson-study .outline-part {
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: var(--ls-primary-light);
+}
+.lesson-study .outline-part .sidebar-step.active {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.lesson-study .outline-substeps {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0 0.75rem 0.75rem 3.5rem;
+  list-style: none;
+}
+.lesson-study .outline-substep {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ls-muted);
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.lesson-study .outline-substep:hover {
+  background: rgba(0, 122, 97, 0.08);
+}
+.lesson-study .outline-substep.is-done {
+  color: var(--ls-primary);
+  font-weight: 500;
+}
+.lesson-study .outline-substep.is-current {
+  color: var(--ls-primary-hover);
+  font-weight: 700;
+}
+/* A small dot by default; a check once done; a larger filled dot when current. */
+.lesson-study .outline-substep-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  font-size: 0.7rem;
+}
+.lesson-study .outline-substep-mark:empty::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.6;
+}
+.lesson-study .outline-substep.is-current .outline-substep-mark:empty::before {
+  width: 8px;
+  height: 8px;
+  opacity: 1;
 }
 
 /* The Exam entry's total vocab / lesson progress, under its header row. */
