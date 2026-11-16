@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { TranslationPanel } from "@/components/page/learner/translation/TranslationPanel";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
@@ -134,5 +134,44 @@ describe("TranslationPanel card drill", () => {
     expect(screen.getByText("1 / 3")).toBeInTheDocument();
     // The deck keeps its size; which sentence leads is random.
     expect(screen.getByRole("button", { name: /Prev/ })).toBeDisabled();
+  });
+
+  // With a finish action the last sentence's Next hands on instead of dead-ending.
+  it("turns Next into the finish action on the last card", () => {
+    const onClick = vi.fn();
+    render(
+      <I18nProvider>
+        <TranslationPanel
+          rows={DECK}
+          loading={false}
+          error={null}
+          finish={{ label: "Next lesson", onClick }}
+        />
+      </I18nProvider>
+    );
+    // Not on the last card yet: plain Next, and the finish action is untouched.
+    fireEvent.click(screen.getByRole("button", { name: /^Next/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Next/ }));
+    expect(onClick).not.toHaveBeenCalled();
+
+    const finish = screen.getByRole("button", { name: /Next lesson/ });
+    expect(finish).toBeEnabled();
+    fireEvent.click(finish);
+    expect(onClick).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("3 / 3")).toBeInTheDocument();
+  });
+
+  it("disables the finish action when asked to", () => {
+    render(
+      <I18nProvider>
+        <TranslationPanel
+          rows={ROWS}
+          loading={false}
+          error={null}
+          finish={{ label: "Lesson complete", onClick: vi.fn(), disabled: true }}
+        />
+      </I18nProvider>
+    );
+    expect(screen.getByRole("button", { name: /Lesson complete/ })).toBeDisabled();
   });
 });

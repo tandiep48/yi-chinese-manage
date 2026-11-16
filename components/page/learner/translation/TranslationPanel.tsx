@@ -5,7 +5,9 @@
 // of Learning/web_app/static/translation/translation.js (renderCards / renderCard /
 // toggleAnswer / prevCard / nextCard / shuffleCards). One sentence at a time: its
 // meaning in the UI language, an input for the Chinese that highlights as soon as it
-// matches, a reveal toggle, and Prev / Shuffle / Next.
+// matches, a reveal toggle, and Prev / Shuffle / Next. Given a `finish` action, Next
+// on the last sentence becomes that action (the lesson flow's "Next lesson") instead
+// of dead-ending.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,14 +17,23 @@ import { shuffle } from "@/lib/lessons/vocabTrainer";
 import type { TranslationRow } from "@/lib/types/lesson";
 import "./translation-panel.css";
 
+// What Next does once the learner is on the last sentence.
+export interface TranslationFinish {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+}
+
 export function TranslationPanel({
   rows,
   loading,
   error,
+  finish,
 }: {
   rows: TranslationRow[];
   loading: boolean;
   error: string | null;
+  finish?: TranslationFinish;
 }) {
   const { t } = useT();
 
@@ -33,10 +44,10 @@ export function TranslationPanel({
 
   // Keyed on the loaded deck so navigating to another lesson remounts the drill —
   // resetting the shuffled order and the card index with it.
-  return <TranslationCards key={`${rows.length}:${rows[0].cn}`} rows={rows} />;
+  return <TranslationCards key={`${rows.length}:${rows[0].cn}`} rows={rows} finish={finish} />;
 }
 
-function TranslationCards({ rows }: { rows: TranslationRow[] }) {
+function TranslationCards({ rows, finish }: { rows: TranslationRow[]; finish?: TranslationFinish }) {
   const { t, lang } = useT();
   // The drill owns its own order so Shuffle can reorder it without touching the fetch.
   const [deck, setDeck] = useState<TranslationRow[]>(rows);
@@ -51,6 +62,7 @@ function TranslationCards({ rows }: { rows: TranslationRow[] }) {
     if (!row) return "";
     return (lang === "vi" ? row.vn : row.en) || row.en || row.vn || "";
   }, [row, lang]);
+  const onLast = index === total - 1;
   const matched = !!row && typed.trim() === (row.cn || "").trim();
 
   // Every card starts blank, hidden and focused (renderCard).
@@ -144,10 +156,10 @@ function TranslationCards({ rows }: { rows: TranslationRow[] }) {
         <button
           type="button"
           className="btn primary translation-nav-btn"
-          disabled={index === total - 1}
-          onClick={next}
+          disabled={onLast ? !finish || finish.disabled : false}
+          onClick={onLast && finish ? finish.onClick : next}
         >
-          {t("reading.next")} &rarr;
+          {onLast && finish ? finish.label : t("reading.next")} &rarr;
         </button>
       </div>
     </div>
