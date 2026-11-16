@@ -38,6 +38,24 @@ export function practiceAudioUrl(
   return `${GCS_BUCKET_URL}/question_bank/${category}/${category}-${lvl}/${key}.mp3`;
 }
 
+// Level-card picture on the Exercise / Exam selection grids, e.g. practice level 1
+// -> .../hsk_images/practice/hsk1.jpg.
+export function hskSelectImageUrl(
+  category: "practice" | "exam",
+  level: number | string
+): string {
+  return `${GCS_BUCKET_URL}/hsk_images/${category}/hsk${level}.jpg`;
+}
+
+// The bundled copy of the same picture (public/images/<category>/hsk<n>.jpg),
+// shown when the bucket image fails to load.
+export function hskSelectFallbackImage(
+  category: "practice" | "exam",
+  level: number | string
+): string {
+  return `/images/${category}/hsk${level}.jpg`;
+}
+
 // HSK achievement badge, e.g. level 3 -> .../badge/HSK3.png (gcs_service badge_url).
 // Returns "" for a level outside 1..6, matching the legacy helper.
 export function badgeUrl(level: number | string | null | undefined): string {
