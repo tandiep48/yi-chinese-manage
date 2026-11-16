@@ -186,7 +186,7 @@ function MilestonePart({
     .map((s) => s.step)
     .join(",");
   useEffect(() => {
-    if (!publishMilestone || !passageId) return;
+    if (!publishMilestone || !passageId || milestone.error) return;
     publishMilestone({
       passageId,
       step,
@@ -195,7 +195,7 @@ function MilestonePart({
       goToStep,
     });
     return () => publishMilestone(null);
-  }, [publishMilestone, passageId, step, milestone.totalSteps, completedKey, goToStep]);
+  }, [publishMilestone, passageId, step, milestone.totalSteps, milestone.error, completedKey, goToStep]);
 
   // Step 3 needs normalized trainer rows. The passage's own vocab rows are a
   // different shape (cn/hsk_level, no word/level), and the standalone trainer

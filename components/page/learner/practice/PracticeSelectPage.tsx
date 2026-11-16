@@ -35,7 +35,6 @@ function LevelCardImage({ category, level, alt }: { category: PracticeCategory; 
       className="card-image"
       src={sources[attempt]}
       alt={alt}
-      loading="lazy"
       onError={() => setAttempt((n) => n + 1)}
     />
   );
