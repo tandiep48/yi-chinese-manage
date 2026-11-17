@@ -748,5 +748,30 @@
     "master_lesson_confirm_body": "Practise all of this lesson's sentences in one session before moving on.",
     "master_vocab_title": "Master Vocab Trainer",
     "master_lesson_title": "Master Lesson Trainer"
+  },
+  "support": {
+    "button": "Help",
+    "title": "Support",
+    "new": "New message",
+    "back": "Back",
+    "empty": "No messages yet. Ask us anything or report a mistake.",
+    "subject": "Subject",
+    "subject_placeholder": "What is this about?",
+    "message": "Message",
+    "message_placeholder": "Describe the problem or your question…",
+    "about_item": "About: {item}",
+    "send": "Send",
+    "sending": "Sending…",
+    "reply_placeholder": "Write a reply…",
+    "reply": "Reply",
+    "status_open": "Open",
+    "status_resolved": "Resolved",
+    "staff": "Support",
+    "you": "You",
+    "failed": "Could not send. Please try again.",
+    "loading": "Loading…",
+    "load_failed": "Could not load your messages.",
+    "close": "Close",
+    "sign_in": "Sign in to contact support."
   }
 }

@@ -748,5 +748,30 @@
     "master_lesson_confirm_body": "Luyện tất cả các câu của bài học trong một lượt trước khi tiếp tục.",
     "master_vocab_title": "Luyện từ vựng tổng hợp",
     "master_lesson_title": "Luyện bài tổng hợp"
+  },
+  "support": {
+    "button": "Hỗ trợ",
+    "title": "Hỗ trợ",
+    "new": "Tin nhắn mới",
+    "back": "Quay lại",
+    "empty": "Chưa có tin nhắn. Hãy hỏi chúng tôi hoặc báo lỗi nội dung.",
+    "subject": "Tiêu đề",
+    "subject_placeholder": "Bạn muốn hỏi về điều gì?",
+    "message": "Nội dung",
+    "message_placeholder": "Mô tả vấn đề hoặc câu hỏi của bạn…",
+    "about_item": "Về: {item}",
+    "send": "Gửi",
+    "sending": "Đang gửi…",
+    "reply_placeholder": "Viết phản hồi…",
+    "reply": "Phản hồi",
+    "status_open": "Đang mở",
+    "status_resolved": "Đã xử lý",
+    "staff": "Hỗ trợ",
+    "you": "Bạn",
+    "failed": "Không gửi được. Vui lòng thử lại.",
+    "loading": "Đang tải…",
+    "load_failed": "Không tải được tin nhắn của bạn.",
+    "close": "Đóng",
+    "sign_in": "Đăng nhập để liên hệ hỗ trợ."
   }
 }
