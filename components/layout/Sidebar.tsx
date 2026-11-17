@@ -5,7 +5,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 interface NavItem {
   label: string;
@@ -91,6 +92,13 @@ const NAV_ITEMS: NavItem[] = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const handleSignOut = async () => {
+    await logout();
+    router.replace("/manage/login");
+  };
 
   const w = collapsed ? "w-16" : "w-60";
 
@@ -150,6 +158,28 @@ export function Sidebar() {
           );
         })}
       </nav>
+
+      {/* Signed-in account */}
+      <div className="border-t border-slate-100 p-2">
+        {!collapsed && user && (
+          <div className="px-3 py-2 overflow-hidden">
+            <p className="text-sm font-medium text-slate-800 truncate">{user.username}</p>
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider">{user.role}</p>
+          </div>
+        )}
+        <button
+          id="sidebar-sign-out"
+          onClick={handleSignOut}
+          title="Sign out"
+          className="flex items-center gap-3 w-full rounded-xl px-3 py-2.5 text-sm text-slate-500 hover:bg-slate-50 hover:text-slate-700 transition-colors"
+        >
+          <svg className="h-5 w-5 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+            <path fillRule="evenodd" d="M3 4.25A2.25 2.25 0 0 1 5.25 2h5.5A2.25 2.25 0 0 1 13 4.25v2a.75.75 0 0 1-1.5 0v-2a.75.75 0 0 0-.75-.75h-5.5a.75.75 0 0 0-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 0 0 .75-.75v-2a.75.75 0 0 1 1.5 0v2A2.25 2.25 0 0 1 10.75 18h-5.5A2.25 2.25 0 0 1 3 15.75V4.25Z" clipRule="evenodd" />
+            <path fillRule="evenodd" d="M6 10a.75.75 0 0 1 .75-.75h9.546l-1.048-.943a.75.75 0 1 1 1.004-1.114l2.5 2.25a.75.75 0 0 1 0 1.114l-2.5 2.25a.75.75 0 1 1-1.004-1.114l1.048-.943H6.75A.75.75 0 0 1 6 10Z" clipRule="evenodd" />
+          </svg>
+          {!collapsed && <span className="truncate">Sign out</span>}
+        </button>
+      </div>
 
       {/* Collapse toggle */}
       <div className="border-t border-slate-100 p-2">
