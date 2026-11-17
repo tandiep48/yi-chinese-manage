@@ -7,6 +7,7 @@
 import { useT } from "@/components/i18n/I18nProvider";
 import { AudioControl } from "../PracticeAudio";
 import { practiceImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { allOptionsAreImages, answersMatch } from "@/lib/practice/practiceEngine";
 import { GroupFeedback } from "./Feedback";
 import { KeyButtons } from "./KeyButtons";
@@ -26,8 +27,7 @@ export function T5ListeningGroup({ group, state, category, onSelectKey }: GroupP
           <div className="t5l-images-row">
             {Object.entries(opts).map(([key, filename]) => (
               <div key={key} className="t5l-img-col">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="t5l-img" src={practiceImageUrl(q0.level, String(filename), category)} alt={key} />
+                <GcsImage className="t5l-img" src={practiceImageUrl(q0.level, String(filename), category)} alt={key} />
                 <div className="t5l-img-label">{key}</div>
               </div>
             ))}

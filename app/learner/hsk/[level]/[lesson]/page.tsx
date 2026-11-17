@@ -18,6 +18,7 @@ import {
   lessonColor,
 } from "@/lib/lessons/lessons";
 import { lessonImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
 import { ProgressLines } from "@/components/page/learner/picker/PickerProgress";
 import {
@@ -128,15 +129,14 @@ export default function PartPickerPage({
           style={{ backgroundColor: headerColor }}
         >
           <div className="picker-header-col1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <GcsImage
               className="picker-header-lesson-img"
               src={lessonImageUrl(hsk.key, lesson)}
               alt=""
               // Fall back to a colored icon tile when the lesson has no image.
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                e.currentTarget.parentElement
+              onFallbackFailed={(img) => {
+                img.style.display = "none";
+                img.parentElement
                   ?.querySelector<HTMLElement>(".picker-header-image")
                   ?.style.setProperty("display", "flex");
               }}

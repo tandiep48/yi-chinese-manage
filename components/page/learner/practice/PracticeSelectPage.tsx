@@ -4,38 +4,27 @@
 // HSK 1–6 level grid — the entry screen for Exercise (category="practice") and
 // Exam (category="exam"). Ports templates/practice/practice_select.html.
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import { LearningTabs } from "@/components/page/learner/picker/LearningTabs";
-import { hskSelectFallbackImage, hskSelectImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
+import { hskSelectImageUrl } from "@/lib/gcs";
 import type { PracticeCategory } from "@/lib/types/practice";
 import "@/components/page/learner/picker/learning-tabs.css";
 import "./practice-select.css";
 
-// The level picture: the bucket image first, the bundled copy if that fails, and
-// the plain level number if neither loads.
+// The level picture: the bucket image, its local mirror if that fails, and the
+// plain level number if neither loads.
 function LevelCardImage({ category, level, alt }: { category: PracticeCategory; level: number; alt: string }) {
-  const sources = [hskSelectImageUrl(category, level), hskSelectFallbackImage(category, level)];
-  const [attempt, setAttempt] = useState(0);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-
-  // A server-rendered image can fail before React attaches onError; catch that
-  // already-broken state once mounted (and again after each source swap).
-  useEffect(() => {
-    const img = imgRef.current;
-    if (img && img.complete && img.naturalWidth === 0) setAttempt((n) => n + 1);
-  }, [attempt]);
-
-  if (attempt >= sources.length) return <div className="card-icon">{level}</div>;
+  const [broken, setBroken] = useState(false);
+  if (broken) return <div className="card-icon">{level}</div>;
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      ref={imgRef}
+    <GcsImage
       className="card-image"
-      src={sources[attempt]}
+      src={hskSelectImageUrl(category, level)}
       alt={alt}
-      onError={() => setAttempt((n) => n + 1)}
+      onFallbackFailed={() => setBroken(true)}
     />
   );
 }

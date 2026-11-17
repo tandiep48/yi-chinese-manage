@@ -8,6 +8,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { AudioControl } from "../PracticeAudio";
 import { hanNodes } from "@/lib/han/hanText";
 import { practiceImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import {
   classifyQuestion,
   isImageFilename,
@@ -57,8 +58,7 @@ export function SingleGroup({ group, state, category, onSelectMC, onToggleChip }
                   return (
                     <>
                       {imgFile ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img className="p-image" src={practiceImageUrl(q.level, String(imgFile), category)} alt="" />
+                        <GcsImage className="p-image" src={practiceImageUrl(q.level, String(imgFile), category)} alt="" />
                       ) : null}
                       {showContent && q.content && !isImageFilename(q.content) ? (
                         <div className="p-paragraph">{hanNodes(q.content, level)}</div>

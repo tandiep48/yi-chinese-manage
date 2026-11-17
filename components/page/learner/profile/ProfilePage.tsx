@@ -12,6 +12,7 @@ import { useT } from "@/components/i18n/I18nProvider";
 import { useProfile } from "@/hooks/profile/useProfile";
 import { useProfileStats } from "@/hooks/profile/useProfileStats";
 import { badgeUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { AvatarModal } from "./AvatarModal";
 import { LearningStatistics } from "./LearningStatistics";
 import { PasswordForm } from "./PasswordForm";
@@ -58,7 +59,7 @@ export function ProfilePage() {
         </div>
         {badge && (
           <div className="profile-badge-col">
-            <img
+            <GcsImage
               className="profile-badge-img"
               src={badge}
               alt={`${t("profile.badge")} HSK ${p.level}`}

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useT } from "@/components/i18n/I18nProvider";
 import { useLearnerBook } from "@/hooks/book/useLearnerBook";
 import { bookCoverUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import "@/components/page/learner/picker/lesson-picker.css";
 import "@/components/page/learner/picker/books.css";
 
@@ -36,13 +37,12 @@ export default function BookLessonsPage({
 
         <div className="picker-header-section">
           <div className="picker-header-col1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <GcsImage
               className="picker-header-lesson-img"
               src={bookCoverUrl(code)}
               alt={bookTitle}
-              onError={(e) => {
-                const wrap = e.currentTarget.parentElement;
+              onFallbackFailed={(img) => {
+                const wrap = img.parentElement;
                 if (wrap) wrap.style.display = "none";
               }}
             />

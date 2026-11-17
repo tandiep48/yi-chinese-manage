@@ -8,6 +8,7 @@
 import { useT } from "@/components/i18n/I18nProvider";
 import { hanNodes } from "@/lib/han/hanText";
 import { practiceImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { answersMatch } from "@/lib/practice/practiceEngine";
 import { BlankedContent } from "./BlankedContent";
 import { GroupFeedback } from "./Feedback";
@@ -34,8 +35,7 @@ export function T5ReadingMatchGroup({
           <div className="t5l-images-row t5ri-images-row">
             {Object.entries(opts).map(([key, filename]) => (
               <div key={key} className="t5l-img-col t5ri-img-col">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="t5l-img t5ri-img" src={practiceImageUrl(q0.level, String(filename), category)} alt={key} />
+                <GcsImage className="t5l-img t5ri-img" src={practiceImageUrl(q0.level, String(filename), category)} alt={key} />
                 <div className="t5l-img-label t5ri-img-label">{key}</div>
               </div>
             ))}
