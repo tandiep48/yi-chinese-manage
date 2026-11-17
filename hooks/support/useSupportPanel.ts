@@ -4,7 +4,7 @@
 // State machine for the learner support panel: my tickets -> new ticket / one thread.
 // While a thread is open it re-fetches every POLL_MS so staff replies appear without a reload.
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   createTicket,
   getMyTicket,
@@ -17,6 +17,14 @@ import type { SupportPrefill } from "@/components/page/learner/support/SupportCo
 export type SupportView = "list" | "new" | "thread";
 const POLL_MS = 15000;
 
+// Put a just-created/updated ticket at the top of the cached list, so going back shows it
+// straight away instead of waiting for (or losing it to) the next list fetch.
+function withTicketFirst(list: SupportTicket[], detail: SupportTicketDetail): SupportTicket[] {
+  const { messages: _messages, ...summary } = detail;
+  void _messages;
+  return [summary, ...list.filter((t) => t.id !== summary.id)];
+}
+
 export function useSupportPanel(open: boolean, prefill: SupportPrefill | null) {
   const [view, setView] = useState<SupportView>("list");
   const [tickets, setTickets] = useState<SupportTicket[]>([]);
@@ -25,15 +33,20 @@ export function useSupportPanel(open: boolean, prefill: SupportPrefill | null) {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Only the newest list request may apply its result, so a slow, older response can't
+  // overwrite a ticket added locally in the meantime.
+  const listRequest = useRef(0);
   const loadList = useCallback(async () => {
+    const mine = ++listRequest.current;
     setLoading(true);
     setError(null);
     try {
-      setTickets((await listMyTickets()).items);
+      const res = await listMyTickets();
+      if (mine === listRequest.current) setTickets(res.items);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "load_failed");
+      if (mine === listRequest.current) setError(e instanceof Error ? e.message : "load_failed");
     } finally {
-      setLoading(false);
+      if (mine === listRequest.current) setLoading(false);
     }
   }, []);
 
@@ -94,6 +107,8 @@ export function useSupportPanel(open: boolean, prefill: SupportPrefill | null) {
           page_url: window.location.pathname + window.location.search,
         });
         setTicket(created);
+        listRequest.current++; // drop any list fetch that started before this ticket existed
+        setTickets((prev) => withTicketFirst(prev, created));
         setView("thread");
         return true;
       } catch (e) {
@@ -113,7 +128,10 @@ export function useSupportPanel(open: boolean, prefill: SupportPrefill | null) {
       setError(null);
       try {
         await replyToTicket(ticket.id, body);
-        setTicket(await getMyTicket(ticket.id));
+        const fresh = await getMyTicket(ticket.id);
+        setTicket(fresh);
+        listRequest.current++;
+        setTickets((prev) => withTicketFirst(prev, fresh));
         return true;
       } catch (e) {
         setError(e instanceof Error ? e.message : "failed");

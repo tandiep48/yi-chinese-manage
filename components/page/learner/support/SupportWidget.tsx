@@ -59,7 +59,9 @@ export function SupportWidget() {
                 <button type="button" className="support-primary" onClick={panel.showNew}>
                   <FontAwesomeIcon icon={faPlus} /> {t("support.new")}
                 </button>
-                {panel.loading && <p className="support-muted">{t("support.loading")}</p>}
+                {panel.loading && panel.tickets.length === 0 && (
+                  <p className="support-muted">{t("support.loading")}</p>
+                )}
                 {!panel.loading && panel.tickets.length === 0 && (
                   <p className="support-muted">{t("support.empty")}</p>
                 )}

@@ -133,4 +133,27 @@ describe("SupportWidget", () => {
     );
     expect(await screen.findByText("Fixed, thanks")).toBeInTheDocument();
   });
+
+  it("keeps a just-created ticket in the list when going back, even if the list fetch is slow", async () => {
+    const empty = { items: [], page: 1, page_size: 20, total: 0, total_pages: 1 };
+    let resolveFirst: (v: typeof empty) => void = () => {};
+    mockList
+      .mockReturnValueOnce(new Promise((r) => (resolveFirst = r))) // opening the panel: stays pending
+      .mockImplementation(() => new Promise(() => {})); // going back: never answers
+    mockCreate.mockResolvedValue(ticket);
+    const user = userEvent.setup();
+    renderWidget();
+
+    await user.click(helpButton()); // list fetch #1 stays pending
+    await user.click(await screen.findByRole("button", { name: /New message|Tin nhắn mới/ }));
+    await user.type(await screen.findByLabelText(/Subject|Tiêu đề/), "Wrong pinyin");
+    await user.type(screen.getByLabelText(/Message|Nội dung/), "It says ni");
+    await user.click(screen.getByRole("button", { name: /^(Send|Gửi)$/ }));
+    await screen.findByText("Fixed, thanks");
+
+    resolveFirst(empty); // the stale list response lands after the ticket exists
+    await user.click(screen.getByRole("button", { name: /Back|Quay lại/ }));
+
+    expect(await screen.findByRole("button", { name: /Wrong pinyin/ })).toBeInTheDocument();
+  });
 });
