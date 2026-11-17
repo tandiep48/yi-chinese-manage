@@ -3,8 +3,8 @@
 // components/page/learner/lesson/WordPopup.tsx
 // The word popup shown when a learner clicks a Lesson Summary word. Ported from
 // the #word-popup markup + showWordPopup()/updateSaveWordBtn() in Learning/web_app's
-// reading.html / reading.js: hanzi, pinyin, VN + EN meaning (or a "not found"
-// state), a play-audio button (only when the word has audio, matching the legacy
+// reading.html / reading.js: hanzi, pinyin, the meaning in the UI language (or a
+// "not found" state), a play-audio button (only when the word has audio, matching the legacy
 // page), a stroke-order toggle, and — for book lessons — an Add/added save toggle.
 
 import { useEffect, useRef, useState } from "react";
@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark, faVolumeHigh, faPenNib, faPlus, faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
+import { pickMeaning } from "@/lib/lessons/meaning";
 import { StrokeOrder } from "./StrokeOrder";
 import type { VocabLookup } from "@/lib/types/vocab";
 import "./word-popup.css";
@@ -31,7 +32,7 @@ export function WordPopup({
   onToggleSave: () => void;
   onClose: () => void;
 }) {
-  const { t } = useT();
+  const { t, lang } = useT();
   const [strokeOpen, setStrokeOpen] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -78,11 +79,8 @@ export function WordPopup({
             <span className="word-popup-not-found">{t("reading.word_not_found")}</span>
           </div>
         ) : (
-          <div className="word-popup-meaning">{entry.meaning_vn}</div>
+          <div className="word-popup-meaning">{pickMeaning(entry, lang)}</div>
         )}
-        {!notFound && entry.meaning_en ? (
-          <div className="word-popup-meaning word-popup-meaning-en">{entry.meaning_en}</div>
-        ) : null}
 
         <div className="word-popup-actions">
           {entry?.audio_key ? (

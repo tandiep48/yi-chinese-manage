@@ -49,8 +49,19 @@ describe("VocabCardList", () => {
     renderList();
     expect(screen.getByText("学习")).toBeInTheDocument();
     expect(screen.getByText("学习-py")).toBeInTheDocument();
-    expect(screen.getByText("学习-vn")).toBeInTheDocument();
+    // Tests pin the UI language to English: the card shows the EN meaning only.
+    expect(screen.getByText("学习-en")).toBeInTheDocument();
+    expect(screen.queryByText("学习-vn")).toBeNull();
     expect(screen.getByText("你好")).toBeInTheDocument();
+  });
+
+  it("falls back to the other language when the UI language has no meaning", () => {
+    render(
+      <I18nProvider>
+        <VocabCardList rows={[{ ...row("学习"), meaning_en: "" }]} selectable={false} />
+      </I18nProvider>
+    );
+    expect(screen.getByText("学习-vn")).toBeInTheDocument();
   });
 
   it("ticks a card to select that word", async () => {
@@ -83,12 +94,10 @@ describe("VocabCardList", () => {
     const user = userEvent.setup();
     renderList();
 
-    // The EN meaning lives only in the detail sheet, not on the card.
-    expect(screen.queryByText("学习-en")).toBeNull();
     await user.click(screen.getByRole("button", { name: /学习/ }));
 
     // Tests pin the UI language to English: the sheet shows the EN meaning and
-    // not the VN one (no cross-language fallback inside the sheet).
+    // not the VN one.
     const sheet = screen.getByRole("dialog");
     expect(within(sheet).getByText("学习-en")).toBeInTheDocument();
     expect(within(sheet).queryByText("学习-vn")).toBeNull();
@@ -120,15 +129,15 @@ describe("VocabCardList", () => {
     );
 
     expect(screen.getByText("学习-py")).toBeInTheDocument();
-    expect(screen.getByText("学习-vn")).toBeInTheDocument();
+    expect(screen.getByText("学习-en")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^Pinyin$/ }));
     expect(screen.queryByText("学习-py")).toBeNull();
     // Meaning is untouched until its own toggle.
-    expect(screen.getByText("学习-vn")).toBeInTheDocument();
+    expect(screen.getByText("学习-en")).toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: /^Meaning$/ }));
-    expect(screen.queryByText("学习-vn")).toBeNull();
+    expect(screen.queryByText("学习-en")).toBeNull();
   });
 
   it("keeps every word after a shuffle", async () => {

@@ -34,7 +34,7 @@ export interface LessonPartsHeader {
   isBook: boolean;
 }
 
-interface UseLessonPartsReturn {
+export interface UseLessonPartsReturn {
   loading: boolean;
   error: string | null;
   parts: SidebarPart[];

@@ -8,6 +8,10 @@
 // the matching lesson-wide study page (navigateToDomain in the original). The
 // section for the current `domain` is expanded and highlighted. Collapses to a
 // floating toggle, matching the Jinja behaviour.
+//
+// It doubles as the lesson outline: two progress bars on top (the whole lesson, and
+// the part being studied) and, under the active part, the six milestone steps of
+// the run in the main column — each one a jump to that step.
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -23,11 +27,15 @@ import {
   faCaretUp,
   faCaretDown,
   faGraduationCap,
+  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   useLessonParts,
   type SidebarPart,
+  type UseLessonPartsReturn,
 } from "@/hooks/lesson/useLessonParts";
+import { STEP_TITLE_KEYS } from "@/components/page/learner/milestone/MilestoneBar";
+import type { OutlineMilestone } from "./LessonOutlineContext";
 import { partPickerHref } from "@/lib/lessons/lessons";
 import { ExamEngineChooser } from "@/components/page/learner/trainer/ExamEngineChooser";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -45,11 +53,18 @@ export function LessonSidebar({
   onSelectPart,
   onSelectDomain,
   onStartMaster,
+  lesson,
+  milestone,
 }: {
   passageId: string;
   domain?: StudyDomain;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  // The lesson's parts, when the host (LessonStudyShell) has already loaded them;
+  // otherwise the sidebar loads its own.
+  lesson?: UseLessonPartsReturn;
+  // The milestone running in the main column, listed as steps under its part.
+  milestone?: OutlineMilestone | null;
   // When given, picking a part switches it in place via this callback instead of
   // navigating to /learner/lesson — the dashboard's embedded milestone uses this to
   // swap the running part without leaving the home tab.
@@ -64,7 +79,9 @@ export function LessonSidebar({
 }) {
   const { t } = useT();
   const router = useRouter();
-  const { loading, error, parts, lessonProgress, header } = useLessonParts(passageId);
+  // An empty id makes the hook a no-op when the host supplied the parts.
+  const own = useLessonParts(lesson ? "" : passageId);
+  const { loading, error, parts, lessonProgress, header } = lesson ?? own;
   // Lesson Parts is the one accordion: open on the lesson view, collapsed while a
   // Grammar/Translation study page is showing. Clicking its header toggles it.
   const [openSection, setOpenSection] = useState<Section | null>(
@@ -118,6 +135,15 @@ export function LessonSidebar({
     ? `${t("picker.lesson_prefix")} ${header.lessonNum}`
     : t("sidebar.navigation");
 
+  // The part on screen and the milestone run that belongs to it (a run reported
+  // for another part — mid-switch — is ignored).
+  const activePart =
+    domain === "lesson" ? parts.find((p) => p.passageId === passageId) : undefined;
+  const activeRun = milestone && milestone.passageId === passageId ? milestone : null;
+  const partPct = activeRun
+    ? pct(activeRun.completed.length, activeRun.totalSteps)
+    : clampPct(activePart?.progress?.progressPct);
+
   return (
     <>
       {/* Mobile-only (CSS): dims the lesson behind the open drawer; tap to close. */}
@@ -151,6 +177,33 @@ export function LessonSidebar({
           </button>
         </div>
 
+        {(lessonProgress || activePart) && (
+          <div className="outline-progress">
+            {lessonProgress && (
+              <OutlineProgress
+                label={t("sidebar.lesson_progress")}
+                value={`${clampPct(lessonProgress.progressPct)}%`}
+                pct={clampPct(lessonProgress.progressPct)}
+              />
+            )}
+            {activePart && (activeRun || activePart.progress) && (
+              <OutlineProgress
+                current
+                label={`${partLabel(activePart, t)} (${t("sidebar.current_suffix")})`}
+                value={
+                  activeRun
+                    ? `${partPct}% · ${t("milestone.step_counter", {
+                        n: activeRun.step,
+                        total: activeRun.totalSteps,
+                      })}`
+                    : `${partPct}%`
+                }
+                pct={partPct}
+              />
+            )}
+          </div>
+        )}
+
         <div className="lesson-sidebar-accordion">
           {/* Lesson Parts */}
           <AccordionItem
@@ -177,6 +230,7 @@ export function LessonSidebar({
                     part={p}
                     active={domain === "lesson" && p.passageId === passageId}
                     onSelect={navigateToPart}
+                    run={p.passageId === passageId ? activeRun : null}
                   />
                 ))
               )}
@@ -312,24 +366,33 @@ function DomainButton({
   );
 }
 
+type Translate = ReturnType<typeof useT>["t"];
+
+function partLabel(part: SidebarPart, t: Translate): string {
+  return (
+    part.title ||
+    (part.isNumber
+      ? t("picker.number_part")
+      : `${t("picker.part_prefix")} ${part.partNum}`)
+  );
+}
+
 function PartStep({
   part,
   active,
   onSelect,
+  run,
 }: {
   part: SidebarPart;
   active: boolean;
   onSelect: (id: string) => void;
+  // The milestone running for this part, when it is the one on screen.
+  run?: OutlineMilestone | null;
 }) {
   const { t } = useT();
-  const label =
-    part.title ||
-    (part.isNumber
-      ? t("picker.number_part")
-      : `${t("picker.part_prefix")} ${part.partNum}`);
   const iconContent = part.isNumber ? "#" : part.partNum;
 
-  return (
+  const card = (
     <button
       type="button"
       className={`sidebar-step${active ? " active" : ""}`}
@@ -337,10 +400,65 @@ function PartStep({
     >
       <span className="step-icon">{iconContent}</span>
       <span className="step-info">
-        <span className="step-label">{label}</span>
+        <span className="step-label">{partLabel(part, t)}</span>
         {part.progress && <MiniStats progress={part.progress} />}
       </span>
     </button>
+  );
+  if (!active || !run) return card;
+
+  const steps = Array.from({ length: run.totalSteps }, (_, i) => i + 1);
+  return (
+    <div className="outline-part">
+      {card}
+      <ol className="outline-substeps">
+        {steps.map((n) => {
+          const current = n === run.step;
+          const done = run.completed.includes(n);
+          return (
+            <li key={n}>
+              <button
+                type="button"
+                className={`outline-substep${done ? " is-done" : ""}${current ? " is-current" : ""}`}
+                aria-current={current ? "step" : undefined}
+                onClick={() => run.goToStep(n)}
+              >
+                <span className="outline-substep-mark" aria-hidden>
+                  {done && !current && <FontAwesomeIcon icon={faCheck} />}
+                </span>
+                <span>
+                  {n}. {t(STEP_TITLE_KEYS[n] ?? "")}
+                </span>
+              </button>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  );
+}
+
+function OutlineProgress({
+  label,
+  value,
+  pct: fill,
+  current = false,
+}: {
+  label: string;
+  value: string;
+  pct: number;
+  current?: boolean;
+}) {
+  return (
+    <div className={`outline-progress-row${current ? " is-current" : ""}`}>
+      <div className="outline-progress-head">
+        <span className="outline-progress-label">{label}</span>
+        <span className="outline-progress-value">{value}</span>
+      </div>
+      <div className="outline-progress-track">
+        <div className="outline-progress-fill" style={{ width: `${fill}%` }} />
+      </div>
+    </div>
   );
 }
 
@@ -351,10 +469,7 @@ function MiniStats({
 }) {
   const { t } = useT();
   const wordsPct = pct(progress.learnedWords, progress.totalWords);
-  const lessonPct = Math.max(
-    0,
-    Math.min(100, Math.round(progress.progressPct || 0)),
-  );
+  const lessonPct = clampPct(progress.progressPct);
   const wordsFull = progress.totalWords > 0 && wordsPct >= 100;
   const lessonFull = lessonPct >= 100;
 
@@ -386,6 +501,10 @@ function MiniStats({
       </span>
     </span>
   );
+}
+
+function clampPct(value: number | null | undefined): number {
+  return Math.max(0, Math.min(100, Math.round(value || 0)));
 }
 
 function pct(done: number, total: number): number {

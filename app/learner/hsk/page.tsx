@@ -6,6 +6,7 @@
 import Link from "next/link";
 import { HSK_LEVELS } from "@/lib/lessons/lessons";
 import { hskImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { useT } from "@/components/i18n/I18nProvider";
 import { LearningTabs } from "@/components/page/learner/picker/LearningTabs";
 import { RecentLessonPanel } from "@/components/page/learner/picker/RecentLessonPanel";
@@ -31,14 +32,13 @@ export default function HskLevelPickerPage() {
               style={{ backgroundColor: lvl.color }}
             >
               <div className="level-icon">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
+                <GcsImage
                   src={hskImageUrl(lvl.level)}
                   alt={lvl.label}
                   // Fall back to the text label if the cover image is unavailable.
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    e.currentTarget.parentElement?.parentElement
+                  onFallbackFailed={(img) => {
+                    img.style.display = "none";
+                    img.parentElement?.parentElement
                       ?.querySelector<HTMLElement>(".level-name")
                       ?.style.setProperty("display", "block");
                   }}

@@ -31,13 +31,19 @@ function renderPopup(props: Partial<Parameters<typeof WordPopup>[0]> = {}) {
 }
 
 describe("WordPopup", () => {
-  it("shows the word, pinyin, both meanings and an audio button when found", () => {
+  it("shows the word, pinyin, the UI-language meaning only and an audio button when found", () => {
     renderPopup();
     expect(screen.getByText("忙")).toBeInTheDocument();
     expect(screen.getByText("máng")).toBeInTheDocument();
-    expect(screen.getByText("bận")).toBeInTheDocument();
+    // Tests pin the UI language to English.
     expect(screen.getByText("busy")).toBeInTheDocument();
+    expect(screen.queryByText("bận")).not.toBeInTheDocument();
     expect(screen.getByText("Listen")).toBeInTheDocument();
+  });
+
+  it("falls back to the other language when the UI language has no meaning", () => {
+    renderPopup({ entry: { ...ENTRY, meaning_en: "" } });
+    expect(screen.getByText("bận")).toBeInTheDocument();
   });
 
   it("shows the not-found state and hides the audio button for unknown words", () => {

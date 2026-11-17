@@ -7,6 +7,16 @@ export const GCS_BUCKET_URL =
   process.env.NEXT_PUBLIC_GCS_BUCKET_URL ??
   "https://storage.googleapis.com/chinese-learning-audio-assets";
 
+// The local mirror of the bucket: public/gcs/<same object path>. A bucket URL maps
+// to /gcs/<path> so an image can be retried from the app itself when GCS fails
+// (any non-2xx, a 500 included). Returns null for a URL outside the bucket.
+export const GCS_LOCAL_PREFIX = "/gcs";
+
+export function gcsLocalFallback(url: string): string | null {
+  const base = `${GCS_BUCKET_URL}/`;
+  return url.startsWith(base) ? `${GCS_LOCAL_PREFIX}/${url.slice(base.length)}` : null;
+}
+
 // HSK level cover image, e.g. level 1 -> .../hsk_images/hsk1.png (gcs_service.hsk_image_url).
 export function hskImageUrl(level: number | string): string {
   const n = String(level).replace(/[^0-9]/g, "");
@@ -36,6 +46,15 @@ export function practiceAudioUrl(
 ): string {
   const lvl = level || 1;
   return `${GCS_BUCKET_URL}/question_bank/${category}/${category}-${lvl}/${key}.mp3`;
+}
+
+// Level-card picture on the Exercise / Exam selection grids, e.g. practice level 1
+// -> .../hsk_images/practice/hsk1.jpg.
+export function hskSelectImageUrl(
+  category: "practice" | "exam",
+  level: number | string
+): string {
+  return `${GCS_BUCKET_URL}/hsk_images/${category}/hsk${level}.jpg`;
 }
 
 // HSK achievement badge, e.g. level 3 -> .../badge/HSK3.png (gcs_service badge_url).

@@ -8,7 +8,7 @@
 // Every step reuses an existing component unchanged except for chrome:
 //
 //   1 Vocab summary   WordSummary       hideActions
-//   2 Vocab learner   FlashcardStudy    shell={false} — the host owns the shell
+//   2 Vocab learner   FlashcardStudy    shell={false}, variant="milestone"
 //   3 Vocab trainer   VocabTrainerPage  Phase 0 seam, contained
 //   4 Lesson summary  LessonSummary     hideActions
 //   5 Lesson learner  LessonCardStudy   direct, no second LessonStudyShell
@@ -65,7 +65,9 @@ import { invalidateVocabReview } from "@/hooks/vocab/useVocabReview";
 import { lessonAudioFolder } from "@/lib/audio";
 import type { TrainerWord, VocabActivityType } from "@/lib/lessons/vocabTrainer";
 import type { LessonTaskType } from "@/lib/types/lesson";
+import { useLessonOutline } from "@/components/page/learner/lesson/LessonOutlineContext";
 import { MilestoneBar } from "./MilestoneBar";
+import { MilestoneHeader } from "./MilestoneHeader";
 import "./milestone.css";
 import "./milestone-nav-slot.css";
 
@@ -174,6 +176,26 @@ function MilestonePart({
   const overview = useLessonOverview(passageId);
   const milestone = useLessonMilestone(passageId, initialStep);
   const { step, goToStep, completeAndAdvance, refreshAfterRun } = milestone;
+
+  // Report the step state to the lesson outline, which lists this part's steps
+  // under it. Keyed on the completed steps' content so a milestone re-read with
+  // the same result does not republish.
+  const publishMilestone = useLessonOutline()?.publishMilestone;
+  const completedKey = (milestone.milestone?.steps ?? [])
+    .filter((s) => s.completed)
+    .map((s) => s.step)
+    .join(",");
+  useEffect(() => {
+    if (!publishMilestone || !passageId || milestone.error) return;
+    publishMilestone({
+      passageId,
+      step,
+      totalSteps: milestone.totalSteps,
+      completed: completedKey ? completedKey.split(",").map(Number) : [],
+      goToStep,
+    });
+    return () => publishMilestone(null);
+  }, [publishMilestone, passageId, step, milestone.totalSteps, milestone.error, completedKey, goToStep]);
 
   // Step 3 needs normalized trainer rows. The passage's own vocab rows are a
   // different shape (cn/hsk_level, no word/level), and the standalone trainer
@@ -308,6 +330,7 @@ function MilestonePart({
 
   return (
     <div className="milestone">
+      <MilestoneHeader passageId={passageId} step={step} totalSteps={milestone.totalSteps} />
       <MilestoneBar
         step={step}
         totalSteps={milestone.totalSteps}
@@ -335,6 +358,7 @@ function MilestonePart({
             shell={false}
             hideSummaryButton
             lockAtEnd
+            variant="milestone"
           />
         )}
 

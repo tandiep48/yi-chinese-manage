@@ -5,6 +5,7 @@
 // class because the legacy CSS sizes those tiles differently.
 
 import { practiceImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { normalizeAnswer } from "@/lib/practice/practiceEngine";
 import type { GroupUIState } from "@/lib/practice/groupState";
 import type { PracticeCategory, PracticeQuestion } from "@/lib/types/practice";
@@ -43,8 +44,7 @@ export function ImageOptions({
             className={cls.join(" ")}
             onClick={() => !state.checked && onSelect(blockId, key)}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={practiceImageUrl(q.level, String(filename), category)} alt={key} />
+            <GcsImage src={practiceImageUrl(q.level, String(filename), category)} alt={key} />
             <div className="img-label">{key}</div>
           </div>
         );

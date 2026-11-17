@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGraduationCap, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { getLevel, filterLessonsByQuery } from "@/lib/lessons/lessons";
 import { hskImageUrl, lessonImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import { useLessonPicker } from "@/hooks/lesson/useLessonPicker";
 import { ProgressLines } from "@/components/page/learner/picker/PickerProgress";
 import { useT } from "@/components/i18n/I18nProvider";
@@ -44,15 +45,14 @@ export default function LessonPickerPage({
 
         <div className="picker-header-section" style={{ backgroundColor: hsk.color }}>
           <div className="picker-header-col1">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <GcsImage
               className="picker-header-hsk-img"
               src={hskImageUrl(hsk.level)}
               alt={hsk.label}
               // Fall back to a graduation-cap tile if the HSK cover is unavailable.
-              onError={(e) => {
-                e.currentTarget.style.display = "none";
-                e.currentTarget.parentElement
+              onFallbackFailed={(img) => {
+                img.style.display = "none";
+                img.parentElement
                   ?.querySelector<HTMLElement>(".picker-header-image")
                   ?.style.setProperty("display", "flex");
               }}
@@ -108,15 +108,14 @@ export default function LessonPickerPage({
                 className="lesson-card"
               >
                 <div className="lesson-card-img-wrap">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <GcsImage
                     className="lesson-card-img"
                     src={lessonImageUrl(hsk.key, ls.lesson)}
                     alt=""
                     loading="lazy"
                     // Hide the image column when a lesson has no cover (e.g. pinyin / Other).
-                    onError={(e) => {
-                      const wrap = e.currentTarget.parentElement;
+                    onFallbackFailed={(img) => {
+                      const wrap = img.parentElement;
                       if (wrap) wrap.style.display = "none";
                     }}
                   />

@@ -1,16 +1,19 @@
 "use client";
 
 // components/page/learner/milestone/MilestoneBar.tsx
-// The six-segment progress indicator above a lesson part's milestone, plus the
-// step title ("Step 3 of 6 · Vocab Trainer").
+// The six labelled step pills above a lesson part's milestone ("1. Vocab Summary",
+// "2. Vocab Learner", …): a check for a finished step, a pulsing dot on the one
+// showing.
 //
 // Gating is soft (docs/plans/dashboard-tabs.md §10.1): every completed step is
-// replayable, so the segments are buttons. Steps ahead of the learner are not
-// disabled either — the sidebar can already jump anywhere, and disabling them
+// replayable, so the pills are buttons. Steps ahead of the learner are not
+// disabled either — the outline can already jump anywhere, and disabling them
 // here would hard-gate the flow by accident.
 //
 // Every class belongs to milestone.css, which is subject to the §2 invariant.
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 
 export const STEP_TITLE_KEYS: Record<number, string> = {
@@ -39,39 +42,28 @@ export function MilestoneBar({ step, totalSteps, isCompleted, onSelect }: Milest
         {steps.map((n) => {
           const done = isCompleted(n);
           const current = n === step;
-          // The connector leading into this step reads as complete once the
-          // previous step is done, so the finished path fills in as one line.
-          const linkDone = n > 1 && isCompleted(n - 1);
+          const title = t(STEP_TITLE_KEYS[n] ?? "");
           return (
             <li key={n} className="milestone-segment-item">
-              {n > 1 && (
-                <span
-                  className={`milestone-connector${linkDone ? " is-done" : ""}`}
-                  aria-hidden
-                />
-              )}
               <button
                 type="button"
                 className={`milestone-segment${done ? " is-done" : ""}${current ? " is-current" : ""}`}
                 aria-current={current ? "step" : undefined}
-                aria-label={t("milestone.step_aria", {
-                  n,
-                  total: totalSteps,
-                  title: t(STEP_TITLE_KEYS[n] ?? ""),
-                })}
+                aria-label={t("milestone.step_aria", { n, total: totalSteps, title })}
                 onClick={() => onSelect(n)}
               >
-                <span className="milestone-segment-num">{n}</span>
+                <span className="milestone-segment-num">
+                  {done && !current ? <FontAwesomeIcon icon={faCheck} aria-hidden /> : n}
+                </span>
+                <span className="milestone-segment-label">
+                  {n}. {title}
+                </span>
+                {current && <span className="milestone-segment-pulse" aria-hidden />}
               </button>
             </li>
           );
         })}
       </ol>
-      <p className="milestone-step-title">
-        {t("milestone.step_counter", { n: step, total: totalSteps })}
-        {" · "}
-        {t(STEP_TITLE_KEYS[step] ?? "")}
-      </p>
     </div>
   );
 }

@@ -361,7 +361,19 @@ export function TranslationView({
           {lessonBreadcrumb(passageId, t("picker.lesson_prefix"))}
         </div>
       </div>
-      <TranslationPanel rows={rows} loading={loading} error={error} />
+      <TranslationPanel
+        rows={rows}
+        loading={loading}
+        error={error}
+        // The last sentence's Next is the flow's own Next (confirm → next lesson).
+        finish={
+          flow && {
+            label: flow.nextLabel,
+            onClick: flow.onNext,
+            disabled: flow.nextDisabled,
+          }
+        }
+      />
       {flow && <LessonFlowNav {...flow} />}
     </>
   );

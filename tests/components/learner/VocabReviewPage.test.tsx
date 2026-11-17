@@ -5,7 +5,8 @@
 // switching to the review tab (which hits the other endpoint), and the pager.
 //
 // The list is the vocabulary page's VocabTable with selection turned off, so the
-// meaning column is the one that table defines — VN, falling back to EN.
+// meaning column is the one that table defines — the UI language (English in tests),
+// falling back to the other.
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
@@ -64,7 +65,8 @@ describe("VocabReviewPage", () => {
 
     await screen.findByText("学习");
     expect(screen.getByText("学习-py")).toBeInTheDocument();
-    expect(screen.getByText("学习-vn")).toBeInTheDocument();
+    expect(screen.getByText("学习-en")).toBeInTheDocument();
+    expect(screen.queryByText("学习-vn")).toBeNull();
     expect(screen.getByText("你好")).toBeInTheDocument();
     expect(container.querySelector(".review-count")).toHaveTextContent("2");
     expect(mockRecent).toHaveBeenCalledWith(1, 50);

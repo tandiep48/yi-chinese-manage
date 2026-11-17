@@ -6,11 +6,16 @@
 // Mirrors the page-layout shell that Learning/web_app/templates/shared/sidebar.html
 // wraps every study screen in.
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { LessonSidebar, type StudyDomain } from "./LessonSidebar";
 import { useLessonSidebarDock } from "./LessonSidebarDock";
+import {
+  LessonOutlineContext,
+  type OutlineMilestone,
+} from "./LessonOutlineContext";
+import { useLessonParts } from "@/hooks/lesson/useLessonParts";
 import "./lesson-study.css";
 
 export function LessonStudyShell({
@@ -48,46 +53,63 @@ export function LessonStudyShell({
   // sidebar stays beside the content as before.
   const dockEl = useLessonSidebarDock();
 
+  // The outline and the milestone header read the same parts load, and the outline
+  // lists the running milestone's steps — see LessonOutlineContext.
+  const lesson = useLessonParts(passageId);
+  const [milestone, setMilestone] = useState<OutlineMilestone | null>(null);
+  const outline = useMemo(
+    () => ({ parts: lesson.parts, publishMilestone: setMilestone }),
+    [lesson.parts],
+  );
+
   if (dockEl && passageId) {
     return (
-      <div className="lesson-study ui2-lesson">
-        <div className="lesson-study-main app-container">{children}</div>
-        {createPortal(
-          <div className="lesson-study lesson-study-sidebar-dock">
-            <LessonSidebar
-              passageId={passageId}
-              domain={domain}
-              open
-              onOpenChange={() => {}}
-              onSelectPart={onSelectPart}
-              onSelectDomain={onSelectDomain}
-              onStartMaster={onStartMaster}
-            />
-          </div>,
-          dockEl,
-        )}
-      </div>
+      <LessonOutlineContext.Provider value={outline}>
+        <div className="lesson-study ui2-lesson">
+          <div className="lesson-study-main app-container">{children}</div>
+          {createPortal(
+            <div className="lesson-study lesson-study-sidebar-dock">
+              <LessonSidebar
+                passageId={passageId}
+                domain={domain}
+                open
+                onOpenChange={() => {}}
+                lesson={lesson}
+                milestone={milestone}
+                onSelectPart={onSelectPart}
+                onSelectDomain={onSelectDomain}
+                onStartMaster={onStartMaster}
+              />
+            </div>,
+            dockEl,
+          )}
+        </div>
+      </LessonOutlineContext.Provider>
     );
   }
 
   return (
-    <div className="lesson-study ui2-lesson">
-      <div
-        className={`lesson-study-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}
-      >
-        {passageId && (
-          <LessonSidebar
-            passageId={passageId}
-            domain={domain}
-            open={sidebarOpen}
-            onOpenChange={setOverride}
-            onSelectPart={onSelectPart}
-            onSelectDomain={onSelectDomain}
-            onStartMaster={onStartMaster}
-          />
-        )}
-        <div className="lesson-study-main app-container">{children}</div>
+    <LessonOutlineContext.Provider value={outline}>
+      <div className="lesson-study ui2-lesson">
+        <div
+          className={`lesson-study-layout${sidebarOpen ? "" : " sidebar-collapsed"}`}
+        >
+          {passageId && (
+            <LessonSidebar
+              passageId={passageId}
+              domain={domain}
+              open={sidebarOpen}
+              onOpenChange={setOverride}
+              lesson={lesson}
+              milestone={milestone}
+              onSelectPart={onSelectPart}
+              onSelectDomain={onSelectDomain}
+              onStartMaster={onStartMaster}
+            />
+          )}
+          <div className="lesson-study-main app-container">{children}</div>
+        </div>
       </div>
-    </div>
+    </LessonOutlineContext.Provider>
   );
 }

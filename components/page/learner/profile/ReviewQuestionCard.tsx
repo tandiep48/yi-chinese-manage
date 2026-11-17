@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faXmark, faUser } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { practiceImageUrl } from "@/lib/gcs";
+import { GcsImage } from "@/components/shared/customer_ui/GcsImage/GcsImage";
 import {
   answerTokens,
   optionState,
@@ -50,7 +51,7 @@ export function ReviewQuestionCard({
       return t("practice.false_label") || "False";
     if (isImageFilename(String(val))) {
       return (
-        <img
+        <GcsImage
           className="q-option-img"
           src={practiceImageUrl(q.level, String(val), q.category)}
           alt=""
@@ -90,7 +91,7 @@ export function ReviewQuestionCard({
       ))}
 
       {imgFile && (
-        <img
+        <GcsImage
           className="q-image"
           src={practiceImageUrl(q.level, imgFile, q.category)}
           alt=""
