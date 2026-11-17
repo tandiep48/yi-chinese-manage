@@ -21,8 +21,8 @@ export default function LearnerLayout({
 }>) {
   return (
     <div className={`${roboto.variable} learner-theme flex h-full`}>
-      <I18nProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <I18nProvider>
           <HanziSettingsProvider>
             <LearnerSessionProvider>
               <LearnerSidebar />
@@ -34,8 +34,8 @@ export default function LearnerLayout({
               </main>
             </LearnerSessionProvider>
           </HanziSettingsProvider>
-        </AuthProvider>
-      </I18nProvider>
+        </I18nProvider>
+      </AuthProvider>
     </div>
   );
 }
