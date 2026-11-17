@@ -7,6 +7,7 @@ export interface User {
   username: string;
   email: string;
   level: number | null;
+  role: string;
 }
 
 // The logged-in learner's session user — returned by /api/auth/*.
@@ -22,6 +23,9 @@ export interface AuthUser {
   hanzi_font: string | null;
   hanzi_script: string | null;
   ui_language: string | null;
+  // Role name plus the permissions that role holds (see lib/auth/permissions.ts).
+  role: string;
+  permissions: string[];
 }
 
 export type UserFormData = {
@@ -29,6 +33,7 @@ export type UserFormData = {
   email: string;
   password?: string;
   level?: number;
+  role?: string;
 };
 
 // ─── Profile / review history ─────────────────────────────────────────────

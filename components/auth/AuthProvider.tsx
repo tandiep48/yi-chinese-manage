@@ -26,7 +26,7 @@ import { clearReadCache } from "@/lib/api/readCache";
 interface AuthContextValue {
   user: AuthUser | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<AuthUser>;
   register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   // Merge server-confirmed fields into the cached user, so a change made on one page
@@ -38,7 +38,9 @@ interface AuthContextValue {
 const AuthCtx = createContext<AuthContextValue>({
   user: null,
   loading: true,
-  login: async () => {},
+  login: async () => {
+    throw new Error("AuthProvider is missing");
+  },
   register: async () => {},
   logout: async () => {},
   patchUser: () => {},
@@ -70,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (username: string, password: string) => {
     const u = await loginApi(username, password);
     setUser(u);
+    return u;
   }, []);
 
   const register = useCallback(
