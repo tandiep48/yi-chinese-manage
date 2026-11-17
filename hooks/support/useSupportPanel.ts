@@ -109,7 +109,8 @@ export function useSupportPanel(open: boolean, prefill: SupportPrefill | null) {
         setTicket(created);
         listRequest.current++; // drop any list fetch that started before this ticket existed
         setTickets((prev) => withTicketFirst(prev, created));
-        setView("thread");
+        // Only jump to the thread if the user hasn't already gone back while this was sending.
+        setView((v) => (v === "new" ? "thread" : v));
         return true;
       } catch (e) {
         setError(e instanceof Error ? e.message : "failed");
