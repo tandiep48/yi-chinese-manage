@@ -29,10 +29,34 @@ describe("MilestoneBar", () => {
 
   it("labels every step with its number and title", () => {
     renderBar();
-    expect(screen.getByText("1. Vocab Summary")).toBeInTheDocument();
-    expect(screen.getByText("2. Vocab Learner")).toBeInTheDocument();
-    expect(screen.getByText("6. Lesson Trainer")).toBeInTheDocument();
-    expect(screen.getAllByRole("button")).toHaveLength(6);
+    expect(screen.getByRole("button", { name: "Step 1 of 6: Vocab Summary" })).toHaveTextContent(
+      "Step 1Vocab Summary"
+    );
+    expect(screen.getByRole("button", { name: "Step 2 of 6: Vocab Learner" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Step 6 of 6: Lesson Trainer" })).toBeInTheDocument();
+    // Six step tiles plus the previous / next arrows.
+    expect(screen.getAllByRole("button")).toHaveLength(8);
+  });
+
+  it("steps back and forward with the arrows, disabled at either end", () => {
+    const { onSelect, rerender } = renderBar(2);
+    fireEvent.click(screen.getByRole("button", { name: "Back one step" }));
+    expect(onSelect).toHaveBeenLastCalledWith(1);
+    fireEvent.click(screen.getByRole("button", { name: "Forward one step" }));
+    expect(onSelect).toHaveBeenLastCalledWith(3);
+
+    rerender(
+      <I18nProvider>
+        <MilestoneBar step={1} totalSteps={6} isCompleted={() => false} onSelect={onSelect} />
+      </I18nProvider>
+    );
+    expect(screen.getByRole("button", { name: "Back one step" })).toBeDisabled();
+    rerender(
+      <I18nProvider>
+        <MilestoneBar step={6} totalSteps={6} isCompleted={() => false} onSelect={onSelect} />
+      </I18nProvider>
+    );
+    expect(screen.getByRole("button", { name: "Forward one step" })).toBeDisabled();
   });
 
   it("marks the done and current steps, and only the current one pulses", () => {

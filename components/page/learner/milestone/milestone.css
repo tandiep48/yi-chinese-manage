@@ -87,31 +87,69 @@
   white-space: nowrap;
 }
 
-/* ── Step pills ──
-   Six labelled pills on a white strip. They share the row equally when there is
-   room and scroll sideways when there is not, so a label is never squeezed to
-   nothing on a phone. */
+/* ── Step tiles ──
+   Six two-line tiles ("Step 2" over the title) between previous / next arrows, on
+   a white strip. The tiles share the row equally when there is room and scroll
+   sideways when there is not, so a label is never squeezed to nothing on a phone. */
 .milestone-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px;
   border-radius: 16px;
   background: var(--learner-card, #ffffff);
-  border: 1px solid var(--learner-border, rgba(87, 104, 86, 0.12));
+  border: 1px solid var(--learner-border-subtle, #e2e8f0);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  overflow-x: auto;
-  scrollbar-width: none;
 }
-.milestone-bar::-webkit-scrollbar {
-  display: none;
+
+.milestone-bar-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 56px;
+  border: 1px solid var(--learner-border-subtle, #e2e8f0);
+  border-radius: 12px;
+  background: var(--learner-card, #ffffff);
+  color: var(--learner-slate, #475569);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease,
+    transform 0.15s ease;
+}
+.milestone-bar-arrow:hover:not(:disabled) {
+  background: var(--learner-mint-soft, #ecfdf5);
+  border-color: var(--learner-mint-border, #a7f3d0);
+  color: var(--learner-nav, #007a61);
+}
+.milestone-bar-arrow:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.milestone-bar-arrow:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.milestone-bar-arrow:focus-visible {
+  outline: 2px solid var(--learner-nav, #007a61);
+  outline-offset: 2px;
 }
 
 .milestone-segments {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(150px, 1fr);
+  flex: 1 1 auto;
+  min-width: 0;
   gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.milestone-segments::-webkit-scrollbar {
+  display: none;
 }
 /* Beside the outline all six fit the main column without scrolling. */
 @media (min-width: 1024px) {
@@ -129,35 +167,35 @@
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 8px 12px;
-  border: 0;
+  min-height: 56px;
+  padding: 10px;
+  border: 1px solid transparent;
   border-radius: 12px;
-  background: rgba(87, 104, 86, 0.07);
-  color: var(--learner-text-muted, #738a72);
+  background: var(--learner-surface-low, #f8fafc);
+  color: var(--learner-slate, #475569);
   font: inherit;
-  font-size: 0.88rem;
-  font-weight: 600;
   text-align: left;
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 .milestone-segment:hover {
-  background: rgba(0, 122, 97, 0.1);
+  background: var(--learner-mint-soft, #ecfdf5);
 }
 .milestone-segment:focus-visible {
   outline: 2px solid var(--learner-nav, #007a61);
   outline-offset: 2px;
 }
 .milestone-segment.is-done {
-  background: rgba(0, 122, 97, 0.1);
+  background: var(--learner-mint-soft, #ecfdf5);
+  border-color: var(--learner-mint-border, #a7f3d0);
   color: var(--learner-nav, #007a61);
 }
-/* The current step is the darker mint pill with bold text and a pulsing dot — the
+/* The current step is the darker mint tile with bold text and a pulsing dot — the
    distinction survives being read without colour. */
 .milestone-segment.is-current {
   background: var(--learner-bg, #cbe2d4);
-  color: var(--learner-text, #2f3a2e);
-  font-weight: 700;
+  border-color: var(--learner-mint-border, #a7f3d0);
+  color: var(--learner-emerald-deep, #064e3b);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
@@ -169,23 +207,53 @@
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: rgba(87, 104, 86, 0.14);
+  background: rgba(148, 163, 184, 0.25);
+  color: var(--learner-slate-muted, #94a3b8);
   font-size: 0.7rem;
   font-weight: 700;
   line-height: 1;
 }
-.milestone-segment.is-done .milestone-segment-num,
-.milestone-segment.is-current .milestone-segment-num {
+.milestone-segment.is-done .milestone-segment-num {
   background: var(--learner-nav, #007a61);
+  color: #ffffff;
+  font-size: 0.6rem;
+}
+.milestone-segment.is-current .milestone-segment-num {
+  background: var(--learner-emerald-deep, #064e3b);
   color: #ffffff;
 }
 
-.milestone-segment-label {
+.milestone-segment-text {
+  display: flex;
   flex: 1 1 auto;
+  flex-direction: column;
   min-width: 0;
+  line-height: 1.25;
+}
+.milestone-segment-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--learner-slate-muted, #94a3b8);
+}
+.milestone-segment.is-current .milestone-segment-eyebrow {
+  color: var(--learner-emerald-deep, #064e3b);
+  opacity: 0.75;
+}
+.milestone-segment-label {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.milestone-segment.is-current .milestone-segment-label {
+  font-weight: 700;
+}
+
+.milestone-segment-done {
+  flex: 0 0 auto;
+  font-size: 1.1rem;
+  color: var(--learner-nav, #007a61);
 }
 
 .milestone-segment-pulse {
@@ -193,12 +261,12 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: var(--learner-nav, #007a61);
+  background: var(--learner-emerald-deep, #064e3b);
   animation: milestonePulse 1.6s ease-out infinite;
 }
 @keyframes milestonePulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 122, 97, 0.45); }
-  100% { box-shadow: 0 0 0 8px rgba(0, 122, 97, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(6, 78, 59, 0.45); }
+  100% { box-shadow: 0 0 0 8px rgba(6, 78, 59, 0); }
 }
 @media (prefers-reduced-motion: reduce) {
   .milestone-segment-pulse {

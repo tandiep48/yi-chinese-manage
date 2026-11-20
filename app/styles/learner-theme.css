@@ -15,6 +15,15 @@
   --learner-nav:           #007a61;  /* teal site header */
   --learner-nav-hover:     rgba(255, 255, 255, 0.12);
   --learner-border:        rgba(87, 104, 86, 0.12);
+  /* Lesson-area palette (Jade Academy layout): deep emerald text/hover, mint wash
+     and its border, hairline slate border, and the muted slate text tones. */
+  --learner-emerald-deep:  #064e3b;
+  --learner-mint-soft:     #ecfdf5;
+  --learner-mint-border:   #a7f3d0;
+  --learner-border-subtle: #e2e8f0;
+  --learner-slate:         #475569;
+  --learner-slate-muted:   #94a3b8;
+  --learner-surface-low:   #f8fafc;
 
   min-height: 100%;
   background-color: var(--learner-bg);
