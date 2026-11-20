@@ -75,6 +75,14 @@ describe("LessonSidebar", () => {
     expect(screen.getByText("Translation")).toBeInTheDocument();
   });
 
+  it("labels the close control Collapse and flags the part on screen as Studying", () => {
+    renderSidebar(true, "H2_2_2", "lesson");
+    expect(screen.getByRole("button", { name: "Close Sidebar" })).toHaveTextContent("Collapse");
+    const studying = screen.getByText("Studying");
+    expect(studying.closest(".sidebar-step")).toHaveClass("active");
+    expect(screen.getAllByText("Studying")).toHaveLength(1);
+  });
+
   it("marks the active domain and opens the other in a single click", () => {
     renderSidebar(true, "H2_2_2", "grammar");
     // Grammar is the active domain; its entry carries the active class, no expand step.

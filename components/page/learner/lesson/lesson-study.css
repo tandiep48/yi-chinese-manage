@@ -25,7 +25,7 @@
      a warm highlight that stands out against the green cards, dark text stays legible. */
   --ls-highlight: #ffe9a8;
   --ls-highlight-border: #d99e00;
-  --ls-sidebar-width: 300px;
+  --ls-sidebar-width: 340px;
 
   /* Full-width layout like the legacy .page-layout (width:100%): the sidebar + main
      span the whole viewport instead of being boxed into a centered max-width, so the

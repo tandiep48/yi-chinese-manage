@@ -19,7 +19,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowLeft,
-  faXmark,
+  faChevronRight,
+  faListUl,
   faBars,
   faBookOpen,
   faFont,
@@ -166,6 +167,7 @@ export function LessonSidebar({
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
           <span className="lesson-sidebar-badge">{header?.badge ?? "HSK"}</span>
+          <FontAwesomeIcon icon={faListUl} className="lesson-sidebar-title-icon" aria-hidden />
           <h2>{title}</h2>
           <button
             type="button"
@@ -173,7 +175,8 @@ export function LessonSidebar({
             onClick={() => onOpenChange(false)}
             aria-label={t("sidebar.close_sidebar_aria")}
           >
-            <FontAwesomeIcon icon={faXmark} />
+            <span>{t("sidebar.collapse")}</span>
+            <FontAwesomeIcon icon={faChevronRight} aria-hidden />
           </button>
         </div>
 
@@ -400,7 +403,10 @@ function PartStep({
     >
       <span className="step-icon">{iconContent}</span>
       <span className="step-info">
-        <span className="step-label">{partLabel(part, t)}</span>
+        <span className="step-label">
+          {partLabel(part, t)}
+          {active && <span className="step-badge">{t("sidebar.studying")}</span>}
+        </span>
         {part.progress && <MiniStats progress={part.progress} />}
       </span>
     </button>

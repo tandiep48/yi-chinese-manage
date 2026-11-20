@@ -532,6 +532,8 @@
   "sidebar": {
     "navigation": "Navigation",
     "close_sidebar_aria": "Close Sidebar",
+    "collapse": "Collapse",
+    "studying": "Studying",
     "part_selection": "Part Selection",
     "current_part": "Current Part",
     "word_summary": "Word Summary",

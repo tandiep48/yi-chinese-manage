@@ -532,6 +532,8 @@
   "sidebar": {
     "navigation": "Điều Hướng",
     "close_sidebar_aria": "Đóng Thanh Bên",
+    "collapse": "Thu gọn",
+    "studying": "Đang học",
     "part_selection": "Chọn Phần",
     "current_part": "Phần Hiện Tại",
     "word_summary": "Tổng Kết Từ Vựng",
