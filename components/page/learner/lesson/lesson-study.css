@@ -14,6 +14,13 @@
   --ls-text: #111827;
   --ls-muted: #4b5563;
   --ls-preview: #cbe2d4;
+  /* Jade Academy lesson-area palette — same values as the --learner-* tokens in
+     app/styles/learner-theme.css, repeated as fallbacks for hosts outside it. */
+  --ls-emerald-deep: var(--learner-emerald-deep, #064e3b);
+  --ls-mint-soft: var(--learner-mint-soft, #ecfdf5);
+  --ls-mint-border: var(--learner-mint-border, #a7f3d0);
+  --ls-border-subtle: var(--learner-border-subtle, #e2e8f0);
+  --ls-surface-low: var(--learner-surface-low, #f8fafc);
   /* Background for the item whose audio is sounding during Play All / Auto Play —
      a warm highlight that stands out against the green cards, dark text stays legible. */
   --ls-highlight: #ffe9a8;

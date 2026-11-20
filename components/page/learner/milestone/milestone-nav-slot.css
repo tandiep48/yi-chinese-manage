@@ -24,14 +24,15 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   border: 0;
   border-radius: 12px;
   font: inherit;
+  font-size: 0.9rem;
   font-weight: 600;
-  padding: 14px 28px;
+  padding: 10px 20px;
   cursor: pointer;
-  background: var(--learner-primary, #576856);
+  background: var(--learner-nav, #007a61);
   color: #ffffff;
   /* Match .milestone-nav-next: the label is a button, never selectable copy, so a
      click cannot repaint it the ::selection accent colour (base-chrome.css). */
@@ -39,7 +40,7 @@
   transition: background 0.15s ease, opacity 0.15s ease;
 }
 .trainer-action-slot.milestone-nav-slot .btn:hover:not(:disabled) {
-  background: var(--learner-primary-hover, #455544);
+  background: var(--learner-emerald-deep, #064e3b);
   border-color: transparent;
   color: #ffffff;
 }
@@ -54,6 +55,6 @@
   }
   .trainer-action-slot.milestone-nav-slot .btn {
     flex: 1 1 0;
-    padding: 14px 16px;
+    padding: 12px 16px;
   }
 }

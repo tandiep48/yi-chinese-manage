@@ -280,6 +280,13 @@
   }
 }
 
+/* The flashcard step is a white card holding the mint card (see flashcards.css). */
+.milestone-step.is-card {
+  padding: 20px;
+  background: var(--learner-card, #ffffff);
+  border: 1px solid var(--learner-border-subtle, #e2e8f0);
+}
+
 .milestone-state {
   padding: clamp(24px, 6vw, 48px) 0;
   text-align: center;
@@ -300,9 +307,9 @@
   justify-content: space-between;
   gap: 12px;
   margin-top: auto;
-  padding: 12px 16px;
+  padding: 12px;
   background: var(--learner-card, #ffffff);
-  border: 1px solid var(--learner-border, rgba(87, 104, 86, 0.12));
+  border: 1px solid var(--learner-border-subtle, #e2e8f0);
   border-radius: 16px;
   box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.05);
 }
@@ -310,31 +317,40 @@
 .milestone-nav-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   border: 0;
   border-radius: 12px;
   font: inherit;
+  font-size: 0.9rem;
   font-weight: 600;
-  padding: 14px 28px;
+  padding: 10px 20px;
   cursor: pointer;
   /* The label is a button, not selectable copy: a click (or the tiny drag that
      rides with it) must never select the text and repaint it the selection
      colour. Keeps the Next label readable white on every interaction. */
   user-select: none;
-  transition: background 0.15s ease, opacity 0.15s ease;
+  transition: background 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+.milestone-nav-btn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 .milestone-nav-btn:disabled {
   opacity: 0.45;
   cursor: default;
 }
 
-.milestone-nav-prev,
+.milestone-nav-prev {
+  background: var(--learner-surface-low, #f8fafc);
+  color: var(--learner-text, #2f3a2e);
+}
+.milestone-nav-prev:hover:not(:disabled) {
+  background: var(--learner-border-subtle, #e2e8f0);
+}
 .milestone-nav-quit {
   background: var(--learner-card, #ffffff);
   color: var(--learner-text, #2f3a2e);
   border: 1px solid rgba(87, 104, 86, 0.3);
 }
-.milestone-nav-prev:hover:not(:disabled),
 .milestone-nav-quit:hover {
   background: rgba(87, 104, 86, 0.08);
 }
@@ -345,18 +361,18 @@
 .milestone-nav-next:focus-visible,
 .milestone-nav-next:active,
 .milestone-nav-next:visited {
-  background: var(--learner-primary, #576856);
+  background: var(--learner-nav, #007a61);
   color: #ffffff;
 }
 .milestone-nav-next:hover:not(:disabled) {
-  background: var(--learner-primary-hover, #455544);
+  background: var(--learner-emerald-deep, #064e3b);
 }
 
 @media (max-width: 640px) {
   .milestone-nav-btn {
     flex: 1 1 0;
     justify-content: center;
-    padding: 14px 16px;
+    padding: 12px 16px;
   }
 }
 

@@ -8,12 +8,22 @@
 // Learning/web_app/static/vocab_learning/vocab_learning.js; speaking practice deferred.
 //
 // variant="milestone" is the lesson flow's layout of the same card: a word-count
-// pill, separate Pinyin / Meaning eye toggles, a labelled progress bar and a larger
-// white card (flashcards.css, `.vl-milestone`). The keys behave the same in both.
+// pill, separate Pinyin / Meaning eye toggles, a labelled progress bar and a mint
+// card carrying its own shuffle / audio / stroke tools and previous / next arrows
+// (flashcards.css, `.vl-milestone`). The keys behave the same in both.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash, faTableList } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faChevronRight,
+  faEye,
+  faEyeSlash,
+  faPencil,
+  faShuffle,
+  faTableList,
+  faVolumeHigh,
+} from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { vocabAudioUrl } from "@/lib/audio";
 import { typingCharClasses } from "@/lib/lessons/typingGlow";
@@ -227,6 +237,66 @@ export function FlashcardView({
       )}
 
       <div className="vl-card">
+        {milestone && (
+          <>
+            <button
+              type="button"
+              className="vl-card-arrow vl-card-arrow-prev"
+              aria-label={t("card_shortcuts.prev")}
+              title={t("card_shortcuts.prev")}
+              disabled={index === 0}
+              onClick={goPrev}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="vl-card-arrow vl-card-arrow-next"
+              aria-label={t("card_shortcuts.next")}
+              title={t("card_shortcuts.next")}
+              disabled={lockAtEnd && index === total - 1}
+              onClick={goNext}
+            >
+              <FontAwesomeIcon icon={faChevronRight} aria-hidden />
+            </button>
+            {total > 1 && (
+              <button
+                type="button"
+                className="vl-tool vl-tool-shuffle"
+                aria-label={t("card_shortcuts.shuffle")}
+                title={t("card_shortcuts.shuffle")}
+                onClick={shuffle}
+              >
+                <FontAwesomeIcon icon={faShuffle} aria-hidden />
+              </button>
+            )}
+            <div className="vl-tool-stack">
+              <button
+                type="button"
+                className="vl-tool vl-tool-audio"
+                aria-label={t("card_shortcuts.audio_reveal")}
+                title={t("card_shortcuts.audio_reveal")}
+                onClick={() => {
+                  reveal();
+                  playAudio();
+                }}
+              >
+                <FontAwesomeIcon icon={faVolumeHigh} aria-hidden />
+              </button>
+              {hasHanzi && (
+                <button
+                  type="button"
+                  className="vl-tool"
+                  aria-label={t("card_shortcuts.stroke")}
+                  title={t("card_shortcuts.stroke")}
+                  onClick={openStroke}
+                >
+                  <FontAwesomeIcon icon={faPencil} aria-hidden />
+                </button>
+              )}
+            </div>
+          </>
+        )}
         <div className="vl-hanzi" lang="zh-CN">
           {typing
             ? target.map((ch, i) => (
@@ -252,17 +322,20 @@ export function FlashcardView({
         </div>
       </div>
 
-      <CardShortcutLegend
-        onPrev={goPrev}
-        onNext={goNext}
-        onAudioReveal={() => {
-          reveal();
-          playAudio();
-        }}
-        onReveal={toggleReveal}
-        onShuffle={shuffle}
-        onStroke={hasHanzi ? openStroke : undefined}
-      />
+      {/* The milestone card carries these actions as its own buttons; the keys still work. */}
+      {!milestone && (
+        <CardShortcutLegend
+          onPrev={goPrev}
+          onNext={goNext}
+          onAudioReveal={() => {
+            reveal();
+            playAudio();
+          }}
+          onReveal={toggleReveal}
+          onShuffle={shuffle}
+          onStroke={hasHanzi ? openStroke : undefined}
+        />
+      )}
     </div>
   );
 }

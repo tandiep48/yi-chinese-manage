@@ -211,6 +211,32 @@ describe("FlashcardView — milestone layout", () => {
     expect(pinyin(container)).toBe("");
   });
 
+  it("moves between cards with the in-card arrows, disabled at the ends", () => {
+    setup({ variant: "milestone", lockAtEnd: true });
+    const prev = screen.getByRole("button", { name: "card_shortcuts.prev" });
+    const next = screen.getByRole("button", { name: "card_shortcuts.next" });
+    expect(prev).toBeDisabled();
+    fireEvent.click(next);
+    expect(screen.getByText("火")).toBeInTheDocument();
+    expect(next).toBeDisabled();
+    fireEvent.click(prev);
+    expect(screen.getByText("水")).toBeInTheDocument();
+  });
+
+  it("opens stroke order and shuffles from the in-card tools", () => {
+    const { onOpenStroke } = setup({ variant: "milestone" });
+    fireEvent.click(screen.getByRole("button", { name: "card_shortcuts.stroke" }));
+    expect(onOpenStroke).toHaveBeenCalledWith("水", "shuǐ");
+    fireEvent.click(screen.getByRole("button", { name: "card_shortcuts.next" }));
+    fireEvent.click(screen.getByRole("button", { name: "card_shortcuts.shuffle" }));
+    expect(screen.getByText("1/2 (50%)")).toBeInTheDocument();
+  });
+
+  it("drops the shortcut legend, since the card carries the same actions", () => {
+    setup({ variant: "milestone" });
+    expect(screen.queryByRole("group", { name: "card_shortcuts.title" })).toBeNull();
+  });
+
   it("leaves the default layout without the toggles", () => {
     setup();
     expect(screen.queryByRole("button", { name: "dashboard.table_pinyin" })).toBeNull();

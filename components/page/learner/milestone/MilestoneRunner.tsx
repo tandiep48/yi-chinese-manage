@@ -338,7 +338,9 @@ function MilestonePart({
         onSelect={goToStep}
       />
 
-      <div className={`milestone-step${studyScoped ? " lesson-study" : ""}`}>
+      <div
+        className={`milestone-step${studyScoped ? " lesson-study" : ""}${step === 2 ? " is-card" : ""}`}
+      >
         {step === 1 && (
           <WordSummary
             vocab={overview.vocab}

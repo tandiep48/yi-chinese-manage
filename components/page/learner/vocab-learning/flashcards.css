@@ -226,24 +226,25 @@
 }
 
 /* ── Milestone layout (FlashcardView variant="milestone") ──
-   The lesson flow's take on the same card: the mint zone around it comes from the
-   milestone's step frame, so the card itself turns white and grows. Every rule is
-   `.lesson-study .vl-milestone …` (0,3,0), which beats the base (0,2,0) rules above
-   without depending on source order. */
+   The lesson flow's take on the same card: the milestone's white step frame holds the
+   word pill, the Pinyin / Meaning toggles and the progress row, then the mint card
+   with its own shuffle / audio / stroke tools and previous / next arrows. Every rule
+   is `.lesson-study .vl-milestone …` (0,3,0), which beats the base (0,2,0) rules
+   above without depending on source order. */
 .lesson-study .vl-milestone .vl-learning-topbar {
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 16px;
+  max-width: none;
+  margin-bottom: 12px;
 }
 .lesson-study .vl-milestone .vl-counter-pill {
   padding: 4px 12px;
   border-radius: 999px;
-  background: #ffffff;
-  color: var(--ls-primary-hover);
+  background: var(--ls-mint-soft);
+  color: var(--ls-emerald-deep);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 .lesson-study .vl-milestone .vl-toggle-group {
   display: flex;
@@ -251,8 +252,7 @@
   gap: 6px;
   padding: 4px;
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: var(--ls-surface-low);
 }
 .lesson-study .vl-milestone .vl-toggle {
   display: inline-flex;
@@ -261,8 +261,8 @@
   padding: 4px 10px;
   border: 0;
   border-radius: 8px;
-  background: var(--ls-primary-light);
-  color: var(--ls-primary-hover);
+  background: var(--ls-mint-soft);
+  color: var(--ls-emerald-deep);
   font: inherit;
   font-size: 0.8rem;
   font-weight: 600;
@@ -281,8 +281,9 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  max-width: 760px;
-  margin: 0 auto 16px;
+  max-width: none;
+  margin: 0 0 16px;
+  padding: 0 4px;
 }
 .lesson-study .vl-milestone .vl-progress-label,
 .lesson-study .vl-milestone .vl-progress-value {
@@ -294,30 +295,156 @@
 }
 .lesson-study .vl-milestone .vl-progress-value {
   font-weight: 700;
-  color: var(--ls-primary-hover);
+  color: var(--ls-emerald-deep);
 }
 .lesson-study .vl-milestone .vl-progress-bar {
   flex: 1 1 auto;
-  height: 10px;
+  height: 8px;
   margin: 0;
-  background: #ffffff;
-  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+  background: var(--ls-border-subtle);
+}
+.lesson-study .vl-milestone .vl-progress-fill {
+  background: linear-gradient(to right, var(--ls-primary), var(--ls-emerald-deep));
 }
 
+/* The mint card. Padded top and sides so the tools and arrows have room; the arrows
+   sit half outside its edge. */
 .lesson-study .vl-milestone .vl-card {
-  background: #ffffff;
-  border-color: transparent;
+  position: relative;
+  max-width: none;
+  padding: 28px 56px;
+  background: var(--ls-secondary);
+  border: 0;
   border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 10px 25px -8px rgba(6, 78, 59, 0.18);
 }
 .lesson-study .vl-milestone .vl-hanzi {
-  font-size: clamp(64px, 12vw, 96px);
+  font-size: clamp(64px, 12vw, 80px);
+  color: var(--ls-text);
+}
+.lesson-study .vl-milestone .vl-pinyin {
+  font-size: 1.4rem;
+  letter-spacing: 0.03em;
+  color: var(--ls-primary-hover);
 }
 .lesson-study .vl-milestone .vl-meaning {
   padding: 8px 12px;
-  border-radius: 12px;
-  background: #f8fafc;
-  color: var(--ls-primary-hover);
+  background: transparent;
+  color: var(--ls-emerald-deep);
+  font-size: 1.15rem;
   font-weight: 600;
   min-height: 2.6rem;
+}
+.lesson-study .vl-milestone .vl-typing-container {
+  margin: 8px auto 0;
+  padding-top: 16px;
+  max-width: 28rem;
+  border-top: 1px solid var(--ls-border-subtle);
+}
+.lesson-study .vl-milestone .vl-input {
+  font-size: 0.95rem;
+  padding: 10px 12px;
+  border-width: 1px;
+  border-color: var(--ls-border-subtle);
+  border-radius: 12px;
+}
+
+/* Round tools in the card's top corners: shuffle left, audio + stroke stacked right. */
+.lesson-study .vl-milestone .vl-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ls-mint-soft);
+  color: var(--ls-primary);
+  font-size: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.lesson-study .vl-milestone .vl-tool:hover {
+  background: #ffffff;
+  transform: scale(1.05);
+}
+.lesson-study .vl-milestone .vl-tool:active {
+  transform: scale(0.95);
+}
+.lesson-study .vl-milestone .vl-tool.vl-tool-audio {
+  background: var(--ls-primary);
+  color: #ffffff;
+}
+.lesson-study .vl-milestone .vl-tool.vl-tool-audio:hover {
+  background: var(--ls-emerald-deep);
+}
+.lesson-study .vl-milestone .vl-tool-shuffle {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+}
+.lesson-study .vl-milestone .vl-tool-stack {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Previous / next word arrows, centred on the card's side edges. */
+.lesson-study .vl-milestone .vl-card-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--ls-mint-border);
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--ls-emerald-deep);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  transform: translateY(-50%);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.lesson-study .vl-milestone .vl-card-arrow-prev {
+  left: -16px;
+}
+.lesson-study .vl-milestone .vl-card-arrow-next {
+  right: -16px;
+}
+.lesson-study .vl-milestone .vl-card-arrow:hover:not(:disabled) {
+  background: var(--ls-mint-soft);
+  transform: translateY(-50%) scale(1.05);
+}
+.lesson-study .vl-milestone .vl-card-arrow:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.95);
+}
+.lesson-study .vl-milestone .vl-card-arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.lesson-study .vl-milestone .vl-tool:focus-visible,
+.lesson-study .vl-milestone .vl-card-arrow:focus-visible {
+  outline: 2px solid var(--ls-primary);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .lesson-study .vl-milestone .vl-card {
+    padding: 64px 20px 20px;
+  }
+  .lesson-study .vl-milestone .vl-card-arrow-prev {
+    left: -10px;
+  }
+  .lesson-study .vl-milestone .vl-card-arrow-next {
+    right: -10px;
+  }
 }
