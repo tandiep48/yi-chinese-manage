@@ -727,6 +727,7 @@
     "step_counter": "Bước {n}/{total}",
     "step_aria": "Bước {n}/{total}: {title}",
     "step_eyebrow": "Bước {n}",
+    "breadcrumb": "Đường dẫn",
     "prev_step": "Lùi một bước",
     "next_step": "Tiến một bước",
     "step_vocab_summary": "Tổng quan từ vựng",

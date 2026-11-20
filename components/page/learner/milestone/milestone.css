@@ -21,58 +21,42 @@
 }
 
 /* ── Context header ──
-   Back link, lesson badge, part title, step counter and the mastered-words chip. */
+   The breadcrumb back up the library and the mastered-words chip. */
 .milestone-header {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 8px 12px;
 }
-.milestone-header-lead {
+.milestone-crumbs {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px 12px;
+  gap: 6px 8px;
   min-width: 0;
-}
-.milestone-header-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(0, 122, 97, 0.1);
-  color: var(--learner-nav, #007a61);
+  color: var(--learner-slate, #475569);
   font-size: 0.9rem;
   font-weight: 600;
+}
+.milestone-crumb {
+  color: inherit;
   text-decoration: none;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: color 0.15s ease;
 }
-.milestone-header-back:hover {
-  background: var(--learner-nav, #007a61);
-  color: #ffffff;
-}
-.milestone-header-badge {
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--learner-bg, #cbe2d4);
+.milestone-crumb:hover {
   color: var(--learner-nav, #007a61);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
 }
-.milestone-header-title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
+.milestone-crumb-icon,
+.milestone-crumb-sep {
+  color: var(--learner-slate-muted, #94a3b8);
+}
+.milestone-crumb-sep {
+  font-size: 0.7rem;
+}
+.milestone-crumb-current {
   color: var(--learner-text, #2f3a2e);
-}
-.milestone-header-step {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--learner-text-muted, #738a72);
+  font-weight: 700;
 }
 .milestone-header-mastered {
   display: inline-flex;
@@ -80,7 +64,7 @@
   gap: 8px;
   padding: 6px 12px;
   border-radius: 12px;
-  background: rgba(203, 226, 212, 0.5);
+  background: var(--learner-mint-soft, #ecfdf5);
   color: var(--learner-nav, #007a61);
   font-size: 0.9rem;
   font-weight: 600;

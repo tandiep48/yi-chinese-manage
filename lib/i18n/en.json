@@ -727,6 +727,7 @@
     "step_counter": "Step {n} of {total}",
     "step_aria": "Step {n} of {total}: {title}",
     "step_eyebrow": "Step {n}",
+    "breadcrumb": "Breadcrumb",
     "prev_step": "Back one step",
     "next_step": "Forward one step",
     "step_vocab_summary": "Vocab Summary",

@@ -88,7 +88,7 @@ describe("MilestoneHeader", () => {
   };
 
   function renderHeader(parts: SidebarPart[] | null) {
-    const header = <MilestoneHeader passageId="H2_2_1" step={2} totalSteps={6} />;
+    const header = <MilestoneHeader passageId="H2_2_1" />;
     return render(
       <I18nProvider>
         {parts ? (
@@ -102,20 +102,20 @@ describe("MilestoneHeader", () => {
     );
   }
 
-  it("shows the back link, lesson badge and step without an outline", () => {
+  it("shows the breadcrumb up the library without an outline", () => {
     renderHeader(null);
-    expect(screen.getByRole("link", { name: /Back to lesson/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Library" })).toHaveAttribute("href", "/learner/hsk");
+    expect(screen.getByRole("link", { name: "HSK 2" })).toHaveAttribute("href", "/learner/hsk/HSK2");
+    expect(screen.getByRole("link", { name: "Lesson 2" })).toHaveAttribute(
       "href",
       "/learner/hsk/HSK2/2"
     );
-    expect(screen.getByText("HSK2 · Lesson 2")).toBeInTheDocument();
-    expect(screen.getByText(/Step 2 of 6 · Vocab Learner/)).toBeInTheDocument();
     expect(screen.queryByText(/Mastered/)).toBeNull();
   });
 
-  it("adds the part title and mastered words from the outline", () => {
+  it("ends the breadcrumb on the part and adds mastered words from the outline", () => {
     const { container } = renderHeader([PART]);
-    expect(screen.getByRole("heading", { name: "Lili likes to run." })).toBeInTheDocument();
+    expect(screen.getByText("Part 1")).toHaveAttribute("aria-current", "page");
     expect(container.querySelector(".milestone-header-mastered")).toHaveTextContent(
       "Mastered: 2/8"
     );
