@@ -396,6 +396,7 @@ function MilestonePart({
               hideSummaryButton
               hideBackSummary
               lockAtEnd
+              variant="milestone"
             />
           ) : (
             <p className="milestone-state">{t("reading.loading")}</p>

@@ -122,4 +122,31 @@ describe("LessonCardStudy", () => {
     expect(onShowSummary).not.toHaveBeenCalled();
     expect(screen.getByText("2 / 2")).toBeInTheDocument();
   });
+
+  describe("milestone variant", () => {
+    it("swaps the in-card legend for the shared milestone layout", () => {
+      const { container } = setup({ variant: "milestone", hideSummaryButton: true, hideBackSummary: true, lockAtEnd: true });
+      expect(container.querySelector(".vl-milestone")).not.toBeNull();
+      expect(container.querySelector(".vl-progress-row")).toHaveTextContent("1/2 (50%)");
+      expect(screen.getByText("milestone.line_counter")).toBeInTheDocument();
+      expect(container.querySelector(".vl-card-arrow-prev")).toBeDisabled();
+    });
+
+    it("steps with the card arrows and locks the last line", () => {
+      const { container, onShowSummary } = setup({ variant: "milestone", lockAtEnd: true });
+      const next = container.querySelector(".vl-card-arrow-next") as HTMLButtonElement;
+      fireEvent.click(next);
+      expect(screen.getByText("再见")).toBeInTheDocument();
+      expect(next).toBeDisabled();
+      expect(onShowSummary).not.toHaveBeenCalled();
+    });
+
+    it("the eye toggles show and hide pinyin and meaning independently", () => {
+      setup({ variant: "milestone" });
+      expect(screen.queryByText("你好-py")).toBeNull();
+      fireEvent.click(screen.getByRole("button", { name: "dashboard.table_pinyin" }));
+      expect(screen.getByText("你好-py")).toBeInTheDocument();
+      expect(screen.queryByText("你好-en")).toBeNull();
+    });
+  });
 });

@@ -280,6 +280,7 @@
 .lesson-study .vl-milestone .vl-progress-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   max-width: none;
   margin: 0 0 16px;
@@ -321,6 +322,12 @@
 .lesson-study .vl-milestone .vl-hanzi {
   font-size: clamp(64px, 12vw, 80px);
   color: var(--ls-text);
+}
+/* Whole sentences (step 5) need a smaller hanzi than a single word. */
+.lesson-study .vl-milestone .lesson-line-hanzi {
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.3;
+  letter-spacing: 0;
 }
 .lesson-study .vl-milestone .vl-pinyin {
   font-size: 1.4rem;
