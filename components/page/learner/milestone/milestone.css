@@ -58,18 +58,6 @@
   color: var(--learner-text, #2f3a2e);
   font-weight: 700;
 }
-.milestone-header-mastered {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 12px;
-  background: var(--learner-mint-soft, #ecfdf5);
-  color: var(--learner-nav, #007a61);
-  font-size: 0.9rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
 
 /* ── Step tiles ──
    Six two-line tiles ("Step 2" over the title) between previous / next arrows, on

@@ -67,8 +67,9 @@ describe("MilestoneBar", () => {
     expect(current).toHaveClass("is-current");
     expect(current).toHaveAttribute("aria-current", "step");
     expect(container.querySelectorAll(".milestone-segment-pulse")).toHaveLength(1);
-    // A finished step shows a check in place of its number.
-    expect(done.querySelector(".milestone-segment-num")).not.toHaveTextContent("1");
+    // A finished step keeps its number and carries a single check mark.
+    expect(done.querySelector(".milestone-segment-num")).toHaveTextContent("1");
+    expect(done.querySelectorAll("svg")).toHaveLength(1);
   });
 
   it("jumps to any step, ahead or behind (soft gating)", () => {
@@ -113,18 +114,9 @@ describe("MilestoneHeader", () => {
     expect(screen.queryByText(/Mastered/)).toBeNull();
   });
 
-  it("ends the breadcrumb on the part and adds mastered words from the outline", () => {
+  it("ends the breadcrumb on the part and shows no mastered chip", () => {
     const { container } = renderHeader([PART]);
     expect(screen.getByText("Part 1")).toHaveAttribute("aria-current", "page");
-    expect(container.querySelector(".milestone-header-mastered")).toHaveTextContent(
-      "Mastered: 2/8"
-    );
-  });
-
-  it("omits the mastered chip for a part with no words", () => {
-    const { container } = renderHeader([
-      { ...PART, progress: { learnedWords: 0, totalWords: 0, progressPct: 0 } },
-    ]);
     expect(container.querySelector(".milestone-header-mastered")).toBeNull();
   });
 });
