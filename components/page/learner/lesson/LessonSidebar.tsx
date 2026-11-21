@@ -18,9 +18,7 @@ import { useRouter } from "next/navigation";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 import {
-  faArrowLeft,
   faChevronRight,
-  faListUl,
   faBars,
   faBookOpen,
   faFont,
@@ -28,16 +26,13 @@ import {
   faCaretUp,
   faCaretDown,
   faGraduationCap,
-  faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   useLessonParts,
   type SidebarPart,
   type UseLessonPartsReturn,
 } from "@/hooks/lesson/useLessonParts";
-import { STEP_TITLE_KEYS } from "@/components/page/learner/milestone/MilestoneBar";
 import type { OutlineMilestone } from "./LessonOutlineContext";
-import { partPickerHref } from "@/lib/lessons/lessons";
 import { ExamEngineChooser } from "@/components/page/learner/trainer/ExamEngineChooser";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./lesson-sidebar.css";
@@ -93,8 +88,6 @@ export function LessonSidebar({
   const toggleSection = (section: Section) =>
     setOpenSection((current) => (current === section ? null : section));
 
-  const goBackToPartPicker = () => router.push(partPickerHref(passageId));
-
   const navigateToPart = (id: string) => {
     if (onSelectPart) {
       onSelectPart(id);
@@ -132,10 +125,6 @@ export function LessonSidebar({
     );
   };
 
-  const title = header?.lessonNum
-    ? `${t("picker.lesson_prefix")} ${header.lessonNum}`
-    : t("sidebar.navigation");
-
   // The part on screen and the milestone run that belongs to it (a run reported
   // for another part — mid-switch — is ignored).
   const activePart =
@@ -157,18 +146,6 @@ export function LessonSidebar({
       )}
       <aside className={`lesson-sidebar${open ? "" : " collapsed"}`}>
         <div className="lesson-sidebar-header">
-          <button
-            type="button"
-            className="lesson-sidebar-back"
-            onClick={goBackToPartPicker}
-            aria-label={t("sidebar.part_selection")}
-            title={t("sidebar.part_selection")}
-          >
-            <FontAwesomeIcon icon={faArrowLeft} />
-          </button>
-          <span className="lesson-sidebar-badge">{header?.badge ?? "HSK"}</span>
-          <FontAwesomeIcon icon={faListUl} className="lesson-sidebar-title-icon" aria-hidden />
-          <h2>{title}</h2>
           <button
             type="button"
             className="lesson-sidebar-close"
@@ -233,7 +210,6 @@ export function LessonSidebar({
                     part={p}
                     active={domain === "lesson" && p.passageId === passageId}
                     onSelect={navigateToPart}
-                    run={p.passageId === passageId ? activeRun : null}
                   />
                 ))
               )}
@@ -384,18 +360,15 @@ function PartStep({
   part,
   active,
   onSelect,
-  run,
 }: {
   part: SidebarPart;
   active: boolean;
   onSelect: (id: string) => void;
-  // The milestone running for this part, when it is the one on screen.
-  run?: OutlineMilestone | null;
 }) {
   const { t } = useT();
   const iconContent = part.isNumber ? "#" : part.partNum;
 
-  const card = (
+  return (
     <button
       type="button"
       className={`sidebar-step${active ? " active" : ""}`}
@@ -410,37 +383,6 @@ function PartStep({
         {part.progress && <MiniStats progress={part.progress} />}
       </span>
     </button>
-  );
-  if (!active || !run) return card;
-
-  const steps = Array.from({ length: run.totalSteps }, (_, i) => i + 1);
-  return (
-    <div className="outline-part">
-      {card}
-      <ol className="outline-substeps">
-        {steps.map((n) => {
-          const current = n === run.step;
-          const done = run.completed.includes(n);
-          return (
-            <li key={n}>
-              <button
-                type="button"
-                className={`outline-substep${done ? " is-done" : ""}${current ? " is-current" : ""}`}
-                aria-current={current ? "step" : undefined}
-                onClick={() => run.goToStep(n)}
-              >
-                <span className="outline-substep-mark" aria-hidden>
-                  {done && !current && <FontAwesomeIcon icon={faCheck} />}
-                </span>
-                <span>
-                  {n}. {t(STEP_TITLE_KEYS[n] ?? "")}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
-    </div>
   );
 }
 

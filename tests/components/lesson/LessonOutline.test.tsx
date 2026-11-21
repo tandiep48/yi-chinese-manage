@@ -3,7 +3,7 @@
 // part's milestone steps listed under it (each a jump to that step).
 
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { LessonSidebar } from "@/components/page/learner/lesson/LessonSidebar";
 import { I18nProvider } from "@/components/i18n/I18nProvider";
 import * as partsHook from "@/hooks/lesson/useLessonParts";
@@ -93,17 +93,18 @@ describe("LessonSidebar outline", () => {
     expect(container.querySelector(".outline-substeps")).toBeNull();
   });
 
-  it("lists the active part's steps and jumps to the clicked one", () => {
-    const milestone = run();
-    const { container } = renderOutline(milestone);
-    const steps = container.querySelectorAll(".outline-substep");
-    expect(steps).toHaveLength(6);
-    expect(steps[0]).toHaveClass("is-done");
-    expect(steps[1]).toHaveClass("is-current");
-    expect(steps[1]).toHaveAttribute("aria-current", "step");
+  it("no longer lists milestone steps under the active part", () => {
+    const { container } = renderOutline(run());
+    expect(container.querySelector(".outline-substeps")).toBeNull();
+    expect(container.querySelector(".outline-substep")).toBeNull();
+  });
 
-    fireEvent.click(screen.getByRole("button", { name: "4. Lesson Summary" }));
-    expect(milestone.goToStep).toHaveBeenCalledWith(4);
+  it("drops the header title, badge and back button", () => {
+    const { container } = renderOutline(run());
+    expect(container.querySelector(".lesson-sidebar-header h2")).toBeNull();
+    expect(container.querySelector(".lesson-sidebar-badge")).toBeNull();
+    expect(container.querySelector(".lesson-sidebar-back")).toBeNull();
+    expect(container.querySelector(".lesson-sidebar-close")).not.toBeNull();
   });
 
   it("ignores a milestone reported for another part", () => {

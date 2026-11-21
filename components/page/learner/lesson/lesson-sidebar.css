@@ -64,33 +64,10 @@
   padding: 1.25rem 1.25rem 1rem;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.75rem;
   flex-shrink: 0;
 }
-.lesson-study .lesson-sidebar-header h2 {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: var(--ls-text);
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.lesson-study .lesson-sidebar-title-icon {
-  color: var(--ls-primary);
-}
-.lesson-study .lesson-sidebar-badge {
-  background: var(--ls-mint-soft);
-  color: var(--ls-emerald-deep);
-  font-size: 0.7rem;
-  font-weight: 700;
-  padding: 0.25rem 0.5rem;
-  border-radius: 100px;
-  white-space: nowrap;
-}
-.lesson-study .lesson-sidebar-back,
 .lesson-study .lesson-sidebar-close {
   background: none;
   border: 0;
@@ -102,10 +79,6 @@
   display: inline-flex;
   align-items: center;
   transition: background 0.2s, color 0.2s;
-}
-.lesson-study .lesson-sidebar-back:hover {
-  background: #f8fafc;
-  color: var(--ls-primary);
 }
 /* "Collapse ›" on desktop; it closes the drawer on phones. */
 .lesson-study .lesson-sidebar-close {
@@ -308,77 +281,6 @@
 }
 .lesson-study .outline-progress-row.is-current .outline-progress-value {
   color: var(--ls-primary-hover);
-}
-
-/* The active part and its steps read as one mint card. */
-.lesson-study .outline-part {
-  display: flex;
-  flex-direction: column;
-  border-radius: 12px;
-  background: var(--ls-mint-soft);
-}
-.lesson-study .outline-part .sidebar-step.active {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-}
-.lesson-study .outline-substeps {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  margin: 0;
-  padding: 0 0.75rem 0.75rem 2.75rem;
-  list-style: none;
-}
-.lesson-study .outline-substep {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 4px 6px;
-  border: 0;
-  border-radius: 8px;
-  background: transparent;
-  color: var(--ls-muted);
-  font: inherit;
-  font-size: 0.82rem;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-.lesson-study .outline-substep:hover {
-  background: rgba(0, 122, 97, 0.08);
-}
-.lesson-study .outline-substep.is-done {
-  color: var(--ls-primary);
-  font-weight: 500;
-}
-.lesson-study .outline-substep.is-current {
-  color: var(--ls-primary-hover);
-  font-weight: 700;
-}
-/* A small dot by default; a check once done; a larger filled dot when current. */
-.lesson-study .outline-substep-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 14px;
-  width: 14px;
-  height: 14px;
-  font-size: 0.7rem;
-}
-.lesson-study .outline-substep-mark:empty::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
-  opacity: 0.6;
-}
-.lesson-study .outline-substep.is-current .outline-substep-mark:empty::before {
-  width: 8px;
-  height: 8px;
-  opacity: 1;
 }
 
 /* The Exam entry's total vocab / lesson progress, under its header row. */
