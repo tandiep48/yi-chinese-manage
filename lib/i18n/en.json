@@ -561,7 +561,6 @@
   "practice_select": {
     "page_title": "Practice - Select Book",
     "choose_hsk_subtitle": "Choose an HSK set to begin your {category} session.",
-    "listening_reading": "Listening & Reading",
     "back_to_category": "Back to {category}",
     "lessons_heading": "HSK {number} - {category} Lessons",
     "choose_lesson_subtitle": "Choose a lesson to begin your {category}.",
@@ -723,9 +722,10 @@
   },
   "milestone": {
     "back_to_lesson": "Back to lesson",
-    "mastered": "Mastered",
     "word_counter": "Word {n} / {total}",
     "word_progress": "Word progress:",
+    "line_counter": "Line {n} / {total}",
+    "line_progress": "Line progress:",
     "step_counter": "Step {n} of {total}",
     "step_aria": "Step {n} of {total}: {title}",
     "step_eyebrow": "Step {n}",

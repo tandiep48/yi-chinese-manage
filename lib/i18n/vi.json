@@ -561,7 +561,6 @@
   "practice_select": {
     "page_title": "Luyện Tập - Chọn Bộ Sách",
     "choose_hsk_subtitle": "Chọn bộ HSK để bắt đầu phiên {category} của bạn.",
-    "listening_reading": "Nghe & Đọc",
     "back_to_category": "Về {category}",
     "lessons_heading": "HSK {number} - Bài {category}",
     "choose_lesson_subtitle": "Chọn một bài học để bắt đầu {category}.",
@@ -723,9 +722,10 @@
   },
   "milestone": {
     "back_to_lesson": "Quay lại bài học",
-    "mastered": "Đã thuộc",
     "word_counter": "Từ vựng {n} / {total}",
     "word_progress": "Tiến độ từ:",
+    "line_counter": "Câu {n} / {total}",
+    "line_progress": "Tiến độ câu:",
     "step_counter": "Bước {n}/{total}",
     "step_aria": "Bước {n}/{total}: {title}",
     "step_eyebrow": "Bước {n}",
