@@ -67,8 +67,8 @@ describe("MilestoneBar", () => {
     expect(current).toHaveClass("is-current");
     expect(current).toHaveAttribute("aria-current", "step");
     expect(container.querySelectorAll(".milestone-segment-pulse")).toHaveLength(1);
-    // A finished step keeps its number and carries a single check mark.
-    expect(done.querySelector(".milestone-segment-num")).toHaveTextContent("1");
+    // The tiles carry no number badge; a finished step has a single check mark.
+    expect(done.querySelector(".milestone-segment-num")).toBeNull();
     expect(done.querySelectorAll("svg")).toHaveLength(1);
   });
 

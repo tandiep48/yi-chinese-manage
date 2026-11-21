@@ -171,30 +171,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.milestone-segment-num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: rgba(148, 163, 184, 0.25);
-  color: var(--learner-slate-muted, #94a3b8);
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 1;
-}
-.milestone-segment.is-done .milestone-segment-num {
-  background: var(--learner-nav, #007a61);
-  color: #ffffff;
-  font-size: 0.6rem;
-}
-.milestone-segment.is-current .milestone-segment-num {
-  background: var(--learner-emerald-deep, #064e3b);
-  color: #ffffff;
-}
-
 .milestone-segment-text {
   display: flex;
   flex: 1 1 auto;

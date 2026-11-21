@@ -67,7 +67,6 @@ export function MilestoneBar({ step, totalSteps, isCompleted, onSelect }: Milest
                 aria-label={t("milestone.step_aria", { n, total: totalSteps, title })}
                 onClick={() => onSelect(n)}
               >
-                <span className="milestone-segment-num">{n}</span>
                 <span className="milestone-segment-text">
                   <span className="milestone-segment-eyebrow">
                     {t("milestone.step_eyebrow", { n })}
