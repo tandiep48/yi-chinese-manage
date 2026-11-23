@@ -44,13 +44,15 @@ export function PracticeSelectPage({ category }: { category: PracticeCategory })
         </p>
         <div className="practice-grid">
           {[1, 2, 3, 4, 5, 6].map((n) => (
-            <Link key={n} href={`${base}/${n}`} className="practice-card">
+            <Link
+              key={n}
+              href={`${base}/${n}`}
+              className="practice-card"
+              data-category={category}
+              data-level={n}
+            >
               <LevelCardImage category={category} level={n} alt={`${categoryLabel} ${n}`} />
-              <div className="card-label">
-                {categoryLabel} {n}
-              </div>
               <div className="hsk-badge">HSK {n}</div>
-              <div className="card-sub">{t("practice_select.listening_reading")}</div>
             </Link>
           ))}
         </div>

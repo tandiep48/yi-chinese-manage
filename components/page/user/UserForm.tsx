@@ -6,6 +6,7 @@
 
 import { useEffect, useState } from "react";
 import { Modal } from "@/components/shared/manager_ui/Modal/Modal";
+import { listRoles } from "@/lib/api/manage/user";
 import type { User, UserFormData } from "@/lib/types/user";
 
 interface UserFormProps {
@@ -20,13 +21,17 @@ interface FormState {
   email: string;
   password: string;
   level: string;
+  role: string;
 }
+
+const DEFAULT_ROLE = "student";
 
 const EMPTY: FormState = {
   username: "",
   email: "",
   password: "",
   level: "1",
+  role: DEFAULT_ROLE,
 };
 
 const inputCls =
@@ -42,6 +47,23 @@ export function UserForm({ open, initial, onClose, onSubmit }: UserFormProps) {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [roles, setRoles] = useState<string[]>([DEFAULT_ROLE]);
+
+  // The role list lives in the database, so fetch it each time the form opens.
+  useEffect(() => {
+    if (!open) return;
+    let cancelled = false;
+    listRoles()
+      .then((names) => {
+        if (!cancelled && names.length) setRoles(names);
+      })
+      .catch(() => {
+        /* keep the fallback list; the server still validates the role */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (open) {
@@ -52,6 +74,7 @@ export function UserForm({ open, initial, onClose, onSubmit }: UserFormProps) {
               email: initial.email ?? "",
               password: "",
               level: String(initial.level ?? 1),
+              role: initial.role ?? DEFAULT_ROLE,
             }
           : EMPTY
       );
@@ -60,7 +83,7 @@ export function UserForm({ open, initial, onClose, onSubmit }: UserFormProps) {
   }, [open, initial]);
 
   const set = (key: keyof FormState) => (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,7 +109,7 @@ export function UserForm({ open, initial, onClose, onSubmit }: UserFormProps) {
       return;
     }
 
-    const payload: UserFormData = { username, email, level };
+    const payload: UserFormData = { username, email, level, role: form.role };
     // Only send a password when one was actually entered.
     if (form.password) payload.password = form.password;
 
@@ -149,6 +172,21 @@ export function UserForm({ open, initial, onClose, onSubmit }: UserFormProps) {
             placeholder="jdoe@example.com"
             className={inputCls}
           />
+        </div>
+
+        {/* Role */}
+        <div>
+          <label htmlFor="user-role" className={labelCls}>Role</label>
+          <select
+            id="user-role"
+            value={form.role}
+            onChange={set("role")}
+            className={inputCls}
+          >
+            {(roles.includes(form.role) ? roles : [...roles, form.role]).map((name) => (
+              <option key={name} value={name}>{name}</option>
+            ))}
+          </select>
         </div>
 
         {/* Password */}

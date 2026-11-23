@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { AuthProvider } from "@/components/auth/AuthProvider";
+import { ManageShell } from "@/components/layout/ManageShell";
 
 export const metadata: Metadata = {
   title: "Yi Chinese — Admin",
@@ -12,14 +13,8 @@ export default function ManageLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-full flex">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main content area */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {children}
-      </div>
-    </div>
+    <AuthProvider>
+      <ManageShell>{children}</ManageShell>
+    </AuthProvider>
   );
 }

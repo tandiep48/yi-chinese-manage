@@ -14,6 +14,7 @@ import {
   useState,
   useEffect,
   useCallback,
+  useRef,
   type ReactNode,
 } from "react";
 import {
@@ -23,6 +24,7 @@ import {
   type Lang,
   type TVars,
 } from "@/lib/i18n";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { loadUiLanguage, saveUiLanguage } from "@/lib/api/learner/userSettings";
 import { clearReadCache } from "@/lib/api/readCache";
 import { clearPassagesCache } from "@/lib/api/learner/lessons";
@@ -48,6 +50,9 @@ const I18nCtx = createContext<I18nContextValue>({
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(DEFAULT_LANG);
   const [contentKey, setContentKey] = useState(0);
+  const { user } = useAuth();
+  const userId = user?.id;
+  const accountLang = user?.ui_language;
 
   // Apply a language to React state, <html lang>, and the local cache.
   const applyLang = useCallback((l: Lang) => {
@@ -88,6 +93,21 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       cancelled = true;
     };
   }, [applyLang]);
+
+  // The provider outlives a sign-in (it sits in the layout, so there is no remount), so the
+  // mount effect above only ever sees whoever was signed in at page load. When a different
+  // account signs in, adopt THEIR saved language — otherwise the previous account's
+  // language sticks and the new account appears to have been switched to it.
+  const adoptedFor = useRef<number | undefined>(undefined);
+  useEffect(() => {
+    if (userId === undefined) {
+      adoptedFor.current = undefined; // signed out: the next sign-in re-adopts, even the same account
+      return;
+    }
+    if (adoptedFor.current === userId) return;
+    adoptedFor.current = userId;
+    if (accountLang && SUPPORTED_LANGS.includes(accountLang as Lang)) applyLang(accountLang as Lang);
+  }, [userId, accountLang, applyLang]);
 
   // Changing the language flips the UI strings at once, then persists to the account
   // so the backend builds its content (lesson titles, trainer options, …) in the same

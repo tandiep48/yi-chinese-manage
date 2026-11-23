@@ -66,13 +66,22 @@ describe("LessonSidebar", () => {
     });
   });
 
-  it("renders the header badge, lesson title, the Parts accordion and the two domain buttons", () => {
+  it("renders the Parts accordion and the two domain buttons, without a title, badge or back button", () => {
     renderSidebar();
-    expect(screen.getByText("HSK2")).toBeInTheDocument();
-    expect(screen.getByText("Lesson 2")).toBeInTheDocument();
+    expect(screen.queryByText("HSK2")).toBeNull();
+    expect(screen.queryByText("Lesson 2")).toBeNull();
+    expect(screen.queryByRole("button", { name: "Part Selection" })).toBeNull();
     expect(screen.getByText("Lesson Parts")).toBeInTheDocument();
     expect(screen.getByText("Grammar")).toBeInTheDocument();
     expect(screen.getByText("Translation")).toBeInTheDocument();
+  });
+
+  it("labels the close control Collapse and flags the part on screen as Studying", () => {
+    renderSidebar(true, "H2_2_2", "lesson");
+    expect(screen.getByRole("button", { name: "Close Sidebar" })).toHaveTextContent("Collapse");
+    const studying = screen.getByText("Studying");
+    expect(studying.closest(".sidebar-step")).toHaveClass("active");
+    expect(screen.getAllByText("Studying")).toHaveLength(1);
   });
 
   it("marks the active domain and opens the other in a single click", () => {
@@ -167,25 +176,6 @@ describe("LessonSidebar", () => {
     push.mockClear();
     fireEvent.click(screen.getByText("Too busy."));
     expect(push).not.toHaveBeenCalled();
-  });
-
-  it("routes back to the HSK part picker", () => {
-    renderSidebar();
-    fireEvent.click(screen.getByRole("button", { name: "Part Selection" }));
-    expect(push).toHaveBeenCalledWith("/learner/hsk/HSK2/2");
-  });
-
-  it("routes back to the book part picker for a book passage", () => {
-    vi.mocked(partsHook.useLessonParts).mockReturnValue({
-      loading: false,
-      error: null,
-      parts: PARTS,
-      lessonProgress: null,
-      header: { badge: "AML", lessonNum: "1", isBook: true },
-    });
-    renderSidebar(true, "AML_1_1");
-    fireEvent.click(screen.getByRole("button", { name: "Part Selection" }));
-    expect(push).toHaveBeenCalledWith("/learner/books/AML/1");
   });
 
   it("collapses via the close button and exposes the toggle when closed", () => {

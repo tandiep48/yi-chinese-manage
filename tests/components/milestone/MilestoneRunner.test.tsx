@@ -154,7 +154,7 @@ describe("MilestoneRunner — passive steps", () => {
     await waitFor(() => expect(body()).toContain("word-summary"));
     // hideActions, not merely no handlers — omitting those only disables.
     expect(body()).toContain("hideActions=true");
-    expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Step 1 of 6/, current: "step" })).toBeInTheDocument();
   });
 
   it("advances on Next", async () => {
@@ -166,7 +166,7 @@ describe("MilestoneRunner — passive steps", () => {
 
     await waitFor(() => expect(body()).toContain("flashcards"));
     expect(mockMark).toHaveBeenCalledWith(PASSAGE, 1);
-    expect(screen.getByText(/Step 2 of 6/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Step 2 of 6/, current: "step" })).toBeInTheDocument();
   });
 
   it("mounts the flash cards without a second study shell", async () => {
@@ -198,7 +198,7 @@ describe("MilestoneRunner — graded steps", () => {
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
     expect(mockMark).not.toHaveBeenCalled();
     await waitFor(() => expect(body()).toContain("lesson-summary"));
-    expect(screen.getByText(/Step 4 of 6/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Step 4 of 6/, current: "step" })).toBeInTheDocument();
   });
 
   it("advances on finish even when the run fell below the pass threshold", async () => {
@@ -213,7 +213,7 @@ describe("MilestoneRunner — graded steps", () => {
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(body()).toContain("lesson-summary"));
-    expect(screen.getByText(/Step 4 of 6/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Step 4 of 6/, current: "step" })).toBeInTheDocument();
     expect(mockMark).not.toHaveBeenCalled();
   });
 
@@ -396,7 +396,7 @@ describe("MilestoneRunner — trainer step nav bar", () => {
     await user.click(screen.getByRole("button", { name: "Yes, Quit" }));
 
     await waitFor(() => expect(body()).toContain("flashcards"));
-    expect(screen.getByText(/Step 2 of 6/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Step 2 of 6/, current: "step" })).toBeInTheDocument();
     expect(mockMark).not.toHaveBeenCalled();
   });
 
@@ -448,7 +448,7 @@ describe("MilestoneRunner — auto-advance across parts", () => {
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledWith(P2));
     // The next part opens at its own resume step, not the carried step 6.
-    await waitFor(() => expect(screen.getByText(/Step 1 of 6/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: /Step 1 of 6/, current: "step" })).toBeInTheDocument());
   });
 
   it("reports the auto-advanced part through onPartChange", async () => {
@@ -528,7 +528,7 @@ describe("MilestoneRunner — auto-advance across parts", () => {
 
     await waitFor(() => expect(mockGet).toHaveBeenCalledWith(P2));
     // Part 2 opens on its own resume step (6, its first incomplete step here).
-    await waitFor(() => expect(screen.getByText(/Step 6 of 6/)).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByRole("button", { name: /Step 6 of 6/, current: "step" })).toBeInTheDocument());
     expect(body()).toContain("lesson-trainer");
   });
 });
@@ -561,7 +561,7 @@ describe("MilestoneRunner — bottom nav bar", () => {
     await user.click(screen.getByRole("button", { name: /Prev/ }));
 
     await waitFor(() => expect(body()).toContain("lesson-summary"));
-    expect(screen.getByText(/Step 4 of 6/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Step 4 of 6/, current: "step" })).toBeInTheDocument();
     expect(mockMark).not.toHaveBeenCalled();
   });
 });

@@ -20,7 +20,7 @@ interface UserTableProps {
   onDelete: (user: User) => void;
 }
 
-const COL_COUNT = 5;
+const COL_COUNT = 6;
 
 const th = "px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider";
 const td = "px-4 py-3 text-sm text-slate-700";
@@ -48,6 +48,7 @@ export function UserTable({
               <th className={th}>Username</th>
               <th className={th}>Email</th>
               <th className={th}>Level</th>
+              <th className={th}>Role</th>
               <th className={`${th} text-right`}>Actions</th>
             </tr>
           </thead>
@@ -74,6 +75,11 @@ export function UserTable({
                   <td className={td}>
                     <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600 ring-1 ring-slate-200">
                       {u.level ?? 1}
+                    </span>
+                  </td>
+                  <td className={td}>
+                    <span className="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-indigo-600 ring-1 ring-indigo-100">
+                      {u.role}
                     </span>
                   </td>
                   <td className={`${td} text-right`}>

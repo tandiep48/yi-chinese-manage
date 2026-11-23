@@ -3,6 +3,8 @@ import { LearnerSidebar } from "@/components/layout/LearnerSidebar";
 import { LearnerSessionProvider } from "@/components/layout/LearnerSessionContext";
 import { I18nProvider, I18nRemount } from "@/components/i18n/I18nProvider";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { SupportProvider } from "@/components/page/learner/support/SupportContext";
+import { SupportWidget } from "@/components/page/learner/support/SupportWidget";
 import { HanziSettingsProvider } from "@/components/han/HanziSettingsProvider";
 
 // Roboto — the Learning app's learner-facing font.
@@ -19,18 +21,21 @@ export default function LearnerLayout({
 }>) {
   return (
     <div className={`${roboto.variable} learner-theme flex h-full`}>
-      <I18nProvider>
-        <AuthProvider>
+      <AuthProvider>
+        <I18nProvider>
           <HanziSettingsProvider>
             <LearnerSessionProvider>
               <LearnerSidebar />
               <main className="learner-main flex min-w-0 flex-1 flex-col overflow-auto">
-                <I18nRemount>{children}</I18nRemount>
+                <SupportProvider>
+                  <I18nRemount>{children}</I18nRemount>
+                  <SupportWidget />
+                </SupportProvider>
               </main>
             </LearnerSessionProvider>
           </HanziSettingsProvider>
-        </AuthProvider>
-      </I18nProvider>
+        </I18nProvider>
+      </AuthProvider>
     </div>
   );
 }

@@ -29,10 +29,34 @@ describe("MilestoneBar", () => {
 
   it("labels every step with its number and title", () => {
     renderBar();
-    expect(screen.getByText("1. Vocab Summary")).toBeInTheDocument();
-    expect(screen.getByText("2. Vocab Learner")).toBeInTheDocument();
-    expect(screen.getByText("6. Lesson Trainer")).toBeInTheDocument();
-    expect(screen.getAllByRole("button")).toHaveLength(6);
+    expect(screen.getByRole("button", { name: "Step 1 of 6: Vocab Summary" })).toHaveTextContent(
+      "Step 1Vocab Summary"
+    );
+    expect(screen.getByRole("button", { name: "Step 2 of 6: Vocab Learner" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Step 6 of 6: Lesson Trainer" })).toBeInTheDocument();
+    // Six step tiles plus the previous / next arrows.
+    expect(screen.getAllByRole("button")).toHaveLength(8);
+  });
+
+  it("steps back and forward with the arrows, disabled at either end", () => {
+    const { onSelect, rerender } = renderBar(2);
+    fireEvent.click(screen.getByRole("button", { name: "Back one step" }));
+    expect(onSelect).toHaveBeenLastCalledWith(1);
+    fireEvent.click(screen.getByRole("button", { name: "Forward one step" }));
+    expect(onSelect).toHaveBeenLastCalledWith(3);
+
+    rerender(
+      <I18nProvider>
+        <MilestoneBar step={1} totalSteps={6} isCompleted={() => false} onSelect={onSelect} />
+      </I18nProvider>
+    );
+    expect(screen.getByRole("button", { name: "Back one step" })).toBeDisabled();
+    rerender(
+      <I18nProvider>
+        <MilestoneBar step={6} totalSteps={6} isCompleted={() => false} onSelect={onSelect} />
+      </I18nProvider>
+    );
+    expect(screen.getByRole("button", { name: "Forward one step" })).toBeDisabled();
   });
 
   it("marks the done and current steps, and only the current one pulses", () => {
@@ -43,8 +67,9 @@ describe("MilestoneBar", () => {
     expect(current).toHaveClass("is-current");
     expect(current).toHaveAttribute("aria-current", "step");
     expect(container.querySelectorAll(".milestone-segment-pulse")).toHaveLength(1);
-    // A finished step shows a check in place of its number.
-    expect(done.querySelector(".milestone-segment-num")).not.toHaveTextContent("1");
+    // The tiles carry no number badge; a finished step has a single check mark.
+    expect(done.querySelector(".milestone-segment-num")).toBeNull();
+    expect(done.querySelectorAll("svg")).toHaveLength(1);
   });
 
   it("jumps to any step, ahead or behind (soft gating)", () => {
@@ -64,7 +89,7 @@ describe("MilestoneHeader", () => {
   };
 
   function renderHeader(parts: SidebarPart[] | null) {
-    const header = <MilestoneHeader passageId="H2_2_1" step={2} totalSteps={6} />;
+    const header = <MilestoneHeader passageId="H2_2_1" />;
     return render(
       <I18nProvider>
         {parts ? (
@@ -78,29 +103,20 @@ describe("MilestoneHeader", () => {
     );
   }
 
-  it("shows the back link, lesson badge and step without an outline", () => {
+  it("shows the breadcrumb up the library without an outline", () => {
     renderHeader(null);
-    expect(screen.getByRole("link", { name: /Back to lesson/ })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Library" })).toHaveAttribute("href", "/learner/hsk");
+    expect(screen.getByRole("link", { name: "HSK 2" })).toHaveAttribute("href", "/learner/hsk/HSK2");
+    expect(screen.getByRole("link", { name: "Lesson 2" })).toHaveAttribute(
       "href",
       "/learner/hsk/HSK2/2"
     );
-    expect(screen.getByText("HSK2 · Lesson 2")).toBeInTheDocument();
-    expect(screen.getByText(/Step 2 of 6 · Vocab Learner/)).toBeInTheDocument();
     expect(screen.queryByText(/Mastered/)).toBeNull();
   });
 
-  it("adds the part title and mastered words from the outline", () => {
+  it("ends the breadcrumb on the part and shows no mastered chip", () => {
     const { container } = renderHeader([PART]);
-    expect(screen.getByRole("heading", { name: "Lili likes to run." })).toBeInTheDocument();
-    expect(container.querySelector(".milestone-header-mastered")).toHaveTextContent(
-      "Mastered: 2/8"
-    );
-  });
-
-  it("omits the mastered chip for a part with no words", () => {
-    const { container } = renderHeader([
-      { ...PART, progress: { learnedWords: 0, totalWords: 0, progressPct: 0 } },
-    ]);
+    expect(screen.getByText("Part 1")).toHaveAttribute("aria-current", "page");
     expect(container.querySelector(".milestone-header-mastered")).toBeNull();
   });
 });

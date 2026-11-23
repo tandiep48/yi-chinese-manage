@@ -20,6 +20,10 @@ export function listUsers(
   });
 }
 
+export function listRoles(): Promise<string[]> {
+  return apiFetch<string[]>("/api/admin/user/roles");
+}
+
 export function getUser(id: number): Promise<User> {
   return apiFetch<User>(`/api/admin/user/${id}`);
 }

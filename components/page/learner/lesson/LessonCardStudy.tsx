@@ -10,7 +10,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTableList } from "@fortawesome/free-solid-svg-icons";
+import {
+  faChevronLeft,
+  faChevronRight,
+  faEye,
+  faEyeSlash,
+  faTableList,
+  faVolumeHigh,
+} from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import { lessonAudioUrl } from "@/lib/audio";
 import { typingCharClasses } from "@/lib/lessons/typingGlow";
@@ -25,6 +32,7 @@ export function LessonCardStudy({
   hideSummaryButton = false,
   hideBackSummary = false,
   lockAtEnd = false,
+  variant = "default",
 }: {
   lines: LessonPassageLine[];
   // Lesson-audio folder for the passage (HSK level or book code).
@@ -36,8 +44,13 @@ export function LessonCardStudy({
   hideSummaryButton?: boolean;
   hideBackSummary?: boolean;
   lockAtEnd?: boolean;
+  // "milestone" is the lesson flow's layout, shared with the vocab flashcard step: line
+  // pill + Pinyin / Meaning toggles, a progress row, and a mint card with in-card
+  // audio and previous / next arrows.
+  variant?: "default" | "milestone";
 }) {
   const { t, lang } = useT();
+  const milestone = variant === "milestone";
 
   const [index, setIndex] = useState(0);
   const [typing, setTyping] = useState("");
@@ -128,19 +141,74 @@ export function LessonCardStudy({
     onPlayAudio: playAudio,
   });
 
+  // The milestone layout's eye toggles show or hide one line each, on top of the
+  // keyboard's show-both state. A flip lasts until that state or the line changes.
+  const [flipped, setFlipped] = useState({ pinyin: false, meaning: false });
+  const flipKey = `${index}:${revealed}`;
+  const [prevFlipKey, setPrevFlipKey] = useState(flipKey);
+  if (flipKey !== prevFlipKey) {
+    setPrevFlipKey(flipKey);
+    setFlipped({ pinyin: false, meaning: false });
+  }
+  const showPinyin = revealed !== flipped.pinyin;
+  const showMeaning = revealed !== flipped.meaning;
+
   if (!line) return null;
 
+  const progressPct = Math.round(((index + 1) / total) * 100);
+  const progressFill = (
+    <div className="vl-progress-bar vl-card-progress">
+      <div className="vl-progress-fill" style={{ width: `${((index + 1) / total) * 100}%` }} />
+    </div>
+  );
+
   return (
-    <div id="screen-learning" className="lesson-line-learning">
+    <div
+      id="screen-learning"
+      className={milestone ? "vl-milestone" : "lesson-line-learning"}
+    >
       <div className="vl-learning-topbar">
-        {!hideBackSummary && (
-          <button type="button" className="btn secondary" onClick={onShowSummary}>
-            &larr; {t("reading.summary")}
-          </button>
+        {milestone ? (
+          <>
+            <span className="vl-counter-pill">
+              {t("milestone.line_counter", {
+                n: String(index + 1).padStart(2, "0"),
+                total: String(total).padStart(2, "0"),
+              })}
+            </span>
+            <div className="vl-toggle-group">
+              <button
+                type="button"
+                className={`vl-toggle${showPinyin ? "" : " is-off"}`}
+                aria-pressed={showPinyin}
+                onClick={() => setFlipped((f) => ({ ...f, pinyin: !f.pinyin }))}
+              >
+                <FontAwesomeIcon icon={showPinyin ? faEye : faEyeSlash} aria-hidden />
+                <span>{t("dashboard.table_pinyin")}</span>
+              </button>
+              <button
+                type="button"
+                className={`vl-toggle${showMeaning ? "" : " is-off"}`}
+                aria-pressed={showMeaning}
+                onClick={() => setFlipped((f) => ({ ...f, meaning: !f.meaning }))}
+              >
+                <FontAwesomeIcon icon={showMeaning ? faEye : faEyeSlash} aria-hidden />
+                <span>{t("dashboard.table_meaning_vn")}</span>
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {!hideBackSummary && (
+              <button type="button" className="btn secondary" onClick={onShowSummary}>
+                &larr; {t("reading.summary")}
+              </button>
+            )}
+            <span className="vl-counter">
+              {index + 1} / {total}
+            </span>
+          </>
         )}
-        <span className="vl-counter">
-          {index + 1} / {total}
-        </span>
         {!hideSummaryButton && (
           <button type="button" className="vl-train-btn" onClick={onShowSummary}>
             <FontAwesomeIcon icon={faTableList} />
@@ -149,11 +217,57 @@ export function LessonCardStudy({
         )}
       </div>
 
-      <div className="vl-progress-bar vl-card-progress">
-        <div className="vl-progress-fill" style={{ width: `${((index + 1) / total) * 100}%` }} />
-      </div>
+      {milestone ? (
+        <div className="vl-progress-row">
+          <span className="vl-progress-label">{t("milestone.line_progress")}</span>
+          {progressFill}
+          <span className="vl-progress-value">
+            {index + 1}/{total} ({progressPct}%)
+          </span>
+        </div>
+      ) : (
+        progressFill
+      )}
 
       <div className="vl-card lesson-line-card">
+        {milestone && (
+          <>
+            <button
+              type="button"
+              className="vl-card-arrow vl-card-arrow-prev"
+              aria-label={t("card_shortcuts.prev")}
+              title={t("card_shortcuts.prev")}
+              disabled={index === 0}
+              onClick={goPrev}
+            >
+              <FontAwesomeIcon icon={faChevronLeft} aria-hidden />
+            </button>
+            <button
+              type="button"
+              className="vl-card-arrow vl-card-arrow-next"
+              aria-label={t("card_shortcuts.next")}
+              title={t("card_shortcuts.next")}
+              disabled={lockAtEnd && index === total - 1}
+              onClick={goNext}
+            >
+              <FontAwesomeIcon icon={faChevronRight} aria-hidden />
+            </button>
+            <div className="vl-tool-stack">
+              <button
+                type="button"
+                className="vl-tool vl-tool-audio"
+                aria-label={t("card_shortcuts.audio_reveal")}
+                title={t("card_shortcuts.audio_reveal")}
+                onClick={() => {
+                  reveal();
+                  playAudio();
+                }}
+              >
+                <FontAwesomeIcon icon={faVolumeHigh} aria-hidden />
+              </button>
+            </div>
+          </>
+        )}
         <div className="vl-hanzi lesson-line-hanzi" lang="zh-CN">
           {typing
             ? target.map((ch, i) => (
@@ -163,8 +277,8 @@ export function LessonCardStudy({
               ))
             : content}
         </div>
-        <div className="vl-pinyin">{revealed ? line.pinyin || "" : ""}</div>
-        <div className="vl-meaning">{revealed ? meaning : ""}</div>
+        <div className="vl-pinyin">{showPinyin ? line.pinyin || "" : ""}</div>
+        <div className="vl-meaning">{showMeaning ? meaning : ""}</div>
 
         <div className="vl-typing-container">
           <textarea
@@ -186,15 +300,18 @@ export function LessonCardStudy({
         </div>
       </div>
 
-      <CardShortcutLegend
-        onPrev={goPrev}
-        onNext={goNext}
-        onAudioReveal={() => {
-          reveal();
-          playAudio();
-        }}
-        onReveal={toggleReveal}
-      />
+      {/* The milestone card carries these actions as its own buttons; the keys still work. */}
+      {!milestone && (
+        <CardShortcutLegend
+          onPrev={goPrev}
+          onNext={goNext}
+          onAudioReveal={() => {
+            reveal();
+            playAudio();
+          }}
+          onReveal={toggleReveal}
+        />
+      )}
     </div>
   );
 }

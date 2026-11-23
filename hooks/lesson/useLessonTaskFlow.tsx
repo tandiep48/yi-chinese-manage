@@ -9,6 +9,9 @@
 //     auto-advances (correct — after the audio finishes for typing/reorder, or a
 //     fixed delay for multiple choice) or turns Skip into Next (wrong / skipped).
 //   - the Skip button reveals the answer as a miss; Next advances.
+//   - a correct typing / reorder answer plays its sentence audio, and Next stays
+//     disabled until that audio has ended — or failed to play, so a missing or broken
+//     clip never strands the learner.
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -17,6 +20,10 @@ import { now } from "@/lib/clock";
 import { lessonTaskAudioUrl, MC_CORRECT_DELAY_MS } from "@/lib/lessons/lessonTrainer";
 import { useTrainerActionSlot } from "@/components/page/learner/trainer/TrainerShell";
 import type { LessonTask } from "@/lib/types/lesson";
+
+// Upper bound on waiting for the reveal audio, so a clip that never reports "ended"
+// or "error" cannot hold the learner on the question forever.
+const AUDIO_SAFETY_MS = 15000;
 
 export type TaskOutcome = "correct" | "wrong" | "skipped" | null;
 
@@ -57,6 +64,8 @@ export function useLessonTaskFlow({
   const [answered, setAnswered] = useState(false);
   const [outcome, setOutcome] = useState<TaskOutcome>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  // False while a correct answer's reveal audio is still playing; gates Next.
+  const [audioDone, setAudioDone] = useState(true);
 
   const startRef = useRef(now());
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -129,16 +138,21 @@ export function useLessonTaskFlow({
     setIsPlaying(false);
   }
 
-  // Play the task audio and resolve when it ends (bounded), so typing/reorder answers
+  // Play the task audio and resolve when it ends (or fails), so typing/reorder answers
   // let the audio finish before advancing. Resolves quickly when there is no audio.
   function playAudioToEnd(): Promise<void> {
     const el = ensureAudio();
-    if (!el) return new Promise((r) => window.setTimeout(r, 500));
+    if (!el) {
+      setAudioDone(true);
+      return new Promise((r) => window.setTimeout(r, 500));
+    }
+    setAudioDone(false);
     return new Promise((resolve) => {
       let done = false;
       const finish = () => {
         if (done) return;
         done = true;
+        setAudioDone(true);
         resolve();
       };
       try {
@@ -149,7 +163,7 @@ export function useLessonTaskFlow({
       } catch {
         finish();
       }
-      window.setTimeout(finish, 6000);
+      window.setTimeout(finish, AUDIO_SAFETY_MS);
     });
   }
 
@@ -171,8 +185,8 @@ export function useLessonTaskFlow({
   const commit = (userAnswer: string, isCorrect: boolean) => resolve(userAnswer, isCorrect, false);
   const skip = () => resolve("", false, true);
 
-  // Skip before answering; once answered, Next is always shown — a wrong/skipped
-  // answer waits for it, and a correct one offers it to skip the auto-advance wait.
+  // Skip before answering; once answered, Next is shown — a wrong/skipped answer waits
+  // for it, and a correct one offers it once its audio (if any) has finished.
   // Portaled into the shared bottom bar.
   let button: React.ReactNode = null;
   if (!answered) {
@@ -183,7 +197,12 @@ export function useLessonTaskFlow({
     );
   } else {
     button = (
-      <button type="button" className="btn secondary bt-primary-action skip-bottom-btn" onClick={advanceOnce}>
+      <button
+        type="button"
+        className="btn secondary bt-primary-action skip-bottom-btn"
+        disabled={!audioDone}
+        onClick={advanceOnce}
+      >
         {t("lesson.next")}
       </button>
     );

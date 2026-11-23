@@ -330,7 +330,7 @@ function MilestonePart({
 
   return (
     <div className="milestone">
-      <MilestoneHeader passageId={passageId} step={step} totalSteps={milestone.totalSteps} />
+      <MilestoneHeader passageId={passageId} />
       <MilestoneBar
         step={step}
         totalSteps={milestone.totalSteps}
@@ -396,6 +396,7 @@ function MilestonePart({
               hideSummaryButton
               hideBackSummary
               lockAtEnd
+              variant="milestone"
             />
           ) : (
             <p className="milestone-state">{t("reading.loading")}</p>

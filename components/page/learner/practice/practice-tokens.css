@@ -17,3 +17,20 @@
   --danger: #ef4444;
   color: var(--text-main);
 }
+
+/* Level-card fills, sampled from each level picture's own background so the card
+   and its image read as one surface. One token per category and level. */
+.practice-select {
+  --card-practice-1: #d9dde0;
+  --card-practice-2: #bbe5bd;
+  --card-practice-3: #9bcdee;
+  --card-practice-4: #f9e584;
+  --card-practice-5: #ffc482;
+  --card-practice-6: #ff726e;
+  --card-exam-1: #cbced3;
+  --card-exam-2: #afe7ce;
+  --card-exam-3: #89c8e7;
+  --card-exam-4: #fcdd83;
+  --card-exam-5: #fdbf84;
+  --card-exam-6: #fd8177;
+}
