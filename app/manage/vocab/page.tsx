@@ -9,7 +9,7 @@ import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { VocabTable } from "@/components/page/vocab/VocabTable";
 import { VocabForm } from "@/components/page/vocab/VocabForm";
-import { VocabSearch } from "@/components/page/vocab/VocabSearch";
+import { SearchBox } from "@/components/shared/manager_ui/SearchBox/SearchBox";
 import { HSK_LEVELS } from "@/lib/types/common";
 import type { Vocab, VocabFormData } from "@/lib/types/vocab";
 
@@ -103,7 +103,12 @@ export default function VocabPage() {
               <option key={l} value={l}>{l}</option>
             ))}
           </select>
-          <VocabSearch onSearch={setSearch} />
+          <SearchBox
+            id="vocab-search"
+            label="Search vocabulary"
+            placeholder="Search Chinese or pinyin, then Enter"
+            onSearch={setSearch}
+          />
         </div>
 
         {/* Error banner */}

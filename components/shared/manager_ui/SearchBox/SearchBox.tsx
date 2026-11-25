@@ -1,16 +1,19 @@
 "use client";
 
-// components/page/vocab/VocabSearch.tsx
-// Word / pinyin search box for the vocabulary table. Searches on Enter; the clear
-// button (and Enter on an empty box) shows the full list again.
+// components/shared/manager_ui/SearchBox/SearchBox.tsx
+// Search box for the manage tables. Searches on Enter; the clear button (and
+// Enter on an empty box) shows the full list again.
 
 import { useState } from "react";
 
-interface VocabSearchProps {
+interface SearchBoxProps {
+  id: string;
+  label: string;
+  placeholder: string;
   onSearch: (term: string) => void;
 }
 
-export function VocabSearch({ onSearch }: VocabSearchProps) {
+export function SearchBox({ id, label, placeholder, onSearch }: SearchBoxProps) {
   const [draft, setDraft] = useState("");
 
   return (
@@ -23,10 +26,10 @@ export function VocabSearch({ onSearch }: VocabSearchProps) {
       }}
     >
       <input
-        id="vocab-search"
+        id={id}
         type="search"
-        aria-label="Search vocabulary"
-        placeholder="Search Chinese or pinyin, then Enter"
+        aria-label={label}
+        placeholder={placeholder}
         maxLength={100}
         value={draft}
         onChange={(e) => setDraft(e.target.value)}
