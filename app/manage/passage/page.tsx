@@ -9,6 +9,7 @@ import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
 import { PassageTable } from "@/components/page/passage/PassageTable";
 import { PassageForm } from "@/components/page/passage/PassageForm";
+import { getPassage } from "@/lib/api/manage/passage";
 import { HSK_LEVELS } from "@/lib/types/common";
 import type { LessonPassage, PassageFormData } from "@/lib/types/lesson";
 
@@ -44,10 +45,13 @@ export default function PassagePage() {
   };
 
   const openEdit = async (passage: LessonPassage) => {
-    // Expand to load lines first, then open modal
-    await expandPassage(passage.passage_id);
-    setEditing(passage);
-    setFormOpen(true);
+    // Saving replaces every line, so only open the form with the lines loaded.
+    try {
+      setEditing(await getPassage(passage.passage_id));
+      setFormOpen(true);
+    } catch (err) {
+      toast(err instanceof Error ? err.message : "Failed to load lines.", "error");
+    }
   };
 
   const handleSubmit = async (data: PassageFormData) => {
@@ -139,11 +143,7 @@ export default function PassagePage() {
       {/* Form modal */}
       <PassageForm
         open={formOpen}
-        initial={
-          editing
-            ? { ...editing, lines: expandedPassage?.lines ?? [] }
-            : null
-        }
+        initial={editing}
         onClose={() => setFormOpen(false)}
         onSubmit={handleSubmit}
       />
