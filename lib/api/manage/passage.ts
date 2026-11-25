@@ -1,19 +1,33 @@
 import type { PaginatedResponse } from "@/lib/types/common";
-import type { LessonPassage, PassageFormData } from "@/lib/types/lesson";
+import type {
+  LessonLine,
+  LessonPassage,
+  LineFormData,
+  PassageDetailsData,
+  PassageFormData,
+} from "@/lib/types/lesson";
 import type { Vocab } from "@/lib/types/vocab";
 import { API_CONSTANTS } from "../constants";
 import { apiFetch } from "../client";
 import { passageQuerySchema } from "../schemas/passage";
 
+export interface PassageFilters {
+  hskLevel?: string;
+  bookCode?: string;
+  search?: string;
+}
+
 export function listPassages(
   page = 1,
   pageSize = API_CONSTANTS.DEFAULT_PAGE_SIZE,
-  hskLevel?: string
+  { hskLevel, bookCode, search }: PassageFilters = {}
 ): Promise<PaginatedResponse<LessonPassage>> {
   const body = passageQuerySchema.parse({
     page,
     page_size: pageSize,
-    ...(hskLevel ? { hsk_level: hskLevel } : {}),
+    hsk_level: hskLevel || undefined,
+    book_code: bookCode || undefined,
+    q: search || undefined,
   });
   return apiFetch<PaginatedResponse<LessonPassage>>("/api/admin/passage/query", {
     method: "POST",
@@ -34,7 +48,7 @@ export function createPassage(data: PassageFormData): Promise<LessonPassage> {
 
 export function updatePassage(
   passageId: string,
-  data: Partial<PassageFormData>
+  data: PassageDetailsData
 ): Promise<LessonPassage> {
   return apiFetch<LessonPassage>(`/api/admin/passage/${passageId}`, {
     method: "PUT",
@@ -42,11 +56,37 @@ export function updatePassage(
   });
 }
 
-export function deletePassage(
-  passageId: string
-): Promise<{ message: string }> {
-  return apiFetch<{ message: string }>(`/api/admin/passage/${passageId}`, {
-    method: "DELETE",
+// ─── Lines ───────────────────────────────────────────────────────────────────
+
+export function addPassageLine(
+  passageId: string,
+  data: LineFormData & { line_id: number }
+): Promise<LessonLine> {
+  return apiFetch<LessonLine>(`/api/admin/passage/${passageId}/lines`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function updatePassageLine(
+  passageId: string,
+  lineId: number,
+  data: LineFormData
+): Promise<LessonLine> {
+  return apiFetch<LessonLine>(`/api/admin/passage/${passageId}/lines/${lineId}`, {
+    method: "PUT",
+    body: JSON.stringify(data),
+  });
+}
+
+// `lineIds` is every current line_id in the new order.
+export function reorderPassageLines(
+  passageId: string,
+  lineIds: number[]
+): Promise<LessonLine[]> {
+  return apiFetch<LessonLine[]>(`/api/admin/passage/${passageId}/lines/order`, {
+    method: "PUT",
+    body: JSON.stringify({ line_ids: lineIds }),
   });
 }
 
