@@ -225,64 +225,6 @@
   font-weight: 700;
 }
 
-/* ── Outline: progress block + the active part's milestone steps ── */
-.lesson-study .outline-progress {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin: 1rem 1rem 0.25rem;
-  padding: 14px;
-  border-radius: 12px;
-  background: var(--ls-surface-low);
-  flex-shrink: 0;
-}
-.lesson-study .outline-progress-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.lesson-study .outline-progress-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-.lesson-study .outline-progress-label {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--ls-muted);
-}
-.lesson-study .outline-progress-value {
-  flex-shrink: 0;
-  font-weight: 700;
-  color: var(--ls-primary);
-}
-.lesson-study .outline-progress-track {
-  height: 8px;
-  border-radius: 999px;
-  background: var(--ls-border-subtle);
-  overflow: hidden;
-}
-.lesson-study .outline-progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(to right, var(--ls-primary), var(--ls-emerald-deep));
-  transition: width 0.3s ease;
-}
-.lesson-study .outline-progress-row.is-current .outline-progress-track {
-  background: var(--ls-secondary);
-}
-.lesson-study .outline-progress-row.is-current .outline-progress-fill {
-  background: var(--ls-primary-hover);
-}
-.lesson-study .outline-progress-row.is-current .outline-progress-value {
-  color: var(--ls-primary-hover);
-}
-
 /* The Exam entry's total vocab / lesson progress, under its header row. */
 .lesson-study .acc-exam-stats {
   padding: 0 1.25rem 0.9rem;

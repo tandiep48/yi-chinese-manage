@@ -93,7 +93,7 @@ describe("MilestoneHeader", () => {
     return render(
       <I18nProvider>
         {parts ? (
-          <LessonOutlineContext.Provider value={{ parts, publishMilestone: vi.fn() }}>
+          <LessonOutlineContext.Provider value={{ parts }}>
             {header}
           </LessonOutlineContext.Provider>
         ) : (
