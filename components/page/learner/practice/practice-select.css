@@ -74,10 +74,6 @@
 .practice-select .card-image {
   width: 100%; max-width: 220px; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 12px;
 }
-.practice-select .hsk-badge {
-  background: var(--primary); color: #fff; font-size: 0.7rem; font-weight: 600;
-  padding: 3px 8px; border-radius: 20px; letter-spacing: 0.05em;
-}
 /* Three lesson cards per row on tablet and up; stacks to two then one on narrower
    screens (mobile-first), matching the level grid above. */
 .practice-select .lesson-grid {

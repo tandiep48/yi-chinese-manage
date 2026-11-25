@@ -52,7 +52,6 @@ export function PracticeSelectPage({ category }: { category: PracticeCategory })
               data-level={n}
             >
               <LevelCardImage category={category} level={n} alt={`${categoryLabel} ${n}`} />
-              <div className="hsk-badge">HSK {n}</div>
             </Link>
           ))}
         </div>
