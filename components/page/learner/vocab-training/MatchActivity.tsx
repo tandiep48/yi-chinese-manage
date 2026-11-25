@@ -263,11 +263,10 @@ export function MatchActivity({
                   className={itemClass(
                     "left",
                     row.word,
-                    [matchCfg.leftKind === "audio" ? "bt-match-audio" : "", keyChar ? "bt-has-key" : ""]
+                    [matchCfg.leftKind === "audio" ? "bt-match-audio" : "bt-match-word", keyChar ? "bt-has-key" : ""]
                       .filter(Boolean)
                       .join(" ")
                   )}
-                  style={matchCfg.leftKind === "word" ? { fontSize: "30px" } : undefined}
                   onClick={() => selectLeft(row.word)}
                   aria-label={matchCfg.leftKind === "audio" ? t("lesson.play_audio") : undefined}
                 >

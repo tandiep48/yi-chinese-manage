@@ -19,6 +19,8 @@ import "@/components/page/learner/trainer/vocab-trainer.css";
 // /learner/vocab-training-batch route, byte-for-byte as before.
 interface VocabTrainerPageProps extends VocabTrainerOptions {
   contained?: boolean;
+  // See TrainerShell.
+  compact?: boolean;
   // Label for the recap's exit button (defaults to "Back to vocabulary"); the
   // milestone passes "Next" because its exit advances to the next step.
   homeLabel?: string;
@@ -32,6 +34,7 @@ interface VocabTrainerPageProps extends VocabTrainerOptions {
 
 export function VocabTrainerPage({
   contained,
+  compact,
   homeLabel,
   bottomBarSlot,
   onScreenChange,
@@ -73,6 +76,8 @@ export function VocabTrainerPage({
         counterText={trainer.counterText}
         onQuit={trainer.goHome}
         contained={contained}
+        compact={compact}
+        taskKey={trainer.activityKey}
         bottomBarSlot={bottomBarSlot}
         complete={
           <VocabTrainerRecap

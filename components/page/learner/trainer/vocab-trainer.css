@@ -51,6 +51,7 @@
    typing card (phones especially). min-width:0 lets this flex child shrink so the
    wrap can kick in; overflow-wrap:anywhere breaks even an unbroken Latin run. */
 .vocab-trainer .bt-hanzi {
+  font-size: 30px;
   min-width: 0;
   max-width: 100%;
   text-align: center;
@@ -65,7 +66,7 @@
 .vocab-trainer .bt-type-input {
   width: 100%;
   padding: 10px 12px;
-  font-size: 1.25rem;
+  font-size: 30px;
   line-height: 1.4;
   font-family: inherit;
   text-align: center;
@@ -142,6 +143,9 @@
 }
 .vocab-trainer .bt-match-item:hover:not(.solved) {
   border-color: var(--primary);
+}
+.vocab-trainer .bt-match-item.bt-match-word {
+  font-size: 30px;
 }
 .vocab-trainer .bt-match-item.bt-match-audio {
   font-size: 1.4rem;

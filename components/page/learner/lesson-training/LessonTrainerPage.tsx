@@ -21,6 +21,8 @@ import "./lesson-trainer.css";
 // /learner/lesson-training route, byte-for-byte as before.
 interface LessonTrainerPageProps extends LessonTrainerOptions {
   contained?: boolean;
+  // See TrainerShell.
+  compact?: boolean;
   // See VocabTrainerPage — host the action in an external bar (the milestone's).
   bottomBarSlot?: HTMLElement | null;
   onScreenChange?: (screen: TrainerScreen) => void;
@@ -28,6 +30,7 @@ interface LessonTrainerPageProps extends LessonTrainerOptions {
 
 export function LessonTrainerPage({
   contained,
+  compact,
   bottomBarSlot,
   onScreenChange,
   ...options
@@ -62,6 +65,8 @@ export function LessonTrainerPage({
         onQuit={trainer.goHome}
         quitIcon
         contained={contained}
+        compact={compact}
+        taskKey={trainer.taskKey}
         bottomBarSlot={bottomBarSlot}
         complete={
           <LessonTrainerRecap

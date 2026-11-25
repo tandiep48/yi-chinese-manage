@@ -351,6 +351,7 @@ function MilestonePart({
               words={trainerWords}
               types={vocabTypes}
               contained
+              compact
               onExit={onTrainerExit}
               bottomBarSlot={trainerSlot}
               onScreenChange={setTrainerScreen}
@@ -386,6 +387,7 @@ function MilestonePart({
             passageIds={[passageId]}
             types={lessonTypes}
             contained
+            compact
             onExit={onTrainerExit}
             // Deliberately no onComplete: finishing the round shows the trainer's recap
             // and the nav's Next drives the advance, so the final step stops here rather

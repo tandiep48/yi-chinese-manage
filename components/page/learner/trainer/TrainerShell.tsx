@@ -12,12 +12,13 @@
 // renders its button into the action slot via a portal (useTrainerActionSlot),
 // which keeps the button's state local to the activity while it lives in the bar.
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./trainer-shell.css";
 import "./trainer-quit-modal.css";
+import "./trainer-compact.css";
 
 const ActionSlotContext = createContext<HTMLElement | null>(null);
 
@@ -66,6 +67,10 @@ interface TrainerShellProps {
   // The milestone passes its nav-bar slot here so one bar carries Quit (the host's)
   // + the trainer's Check/Next. Passing it (even as null) suppresses the own bar.
   bottomBarSlot?: HTMLElement | null;
+  // The milestone's trainer steps: no topbar or top gap, tighter on phones, and
+  // each new task (a change of `taskKey`) is scrolled into view there.
+  compact?: boolean;
+  taskKey?: number;
 }
 
 export function TrainerShell({
@@ -81,6 +86,8 @@ export function TrainerShell({
   quitIcon = false,
   contained = false,
   bottomBarSlot,
+  compact = false,
+  taskKey,
 }: TrainerShellProps) {
   const { t } = useT();
   const [internalSlot, setInternalSlot] = useState<HTMLElement | null>(null);
@@ -91,9 +98,21 @@ export function TrainerShell({
   const externalBar = bottomBarSlot !== undefined;
   const slot = externalBar ? bottomBarSlot ?? null : internalSlot;
 
+  const shellRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!compact || screen !== "training") return;
+    if (!window.matchMedia?.("(max-width: 600px)").matches) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    shellRef.current?.scrollIntoView?.({ block: "start", behavior: reduced ? "auto" : "smooth" });
+  }, [compact, screen, taskKey]);
+
+  const rootClass = ["trainer-shell", scopeClass, contained && "contained", compact && "compact"]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <ActionSlotContext.Provider value={slot}>
-      <div className={`trainer-shell ${scopeClass}${contained ? " contained" : ""}`}>
+      <div className={rootClass} ref={shellRef}>
         <div className="app-container">
           <div className={`screen trainer-loading-screen${screen === "loading" ? " active" : ""}`}>
             <div className="loader" />
@@ -101,9 +120,11 @@ export function TrainerShell({
           </div>
 
           <div className={`screen${screen === "training" ? " active" : ""}`}>
-            <div className="trainer-topbar">
-              <div className="trainer-subtitle">{subtitle}</div>
-            </div>
+            {!compact && (
+              <div className="trainer-topbar">
+                <div className="trainer-subtitle">{subtitle}</div>
+              </div>
+            )}
 
             <div className="progress-bar">
               <div
