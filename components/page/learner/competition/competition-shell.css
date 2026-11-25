@@ -1,29 +1,26 @@
 /* ─────────────────────────────────────────────
    LEARN TOGETHER (.competition-shell) — the real-time vocabulary competition.
    Ported from Learning/web_app/static/competition/competition.css plus the shared
-   multi_select.css the legacy page loads alongside it. Sage palette (the legacy page
-   inherits styles.css :root, not the teal dashboard theme); the in-room trainer
-   boards reuse the .vocab-trainer .bt-* rules above, which resolve their colours
-   against the tokens defined here.
-   Lesson-mode (.lt-*) styles land with the lesson competition in phase 2.
+   multi_select.css the legacy page loads alongside it. It wears the milestone
+   trainers' palette (teal accent, near-black text, mint cards), and the in-room
+   .vocab-trainer / .lesson-trainer boards resolve their colours against the tokens
+   defined here.
    ───────────────────────────────────────────── */
 .competition-shell {
-  --primary: #576856;
-  --primary-hover: #455544;
-  --secondary: #f0f4f1;
-  --secondary-hover: #e0e8e1;
-  --text-main: #576856;
-  --text-muted: #738a72;
+  --primary: var(--learner-nav);
+  --primary-hover: var(--learner-emerald-deep);
+  --secondary: var(--learner-mint-soft);
+  --secondary-hover: var(--learner-bg);
+  --text-main: var(--learner-ink);
+  --text-muted: var(--learner-slate);
+  --card-bg: var(--learner-card);
   --success: #10b981;
   --danger: #ef4444;
-  /* styles.css only defines --border-soft on the dashboard body, so the legacy
-     competition page leaves the trainer card borders unset; the port gives them the
-     sage hairline used by the other sage pages. */
-  --border-soft: rgba(87, 104, 86, 0.15);
+  --border-soft: color-mix(in srgb, var(--primary) 18%, transparent);
   width: min(1120px, 100%);
   margin: 0 auto;
   padding: 32px 20px;
-  color: #111111;
+  color: var(--learner-ink);
 }
 
 .competition-screen {
@@ -73,8 +70,8 @@
 }
 
 .competition-shell .competition-panel {
-  background: #cbe2d4;
-  border: 1px solid #afcfbd;
+  background: var(--learner-bg);
+  border: 1px solid var(--learner-bg-border);
   border-radius: 8px;
   padding: 22px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
@@ -95,7 +92,7 @@
 .competition-shell .competition-form input,
 .competition-shell .chat-input-row input {
   width: 100%;
-  border: 1px solid rgba(87, 104, 86, 0.18);
+  border: 1px solid var(--border-soft);
   border-radius: 8px;
   padding: 12px;
   color: var(--text-main);
@@ -151,8 +148,8 @@
 }
 
 .competition-room-bar {
-  background: #cbe2d4;
-  border: 1px solid #afcfbd;
+  background: var(--learner-bg);
+  border: 1px solid var(--learner-bg-border);
   border-radius: 8px;
   padding: 16px;
   margin-bottom: 16px;
@@ -182,7 +179,7 @@
 .competition-shell .member-row,
 .competition-shell .chat-message,
 .competition-shell .ranking-row {
-  border: 1px solid #afcfbd;
+  border: 1px solid var(--learner-bg-border);
   border-radius: 8px;
   background: #ffffff;
   padding: 10px 12px;
@@ -247,21 +244,17 @@
   align-items: start;
 }
 .competition-shell .competition-trainer {
-  /* Match the milestone trainer (steps 3 & 6): a white board, not the old mint
-     panel. But the competition page renders on white, so a borderless white board
-     would vanish into it — the milestone's board reads as a card only because its
-     own word-cards frame it. Keep a soft neutral card frame (sage hairline + light
-     lift) so the board stays a visible container on the white page. */
-  background: #ffffff;
-  border: 1px solid var(--border-soft);
-  border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  /* The milestone trainer's task card: mint, with white cards inside. */
+  background: var(--learner-bg);
+  border: 1px solid var(--learner-bg-border);
+  border-radius: 16px;
+  box-shadow: 0 18px 44px color-mix(in srgb, var(--primary) 8%, transparent);
   padding: clamp(18px, 4vw, 30px);
   min-height: 360px;
 }
 .competition-shell .competition-scoreboard-panel {
-  background: #cbe2d4;
-  border: 1px solid #afcfbd;
+  background: var(--learner-bg);
+  border: 1px solid var(--learner-bg-border);
   border-radius: 8px;
   padding: 18px;
 }
@@ -367,7 +360,7 @@
 }
 .competition-shell .competition-open-rooms-empty {
   color: var(--text-muted);
-  background: #f0f4f1;
+  background: var(--secondary);
   border: 1px dashed var(--border-soft);
   border-radius: 8px;
   padding: 18px;
