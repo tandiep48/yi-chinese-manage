@@ -47,6 +47,7 @@ export function PassageForm({ open, initial, onClose, onSubmit }: PassageFormPro
             translation_en: l.translation_en ?? undefined,
             translation_vi: l.translation_vi ?? undefined,
             tokens: l.tokens ?? [],
+            flag: l.flag,
           }))
         );
       } else {

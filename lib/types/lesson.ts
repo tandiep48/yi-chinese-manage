@@ -13,7 +13,8 @@ export interface LessonLine {
   audio_key: string | null;
   translation_en: string | null;
   translation_vi: string | null;
-  tokens: unknown[];
+  tokens: string[];
+  flag: 0 | 1; // 1 = quizzed by the lesson trainer, 0 = review only
 }
 
 export interface LessonPassage {
@@ -133,7 +134,8 @@ export type LineFormData = {
   audio_key?: string;
   translation_en?: string;
   translation_vi?: string;
-  tokens?: unknown[];
+  tokens?: string[];
+  flag?: 0 | 1;
 };
 
 export type PassageFormData = {

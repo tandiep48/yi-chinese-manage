@@ -21,7 +21,7 @@ vi.mock("@/components/page/passage/PassageVocabManager", () => ({
 const passage = { passage_id: "H1_1_1", hsk_level: "HSK1" };
 const line = {
   id: 1, passage_id: "H1_1_1", line_id: 1, speaker: "A", content: "你好", pinyin: null,
-  audio_key: null, translation_en: null, translation_vi: null, tokens: [],
+  audio_key: null, translation_en: null, translation_vi: null, tokens: [], flag: 0 as const,
 };
 
 describe("Passage edit", () => {
@@ -44,7 +44,7 @@ describe("Passage edit", () => {
 
     expect(updatePassage).toHaveBeenCalledWith(
       "H1_1_1",
-      expect.objectContaining({ lines: [expect.objectContaining({ content: "你好" })] })
+      expect.objectContaining({ lines: [expect.objectContaining({ content: "你好", flag: 0 })] })
     );
   });
 
