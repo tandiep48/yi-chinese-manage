@@ -27,11 +27,11 @@ describe("admin list queries POST validated bodies", () => {
   beforeEach(() => mockFetch.mockClear());
 
   it("listPassages -> /api/admin/passage/query", async () => {
-    await listPassages(2, 50, "HSK3");
+    await listPassages(2, 50, { hskLevel: "HSK3", bookCode: "", search: " 1_2 " });
     expect(lastCall()).toEqual({
       path: "/api/admin/passage/query",
       method: "POST",
-      body: { page: 2, page_size: 50, hsk_level: "HSK3" },
+      body: { page: 2, page_size: 50, hsk_level: "HSK3", q: "1_2" },
     });
   });
 

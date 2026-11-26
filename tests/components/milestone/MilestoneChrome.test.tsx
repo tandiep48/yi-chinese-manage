@@ -72,6 +72,32 @@ describe("MilestoneBar", () => {
     expect(done.querySelectorAll("svg")).toHaveLength(1);
   });
 
+  it("scrolls the strip to centre the current step on load and on each change", () => {
+    const scrollTo = vi.fn();
+    const rect = vi
+      .spyOn(Element.prototype, "getBoundingClientRect")
+      .mockImplementation(function (this: Element) {
+        if (this.classList.contains("milestone-segments")) return new DOMRect(50, 0, 200, 56);
+        const tiles = Array.from(document.querySelectorAll(".milestone-segment"));
+        const index = tiles.indexOf(this);
+        return new DOMRect(50 + index * 160, 0, 150, 56);
+      });
+    Element.prototype.scrollTo = scrollTo;
+    const { rerender, onSelect } = renderBar(3);
+    // Tile 3 starts 320px in; centring a 150px tile in 200px leaves 25px each side.
+    expect(scrollTo).toHaveBeenLastCalledWith({ left: 295, behavior: "auto" });
+
+    rerender(
+      <I18nProvider>
+        <MilestoneBar step={4} totalSteps={6} isCompleted={() => false} onSelect={onSelect} />
+      </I18nProvider>
+    );
+    expect(scrollTo).toHaveBeenLastCalledWith({ left: 455, behavior: "smooth" });
+
+    rect.mockRestore();
+    Reflect.deleteProperty(Element.prototype, "scrollTo");
+  });
+
   it("jumps to any step, ahead or behind (soft gating)", () => {
     const { onSelect } = renderBar();
     fireEvent.click(screen.getByRole("button", { name: /Step 5 of 6/ }));
@@ -93,7 +119,7 @@ describe("MilestoneHeader", () => {
     return render(
       <I18nProvider>
         {parts ? (
-          <LessonOutlineContext.Provider value={{ parts, publishMilestone: vi.fn() }}>
+          <LessonOutlineContext.Provider value={{ parts }}>
             {header}
           </LessonOutlineContext.Provider>
         ) : (

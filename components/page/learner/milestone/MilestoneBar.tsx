@@ -3,7 +3,7 @@
 // components/page/learner/milestone/MilestoneBar.tsx
 // The six step tiles above a lesson part's milestone ("Step 1 / Vocab Summary", …),
 // flanked by previous / next arrows: a check for a finished step, a pulsing dot on
-// the one showing.
+// the one showing. When the tiles overflow, the strip scrolls to centre that one.
 //
 // Gating is soft (docs/plans/dashboard-tabs.md §10.1): every completed step is
 // replayable, so the tiles are buttons. Steps ahead of the learner are not
@@ -12,6 +12,7 @@
 //
 // Every class belongs to milestone.css, which is subject to the §2 invariant.
 
+import { useEffect, useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faChevronLeft,
@@ -40,6 +41,24 @@ export function MilestoneBar({ step, totalSteps, isCompleted, onSelect }: Milest
   const { t } = useT();
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
+  // Only the strip scrolls: scrollIntoView would also move the page.
+  const stripRef = useRef<HTMLOListElement>(null);
+  const hasCentred = useRef(false);
+  useEffect(() => {
+    const strip = stripRef.current;
+    const tile = strip?.querySelector(".is-current");
+    if (!strip || !tile) return;
+    const stripBox = strip.getBoundingClientRect();
+    const tileBox = tile.getBoundingClientRect();
+    const instant =
+      !hasCentred.current || window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    hasCentred.current = true;
+    strip.scrollTo?.({
+      left: strip.scrollLeft + tileBox.left - stripBox.left - (stripBox.width - tileBox.width) / 2,
+      behavior: instant ? "auto" : "smooth",
+    });
+  }, [step]);
+
   return (
     <div className="milestone-bar">
       <button
@@ -53,7 +72,7 @@ export function MilestoneBar({ step, totalSteps, isCompleted, onSelect }: Milest
         <FontAwesomeIcon icon={faChevronLeft} aria-hidden />
       </button>
 
-      <ol className="milestone-segments">
+      <ol className="milestone-segments" ref={stripRef}>
         {steps.map((n) => {
           const done = isCompleted(n);
           const current = n === step;

@@ -217,3 +217,14 @@
   border: 1px solid var(--learner-border);
   font-size: 0.875rem;
 }
+
+/* On phones the milestone's trainer steps pin their action bar to the bottom of
+   the screen; lift the widget clear of its buttons. */
+@media (max-width: 640px) {
+  body:has(.trainer-shell.compact) .support-widget {
+    bottom: 6.75rem;
+  }
+  body:has(.trainer-shell.compact) .support-panel {
+    max-height: calc(100vh - 12rem);
+  }
+}

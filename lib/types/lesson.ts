@@ -13,12 +13,16 @@ export interface LessonLine {
   audio_key: string | null;
   translation_en: string | null;
   translation_vi: string | null;
-  tokens: unknown[];
+  tokens: string[];
+  flag: 0 | 1; // 1 = quizzed by the lesson trainer, 0 = review only
 }
 
 export interface LessonPassage {
   passage_id: string;
   hsk_level: string | null;
+  book_code: string | null;
+  title_en: string | null;
+  title_vn: string | null;
   lines?: LessonLine[];
 }
 
@@ -125,19 +129,25 @@ export interface TranslationRow {
   en?: string | null;
 }
 
+// The editable fields of one line; a blank string clears the column.
 export type LineFormData = {
-  line_id?: number;
-  speaker?: string;
-  content?: string;
-  pinyin?: string;
-  audio_key?: string;
-  translation_en?: string;
-  translation_vi?: string;
-  tokens?: unknown[];
+  speaker: string;
+  content: string;
+  pinyin: string;
+  audio_key: string;
+  translation_en: string;
+  translation_vi: string;
+  tokens: string[];
+  flag: 0 | 1;
 };
 
 export type PassageFormData = {
   passage_id: string;
   hsk_level?: string;
-  lines?: LineFormData[];
+};
+
+export type PassageDetailsData = {
+  hsk_level: string;
+  title_en: string;
+  title_vn: string;
 };

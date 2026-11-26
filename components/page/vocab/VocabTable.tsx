@@ -16,6 +16,8 @@ interface VocabTableProps {
   page: number;
   pageSize: number;
   loading: boolean;
+  // The active search term, named in the empty state.
+  search: string;
   onPageChange: (p: number) => void;
   onEdit: (vocab: Vocab) => void;
   onDelete: (vocab: Vocab) => void;
@@ -33,6 +35,7 @@ export function VocabTable({
   page,
   pageSize,
   loading,
+  search,
   onPageChange,
   onEdit,
   onDelete,
@@ -60,7 +63,7 @@ export function VocabTable({
             ) : items.length === 0 ? (
               <tr>
                 <td colSpan={COL_COUNT} className="px-4 py-12 text-center text-slate-400 text-sm">
-                  No vocabulary entries found.
+                  {search ? `No vocabulary matches “${search}”.` : "No vocabulary entries found."}
                 </td>
               </tr>
             ) : (

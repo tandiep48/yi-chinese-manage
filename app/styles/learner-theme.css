@@ -15,6 +15,9 @@
   --learner-nav:           #007a61;  /* teal site header */
   --learner-nav-hover:     rgba(255, 255, 255, 0.12);
   --learner-border:        rgba(87, 104, 86, 0.12);
+  /* Near-black body text and the mint card's hairline (trainers, Learn Together). */
+  --learner-ink:           #111111;
+  --learner-bg-border:     #afcfbd;
   /* Lesson-area palette (Jade Academy layout): deep emerald text/hover, mint wash
      and its border, hairline slate border, and the muted slate text tones. */
   --learner-emerald-deep:  #064e3b;

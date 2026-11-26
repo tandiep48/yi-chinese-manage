@@ -8,10 +8,6 @@
 // the matching lesson-wide study page (navigateToDomain in the original). The
 // section for the current `domain` is expanded and highlighted. Collapses to a
 // floating toggle, matching the Jinja behaviour.
-//
-// It doubles as the lesson outline: two progress bars on top (the whole lesson, and
-// the part being studied) and, under the active part, the six milestone steps of
-// the run in the main column — each one a jump to that step.
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -32,7 +28,6 @@ import {
   type SidebarPart,
   type UseLessonPartsReturn,
 } from "@/hooks/lesson/useLessonParts";
-import type { OutlineMilestone } from "./LessonOutlineContext";
 import { ExamEngineChooser } from "@/components/page/learner/trainer/ExamEngineChooser";
 import { useT } from "@/components/i18n/I18nProvider";
 import "./lesson-sidebar.css";
@@ -50,7 +45,6 @@ export function LessonSidebar({
   onSelectDomain,
   onStartMaster,
   lesson,
-  milestone,
 }: {
   passageId: string;
   domain?: StudyDomain;
@@ -59,8 +53,6 @@ export function LessonSidebar({
   // The lesson's parts, when the host (LessonStudyShell) has already loaded them;
   // otherwise the sidebar loads its own.
   lesson?: UseLessonPartsReturn;
-  // The milestone running in the main column, listed as steps under its part.
-  milestone?: OutlineMilestone | null;
   // When given, picking a part switches it in place via this callback instead of
   // navigating to /learner/lesson — the dashboard's embedded milestone uses this to
   // swap the running part without leaving the home tab.
@@ -125,15 +117,6 @@ export function LessonSidebar({
     );
   };
 
-  // The part on screen and the milestone run that belongs to it (a run reported
-  // for another part — mid-switch — is ignored).
-  const activePart =
-    domain === "lesson" ? parts.find((p) => p.passageId === passageId) : undefined;
-  const activeRun = milestone && milestone.passageId === passageId ? milestone : null;
-  const partPct = activeRun
-    ? pct(activeRun.completed.length, activeRun.totalSteps)
-    : clampPct(activePart?.progress?.progressPct);
-
   return (
     <>
       {/* Mobile-only (CSS): dims the lesson behind the open drawer; tap to close. */}
@@ -156,33 +139,6 @@ export function LessonSidebar({
             <FontAwesomeIcon icon={faChevronRight} aria-hidden />
           </button>
         </div>
-
-        {(lessonProgress || activePart) && (
-          <div className="outline-progress">
-            {lessonProgress && (
-              <OutlineProgress
-                label={t("sidebar.lesson_progress")}
-                value={`${clampPct(lessonProgress.progressPct)}%`}
-                pct={clampPct(lessonProgress.progressPct)}
-              />
-            )}
-            {activePart && (activeRun || activePart.progress) && (
-              <OutlineProgress
-                current
-                label={`${partLabel(activePart, t)} (${t("sidebar.current_suffix")})`}
-                value={
-                  activeRun
-                    ? `${partPct}% · ${t("milestone.step_counter", {
-                        n: activeRun.step,
-                        total: activeRun.totalSteps,
-                      })}`
-                    : `${partPct}%`
-                }
-                pct={partPct}
-              />
-            )}
-          </div>
-        )}
 
         <div className="lesson-sidebar-accordion">
           {/* Lesson Parts */}
@@ -383,30 +339,6 @@ function PartStep({
         {part.progress && <MiniStats progress={part.progress} />}
       </span>
     </button>
-  );
-}
-
-function OutlineProgress({
-  label,
-  value,
-  pct: fill,
-  current = false,
-}: {
-  label: string;
-  value: string;
-  pct: number;
-  current?: boolean;
-}) {
-  return (
-    <div className={`outline-progress-row${current ? " is-current" : ""}`}>
-      <div className="outline-progress-head">
-        <span className="outline-progress-label">{label}</span>
-        <span className="outline-progress-value">{value}</span>
-      </div>
-      <div className="outline-progress-track">
-        <div className="outline-progress-fill" style={{ width: `${fill}%` }} />
-      </div>
-    </div>
   );
 }
 

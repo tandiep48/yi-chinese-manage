@@ -40,11 +40,12 @@ describe("PracticeSelectPage level images", () => {
     expect(container.querySelector(".card-icon")).toHaveTextContent("1");
   });
 
-  it.each(["practice", "exam"] as const)("drops the %s card label and sub line", (category) => {
+  it.each(["practice", "exam"] as const)("drops the %s card label, sub line and HSK badge", (category) => {
     const { container } = renderPage(category);
     expect(container.querySelector(".card-label")).toBeNull();
     expect(container.querySelector(".card-sub")).toBeNull();
-    expect(screen.getByText("HSK 1")).toBeInTheDocument();
+    expect(container.querySelector(".hsk-badge")).toBeNull();
+    expect(screen.queryByText("HSK 1")).toBeNull();
   });
 
   it("tags each card with its category and level for the per-picture fill", () => {

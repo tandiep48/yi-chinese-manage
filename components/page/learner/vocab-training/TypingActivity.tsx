@@ -256,7 +256,7 @@ export function TypingActivity({
             return (
             <div key={`${row.word}-${idx}`} className={`bt-type-row ${status[idx]}`}>
               <div className="bt-type-prompt">
-                <span className="bt-hanzi" style={{ fontSize: "30px" }}>
+                <span className="bt-hanzi">
                   {glow
                     ? promptChars.map((ch, ci) => (
                         <span key={ci} className={`typing-char ${glow[ci]}`}>
@@ -276,7 +276,6 @@ export function TypingActivity({
                 autoComplete="off"
                 inputMode="text"
                 rows={1}
-                style={{ fontSize: "30px" }}
                 value={values[idx]}
                 disabled={checked || locked[idx]}
                 onChange={(e) => {

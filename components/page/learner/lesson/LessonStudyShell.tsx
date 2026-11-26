@@ -11,10 +11,7 @@ import { createPortal } from "react-dom";
 import { useMediaQuery } from "@/hooks/shared/useMediaQuery";
 import { LessonSidebar, type StudyDomain } from "./LessonSidebar";
 import { useLessonSidebarDock } from "./LessonSidebarDock";
-import {
-  LessonOutlineContext,
-  type OutlineMilestone,
-} from "./LessonOutlineContext";
+import { LessonOutlineContext } from "./LessonOutlineContext";
 import { useLessonParts } from "@/hooks/lesson/useLessonParts";
 import "./lesson-study.css";
 
@@ -53,14 +50,10 @@ export function LessonStudyShell({
   // sidebar stays beside the content as before.
   const dockEl = useLessonSidebarDock();
 
-  // The outline and the milestone header read the same parts load, and the outline
-  // lists the running milestone's steps — see LessonOutlineContext.
+  // The sidebar and the milestone header read the same parts load — see
+  // LessonOutlineContext.
   const lesson = useLessonParts(passageId);
-  const [milestone, setMilestone] = useState<OutlineMilestone | null>(null);
-  const outline = useMemo(
-    () => ({ parts: lesson.parts, publishMilestone: setMilestone }),
-    [lesson.parts],
-  );
+  const outline = useMemo(() => ({ parts: lesson.parts }), [lesson.parts]);
 
   if (dockEl && passageId) {
     return (
@@ -75,7 +68,6 @@ export function LessonStudyShell({
                 open
                 onOpenChange={() => {}}
                 lesson={lesson}
-                milestone={milestone}
                 onSelectPart={onSelectPart}
                 onSelectDomain={onSelectDomain}
                 onStartMaster={onStartMaster}
@@ -101,7 +93,6 @@ export function LessonStudyShell({
               open={sidebarOpen}
               onOpenChange={setOverride}
               lesson={lesson}
-              milestone={milestone}
               onSelectPart={onSelectPart}
               onSelectDomain={onSelectDomain}
               onStartMaster={onStartMaster}

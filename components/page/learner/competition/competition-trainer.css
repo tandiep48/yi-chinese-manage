@@ -4,8 +4,8 @@
 
    The competition boards reuse the solo trainers' scoped styles
    (.vocab-trainer .bt-* and .lesson-trainer .lt-*). These rules add the
-   Learn-Together-only keyboard-shortcut badge and re-point the few places
-   that hardcode the teal learner accent at the sage competition palette.
+   Learn-Together-only keyboard-shortcut badge and restate what the solo trainers
+   scope to .trainer-shell, which the room boards do not carry.
 
    Imported by SectionScreen, the screen that renders those boards.
    Tokens come from ./competition-shell.css.
@@ -33,35 +33,29 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   pointer-events: none;
 }
-/* Lesson-mode rooms (phase 2) reuse the solo lesson trainer's .lesson-trainer .lt-*
-   task styles; these override the few places that hardcode the teal learner accent so
-   the boards read sage inside the competition shell, and restore the legacy
-   competition.css sizing for the audio button and the choice grid. */
+/* Lesson-mode rooms reuse the solo lesson trainer's .lesson-trainer .lt-* task
+   styles; these restore the legacy competition.css sizing for the audio button and
+   the choice grid. */
 .competition-shell .lesson-trainer .lt-audio-btn {
   width: 84px;
   height: 84px;
   font-size: 30px;
-  box-shadow: 0 4px 14px rgba(87, 104, 86, 0.3);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--primary) 30%, transparent);
 }
 .competition-shell .lesson-trainer .lt-mc-area { max-width: 620px; }
-/* The answer-choice buttons: competition.css adjusts alignment/size, and here they get
-   the same soft-sage fill the other in-room cards use (they'd otherwise take the grey
-   `.competition-shell .btn` fill). The answered-state highlight MUST be restated under
-   `.competition-shell` too: the solo rules are scoped to `.trainer-shell.lesson-trainer`,
-   a class pair the room board does not carry, so without these the correct/wrong answer
-   never highlights — on Skip or on a real pick. Clean green/red on white, matching the
-   vocab boards. */
+/* The answer-choice buttons look like the milestone's: teal outline on the mint
+   card. The answered states are restated too, because the solo rules are scoped to
+   `.trainer-shell.lesson-trainer`, a class pair the room board does not carry. */
 .competition-shell .lesson-trainer .lt-mc-btn {
   justify-content: flex-start;
   text-align: left;
   font-size: 1.05rem;
-  background: #cbe2d4;
-  border-color: #afcfbd;
-  color: var(--text-main);
+  background: transparent;
+  border: 1px solid var(--primary);
+  color: var(--primary);
 }
 .competition-shell .lesson-trainer .lt-mc-btn:hover:not(:disabled) {
-  background: #bddbc9;
-  border-color: #93bda7;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 .competition-shell .lesson-trainer .lt-mc-btn.lt-correct {
   background: var(--success);
@@ -74,54 +68,16 @@
   color: #ffffff;
 }
 .competition-shell .lesson-trainer .lt-typing-input:focus {
-  box-shadow: 0 0 0 4px rgba(87, 104, 86, 0.12);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 12%, transparent);
 }
-/* The typing and matching cards read white in the solo trainer; in the Learn-Together
-   room they sit on the sage board, so each resting card gets the same soft-sage fill the
-   other in-room cards use (competition-shell.css #cbe2d4 / #afcfbd). Once a card is
-   answered or picked, the correct/wrong/selected tint is mixed onto WHITE, not onto the
-   sage base — red mixed into sage turns a muddy brown that clashes with the board — so
-   the state reads as a clean green/red/teal. All re-asserted at higher specificity than
-   the solo rules, so they win independent of chunk load order. */
-.competition-shell .vocab-trainer .bt-type-row {
-  background: #cbe2d4;
-  border-color: #afcfbd;
-}
-.competition-shell .vocab-trainer .bt-type-row.correct {
-  border-color: var(--success);
-  background: color-mix(in srgb, var(--success) 12%, #ffffff);
-}
-.competition-shell .vocab-trainer .bt-type-row.incorrect {
-  border-color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 12%, #ffffff);
-}
-/* Matching boards (audio-match + word-match) — same treatment: sage at rest, a clean
-   tint on white while selected / solved / wrong. */
-.competition-shell .vocab-trainer .bt-match-item {
-  background: #cbe2d4;
-  border-color: #afcfbd;
-}
-.competition-shell .vocab-trainer .bt-match-item.selected {
-  border-color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 14%, #ffffff);
-}
-.competition-shell .vocab-trainer .bt-match-item.solved {
-  border-color: var(--success);
-  background: color-mix(in srgb, var(--success) 12%, #ffffff);
-  color: var(--success);
-}
-.competition-shell .vocab-trainer .bt-match-item.wrong {
-  border-color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 12%, #ffffff);
-}
-/* The lesson tasks portal a "btn secondary" Skip/Next into the competition action bar,
-   which only styles .btn.primary; give it the same grey the trainer bottom bar uses. */
+/* The lesson tasks portal a "btn secondary" Skip/Next into the competition action
+   bar; give it the teal the milestone's bar uses. */
 .competition-shell .skip-bottom-btn.btn.secondary {
-  background: #90a496;
+  background: var(--primary);
   color: #ffffff;
   border: none;
   justify-content: center;
   align-items: center;
   text-align: center;
 }
-.competition-shell .skip-bottom-btn.btn.secondary:hover { background: #7c8f82; }
+.competition-shell .skip-bottom-btn.btn.secondary:hover { background: var(--primary-hover); }

@@ -65,7 +65,6 @@ import { invalidateVocabReview } from "@/hooks/vocab/useVocabReview";
 import { lessonAudioFolder } from "@/lib/audio";
 import type { TrainerWord, VocabActivityType } from "@/lib/lessons/vocabTrainer";
 import type { LessonTaskType } from "@/lib/types/lesson";
-import { useLessonOutline } from "@/components/page/learner/lesson/LessonOutlineContext";
 import { MilestoneBar } from "./MilestoneBar";
 import { MilestoneHeader } from "./MilestoneHeader";
 import "./milestone.css";
@@ -176,26 +175,6 @@ function MilestonePart({
   const overview = useLessonOverview(passageId);
   const milestone = useLessonMilestone(passageId, initialStep);
   const { step, goToStep, completeAndAdvance, refreshAfterRun } = milestone;
-
-  // Report the step state to the lesson outline, which lists this part's steps
-  // under it. Keyed on the completed steps' content so a milestone re-read with
-  // the same result does not republish.
-  const publishMilestone = useLessonOutline()?.publishMilestone;
-  const completedKey = (milestone.milestone?.steps ?? [])
-    .filter((s) => s.completed)
-    .map((s) => s.step)
-    .join(",");
-  useEffect(() => {
-    if (!publishMilestone || !passageId || milestone.error) return;
-    publishMilestone({
-      passageId,
-      step,
-      totalSteps: milestone.totalSteps,
-      completed: completedKey ? completedKey.split(",").map(Number) : [],
-      goToStep,
-    });
-    return () => publishMilestone(null);
-  }, [publishMilestone, passageId, step, milestone.totalSteps, milestone.error, completedKey, goToStep]);
 
   // Step 3 needs normalized trainer rows. The passage's own vocab rows are a
   // different shape (cn/hsk_level, no word/level), and the standalone trainer
@@ -372,6 +351,7 @@ function MilestonePart({
               words={trainerWords}
               types={vocabTypes}
               contained
+              compact
               onExit={onTrainerExit}
               bottomBarSlot={trainerSlot}
               onScreenChange={setTrainerScreen}
@@ -407,6 +387,7 @@ function MilestonePart({
             passageIds={[passageId]}
             types={lessonTypes}
             contained
+            compact
             onExit={onTrainerExit}
             // Deliberately no onComplete: finishing the round shows the trainer's recap
             // and the nav's Next drives the advance, so the final step stops here rather

@@ -1,72 +1,40 @@
 "use client";
 
 // app/manage/passage/page.tsx
-// Passage management page — list, create, edit, delete, expand lines.
+// Passage list — search, filter, add, and open a passage to edit it.
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { usePassage } from "@/hooks/manage/usePassage";
-import { useToast } from "@/components/shared/manager_ui/Toast/Toast";
 import { TopBar } from "@/components/layout/TopBar";
+import { SearchBox } from "@/components/shared/manager_ui/SearchBox/SearchBox";
 import { PassageTable } from "@/components/page/passage/PassageTable";
 import { PassageForm } from "@/components/page/passage/PassageForm";
+import { errorCls, primaryButtonCls } from "@/components/page/passage/formStyles";
+import { createPassage } from "@/lib/api/manage/passage";
+import { listBooks } from "@/lib/api/manage/book";
 import { HSK_LEVELS } from "@/lib/types/common";
-import type { LessonPassage, PassageFormData } from "@/lib/types/lesson";
+import type { Book } from "@/lib/types/book";
+import type { PassageFormData } from "@/lib/types/lesson";
+
+const selectCls =
+  "rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all";
 
 export default function PassagePage() {
-  const {
-    items,
-    total,
-    totalPages,
-    page,
-    pageSize,
-    hskFilter,
-    loading,
-    error,
-    expandedPassage,
-    expandLoading,
-    setPage,
-    setHskFilter,
-    expandPassage,
-    createItem,
-    updateItem,
-    deleteItem,
-  } = usePassage();
-
-  const { toast } = useToast();
-
-  // Modal state
+  const { items, total, totalPages, page, pageSize, filters, loading, error, setPage, setFilter } =
+    usePassage();
+  const router = useRouter();
+  const [books, setBooks] = useState<Book[]>([]);
   const [formOpen, setFormOpen] = useState(false);
-  const [editing, setEditing] = useState<LessonPassage | null>(null);
 
-  const openCreate = () => {
-    setEditing(null);
-    setFormOpen(true);
-  };
+  useEffect(() => {
+    // A role without book:read still gets the page, just without book choices.
+    listBooks().then(setBooks).catch(() => setBooks([]));
+  }, []);
 
-  const openEdit = async (passage: LessonPassage) => {
-    // Expand to load lines first, then open modal
-    await expandPassage(passage.passage_id);
-    setEditing(passage);
-    setFormOpen(true);
-  };
-
-  const handleSubmit = async (data: PassageFormData) => {
-    if (editing) {
-      await updateItem(editing.passage_id, data);
-      toast(`Passage "${editing.passage_id}" updated.`, "success");
-    } else {
-      await createItem(data);
-      toast(`Passage "${data.passage_id}" created.`, "success");
-    }
-  };
-
-  const handleDelete = async (passage: LessonPassage) => {
-    try {
-      await deleteItem(passage.passage_id);
-      toast(`Passage "${passage.passage_id}" deleted.`, "info");
-    } catch (err) {
-      toast(err instanceof Error ? err.message : "Delete failed.", "error");
-    }
+  const handleCreate = async (data: PassageFormData) => {
+    await createPassage(data);
+    router.push(`/manage/passage/${data.passage_id}`);
   };
 
   return (
@@ -75,14 +43,7 @@ export default function PassagePage() {
         title="Passages"
         subtitle={`${total.toLocaleString()} lesson passages`}
         actions={
-          <button
-            id="passage-add-btn"
-            onClick={openCreate}
-            className="inline-flex items-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-600 transition-colors shadow-sm"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-            </svg>
+          <button id="passage-add-btn" onClick={() => setFormOpen(true)} className={primaryButtonCls}>
             Add Passage
           </button>
         }
@@ -96,30 +57,39 @@ export default function PassagePage() {
           </label>
           <select
             id="passage-hsk-filter"
-            value={hskFilter}
-            onChange={(e) => setHskFilter(e.target.value)}
-            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 transition-all"
+            value={filters.hskLevel ?? ""}
+            onChange={(e) => setFilter({ hskLevel: e.target.value })}
+            className={selectCls}
           >
             <option value="">All Levels</option>
             {HSK_LEVELS.map((l) => (
               <option key={l} value={l}>{l}</option>
             ))}
           </select>
+          <label htmlFor="passage-book-filter" className="text-sm font-medium text-slate-600 shrink-0">
+            Book:
+          </label>
+          <select
+            id="passage-book-filter"
+            value={filters.bookCode ?? ""}
+            onChange={(e) => setFilter({ bookCode: e.target.value })}
+            className={`${selectCls} max-w-xs`}
+          >
+            <option value="">All Books</option>
+            {books.map((b) => (
+              <option key={b.book_code} value={b.book_code}>{b.book_code}</option>
+            ))}
+          </select>
+          <SearchBox
+            id="passage-search"
+            label="Search passages"
+            placeholder="Search passage ID, then Enter"
+            onSearch={(search) => setFilter({ search })}
+          />
         </div>
 
-        {/* Error banner */}
-        {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-            {error}
-          </div>
-        )}
+        {error && <div role="alert" className={errorCls}>{error}</div>}
 
-        {/* Hint */}
-        <p className="text-xs text-slate-400">
-          💡 Click any row to expand and view its lesson lines.
-        </p>
-
-        {/* Table */}
         <PassageTable
           items={items}
           total={total}
@@ -127,26 +97,14 @@ export default function PassagePage() {
           page={page}
           pageSize={pageSize}
           loading={loading}
-          expandedPassage={expandedPassage}
-          expandLoading={expandLoading}
           onPageChange={setPage}
-          onExpand={expandPassage}
-          onEdit={openEdit}
-          onDelete={handleDelete}
         />
       </main>
 
-      {/* Form modal */}
-      <PassageForm
-        open={formOpen}
-        initial={
-          editing
-            ? { ...editing, lines: expandedPassage?.lines ?? [] }
-            : null
-        }
-        onClose={() => setFormOpen(false)}
-        onSubmit={handleSubmit}
-      />
+      {/* Mounted only while open, so each visit starts blank. */}
+      {formOpen && (
+        <PassageForm open onClose={() => setFormOpen(false)} onSubmit={handleCreate} />
+      )}
     </div>
   );
 }

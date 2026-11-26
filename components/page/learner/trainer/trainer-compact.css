@@ -1,0 +1,42 @@
+/* ─────────────────────────────────────────────
+   COMPACT TRAINER (.trainer-shell.compact) — the milestone's steps 3 and 6. No
+   top gap, and on phones smaller type and tighter spacing so a task fits between
+   the step strip and the nav bar with as little scrolling as possible. Compounds
+   are chosen to outrank the solo-trainer rules regardless of chunk load order.
+   ───────────────────────────────────────────── */
+.trainer-shell.contained.compact .app-container {
+  padding-top: 0;
+}
+/* Breathing room above the shell when a new task is scrolled into view. */
+.trainer-shell.compact {
+  scroll-margin-top: 3.5rem;
+}
+
+@media (max-width: 600px) {
+  .trainer-shell.compact .task-counter { margin-bottom: 8px; }
+  .trainer-shell.compact .task-card { padding: 12px; }
+  .trainer-shell.compact .instruction { margin-bottom: 8px; font-size: 15px; }
+
+  /* Lesson trainer (step 6). */
+  .trainer-shell.compact .lt-task { gap: 10px; }
+  .trainer-shell.compact .lt-word { font-size: 22px; }
+  .trainer-shell.compact .lt-audio-btn { width: 56px; height: 56px; font-size: 1.2rem; }
+  .trainer-shell.compact .lt-mc-area { gap: 8px; }
+  .trainer-shell.contained.compact .lt-mc-btn { padding: 8px 10px; font-size: 14px; }
+  .trainer-shell.compact .lt-typing-target { font-size: 20px; }
+  .trainer-shell.compact .lt-typing-input { min-height: 44px; font-size: 20px; }
+  .trainer-shell.compact .lt-typing-pinyin { font-size: 16px; }
+  .trainer-shell.compact .chip-container { gap: 6px; min-height: 44px; margin-bottom: 8px; padding: 6px; }
+  .trainer-shell.compact .chip { min-width: 36px; min-height: 36px; padding: 4px 10px; font-size: 16px; }
+
+  /* Vocab trainer (step 3). */
+  .trainer-shell.compact .bt-type-list { gap: 8px; }
+  .trainer-shell.compact .bt-type-row { flex-basis: 130px; gap: 4px; padding: 8px 10px; }
+  .trainer-shell.compact .bt-type-row .bt-hanzi,
+  .trainer-shell.compact .bt-type-row .bt-type-input { font-size: 22px; }
+  .trainer-shell.compact .bt-type-row .bt-type-input { padding: 6px 8px; }
+  .trainer-shell.compact .bt-match-board-rows { gap: 10px; }
+  .trainer-shell.compact .bt-match-col { gap: 8px; }
+  .trainer-shell.compact .bt-match-item { min-width: 72px; min-height: 44px; padding: 6px 10px; font-size: 1rem; }
+  .trainer-shell.compact .bt-match-item.bt-match-word { font-size: 22px; }
+}

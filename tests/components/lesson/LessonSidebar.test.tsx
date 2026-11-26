@@ -76,6 +76,33 @@ describe("LessonSidebar", () => {
     expect(screen.getByText("Translation")).toBeInTheDocument();
   });
 
+  it("has no outline progress block above the accordion", () => {
+    const { container } = renderSidebar();
+    expect(container.querySelector(".outline-progress")).toBeNull();
+    expect(screen.queryByText("Lesson progress")).toBeNull();
+  });
+
+  it("uses the host's parts instead of loading its own", () => {
+    render(
+      <I18nProvider>
+        <LessonSidebar
+          passageId="H2_2_1"
+          open
+          onOpenChange={vi.fn()}
+          lesson={{
+            loading: false,
+            error: null,
+            parts: PARTS,
+            lessonProgress: null,
+            header: HEADER,
+          }}
+        />
+      </I18nProvider>,
+    );
+    expect(screen.getByText("Lili likes to run.")).toBeInTheDocument();
+    expect(partsHook.useLessonParts).toHaveBeenCalledWith("");
+  });
+
   it("labels the close control Collapse and flags the part on screen as Studying", () => {
     renderSidebar(true, "H2_2_2", "lesson");
     expect(screen.getByRole("button", { name: "Close Sidebar" })).toHaveTextContent("Collapse");
